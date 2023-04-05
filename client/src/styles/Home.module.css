@@ -1,0 +1,12 @@
+.main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: white;
+}
+
+.title {
+    font-size: 50px;
+    color: black;
+}
