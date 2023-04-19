@@ -9,6 +9,7 @@ import { ErrorCode } from '../lib/error/errorCode';
 export interface IRequestContext {
     requestId: string;
     url: string;
+    deviceId: string;
     logger: Logger;
 }
 
@@ -26,12 +27,25 @@ export const validateContext = (context: unknown, origin: string): IRequestConte
     );
 };
 
-export const addCallContext = (req: Request, _res: Response, next: NextFunction): void => {
+export const addCallContext = (req: Request, res: Response, next: NextFunction): void => {
     const requestId = validateWithFallback(isString, req.headers['x-sirona-request-id'], uuid());
 
+    let deviceId = req.cookies.deviceId;
+
+    if (!deviceId) {
+        deviceId = uuid();
+        res.cookie('deviceId', deviceId, { 
+            maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+    }
+    
     req.context = {
         requestId: requestId,
         url: req.originalUrl,
+        deviceId: deviceId,
         logger: logger.child({ requestId })
     };
 

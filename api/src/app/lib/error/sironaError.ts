@@ -64,26 +64,62 @@ export class SironaError implements ISironaError {
     }
 }
 
-export class BadRequestError extends SironaError {
+export class BadRequestError extends SironaError { // 400
     constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
         super(internalCode, message ?? 'Bad Request', HttpCode.BAD_REQUEST, logBody);
     }
 }
 
-export class ConflictError extends SironaError {
+export class UnauthorizedError extends SironaError { // 401
+    constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
+        super(internalCode, message ?? 'Unauthorized', HttpCode.UNAUTHORIZED, logBody);
+    }
+}
+
+export class ForbiddenError extends SironaError { // 403
+    constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
+        super(internalCode, message ?? 'Forbidden', HttpCode.FORBIDDEN, logBody);
+    }
+}
+
+export class NotFoundError extends SironaError { // 404
+    constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
+        super(internalCode, message ?? 'Not Found', HttpCode.NOT_FOUND, logBody);
+    }
+}
+
+export class MethodNotAllowedError extends SironaError { // 405
+    constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
+        super(internalCode, message ?? 'Method Not Allowed', HttpCode.METHOD_NOT_ALLOWED, logBody);
+    }
+}
+
+export class ConflictError extends SironaError { // 409
     constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
         super(internalCode, message ?? 'Conflict', HttpCode.CONFLICT, logBody);
     }
 }
 
-export class UnprocessableError extends SironaError {
+export class UnprocessableError extends SironaError { // 422
     constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
         super(internalCode, message ?? 'Unprocessable Entity', HttpCode.UNPROCESSABLE_ENTITY, logBody);
     }
 }
 
-export class NotFoundError extends SironaError {
+export class TooManyRequestsError extends SironaError { // 429
     constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
-        super(internalCode, message ?? 'Not Found', HttpCode.NOT_FOUND, logBody);
+        super(internalCode, message ?? 'Too Many Requests', HttpCode.TOO_MANY_REQUESTS, logBody);
+    }
+}
+
+export class InternalServerError extends SironaError { // 500
+    constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
+        super(internalCode, message ?? 'Internal Server Error', HttpCode.INTERNAL_SERVER_ERROR, logBody);
+    }
+}
+
+export class BadGatewayError extends SironaError { // 502
+    constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
+        super(internalCode, message ?? 'Bad Gateway', HttpCode.BAD_GATEWAY, logBody);
     }
 }
