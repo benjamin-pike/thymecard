@@ -8,5 +8,13 @@ export enum ErrorCode {
     InvalidUserId = 4,
     InvalidContext = 5,
     InvalidQueryParameter = 6,
+    InvalidRefreshToken = 7,
+    RedisConnectionError = 8,
+    MissingLoginCredentials = 9,
+    NotLocalUser = 10,
+    InvalidAuthProvider = 11,
+    GoogleAuthError = 11,
+    FacebookAuthError = 12,
+    AppleAuthError = 13,
     InternalServerError = 9999
 }

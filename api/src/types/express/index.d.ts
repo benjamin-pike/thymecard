@@ -5,6 +5,7 @@ declare module 'express-serve-static-core' {
         context: {
             requestId: string;
             url: string;
+            deviceId: string;
             logger: Logger;
         };
     }

@@ -1,12 +1,16 @@
 import express from 'express';
 import http from 'http';
+import cookieParser from 'cookie-parser';
 import { logger } from './app/common/logger';
 import { addCallContext } from './app/middleware/context.middleware';
 import { UserController } from './app/components/user/user.controller';
 import { userRouter } from './app/components/user/user.router';
 import { errorHandler } from './app/middleware/error.middleware';
+import { AuthController } from './app/components/auth/auth.controller';
+import { authRouter } from './app/components/auth/auth.router';
 
 export interface IDependencies {
+    authController: AuthController;
     userController: UserController;
 }
 
@@ -50,12 +54,14 @@ export class Server {
 
         this.application.use(express.json());
         this.application.use(express.urlencoded({ extended: true }));
+        this.application.use(cookieParser());
         this.application.use(addCallContext);
 
         return this;
     }
 
     public initRoutes() {
+        this.application.use('/auth', authRouter(this.dependencies));
         this.application.use('/users', userRouter(this.dependencies));
         return this;
     }

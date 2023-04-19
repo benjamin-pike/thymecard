@@ -1,21 +1,47 @@
 import { ZodError } from 'zod';
 import { formatZodError } from '../../lib/error/error.utils';
 import { ErrorCode } from '../../lib/error/errorCode';
-import { UnprocessableError } from '../../lib/error/sironaError';
+import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
 import { hasKey, isObject, isString, isValidMongoId } from '../../lib/types/types.utils';
 import { UserService } from './user.service';
-import { IUserCreate, IUserUpdate, userCreateSchema, userUpdateSchema } from './user.types';
+import {
+    AuthProvider,
+    ILocalUserCreate,
+    IOAuthUserCreate,
+    IUser,
+    IUserUpdate,
+    createLocalUserSchema,
+    updateUserSchema
+} from './user.types';
+import { IGoogleUser } from '../auth/auth.types';
 
-export class UserController {
-    constructor(private userService: UserService) {}
+interface IUserControllerDependencies {
+    userService: UserService;
+}
 
-    public async create(_context: any, resource: unknown) {
+interface IUserController {
+    createLocalUser(context: any, resource: unknown): Promise<IUser>;
+    getUserById(context: any, userId: string): Promise<IUser>;
+    getUserByEmailNoError(context: any, email: string): Promise<IUser | null>;
+    updateUser(context: any, userId: string, resource: unknown): Promise<IUser>;
+    deleteUser(context: any, userId: string): Promise<void>;
+    getOrCreateOAuthUser(context: any, email: string, resource: unknown, authProvider: AuthProvider): Promise<IUser>;
+}
+
+export class UserController implements IUserController {
+    private userService: UserService;
+
+    constructor(deps: IUserControllerDependencies) {
+        this.userService = deps.userService;
+    }
+
+    public async createLocalUser(_context: any, resource: unknown) {
         try {
             if (isObject(resource) && hasKey(resource, 'dob') && isString(resource.dob)) {
                 resource.dob = new Date(resource.dob);
             }
 
-            const userResource: IUserCreate = userCreateSchema.parse(resource);
+            const userResource: ILocalUserCreate = createLocalUserSchema.parse(resource);
 
             return await this.userService.createUser(userResource);
         } catch (err: any) {
@@ -29,19 +55,31 @@ export class UserController {
         }
     }
 
-    public async getById(_context: any, userId: string) {
+    public async getUserById(_context: any, userId: string) {
         if (!isValidMongoId(userId)) {
-            throw new UnprocessableError(ErrorCode.InvalidUserId, 'Invalid user id', {
+            throw new UnprocessableError(ErrorCode.InvalidUserId, 'Invalid user ID', {
                 origin: 'UserController.getById',
                 data: { userId }
             });
         }
-        return await this.userService.getUser(userId);
+        return await this.userService.getUserById(userId);
     }
 
-    public async update(_context: any, userId: string, resource: unknown) {
+    public async getUserByEmailNoError(_context: any, email: string) {
+        try {
+            return await this.userService.getUserByEmail(email);
+        } catch (err: any) {
+            if (err instanceof NotFoundError) {
+                return null;
+            }
+
+            throw err;
+        }
+    }
+
+    public async updateUser(_context: any, userId: string, resource: unknown) {
         if (!isValidMongoId(userId)) {
-            throw new UnprocessableError(ErrorCode.InvalidUserId, 'Invalid user id', {
+            throw new UnprocessableError(ErrorCode.InvalidUserId, 'Invalid user ID', {
                 origin: 'UserController.getById',
                 data: { userId }
             });
@@ -52,7 +90,7 @@ export class UserController {
                 resource.dob = new Date(resource.dob);
             }
 
-            const userResource: IUserUpdate = userUpdateSchema.parse(resource);
+            const userResource: IUserUpdate = updateUserSchema.parse(resource);
 
             return await this.userService.updateUser(userId, userResource);
         } catch (err: any) {
@@ -66,14 +104,58 @@ export class UserController {
         }
     }
 
-    public async delete(_context: any, userId: string) {
+    public async deleteUser(_context: any, userId: string) {
         if (!isValidMongoId(userId)) {
-            throw new UnprocessableError(ErrorCode.InvalidUserId, 'Invalid user id', {
+            throw new UnprocessableError(ErrorCode.InvalidUserId, 'Invalid user ID', {
                 origin: 'UserController.getById',
                 data: { userId }
             });
         }
 
         return await this.userService.deleteUser(userId);
+    }
+
+    public async getOrCreateOAuthUser(_context: any, email: string, resource: unknown, authProvider: AuthProvider) {
+        try {
+            const existingUser = await this.getUserByEmailNoError(_context, email);
+
+            if (existingUser) {
+                if (existingUser.authProvider !== authProvider) {
+                    throw new UnprocessableError(ErrorCode.InvalidAuthProvider, 'Please log in with the method you used to sign up', {
+                        origin: 'UserController.getOrCreateOAuthUser',
+                        data: { email, authProvider }
+                    });
+                }
+
+                return existingUser;
+            }
+
+            let userResource: IOAuthUserCreate;
+
+            switch (authProvider) {
+                case AuthProvider.Google:
+                    const googleUser = resource as IGoogleUser;
+                    userResource = {
+                        firstName: googleUser.given_name,
+                        email: googleUser.email,
+                        authProvider
+                    };
+
+                    if (googleUser.family_name) {
+                        userResource.lastName = googleUser.family_name;
+                    }
+
+                    break;
+                default:
+                    throw new UnprocessableError(ErrorCode.InvalidAuthProvider, 'Invalid auth provider', {
+                        origin: 'UserController.getOrCreateOAuthUser',
+                        data: { email, authProvider }
+                    });
+            }
+
+            return await this.userService.createUser(userResource);
+        } catch (err: any) {
+            throw err;
+        }
     }
 }

@@ -1,25 +1,41 @@
-import * as bcrypt from 'bcrypt';
 import { userRepository } from './user.model';
-import { IUser, IUserCreate } from './user.types';
+import { ILocalUserCreate, IOAuthUserCreate, IUser, isLocalUser } from './user.types';
 import { NotFoundError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { UserCache } from '../../lib/types/cache.types';
+import { AuthService } from '../auth/auth.service';
 
 interface IUserServiceDependencies {
     userCache: UserCache;
+    authService: AuthService;
 }
 
-export class UserService {
-    private cache: UserCache;
+interface IUserService {
+    createUser(user: ILocalUserCreate | IOAuthUserCreate): Promise<IUser>;
+    updateUser(userId: string, update: Partial<IUser>): Promise<IUser>;
+    getUserById(userId: string): Promise<IUser>;
+    getUserByEmail(email: string): Promise<IUser>;
+    deleteUser(userId: string): Promise<void>;
+}
 
-    constructor(dependencies: IUserServiceDependencies) {
-        this.cache = dependencies.userCache;
+export class UserService implements IUserService {
+    private cache: UserCache;
+    private authService: AuthService;
+
+    constructor(deps: IUserServiceDependencies) {
+        this.cache = deps.userCache;
+        this.authService = deps.authService;
     }
 
-    public async createUser(user: IUserCreate): Promise<IUser> {
-        const hashedPassword = await bcrypt.hash(user.password, 10);
+    public async createUser(user: ILocalUserCreate | IOAuthUserCreate): Promise<IUser> {
+        let createdUser: IUser;
 
-        const createdUser = await userRepository.create({ ...user, password: hashedPassword });
+        if (isLocalUser(user)) {
+            const hashedPassword = await this.authService.hashPassword(user.password);
+            createdUser = await userRepository.create({ ...user, password: hashedPassword });
+        } else {
+            createdUser = await userRepository.create(user);
+        }
 
         this.cache.set(createdUser._id.toString(), createdUser);
 
@@ -29,7 +45,7 @@ export class UserService {
     public async updateUser(userId: string, update: Partial<IUser>): Promise<IUser> {
         const query = { _id: userId, deleted: { $ne: true } };
 
-        const hashedPassword = update.password ? await bcrypt.hash(update.password, 10) : undefined;
+        const hashedPassword = update.password ? await this.authService.hashPassword(update.password) : undefined;
 
         const updatedUser = await userRepository.findOneAndUpdate(query, { ...update, password: hashedPassword });
 
@@ -45,7 +61,7 @@ export class UserService {
         return updatedUser;
     }
 
-    public async getUser(userId: string): Promise<IUser> {
+    public async getUserById(userId: string): Promise<IUser> {
         const cachedUser = this.cache.get(userId);
 
         if (cachedUser) {
@@ -63,13 +79,34 @@ export class UserService {
         }
 
         if (user.deleted) {
-            throw new NotFoundError(ErrorCode.DeletedUserNotFound, 'The requested account not longer exists', {
+            throw new NotFoundError(ErrorCode.DeletedUserNotFound, 'The requested account no longer exists', {
                 origin: 'UserService.getUser',
                 data: { user }
             });
         }
 
         this.cache.set(userId, user);
+
+        return user;
+    }
+
+    public async getUserByEmail(email: string): Promise<IUser> {
+        const query = { email };
+        const user = await userRepository.getOne(query);
+
+        if (!user) {
+            throw new NotFoundError(ErrorCode.UserNotFound, 'User not found', {
+                origin: 'UserService.getUser',
+                data: { email }
+            });
+        }
+
+        if (user.deleted) {
+            throw new NotFoundError(ErrorCode.DeletedUserNotFound, 'The requested account no longer exists', {
+                origin: 'UserService.getUser',
+                data: { email }
+            });
+        }
 
         return user;
     }

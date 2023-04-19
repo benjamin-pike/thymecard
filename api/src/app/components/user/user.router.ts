@@ -9,25 +9,15 @@ export const userRouter = (dependencies: IDependencies) => {
 
     const router = express.Router();
 
-    const resRootKey = 'user';
-    router.use(excludeResFields(resRootKey, ['password']));
-    router.use(includeResFields(resRootKey, ['createdAt', 'updatedAt']));
+    router.use(excludeResFields('user', ['password']));
+    router.use(includeResFields('user', ['createdAt', 'updatedAt']));
 
     return router
-        .post('/', async (req, res, next) => {
-            const context = validateContext(req.context, 'userRouter.post');
-            try {
-                const user = await userController.create(context, req.body);
-                res.status(201).json({ [resRootKey]: user });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
         .get('/:userId', async (req, res, next) => {
             const context = validateContext(req.context, 'userRouter.get');
             try {
-                const user = await userController.getById(context, req.params.userId);
-                res.status(200).json({ [resRootKey]: user });
+                const user = await userController.getUserById(context, req.params.userId);
+                res.status(200).json({ user });
             } catch (err) {
                 next(enrichError(err, context));
             }
@@ -35,8 +25,8 @@ export const userRouter = (dependencies: IDependencies) => {
         .put('/:userId', async (req, res, next) => {
             const context = validateContext(req.context, 'userRouter.put');
             try {
-                const user = await userController.update(context, req.params.userId, req.body);
-                res.status(200).json({ [resRootKey]: user });
+                const user = await userController.updateUser(context, req.params.userId, req.body);
+                res.status(200).json({ user });
             } catch (err) {
                 next(enrichError(err, context));
             }
@@ -44,7 +34,7 @@ export const userRouter = (dependencies: IDependencies) => {
         .delete('/:userId', async (req, res, next) => {
             const context = validateContext(req.context, 'userRouter.delete');
             try {
-                await userController.delete(context, req.params.userId);
+                await userController.deleteUser(context, req.params.userId);
                 res.status(204).end();
             } catch (err) {
                 next(enrichError(err, context));

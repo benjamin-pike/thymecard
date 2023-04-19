@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { MongoRepository } from '../../lib/database/mongo.repository';
-import { IUser, IUserCreate } from './user.types';
+import { ILocalUserCreate, IOAuthUserCreate, IUser } from './user.types';
 
 export const collectionName = 'users';
 
@@ -12,7 +12,7 @@ export const User = new Schema(
         },
         lastName: {
             type: String,
-            required: true
+            required: false
         },
         email: {
             type: String,
@@ -20,7 +20,7 @@ export const User = new Schema(
         },
         password: {
             type: String,
-            required: true
+            required: false
         },
         phoneNumber: {
             type: String,
@@ -28,11 +28,16 @@ export const User = new Schema(
         },
         dob: {
             type: Date,
-            required: true
+            required: false
         },
         gender: {
             type: String,
             enum: ['MALE', 'FEMALE', 'OTHER'],
+            required: false
+        },
+        authProvider: {
+            type: String,
+            enum: ['LOCAL', 'GOOGLE', 'FACEBOOK', 'APPLE'],
             required: true
         },
         deleted: {
@@ -51,7 +56,7 @@ User.index({ email: 1 }, { unique: true });
 
 mongoose.model('User', User);
 
-class UserRepository extends MongoRepository<IUser, IUserCreate> {
+class UserRepository extends MongoRepository<IUser, ILocalUserCreate | IOAuthUserCreate> {
     constructor() {
         super(collectionName, User);
     }

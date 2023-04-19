@@ -1,11 +1,11 @@
-import { Document, FilterQuery, Types, Model, model, Schema } from 'mongoose';
+import { Document, FilterQuery, ObjectId, Model, model, Schema } from 'mongoose';
 import { ErrorCode } from '../error/errorCode';
 import { ConflictError } from '../error/sironaError';
 
 interface IEntityKey {
-    _id: Types.ObjectId;
+    _id: ObjectId;
 }
-type Doc = Document<Types.ObjectId>;
+type Doc = Document<ObjectId>;
 
 type Update<Entity> = Partial<Omit<Entity, keyof IEntityKey>>;
 type Create<Entity> = Partial<Omit<Entity, keyof IEntityKey>>;
@@ -18,7 +18,7 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
     protected model: Model<Entity & Doc>;
 
     constructor(collectionName: string, schema: Schema) {
-        this.model = model<Entity & Doc>(collectionName, schema);
+        this.model = model<Entity & Doc>(collectionName, schema, collectionName);
         this.ensureIndexes();
     }
 
@@ -35,7 +35,7 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
                 const repoName = Object.getPrototypeOf(this).constructor.name;
                 throw new ConflictError(
                     ErrorCode.MongoDuplicateKey,
-                    `The value of '${Object.keys(err.keyPattern)[0]}' violates a unique constraint`,
+                    `The value of ${Object.keys(err.keyPattern)[0]} violates a unique constraint`,
                     {
                         origin: `${repoName}.create`,
                         data: err.keyValue
