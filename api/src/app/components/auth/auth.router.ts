@@ -3,6 +3,7 @@ import { enrichError } from '../../lib/error/error.utils';
 import { AuthProvider } from '../user/user.types';
 import { IDependencies } from '../../lib/types/server.types';
 import { IRoutePermissions } from '../../lib/auth/permissions';
+import HTTP_STATUS_CODES from 'http-status-enum';
 
 export const authRouter = (dependencies: IDependencies) => {
     const { authController, userController } = dependencies;
@@ -17,7 +18,7 @@ export const authRouter = (dependencies: IDependencies) => {
                 const { email, password } = req.body;
                 const { user, tokens } = await authController.validatePasswordAndLogin(context, email, password);
 
-                res.status(200).json({ user, tokens });
+                res.status(HTTP_STATUS_CODES.OK).json({ user, tokens });
             } catch (err) {
                 next(enrichError(err, context));
             }
@@ -28,7 +29,7 @@ export const authRouter = (dependencies: IDependencies) => {
                 const user = await userController.createLocalUser(context, req.body);
                 const tokens = await authController.loginPrevalidatedUser(context, user);
 
-                res.status(201).json({ user, tokens });
+                res.status(HTTP_STATUS_CODES.CREATED).json({ user, tokens });
             } catch (err) {
                 next(enrichError(err, context));
             }
@@ -39,7 +40,7 @@ export const authRouter = (dependencies: IDependencies) => {
                 const { refreshToken } = req.body;
                 const newTokens = await authController.refreshAccessToken(context, refreshToken);
 
-                res.status(200).json({ tokens: newTokens });
+                res.status(HTTP_STATUS_CODES.OK).json({ tokens: newTokens });
             } catch (err) {
                 next(enrichError(err, context));
             }
@@ -71,7 +72,7 @@ export const authRouter = (dependencies: IDependencies) => {
                 );
                 const tokens = await authController.loginPrevalidatedUser(context, user);
 
-                res.status(200).json({ user, tokens });
+                res.status(HTTP_STATUS_CODES.OK).json({ user, tokens });
             } catch (err) {
                 next(enrichError(err, context));
             }
@@ -100,7 +101,7 @@ export const authRouter = (dependencies: IDependencies) => {
                 );
                 const tokens = await authController.loginPrevalidatedUser(context, user);
 
-                return res.json({ user, tokens });
+                return res.status(HTTP_STATUS_CODES.OK).json({ user, tokens });
             } catch (err) {
                 next(enrichError(err, context));
             }

@@ -37,7 +37,7 @@ export class UserService implements IUserService {
             createdUser = await userRepository.create(user);
         }
 
-        this.cache.set(createdUser._id.toString(), createdUser);
+        this.cache.set(createdUser._id, createdUser);
 
         return createdUser;
     }

@@ -1,6 +1,23 @@
 import he from 'he';
-import { isArray, isArrayOf, isNonEmptyString, isNumber, isPlainObject, isString, parseFloatOrUndefined, validateWithFallback } from '../../lib/types/types.utils';
-import { IRecipe, IIngredient, IYield, INutritionalInformation, Method } from './recipe.types';
+import {
+    isArray,
+    isArrayOf,
+    isNonEmptyString,
+    isNumber,
+    isPlainObject,
+    isString,
+    parseFloatOrUndefined,
+    validateWithFallback
+} from '../../lib/types/types.utils';
+import {
+    IIngredient,
+    IYield,
+    INutritionalInformation,
+    Method,
+    IRecipeCreate,
+    isSchemaOrgHowToStep,
+    isSchemaOrgHowToSection
+} from './recipe.types';
 import { UNIT_MAP, FRACTION_MAP, VALID_PREP_STYLES, VALID_PREP_STYLE_MODIFIERS } from './recipe.globals';
 
 export class RecipeParser {
@@ -10,9 +27,9 @@ export class RecipeParser {
         this.resource = resource;
     }
 
-    public parseRecipe(): IRecipe {
+    public parseRecipe(): IRecipeCreate {
         return {
-            name: validateWithFallback(this.resource.name, isNonEmptyString, undefined),
+            name: validateWithFallback(this.resource.name, isNonEmptyString, ''), // Required
             description: validateWithFallback(this.resource.description, isNonEmptyString, undefined),
             images: this.parseImages(this.resource.image),
             authors: this.parseAuthors(this.resource.author),
@@ -22,11 +39,11 @@ export class RecipeParser {
             prepTime: this.parseDuration(this.resource.prepTime),
             cookTime: this.parseDuration(this.resource.cookTime),
             totalTime: this.parseDuration(this.resource.totalTime),
-            yield: this.parseYield(this.resource.recipeYield),
+            yield: this.parseYield(this.resource.recipeYield) ?? { quantity: [], units: null }, // Required
             diet: this.parseDietInformation(this.resource.suitableForDiet),
             nutrition: this.parseNutritionInformation(this.resource.nutrition),
-            ingredients: this.parseIngredients(this.resource.recipeIngredient),
-            method: this.parseMethod(this.resource.recipeInstructions)
+            ingredients: this.parseIngredients(this.resource.recipeIngredient) ?? [], // Required
+            method: this.parseMethod(this.resource.recipeInstructions) ?? [] // Required
         };
     }
 
@@ -224,37 +241,36 @@ export class RecipeParser {
     }
 
     private parseMethod(resource: any): Method | undefined {
-        if (!resource) {
-            return undefined;
-        }
+        if (isArray(resource)) {
+            const result: Method = [];
 
-        if (isArray(resource) && resource.every((element) => this.isSchemaOrgObject(element, 'HowToStep'))) {
-            const steps = resource.map((step: any) => {
-                return {
-                    instructions: step.text,
-                    title: step.name,
-                    image: this.parseImages(step.image)
-                };
-            });
-
-            return [{ steps }];
-        }
-
-        if (isArray(resource) && this.isSchemaOrgObject(resource, 'HowToSection')) {
-            return resource.map((section: any) => {
-                const steps = section.itemListElement.map((step: any) => {
-                    return {
-                        instructions: step.text,
-                        title: step.name,
-                        image: this.parseImages(step.image)
+            for (const element of resource) {
+                if (isSchemaOrgHowToStep(element)) {
+                    const step = {
+                        instructions: element.text,
+                        stepTitle: element.name,
+                        image: this.parseImages(element.image)
                     };
-                });
+                    result.push({ steps: [step] });
+                    continue;
+                }
+                if (isSchemaOrgHowToSection(element)) {
+                    const steps = element.itemListElement.map((step: any) => {
+                        return {
+                            instructions: step.text,
+                            stepTitle: step.name !== step.text ? step.name : undefined,
+                            image: this.parseImages(step.image)
+                        };
+                    });
 
-                return {
-                    steps,
-                    title: section.name
-                };
-            });
+                    result.push({
+                        steps,
+                        sectionTitle: element.name
+                    });
+                }
+            }
+
+            return result;
         }
     }
 
@@ -392,36 +408,6 @@ export class IngredientsParser {
         return { intermediateText, unit };
     }
 
-    // private parsePrepStyles(input: string): { intermediateText: string; prepStyles: string[] } {
-    //     // Parses prep styles from input string (eg. "finely chopped", "diced", "minced", etc.
-    //     // Only parses prep styles from before the first comma (eg. "finely chopped" in "finely chopped onion, diced tomato")
-    //     // Prevents parsing of styles specific to notes (eg. "shaved" in "asparagus spears, stalks shaved into ribbons")
-
-    //     const wordBoundary = '\\b';
-    //     const space = '\\s';
-    //     const prepStylesPattern = VALID_PREP_STYLES.map((style) => `${wordBoundary}${style}${wordBoundary}`).join('|');
-    //     const prepStyleModifiersPattern = VALID_PREP_STYLE_MODIFIERS.map((modifier) => `${wordBoundary}${modifier}${space}`).join('|');
-    //     const regexPattern = `(${prepStyleModifiersPattern})?(${prepStylesPattern})`;
-    //     const regex = new RegExp(regexPattern, 'gi');
-
-    //     const prepStyles: string[] = [];
-    //     let match: RegExpExecArray | null;
-
-    //     const preCommaString = input.split(/,|;|:/)[0];
-    //     const postCommaString = input.split(/,|;|:/).slice(1).join(',');
-
-    //     while ((match = regex.exec(preCommaString)) !== null) {
-    //         prepStyles.push(match[0]);
-    //     }
-
-    //     const intermediateText = this.cleanupText(`${preCommaString.replace(regex, '')}, ${postCommaString}`);
-
-    //     return {
-    //         intermediateText,
-    //         prepStyles
-    //     };
-    // }
-
     private parsePrepStyles(input: string): { intermediateText: string; prepStyles: string[] } {
         const wordBoundary = '\\b';
         const space = '\\s';
@@ -430,20 +416,20 @@ export class IngredientsParser {
         const separatorPattern = `${space}(and|or)${space}`;
         const regexPattern = `(${prepStyleModifiersPattern})?(${prepStylesPattern})(${separatorPattern})?(${prepStyleModifiersPattern})?(${prepStylesPattern})?`;
         const regex = new RegExp(regexPattern, 'gi');
-    
+
         const prepStyles: string[] = [];
         let match: RegExpExecArray | null;
-    
+
         const preCommaString = input.split(/,|;|:/)[0];
         const postCommaString = input.split(/,|;|:/).slice(1).join(',');
-    
+
         while ((match = regex.exec(preCommaString)) !== null) {
             const combinedStyle = match[0];
             prepStyles.push(combinedStyle);
         }
-    
+
         const intermediateText = this.cleanupText(`${preCommaString.replace(regex, '')}, ${postCommaString}`);
-    
+
         return {
             intermediateText,
             prepStyles
@@ -453,7 +439,7 @@ export class IngredientsParser {
     private isPrepStyle(input: string): boolean {
         return this.cleanupText(this.parsePrepStyles(input).intermediateText) === '';
     }
-    
+
     private cleanupText(input: string): string {
         // Trims non-alpha chars, removes surplus spaces, removes space before comma/semicolon
 
@@ -590,8 +576,8 @@ export const parseJsonLinkedData = (html: string): any => {
     if (!isArray(data)) {
         if (!isPlainObject(data) || !data['@type']) {
             return {};
-        } 
-        data = [data]
+        }
+        data = [data];
     }
 
     data = splitMultiTypeObjects(data);
@@ -605,7 +591,7 @@ export const parseJsonLinkedData = (html: string): any => {
     }, {});
 
     return dataObject;
-}
+};
 
 export const decodeHtmlEntities = (obj: any): any => {
     if (isString(obj)) {
@@ -625,7 +611,7 @@ export const decodeHtmlEntities = (obj: any): any => {
     }
 
     return obj;
-}
+};
 
 export const splitMultiTypeObjects = (objs: any): object[] => {
     const duplicatedObjects: object[] = [];
@@ -652,4 +638,4 @@ export const splitMultiTypeObjects = (objs: any): object[] => {
     }
 
     return duplicatedObjects;
-}
+};

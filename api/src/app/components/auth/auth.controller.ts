@@ -59,7 +59,7 @@ export class AuthController implements IAuthController {
         }
 
         const decodedRefreshToken = await this.authService.verifyRefreshToken(refreshToken, context.deviceId);
-        const user = await this.userService.getUserById(decodedRefreshToken.userId.toString());
+        const user = await this.userService.getUserById(decodedRefreshToken.userId);
         return await this.authService.initializeSession(user, context.deviceId);
     }
 
