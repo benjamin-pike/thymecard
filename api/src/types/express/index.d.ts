@@ -1,12 +1,7 @@
-import { Logger } from 'winston';
+import { RequestContext } from '../../app/middleware/context.middleware';
 
 declare module 'express-serve-static-core' {
     export interface Request {
-        context: {
-            requestId: string;
-            url: string;
-            deviceId: string;
-            logger: Logger;
-        };
+        context: RequestContext
     }
 }

@@ -1,21 +1,44 @@
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 import bcrypt from 'bcrypt';
-import { IUser } from '../user/user.types';
-import { BadGatewayError, BadRequestError, UnauthorizedError } from '../../lib/error/sironaError';
-import { ErrorCode } from '../../lib/error/errorCode';
-import { ITokenPair, isRefreshTokenPayload, IRefreshTokenPayload, IRefreshTokenEntity, IGoogleUser } from './auth.types';
-import { RedisRepository } from '../../lib/database/redis.repository';
 import { OAuth2Client as GoogleAuthClient } from 'google-auth-library';
+import { IUser } from '../user/user.types';
+import { BadGatewayError, BadRequestError, SironaError, UnauthorizedError } from '../../lib/error/sironaError';
+import { ErrorCode } from '../../lib/error/errorCode';
+import {
+    ITokenPair,
+    IAccessTokenPayload,
+    IRefreshTokenPayload,
+    isRefreshTokenPayload,
+    IRefreshTokenEntity,
+    IGoogleUser,
+    isFacebookUser,
+    IFacebookUser,
+    isGoogleUser,
+} from './auth.types';
+import { RedisRepository } from '../../lib/database/redis.repository';
+import { validateWithError } from '../../lib/types/types.utils';
+import { Role, permissions } from '../../lib/auth/permissions';
 
 interface IAuthServiceDependencies {
     redisRepository: RedisRepository;
     jwtAccessSecret: string;
     jwtRefreshSecret: string;
-    googleConfig: {
-        clientId: string;
-        clientSecret: string;
-        redirectUrl: string;
-    };
+    googleConfig: IGoogleAuthConfig;
+    facebookAuthConfig: IFacebookAuthConfig;
+}
+
+interface IGoogleAuthConfig {
+    clientId: string;
+    clientSecret: string;
+    redirectUrl: string;
+}
+
+interface IFacebookAuthConfig {
+    clientId: string;
+    clientSecret: string;
+    redirectUrl: string;
+    state: string;
 }
 
 export class AuthService {
@@ -23,6 +46,7 @@ export class AuthService {
     private accessTokenSecret: string;
     private refreshTokenSecret: string;
     private googleAuthClient: GoogleAuthClient;
+    private facebookAuthConfig: IFacebookAuthConfig;
 
     constructor(deps: IAuthServiceDependencies) {
         this.redisRepository = deps.redisRepository;
@@ -34,6 +58,8 @@ export class AuthService {
             deps.googleConfig.clientSecret,
             deps.googleConfig.redirectUrl
         );
+
+        this.facebookAuthConfig = deps.facebookAuthConfig;
     }
 
     public async hashPassword(password: string): Promise<string> {
@@ -46,18 +72,17 @@ export class AuthService {
     }
 
     private generateAccessToken(user: IUser): string {
-        const payload = {
-            userId: user._id,
-            email: user.email
+        const payload: IAccessTokenPayload = {
+            userId: user._id.toString(),
+            permissions: permissions[Role.USER]
         };
-        const expiresIn = '15m';
+        const expiresIn = '10h';
         return jwt.sign(payload, this.accessTokenSecret, { expiresIn });
     }
 
     private generateRefreshToken(user: IUser): string {
-        const payload = {
-            userId: user._id,
-            email: user.email
+        const payload: IRefreshTokenPayload = {
+            userId: user._id.toString(),
         };
         const expiresIn = '30d';
         return jwt.sign(payload, this.refreshTokenSecret, { expiresIn });
@@ -128,25 +153,92 @@ export class AuthService {
         await this.redisRepository.set(key, value);
     }
 
-    async getGoogleAuthUrl(): Promise<string> {
+    public async getGoogleAuthUrl(): Promise<string> {
         const scopeRoot = 'https://www.googleapis.com/auth/';
         const scopes = [scopeRoot + 'userinfo.profile', scopeRoot + 'userinfo.email'];
         return this.googleAuthClient.generateAuthUrl({ scope: scopes });
     }
 
-    public async getGoogleUserProfile(code: string) {
+    public async getGoogleUserProfile(code: string): Promise<IGoogleUser> {
         try {
             const { tokens } = await this.googleAuthClient.getToken(code);
             this.googleAuthClient.setCredentials(tokens);
 
-            const profileRequest = await this.googleAuthClient.request<IGoogleUser>({
+            const { data } = await this.googleAuthClient.request({
                 url: 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json'
             });
 
-            return profileRequest.data;
+            return validateWithError(
+                data,
+                isGoogleUser,
+                new BadGatewayError(ErrorCode.GoogleAuthError, 'Google returned invalid user data', {
+                    origin: 'AuthService.getGoogleUserProfile',
+                    data: { data }
+                })
+            );
         } catch (err) {
+            if (err instanceof SironaError) {
+                throw err;
+            }
+
             throw new BadGatewayError(ErrorCode.GoogleAuthError, 'An error occured whilst authenticating with Google', {
                 origin: 'AuthService.getGoogleUserProfile',
+                data: { err }
+            });
+        }
+    }
+
+    public async getFacebookAuthUrl(): Promise<string> {
+        const url = new URL('https://www.facebook.com/v12.0/dialog/oauth');
+        url.searchParams.append('client_id', this.facebookAuthConfig.clientId);
+        url.searchParams.append('redirect_uri', this.facebookAuthConfig.redirectUrl);
+        url.searchParams.append('state', this.facebookAuthConfig.state);
+
+        return url.toString();
+    }
+
+    public async getFacebookUserProfile(code: string, state: string): Promise<IFacebookUser> {
+        try {
+            if (state !== this.facebookAuthConfig.state) {
+                throw new UnauthorizedError(ErrorCode.FacebookAuthError, 'Facebook returned an invalid state parameter', {
+                    origin: 'AuthService.getFacebookUserProfile',
+                    data: { state }
+                });
+            }
+
+            const tokenResponse = await axios.get('https://graph.facebook.com/v16.0/oauth/access_token', {
+                params: {
+                    client_id: this.facebookAuthConfig.clientId,
+                    client_secret: this.facebookAuthConfig.clientSecret,
+                    redirect_uri: this.facebookAuthConfig.redirectUrl,
+                    code
+                }
+            });
+
+            const { access_token } = tokenResponse.data;
+
+            const { data } = await axios.get('https://graph.facebook.com/me', {
+                params: {
+                    fields: 'id,email,first_name,last_name',
+                    access_token
+                }
+            });
+
+            return validateWithError(
+                isFacebookUser,
+                data,
+                new BadGatewayError(ErrorCode.FacebookAuthError, 'Facebook returned invalid user data', {
+                    origin: 'AuthService.getFacebookUserProfile',
+                    data: { data }
+                })
+            );
+        } catch (err) {
+            if (err instanceof SironaError) {
+                throw err;
+            }
+
+            throw new BadGatewayError(ErrorCode.FacebookAuthError, 'An error occured whilst authenticating with Facebook', {
+                origin: 'AuthService.getFacebookUserProfile',
                 data: { err }
             });
         }

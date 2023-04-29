@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A health planning app for diet and exercise",
   "main": "index.js",
+  "engines": {
+    "node": "18.15.0"
+},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "npm run dev --prefix client",

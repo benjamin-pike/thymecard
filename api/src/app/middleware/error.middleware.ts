@@ -4,7 +4,7 @@ import { ErrorCode } from '../lib/error/errorCode';
 import { SironaError, standardizeErrorCode } from '../lib/error/sironaError';
 import { logger } from '../common/logger';
 
-export const errorHandler = (err: any, req: Request, res: Response, _next: NextFunction) => {
+export const errorsMiddleware = (err: any, req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof SironaError) {
         logger.error(err.toLog());
         return res.status(err.httpCode).json(err.toResponseBody());
@@ -14,3 +14,5 @@ export const errorHandler = (err: any, req: Request, res: Response, _next: NextF
         message: err.message
     });
 };
+
+export type ErrorsMiddleware = typeof errorsMiddleware;

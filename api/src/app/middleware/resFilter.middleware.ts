@@ -27,7 +27,7 @@ export const includeResFields = (rootKey: string | undefined, excludeFieldsByDef
 
             if (isDefined(includeValue) && !isString(includeValue)) {
                 throw new UnprocessableError(ErrorCode.InvalidQueryParameter, "Query parameter 'include' must be a string", {
-                    origin: 'middleware.includeResFields',
+                    origin: 'filterMiddleware.includeResFields',
                     data: {
                         parameterName: 'include',
                         parameterValue: req.query.include
