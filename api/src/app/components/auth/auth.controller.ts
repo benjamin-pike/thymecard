@@ -1,9 +1,9 @@
 import { AuthService } from './auth.service';
 import { IRequestContext } from '../../middleware/context.middleware';
 import { UserService } from '../user/user.service';
-import { IGoogleUser, ITokenPair } from './auth.types';
+import { ITokenPair, IGoogleUser, IFacebookUser } from './auth.types';
 import { isString } from '../../lib/types/types.utils';
-import { UnprocessableError } from '../../lib/error/sironaError';
+import { SironaError, UnprocessableError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { IUser } from '../user/user.types';
 
@@ -75,8 +75,31 @@ export class AuthController implements IAuthController {
 
             return await this.authService.getGoogleUserProfile(code);
         } catch (err) {
+            if (err instanceof SironaError) {
+                throw err;
+            }
+
             throw new UnprocessableError(ErrorCode.GoogleAuthError, 'Error authenticating with Google', {
                 origin: 'authRouter.loginWithGoogle',
+                data: { code }
+            });
+        }
+    };
+
+    public async getFacebookAuthUrl(_context: IRequestContext): Promise<string> {
+        return await this.authService.getFacebookAuthUrl();
+    };
+
+    public async getFacebookUserProfile(_context: IRequestContext, code: unknown, state: unknown): Promise<IFacebookUser> {
+        try {
+            if (!isString(code) || !isString(state)) {
+                throw new Error();
+            }
+
+            return await this.authService.getFacebookUserProfile(code, state);
+        } catch (err) {
+            throw new UnprocessableError(ErrorCode.FacebookAuthError, 'Error authenticating with Facebook', {
+                origin: 'authRouter.loginWithFacebook',
                 data: { code }
             });
         }

@@ -1,5 +1,5 @@
 import { userRepository } from './user.model';
-import { ILocalUserCreate, IOAuthUserCreate, IUser, isLocalUser } from './user.types';
+import { AuthProvider, ILocalUserCreate, IOAuthUserCreate, IUser, isLocalUser } from './user.types';
 import { NotFoundError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { UserCache } from '../../lib/types/cache.types';
@@ -105,6 +105,24 @@ export class UserService implements IUserService {
             throw new NotFoundError(ErrorCode.DeletedUserNotFound, 'The requested account no longer exists', {
                 origin: 'UserService.getUser',
                 data: { email }
+            });
+        }
+
+        return user;
+    }
+
+    public async getOAuthUserOrNull(OAuthId: string, authProvider: AuthProvider, email: string | undefined): Promise<IUser | null> {
+        const query = { $or: [{ OAuthId, authProvider }, { email }] };
+        const user = await userRepository.getOne(query);
+
+        if (!user) {
+            return null
+        }
+
+        if (user.deleted) {
+            throw new NotFoundError(ErrorCode.DeletedUserNotFound, 'The requested account no longer exists', {
+                origin: 'UserService.getUser',
+                data: { OAuthId, authProvider }
             });
         }
 
