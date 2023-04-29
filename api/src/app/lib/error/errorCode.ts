@@ -26,5 +26,8 @@ export enum ErrorCode {
     InvalidRecipeUrl = 20,
     ExternalPageNotFound = 21,
     InvalidRequestReturnType = 22,
+    InvalidRecipeCreateResource = 23,
+    InvalidRecipeUpdateResource = 24,
+    RecipeNotFound = 24,
     InternalServerError = 9999
 }

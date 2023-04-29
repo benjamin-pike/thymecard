@@ -1,8 +1,8 @@
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 import * as z from 'zod';
 
 export interface IUser {
-    _id: ObjectId;
+    _id: string;
     firstName: string;
     lastName?: string;
     email?: string;

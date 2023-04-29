@@ -3,14 +3,68 @@ import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { isString } from '../../lib/types/types.utils';
 import { RecipeParser, parseJsonLinkedData } from './recipe.utils';
-import { IRecipe } from './recipe.types';
+import { IRecipe, IRecipeCreate } from './recipe.types';
+import { recipeRepository } from './recipe.model';
+import { Types } from 'mongoose';
 
 interface IRecipeService {
-    getRecipeFromUrl(url: string): Promise<IRecipe>;
+    getRecipeFromUrl(url: string): Promise<IRecipeCreate>;
 }
 
 export class RecipeService implements IRecipeService {
-    public async getRecipeFromUrl(url: string): Promise<IRecipe> {
+    public async createRecipe(recipe: IRecipeCreate, userId: string): Promise<IRecipe> {
+        const query = { ...recipe, userId };
+        return await recipeRepository.create(query);
+    }
+
+    public async getRecipe(recipeId: string, userId: string): Promise<IRecipe> {
+        const query = { _id: recipeId, userId: userId };
+        const recipe = await recipeRepository.getOne(query);
+
+        if (!recipe) {
+            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
+                origin: 'RecipeService.getRecipe',
+                data: { recipeId, userId }
+            });
+        }
+
+        return recipe;
+    }
+
+    public async getRecipes(userId: string): Promise<IRecipe[]> {
+        const query = { userId: userId };
+        return await recipeRepository.getAll(query);
+    }
+
+    public async updateRecipe(recipeId: string, recipe: IRecipeCreate, userId: string): Promise<IRecipe> {
+        const query = { _id: recipeId, userId: userId };
+        const updatedRecipe = await recipeRepository.findOneAndUpdate(query, recipe);
+
+        if (!updatedRecipe) {
+            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
+                origin: 'RecipeService.updateRecipe',
+                data: { recipeId, userId }
+            });
+        }
+
+        return updatedRecipe;
+    }  
+    
+    public async deleteRecipe(recipeId: string, userId: string): Promise<void> {
+        const query = { _id: recipeId, userId: userId };
+        const deletedRecipe = await recipeRepository.delete(query);
+
+        if (!deletedRecipe) {
+            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
+                origin: 'RecipeService.deleteRecipe',
+                data: { recipeId, userId }
+            });
+        }
+
+        return;
+    }
+    
+    public async getRecipeFromUrl(url: string): Promise<IRecipeCreate> {
         let axiosRes: AxiosResponse;
         try {
             axiosRes = await axios(url);
