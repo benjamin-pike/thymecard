@@ -2,26 +2,18 @@ import express from 'express';
 import http from 'http';
 import cookieParser from 'cookie-parser';
 import { logger } from './app/common/logger';
-import { addCallContext } from './app/middleware/context.middleware';
-import { UserController } from './app/components/user/user.controller';
-import { userRouter } from './app/components/user/user.router';
-import { errorHandler } from './app/middleware/error.middleware';
-import { AuthController } from './app/components/auth/auth.controller';
-import { authRouter } from './app/components/auth/auth.router';
-
-export interface IDependencies {
-    authController: AuthController;
-    userController: UserController;
-}
+import { IMiddleware, IRouters } from './app/lib/types/server.types';
 
 export class Server {
     public server!: http.Server;
     public application: express.Application;
-    private dependencies: IDependencies;
+    private routers: IRouters;
+    private middleware: IMiddleware;
 
-    constructor(dependencies: IDependencies) {
+    constructor(routers: IRouters, middleware: IMiddleware) {
         this.application = express();
-        this.dependencies = dependencies;
+        this.routers = routers;
+        this.middleware = middleware;
     }
 
     public start() {
@@ -55,19 +47,29 @@ export class Server {
         this.application.use(express.json());
         this.application.use(express.urlencoded({ extended: true }));
         this.application.use(cookieParser());
-        this.application.use(addCallContext);
+        this.application.use(this.middleware.context);
+        // this.application.use(this.middleware.matchRoute)
 
         return this;
     }
 
-    public initRoutes() {
-        this.application.use('/auth', authRouter(this.dependencies));
-        this.application.use('/users', userRouter(this.dependencies));
+    public initAnonymousRoutes() {
+        this.application.use('/auth', this.routers.auth);
+
+        return this;
+    }
+
+    public initAuthenticatedRoutes() {
+        this.application.use(this.middleware.auth);
+        this.application.use('/users', this.routers.user);
+        this.application.use('/recipes', this.routers.recipe);
+
         return this;
     }
 
     public initErrorHandler() {
-        this.application.use(errorHandler);
+        this.application.use(this.middleware.errors);
+
         return this;
     }
 }

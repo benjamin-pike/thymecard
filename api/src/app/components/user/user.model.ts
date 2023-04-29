@@ -16,7 +16,7 @@ export const User = new Schema(
         },
         email: {
             type: String,
-            required: true
+            required: false
         },
         password: {
             type: String,
@@ -40,6 +40,10 @@ export const User = new Schema(
             enum: ['LOCAL', 'GOOGLE', 'FACEBOOK', 'APPLE'],
             required: true
         },
+        OAuthId: {
+            type: String,
+            required: false
+        },
         deleted: {
             type: Boolean,
             required: false
@@ -53,6 +57,15 @@ export const User = new Schema(
 );
 
 User.index({ email: 1 }, { unique: true });
+User.index(
+    { OAuthId: 1, authProvider: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            OAuthId: { $exists: true }
+        }
+    }
+);
 
 mongoose.model('User', User);
 

@@ -1,22 +1,17 @@
 import { ObjectId } from 'mongoose';
 import * as z from 'zod';
 
-export enum AuthProvider {
-    Local = 'LOCAL',
-    Google = 'GOOGLE',
-    Facebook = 'FACEBOOK',
-    Apple = 'APPLE'
-}
 export interface IUser {
     _id: ObjectId;
     firstName: string;
     lastName?: string;
-    email: string;
+    email?: string;
     password?: string;
     phoneNumber?: string;
     dob?: Date;
     gender?: 'MALE' | 'FEMALE' | 'OTHER';
     authProvider: 'LOCAL' | 'GOOGLE' | 'FACEBOOK' | 'APPLE';
+    OAuthId?: string;
     deleted?: boolean;
 }
 
@@ -26,10 +21,17 @@ interface ILocalUser extends IUser {
     authProvider: 'LOCAL';
 }
 
-export type IOAuthUserCreate = Pick<IUser, 'firstName' | 'lastName' | 'email' | 'authProvider'>;
-export type ILocalUserCreate = Omit<ILocalUser, '_id' | 'deleted'>;
+export type IOAuthUserCreate = Pick<IUser, 'firstName' | 'lastName' | 'OAuthId' | 'email' |'authProvider'>;
+export type ILocalUserCreate = Omit<ILocalUser, '_id' | 'authProvider' | 'deleted'>;
 
 export type IUserUpdate = Partial<IUser>;
+
+export enum AuthProvider {
+    Local = 'LOCAL',
+    Google = 'GOOGLE',
+    Facebook = 'FACEBOOK',
+    Apple = 'APPLE'
+}
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
 
@@ -41,13 +43,12 @@ export const createLocalUserSchema = z.object({
     phoneNumber: z.string().optional(),
     dob: z.date().optional(),
     gender: z.enum(['MALE', 'FEMALE', 'OTHER']),
-    authProvider: z.literal('LOCAL')
 });
 
 export const createOAuthUserSchema = z.object({
     firstName: z.string(),
     lastName: z.string().optional(),
-    email: z.string().email(),
+    OAuthId: z.string(),
     authProvider: z.enum(['GOOGLE', 'FACEBOOK', 'APPLE'])
 });
 

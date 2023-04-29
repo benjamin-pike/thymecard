@@ -35,7 +35,7 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
                 const repoName = Object.getPrototypeOf(this).constructor.name;
                 throw new ConflictError(
                     ErrorCode.MongoDuplicateKey,
-                    `The value of ${Object.keys(err.keyPattern)[0]} violates a unique constraint`,
+                    `The value of '${Object.keys(err.keyPattern)[0]}' violates a unique constraint`,
                     {
                         origin: `${repoName}.create`,
                         data: err.keyValue

@@ -1,8 +1,8 @@
 import express from 'express';
-import { IDependencies } from '../../../server';
-import { validateContext } from '../../middleware/context.middleware';
+import { IDependencies } from '../../lib/types/server.types';
 import { enrichError } from '../../lib/error/error.utils';
 import { excludeResFields, includeResFields } from '../../middleware/resFilter.middleware';
+import { AccessScope, IRoutePermissions, Permission } from '../../lib/auth/permissions';
 
 export const userRouter = (dependencies: IDependencies) => {
     const { userController } = dependencies;
@@ -14,7 +14,7 @@ export const userRouter = (dependencies: IDependencies) => {
 
     return router
         .get('/:userId', async (req, res, next) => {
-            const context = validateContext(req.context, 'userRouter.get');
+            const context = req.context.validateAuthContext('userRouter.get');
             try {
                 const user = await userController.getUserById(context, req.params.userId);
                 res.status(200).json({ user });
@@ -23,7 +23,7 @@ export const userRouter = (dependencies: IDependencies) => {
             }
         })
         .put('/:userId', async (req, res, next) => {
-            const context = validateContext(req.context, 'userRouter.put');
+            const context = req.context.validateAuthContext('userRouter.put');
             try {
                 const user = await userController.updateUser(context, req.params.userId, req.body);
                 res.status(200).json({ user });
@@ -32,7 +32,7 @@ export const userRouter = (dependencies: IDependencies) => {
             }
         })
         .delete('/:userId', async (req, res, next) => {
-            const context = validateContext(req.context, 'userRouter.delete');
+            const context = req.context.validateAuthContext('userRouter.delete');
             try {
                 await userController.deleteUser(context, req.params.userId);
                 res.status(204).end();
@@ -40,4 +40,10 @@ export const userRouter = (dependencies: IDependencies) => {
                 next(enrichError(err, context));
             }
         });
+};
+
+export const userPermissions: IRoutePermissions = {
+    'GET /users/:userId': [{ scope: AccessScope.User, permission: Permission.READ }],
+    'PUT /users/:userId': [{ scope: AccessScope.User, permission: Permission.WRITE }],
+    'DELETE /users/:userId': [{ scope: AccessScope.User, permission: Permission.DELETE }]
 };

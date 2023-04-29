@@ -1,4 +1,4 @@
-import { isString, isValidMongoId } from '../../lib/types/types.utils';
+import { isBoolean, isOptional, isString, isValidMongoId, isRecord, isNumber } from '../../lib/types/types.utils';
 
 export interface ITokenPair {
     accessToken: string;
@@ -11,23 +11,57 @@ export interface IRefreshTokenEntity {
     userId: string;
 }
 
-export interface IRefreshTokenPayload {
+export interface IAccessTokenPayload {
     userId: string;
-    email: string;
+    permissions: Record<string, number>
 }
 
+export interface IRefreshTokenPayload {
+    userId: string;
+}
+
+export const isAccessTokenPayload = (obj: any): obj is IAccessTokenPayload => {
+    return obj && isValidMongoId(obj.userId) && isRecord(obj.permissions, isNumber);
+};
+
 export const isRefreshTokenPayload = (obj: any): obj is IRefreshTokenPayload => {
-    return obj && isValidMongoId(obj.userId) && isString(obj.email) && isString(obj.deviceId);
+    return obj && isValidMongoId(obj.userId)
 };
 
 export interface IGoogleUser {
-    sub: string;
-    name: string;
-    given_name: string;
-    family_name: string;
-    picture: string;
-    email: string;
-    email_verified: boolean;
-    locale: string;
-    hd: string;
+    id: string
+    given_name: string
+    family_name: string
+    name: string
+    email: string
+    verified_email: boolean,
+    picture: string
+    locale: string
+}
+
+export interface IFacebookUser {
+    id: string;
+    email?: string;
+    first_name: string;
+    last_name: string;
+}
+
+export const isGoogleUser = (obj: any): obj is IGoogleUser => {
+    return obj && 
+        isString(obj.id) && 
+        isString(obj.given_name) && 
+        isString(obj.family_name) && 
+        isString(obj.name) && 
+        isString(obj.email) && 
+        isBoolean(obj.verified_email) && 
+        isString(obj.picture) && 
+        isString(obj.locale);
+};
+
+export const isFacebookUser = (obj: any): obj is IFacebookUser => {
+    return obj && 
+        isString(obj.id) && 
+        isString(obj.first_name) && 
+        isString(obj.last_name) && 
+        isOptional(isString, obj.email);
 }
