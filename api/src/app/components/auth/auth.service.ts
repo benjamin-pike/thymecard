@@ -73,7 +73,7 @@ export class AuthService {
 
     private generateAccessToken(user: IUser): string {
         const payload: IAccessTokenPayload = {
-            userId: user._id.toString(),
+            userId: user._id,
             permissions: permissions[Role.USER]
         };
         const expiresIn = '10h';
@@ -82,7 +82,7 @@ export class AuthService {
 
     private generateRefreshToken(user: IUser): string {
         const payload: IRefreshTokenPayload = {
-            userId: user._id.toString(),
+            userId: user._id,
         };
         const expiresIn = '30d';
         return jwt.sign(payload, this.refreshTokenSecret, { expiresIn });
@@ -92,7 +92,7 @@ export class AuthService {
         const newAccessToken = this.generateAccessToken(user);
         const newRefreshToken = this.generateRefreshToken(user);
 
-        await this.upsertStoredRefreshToken(user._id.toString(), deviceId, newRefreshToken);
+        await this.upsertStoredRefreshToken(user._id, deviceId, newRefreshToken);
 
         return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     }

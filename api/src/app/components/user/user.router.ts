@@ -1,4 +1,5 @@
 import express from 'express';
+import HTTP_STATUS_CODES from 'http-status-enum';
 import { IDependencies } from '../../lib/types/server.types';
 import { enrichError } from '../../lib/error/error.utils';
 import { excludeResFields, includeResFields } from '../../middleware/resFilter.middleware';
@@ -17,7 +18,7 @@ export const userRouter = (dependencies: IDependencies) => {
             const context = req.context.validateAuthContext('userRouter.get');
             try {
                 const user = await userController.getUserById(context, req.params.userId);
-                res.status(200).json({ user });
+                res.status(HTTP_STATUS_CODES.OK).json({ user });
             } catch (err) {
                 next(enrichError(err, context));
             }
@@ -26,7 +27,7 @@ export const userRouter = (dependencies: IDependencies) => {
             const context = req.context.validateAuthContext('userRouter.put');
             try {
                 const user = await userController.updateUser(context, req.params.userId, req.body);
-                res.status(200).json({ user });
+                res.status(HTTP_STATUS_CODES.OK).json({ user });
             } catch (err) {
                 next(enrichError(err, context));
             }
@@ -35,7 +36,7 @@ export const userRouter = (dependencies: IDependencies) => {
             const context = req.context.validateAuthContext('userRouter.delete');
             try {
                 await userController.deleteUser(context, req.params.userId);
-                res.status(204).end();
+                res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
             } catch (err) {
                 next(enrichError(err, context));
             }
