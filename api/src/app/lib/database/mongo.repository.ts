@@ -1,4 +1,4 @@
-import { Document, FilterQuery, Types, Model, model, Schema } from 'mongoose';
+import { Document, FilterQuery, UpdateQuery, Types, Model, model, Schema } from 'mongoose';
 import { ErrorCode } from '../error/errorCode';
 import { ConflictError } from '../error/sironaError';
 import { isArray, isPlainObject } from '../types/types.utils';
@@ -8,8 +8,8 @@ interface IEntityKey {
 }
 type Doc = Document<string>;
 
-type Update<Entity> = Partial<Omit<Entity, keyof IEntityKey>>;
 type Create<Entity> = Partial<Omit<Entity, keyof IEntityKey>>;
+type Update<Entity> = UpdateQuery<Entity & Doc>;
 
 // Query and Sort do not support nested paths; use dot notation
 type Query<Entity> = FilterQuery<Entity & Doc>;

@@ -3,12 +3,19 @@ import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { isString } from '../../lib/types/types.utils';
 import { RecipeParser, parseJsonLinkedData } from './recipe.utils';
-import { IRecipe, IRecipeCreate } from './recipe.types';
+import { IComment, IRecipe, IRecipeCreate, IRecipeUpdate } from './recipe.types';
 import { recipeRepository } from './recipe.model';
-import { Types } from 'mongoose';
 
 interface IRecipeService {
-    getRecipeFromUrl(url: string): Promise<IRecipeCreate>;
+    createRecipe(recipe: IRecipeCreate, userId: string): Promise<IRecipe>
+    getRecipe(recipeId: string, userId: string): Promise<IRecipe>    
+    getRecipes(userId: string): Promise<IRecipe[]>    
+    updateRecipe(recipeId: string, recipe: IRecipeUpdate, userId: string): Promise<IRecipe>    
+    deleteRecipe(recipeId: string, userId: string): Promise<void>    
+    getRecipeFromUrl(url: string): Promise<Partial<IRecipeCreate>>    
+    createComment(recipeId: string, userId: string, comment: IComment): Promise<IComment[]>    
+    getComments(recipeId: string, userId: string): Promise<IComment[]>    
+    deleteComment(recipeId: string, userId: string, commentId: string): Promise<void>
 }
 
 export class RecipeService implements IRecipeService {
@@ -36,7 +43,7 @@ export class RecipeService implements IRecipeService {
         return await recipeRepository.getAll(query);
     }
 
-    public async updateRecipe(recipeId: string, recipe: IRecipeCreate, userId: string): Promise<IRecipe> {
+    public async updateRecipe(recipeId: string, recipe: IRecipeUpdate, userId: string): Promise<IRecipe> {
         const query = { _id: recipeId, userId: userId };
         const updatedRecipe = await recipeRepository.findOneAndUpdate(query, recipe);
 
@@ -48,8 +55,8 @@ export class RecipeService implements IRecipeService {
         }
 
         return updatedRecipe;
-    }  
-    
+    }
+
     public async deleteRecipe(recipeId: string, userId: string): Promise<void> {
         const query = { _id: recipeId, userId: userId };
         const deletedRecipe = await recipeRepository.delete(query);
@@ -63,8 +70,8 @@ export class RecipeService implements IRecipeService {
 
         return;
     }
-    
-    public async getRecipeFromUrl(url: string): Promise<IRecipeCreate> {
+
+    public async getRecipeFromUrl(url: string): Promise<Partial<IRecipeCreate>> {
         let axiosRes: AxiosResponse;
         try {
             axiosRes = await axios(url);
@@ -97,6 +104,67 @@ export class RecipeService implements IRecipeService {
         const recipeParser = new RecipeParser(recipeData);
         const parsedRecipe = recipeParser.parseRecipe();
 
-        return parsedRecipe;
+        return { ...parsedRecipe, source: url };
+    }
+
+    public async createComment(recipeId: string, userId: string, comment: IComment): Promise<IComment[]> {
+        const filter = {
+            _id: recipeId,
+            $or: [{ isPublic: true }, { isPublic: false, userId }]
+        };
+        const update = { $push: { comments: comment } };
+        const updatedRecipe = await recipeRepository.findOneAndUpdate(filter, update);
+
+        if (!updatedRecipe || !updatedRecipe.comments) {
+            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found or you do not have access to it', {
+                origin: 'RecipeService.createComment',
+                data: { recipeId, userId }
+            });
+        }
+
+        return updatedRecipe.comments;
+    }
+
+    public async getComments(recipeId: string, userId: string): Promise<IComment[]> {
+        const filter = {
+            _id: recipeId,
+            $or: [{ isPublic: true }, { isPublic: false, userId }]
+        };
+        const recipe = await recipeRepository.getOne(filter);
+
+        if (!recipe) {
+            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found or you do not have access to it', {
+                origin: 'RecipeService.getComments',
+                data: { recipeId, userId }
+            });
+        }
+
+        return recipe.comments ?? [];
+    }
+
+    public async deleteComment(recipeId: string, userId: string, commentId: string): Promise<void> {
+        const filter = {
+            _id: recipeId,
+            $or: [{ isPublic: true }, { isPublic: false, userId }]
+        };
+        const update = {
+            $pull: {
+                comments: {
+                    _id: commentId,
+                    userId: userId
+                }
+            }
+        };
+
+        const updatedRecipe = await recipeRepository.findOneAndUpdate(filter, update);
+
+        if (!updatedRecipe || !updatedRecipe.comments) {
+            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found or you do not have access to it', {
+                origin: 'RecipeService.deleteComment',
+                data: { recipeId, userId }
+            });
+        }
+
+        return
     }
 }

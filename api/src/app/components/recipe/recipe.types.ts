@@ -1,10 +1,10 @@
-import { Types } from 'mongoose';
-import { isArray, isArrayOf, isOptional, isString } from '../../lib/types/types.utils';
+import { isArrayOf, isOptional, isString, isValidMongoId } from '../../lib/types/types.utils';
 import { z } from 'zod';
 
 export interface IRecipe {
     _id: string;
     userId: string;
+    source?: string;
     name: string;
     description?: string;
     images?: string[];
@@ -20,9 +20,14 @@ export interface IRecipe {
     nutrition?: INutritionalInformation;
     ingredients: Ingredients;
     method: Method;
+    comments?: IComment[];
+    rating?: number;
+    isBookmarked?: boolean;
+    isPublic?: boolean;
 }
 
-export type IRecipeCreate = Omit<IRecipe, '_id' | 'userId'>;
+export type IRecipeCreate = Omit<IRecipe, '_id'>;
+export type IRecipeUpdate = Partial<IRecipeCreate>;
 
 export type Ingredients = IIngredient[];
 export type Method = IMethodSection[];
@@ -31,8 +36,8 @@ export interface IIngredient {
     quantity: number[] | null;
     unit: string | null;
     item: string;
-    prepStyles: string[];
-    notes: string[];
+    prepStyles?: string[];
+    notes?: string[];
     source: string;
 }
 
@@ -52,6 +57,7 @@ export interface IYield {
     units: string | null;
 }
 
+
 export interface INutritionalInformation {
     calories?: number;
     sugar?: number; // g
@@ -67,6 +73,15 @@ export interface INutritionalInformation {
     servingSize?: IYield;
 }
 
+export interface IComment {
+    userId: string;
+    comment: string;
+    createdAt: Date;
+    replyTo?: string;
+}
+
+type ICommentCreateResource = Pick<IComment, 'comment' | 'replyTo'>
+
 export interface IParseRecipeRequestBody {
     url: string;
 }
@@ -77,6 +92,7 @@ export const isParseRecipeRequestBody = (obj: any): obj is IParseRecipeRequestBo
 
 export const createRecipeSchema = z.object({
     name: z.string(),
+    userId: z.string(),
     description: z.string().optional(),
     images: z.array(z.string()).optional(),
     authors: z.array(z.string()).optional(),
@@ -112,8 +128,8 @@ export const createRecipeSchema = z.object({
         quantity: z.array(z.number()).nullable(),
         unit: z.string().nullable(),
         item: z.string(),
-        prepStyles: z.array(z.string()),
-        notes: z.array(z.string()),
+        prepStyles: z.array(z.string()).optional(),
+        notes: z.array(z.string()).optional(),
         source: z.string()
     })),
     method: z.array(z.object({
@@ -123,8 +139,18 @@ export const createRecipeSchema = z.object({
             image: z.array(z.string()).optional()
         })),
         sectionTitle: z.string().optional()
-    }))
+    })),
+    comments: z.array(z.object({
+        userId: z.string(),
+        comment: z.string(),
+        createdAt: z.date()
+    })).optional(),
+    rating: z.number().min(0).max(5).optional(),
+    isBookmarked: z.boolean().optional(),
+    isPublic: z.boolean().optional()
 });
+
+export const updateRecipeSchema = createRecipeSchema.omit({ userId: true }).partial();
 
 interface ISchemaOrgHowToStep {
     '@type': 'HowToStep';
@@ -152,3 +178,9 @@ export const isSchemaOrgHowToSection = (obj: any): obj is ISchemaOrgHowToSection
         isArrayOf(obj.itemListElement, isSchemaOrgHowToStep) &&
         isOptional(obj.name, isString)
 }
+
+export const isCommentCreateResource = (obj: any): obj is ICommentCreateResource => {
+    return obj && 
+        isString(obj.comment) && 
+        isOptional(obj.replyTo, isValidMongoId)
+};

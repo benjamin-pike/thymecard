@@ -325,4 +325,37 @@ export const VALID_PREP_STYLES = [
     'cut into slices',
     'cut into slivers'
 ];
-export const VALID_PREP_STYLE_MODIFIERS = ['very', 'finely', 'freshly', 'thinly', 'coarsely', 'roughly', 'lightly'];
+export const VALID_PREP_STYLE_MODIFIERS = [
+    'very',
+    'finely',
+    'freshly',
+    'thinly',
+    'coarsely',
+    'roughly',
+    'lightly',
+    'thickly',
+    'evenly',
+    'sparsely',
+    'generously',
+    'tightly',
+    'loosely',
+    'delicately',
+    'moderately',
+    'heavily',
+    'lightly',
+    'crisply',
+    'smoothly',
+    'partially',
+    'fully',
+    'uniformly',
+    'randomly',
+    'gradually',
+    'tenderly',
+    'firmly',
+    'artfully',
+    'skillfully',
+    'meticulously',
+    'elegantly',
+    'symmetrically',
+    'asymmetrically'
+];
