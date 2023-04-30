@@ -1,28 +1,40 @@
-import { ZodError } from "zod";
-import { ErrorCode } from "../../lib/error/errorCode";
-import { UnprocessableError } from "../../lib/error/sironaError";
-import { IAuthenticatedContext } from "../../middleware/context.middleware";
-import { RecipeService } from "./recipe.service";
-import { IComment, IRecipe, IRecipeCreate, IRecipeUpdate, createRecipeSchema, isCommentCreateResource, isParseRecipeRequestBody, updateRecipeSchema } from "./recipe.types";
-import { formatZodError } from "../../lib/error/error.utils";
-import { isPlainObject } from "../../lib/types/types.utils";
+import { ZodError } from 'zod';
+import { ErrorCode } from '../../lib/error/errorCode';
+import { UnprocessableError } from '../../lib/error/sironaError';
+import { IAuthenticatedContext } from '../../middleware/context.middleware';
+import { IRecipeService } from './recipe.service';
+import {
+    IComment,
+    IRecipe,
+    IRecipeCreate,
+    IRecipeUpdate,
+    createRecipeSchema,
+    isCommentCreateResource,
+    isParseRecipeRequestBody,
+    updateRecipeSchema
+} from './recipe.types';
+import { formatZodError } from '../../lib/error/error.utils';
+import { isPlainObject } from '../../lib/types/types.utils';
 
 interface IRecipeControllerDependencies {
-    recipeService: RecipeService;
+    recipeService: IRecipeService;
 }
 
-interface IRecipeController {
+export interface IRecipeController {
     createRecipe(context: IAuthenticatedContext, resource: unknown): Promise<IRecipe>;
     getRecipe(context: IAuthenticatedContext, recipeId: string): Promise<IRecipe>;
     getRecipes(context: IAuthenticatedContext): Promise<IRecipe[]>;
     updateRecipe(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IRecipe>;
     deleteRecipe(context: IAuthenticatedContext, recipeId: string): Promise<void>;
     parseRecipe(context: IAuthenticatedContext, reqBody: unknown): Promise<Partial<IRecipeCreate>>;
+    createComment(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IComment[]>;
+    getComments(context: IAuthenticatedContext, recipeId: string): Promise<IComment[]>;
+    deleteComment(context: IAuthenticatedContext, recipeId: string, commentId: string): Promise<void>;
 }
 
-export class RecipeController implements IRecipeController{
-    private recipeService: RecipeService;
-    
+export class RecipeController implements IRecipeController {
+    private recipeService: IRecipeService;
+
     constructor(deps: IRecipeControllerDependencies) {
         this.recipeService = deps.recipeService;
     }

@@ -139,7 +139,7 @@ const Comment = {
         type: Types.ObjectId,
         required: false
     }
-}
+};
 
 const Recipe = new Schema(
     {
@@ -226,7 +226,7 @@ const Recipe = new Schema(
         comments: {
             type: Array(Comment),
             required: false,
-            default: undefined,
+            default: undefined
         },
         isBookmarked: {
             type: Boolean,
