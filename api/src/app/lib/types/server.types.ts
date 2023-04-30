@@ -1,22 +1,24 @@
 import express from "express";
-import { AuthController } from "../../components/auth/auth.controller";
-import { UserController } from "../../components/user/user.controller";
+import { IAuthController } from "../../components/auth/auth.controller";
+import { IUserController } from "../../components/user/user.controller";
+import { IRecipeController } from "../../components/recipe/recipe.controller";
+import { IPlannerController } from "../../components/planner/planner.controller";
 import { AuthMiddleware } from "../../middleware/auth.middleware";
 import { ContextMiddleware } from "../../middleware/context.middleware";
 import { ErrorsMiddleware } from "../../middleware/error.middleware";
-import { RecipeController } from "../../components/recipe/recipe.controller";
 
 export interface IDependencies {
-    authController: AuthController;
-    userController: UserController;
-    recipeController: RecipeController
+    authController: IAuthController;
+    userController: IUserController;
+    recipeController: IRecipeController
+    plannerController: IPlannerController;
 }
 
-export interface IRouters {
-    auth: express.Router;
-    user: express.Router;
-    recipe: express.Router;
-}
+type routers = 'auth' | 'user' | 'recipe' | 'planner'
+
+export type IRouters = {
+    [key in routers]: express.Router;
+};
 
 export interface IMiddleware {
     context: ContextMiddleware;

@@ -57,7 +57,6 @@ export interface IYield {
     units: string | null;
 }
 
-
 export interface INutritionalInformation {
     calories?: number;
     sugar?: number; // g
@@ -80,7 +79,7 @@ export interface IComment {
     replyTo?: string;
 }
 
-type ICommentCreateResource = Pick<IComment, 'comment' | 'replyTo'>
+type ICommentCreateResource = Pick<IComment, 'comment' | 'replyTo'>;
 
 export interface IParseRecipeRequestBody {
     url: string;
@@ -107,44 +106,58 @@ export const createRecipeSchema = z.object({
         units: z.string().nullable()
     }),
     diet: z.array(z.string()).optional(),
-    nutrition: z.object({
-        calories: z.number().optional(),
-        sugar: z.number().optional(),
-        carbohydrate: z.number().optional(),
-        cholesterol: z.number().optional(),
-        fat: z.number().optional(),
-        saturatedFat: z.number().optional(),
-        transFat: z.number().optional(),
-        unsaturatedFat: z.number().optional(),
-        protein: z.number().optional(),
-        fiber: z.number().optional(),
-        sodium: z.number().optional(),
-        servingSize: z.object({
-            quantity: z.array(z.number()),
-            units: z.string().nullable()
-        }).optional()
-    }).optional(),
-    ingredients: z.array(z.object({
-        quantity: z.array(z.number()).nullable(),
-        unit: z.string().nullable(),
-        item: z.string(),
-        prepStyles: z.array(z.string()).optional(),
-        notes: z.array(z.string()).optional(),
-        source: z.string()
-    })),
-    method: z.array(z.object({
-        steps: z.array(z.object({
-            instructions: z.string(),
-            stepTitle: z.string().optional(),
-            image: z.array(z.string()).optional()
-        })),
-        sectionTitle: z.string().optional()
-    })),
-    comments: z.array(z.object({
-        userId: z.string(),
-        comment: z.string(),
-        createdAt: z.date()
-    })).optional(),
+    nutrition: z
+        .object({
+            calories: z.number().optional(),
+            sugar: z.number().optional(),
+            carbohydrate: z.number().optional(),
+            cholesterol: z.number().optional(),
+            fat: z.number().optional(),
+            saturatedFat: z.number().optional(),
+            transFat: z.number().optional(),
+            unsaturatedFat: z.number().optional(),
+            protein: z.number().optional(),
+            fiber: z.number().optional(),
+            sodium: z.number().optional(),
+            servingSize: z
+                .object({
+                    quantity: z.array(z.number()),
+                    units: z.string().nullable()
+                })
+                .optional()
+        })
+        .optional(),
+    ingredients: z.array(
+        z.object({
+            quantity: z.array(z.number()).nullable(),
+            unit: z.string().nullable(),
+            item: z.string(),
+            prepStyles: z.array(z.string()).optional(),
+            notes: z.array(z.string()).optional(),
+            source: z.string()
+        })
+    ),
+    method: z.array(
+        z.object({
+            steps: z.array(
+                z.object({
+                    instructions: z.string(),
+                    stepTitle: z.string().optional(),
+                    image: z.array(z.string()).optional()
+                })
+            ),
+            sectionTitle: z.string().optional()
+        })
+    ),
+    comments: z
+        .array(
+            z.object({
+                userId: z.string(),
+                comment: z.string(),
+                createdAt: z.date()
+            })
+        )
+        .optional(),
     rating: z.number().min(0).max(5).optional(),
     isBookmarked: z.boolean().optional(),
     isPublic: z.boolean().optional()
@@ -166,21 +179,13 @@ interface ISchemaOrgHowToSection {
 }
 
 export const isSchemaOrgHowToStep = (obj: any): obj is ISchemaOrgHowToStep => {
-    return obj && 
-        obj['@type'] === 'HowToStep' &&
-        isString(obj.text) &&
-        isOptional(obj.name, isString)
-}
+    return obj && obj['@type'] === 'HowToStep' && isString(obj.text) && isOptional(obj.name, isString);
+};
 
 export const isSchemaOrgHowToSection = (obj: any): obj is ISchemaOrgHowToSection => {
-    return obj &&
-        obj['@type'] === 'HowToSection' &&
-        isArrayOf(obj.itemListElement, isSchemaOrgHowToStep) &&
-        isOptional(obj.name, isString)
-}
+    return obj && obj['@type'] === 'HowToSection' && isArrayOf(obj.itemListElement, isSchemaOrgHowToStep) && isOptional(obj.name, isString);
+};
 
 export const isCommentCreateResource = (obj: any): obj is ICommentCreateResource => {
-    return obj && 
-        isString(obj.comment) && 
-        isOptional(obj.replyTo, isValidMongoId)
+    return obj && isString(obj.comment) && isOptional(obj.replyTo, isValidMongoId);
 };

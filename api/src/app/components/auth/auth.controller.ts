@@ -1,6 +1,6 @@
-import { AuthService } from './auth.service';
+import { IAuthService } from './auth.service';
 import { IRequestContext } from '../../middleware/context.middleware';
-import { UserService } from '../user/user.service';
+import { IUserService } from '../user/user.service';
 import { ITokenPair, IGoogleUser, IFacebookUser } from './auth.types';
 import { isString } from '../../lib/types/types.utils';
 import { SironaError, UnprocessableError } from '../../lib/error/sironaError';
@@ -8,21 +8,23 @@ import { ErrorCode } from '../../lib/error/errorCode';
 import { IUser } from '../user/user.types';
 
 interface IAuthControllerDependencies {
-    authService: AuthService;
-    userService: UserService;
+    authService: IAuthService;
+    userService: IUserService;
 }
 
-interface IAuthController {
+export interface IAuthController {
     validatePasswordAndLogin(context: IRequestContext, email: unknown, password: unknown): Promise<{ user: IUser; tokens: ITokenPair }>;
     loginPrevalidatedUser(context: IRequestContext, user: IUser): Promise<ITokenPair>;
     refreshAccessToken(context: IRequestContext, refreshToken: unknown): Promise<ITokenPair>;
     getGoogleAuthUrl(context: IRequestContext): Promise<string>;
     getGoogleUserProfile(context: IRequestContext, code: unknown): Promise<IGoogleUser>;
+    getFacebookAuthUrl(context: IRequestContext): Promise<string>;
+    getFacebookUserProfile(context: IRequestContext, code: unknown, state: unknown): Promise<IFacebookUser>;
 }
 
 export class AuthController implements IAuthController {
-    private authService: AuthService;
-    private userService: UserService;
+    private authService: IAuthService;
+    private userService: IUserService;
 
     constructor(deps: IAuthControllerDependencies) {
         this.authService = deps.authService;
@@ -84,11 +86,11 @@ export class AuthController implements IAuthController {
                 data: { code }
             });
         }
-    };
+    }
 
     public async getFacebookAuthUrl(_context: IRequestContext): Promise<string> {
         return await this.authService.getFacebookAuthUrl();
-    };
+    }
 
     public async getFacebookUserProfile(_context: IRequestContext, code: unknown, state: unknown): Promise<IFacebookUser> {
         try {

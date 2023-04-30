@@ -19,13 +19,19 @@ interface IUserControllerDependencies {
     userService: UserService;
 }
 
-interface IUserController {
+export interface IUserController {
     createLocalUser(context: any, resource: unknown): Promise<IUser>;
     getUserById(context: any, userId: string): Promise<IUser>;
     getUserByEmailNoError(context: any, email: string): Promise<IUser | null>;
     updateUser(context: any, userId: string, resource: unknown): Promise<IUser>;
     deleteUser(context: any, userId: string): Promise<void>;
-    getOrCreateOAuthUser(context: any, OAuthId: string, email: string | undefined, resource: unknown, authProvider: AuthProvider): Promise<IUser>;
+    getOrCreateOAuthUser(
+        context: any,
+        OAuthId: string,
+        email: string | undefined,
+        resource: unknown,
+        authProvider: AuthProvider
+    ): Promise<IUser>;
 }
 
 export class UserController implements IUserController {
@@ -115,7 +121,13 @@ export class UserController implements IUserController {
         return await this.userService.deleteUser(userId);
     }
 
-    public async getOrCreateOAuthUser(_context: any, OAuthId: string, email: string | undefined, resource: unknown, authProvider: AuthProvider): Promise<IUser> {
+    public async getOrCreateOAuthUser(
+        _context: any,
+        OAuthId: string,
+        email: string | undefined,
+        resource: unknown,
+        authProvider: AuthProvider
+    ): Promise<IUser> {
         try {
             const existingUser = await this.userService.getOAuthUserOrNull(OAuthId, authProvider, email);
 

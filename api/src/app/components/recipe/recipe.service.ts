@@ -6,16 +6,16 @@ import { RecipeParser, parseJsonLinkedData } from './recipe.utils';
 import { IComment, IRecipe, IRecipeCreate, IRecipeUpdate } from './recipe.types';
 import { recipeRepository } from './recipe.model';
 
-interface IRecipeService {
-    createRecipe(recipe: IRecipeCreate, userId: string): Promise<IRecipe>
-    getRecipe(recipeId: string, userId: string): Promise<IRecipe>    
-    getRecipes(userId: string): Promise<IRecipe[]>    
-    updateRecipe(recipeId: string, recipe: IRecipeUpdate, userId: string): Promise<IRecipe>    
-    deleteRecipe(recipeId: string, userId: string): Promise<void>    
-    getRecipeFromUrl(url: string): Promise<Partial<IRecipeCreate>>    
-    createComment(recipeId: string, userId: string, comment: IComment): Promise<IComment[]>    
-    getComments(recipeId: string, userId: string): Promise<IComment[]>    
-    deleteComment(recipeId: string, userId: string, commentId: string): Promise<void>
+export interface IRecipeService {
+    createRecipe(recipe: IRecipeCreate, userId: string): Promise<IRecipe>;
+    getRecipe(recipeId: string, userId: string): Promise<IRecipe>;
+    getRecipes(userId: string): Promise<IRecipe[]>;
+    updateRecipe(recipeId: string, recipe: IRecipeUpdate, userId: string): Promise<IRecipe>;
+    deleteRecipe(recipeId: string, userId: string): Promise<void>;
+    getRecipeFromUrl(url: string): Promise<Partial<IRecipeCreate>>;
+    createComment(recipeId: string, userId: string, comment: IComment): Promise<IComment[]>;
+    getComments(recipeId: string, userId: string): Promise<IComment[]>;
+    deleteComment(recipeId: string, userId: string, commentId: string): Promise<void>;
 }
 
 export class RecipeService implements IRecipeService {
@@ -165,6 +165,6 @@ export class RecipeService implements IRecipeService {
             });
         }
 
-        return
+        return;
     }
 }

@@ -3,14 +3,14 @@ import { AuthProvider, ILocalUserCreate, IOAuthUserCreate, IUser, isLocalUser } 
 import { NotFoundError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { UserCache } from '../../lib/types/cache.types';
-import { AuthService } from '../auth/auth.service';
+import { IAuthService } from '../auth/auth.service';
 
 interface IUserServiceDependencies {
     userCache: UserCache;
-    authService: AuthService;
+    authService: IAuthService;
 }
 
-interface IUserService {
+export interface IUserService {
     createUser(user: ILocalUserCreate | IOAuthUserCreate): Promise<IUser>;
     updateUser(userId: string, update: Partial<IUser>): Promise<IUser>;
     getUserById(userId: string): Promise<IUser>;
@@ -20,7 +20,7 @@ interface IUserService {
 
 export class UserService implements IUserService {
     private cache: UserCache;
-    private authService: AuthService;
+    private authService: IAuthService;
 
     constructor(deps: IUserServiceDependencies) {
         this.cache = deps.userCache;
