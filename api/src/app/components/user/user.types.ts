@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import * as z from 'zod';
 
 export interface IUser {
@@ -21,7 +20,7 @@ interface ILocalUser extends IUser {
     authProvider: 'LOCAL';
 }
 
-export type IOAuthUserCreate = Pick<IUser, 'firstName' | 'lastName' | 'OAuthId' | 'email' |'authProvider'>;
+export type IOAuthUserCreate = Pick<IUser, 'firstName' | 'lastName' | 'OAuthId' | 'email' | 'authProvider'>;
 export type ILocalUserCreate = Omit<ILocalUser, '_id' | 'authProvider' | 'deleted'>;
 
 export type IUserUpdate = Partial<IUser>;
@@ -42,7 +41,7 @@ export const createLocalUserSchema = z.object({
     password: z.string().min(8).regex(passwordRegex),
     phoneNumber: z.string().optional(),
     dob: z.date().optional(),
-    gender: z.enum(['MALE', 'FEMALE', 'OTHER']),
+    gender: z.enum(['MALE', 'FEMALE', 'OTHER'])
 });
 
 export const createOAuthUserSchema = z.object({

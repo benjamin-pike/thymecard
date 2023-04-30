@@ -89,7 +89,6 @@ export const isValidMongoId = (val: any): val is string => {
     }
 };
 
-
 export const parseIntOrUndefined = (val: string): number | undefined => {
     const parsed = parseInt(val);
     return validateWithFallback(parsed, isNumber, undefined)

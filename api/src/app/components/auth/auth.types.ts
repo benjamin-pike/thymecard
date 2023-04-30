@@ -13,7 +13,7 @@ export interface IRefreshTokenEntity {
 
 export interface IAccessTokenPayload {
     userId: string;
-    permissions: Record<string, number>
+    permissions: Record<string, number>;
 }
 
 export interface IRefreshTokenPayload {
@@ -25,18 +25,18 @@ export const isAccessTokenPayload = (obj: any): obj is IAccessTokenPayload => {
 };
 
 export const isRefreshTokenPayload = (obj: any): obj is IRefreshTokenPayload => {
-    return obj && isValidMongoId(obj.userId)
+    return obj && isValidMongoId(obj.userId);
 };
 
 export interface IGoogleUser {
-    id: string
-    given_name: string
-    family_name: string
-    name: string
-    email: string
-    verified_email: boolean,
-    picture: string
-    locale: string
+    id: string;
+    given_name: string;
+    family_name: string;
+    name: string;
+    email: string;
+    verified_email: boolean;
+    picture: string;
+    locale: string;
 }
 
 export interface IFacebookUser {
@@ -47,21 +47,19 @@ export interface IFacebookUser {
 }
 
 export const isGoogleUser = (obj: any): obj is IGoogleUser => {
-    return obj && 
-        isString(obj.id) && 
-        isString(obj.given_name) && 
-        isString(obj.family_name) && 
-        isString(obj.name) && 
-        isString(obj.email) && 
-        isBoolean(obj.verified_email) && 
-        isString(obj.picture) && 
-        isString(obj.locale);
+    return (
+        obj &&
+        isString(obj.id) &&
+        isString(obj.given_name) &&
+        isString(obj.family_name) &&
+        isString(obj.name) &&
+        isString(obj.email) &&
+        isBoolean(obj.verified_email) &&
+        isString(obj.picture) &&
+        isString(obj.locale)
+    );
 };
 
 export const isFacebookUser = (obj: any): obj is IFacebookUser => {
-    return obj && 
-        isString(obj.id) && 
-        isString(obj.first_name) && 
-        isString(obj.last_name) && 
-        isOptional(isString, obj.email);
-}
+    return obj && isString(obj.id) && isString(obj.first_name) && isString(obj.last_name) && isOptional(isString, obj.email);
+};

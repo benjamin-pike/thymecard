@@ -14,7 +14,7 @@ import {
     IGoogleUser,
     isFacebookUser,
     IFacebookUser,
-    isGoogleUser,
+    isGoogleUser
 } from './auth.types';
 import { RedisRepository } from '../../lib/database/redis.repository';
 import { validateWithError } from '../../lib/types/types.utils';
@@ -39,6 +39,17 @@ interface IFacebookAuthConfig {
     clientSecret: string;
     redirectUrl: string;
     state: string;
+}
+
+export interface IAuthService {
+    hashPassword(password: string): Promise<string>;
+    initializeSession(user: IUser, deviceId: string): Promise<{ accessToken: string; refreshToken: string }>;
+    loginUser(user: IUser, password: string, deviceId: string): Promise<ITokenPair>;
+    verifyRefreshToken(token: string, deviceId: string): Promise<IRefreshTokenPayload>;
+    getGoogleAuthUrl(): Promise<string>;
+    getGoogleUserProfile(code: string): Promise<IGoogleUser>;
+    getFacebookAuthUrl(): Promise<string>;
+    getFacebookUserProfile(code: string, state: string): Promise<IFacebookUser>;
 }
 
 export class AuthService {
@@ -82,7 +93,7 @@ export class AuthService {
 
     private generateRefreshToken(user: IUser): string {
         const payload: IRefreshTokenPayload = {
-            userId: user._id,
+            userId: user._id
         };
         const expiresIn = '30d';
         return jwt.sign(payload, this.refreshTokenSecret, { expiresIn });
@@ -134,7 +145,7 @@ export class AuthService {
         return decodedToken;
     }
 
-    async getStoredRefreshToken(deviceId: string): Promise<string | null> {
+    private async getStoredRefreshToken(deviceId: string): Promise<string | null> {
         const key = `refreshToken::${deviceId}`;
         const tokenObject = await this.redisRepository.get(key);
 
@@ -146,7 +157,7 @@ export class AuthService {
         return token;
     }
 
-    async upsertStoredRefreshToken(userId: string, deviceId: string, token: string): Promise<void> {
+    private async upsertStoredRefreshToken(userId: string, deviceId: string, token: string): Promise<void> {
         const key = `refreshToken::${deviceId}`;
         const value: IRefreshTokenEntity = { key, userId, token };
 

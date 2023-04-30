@@ -6,7 +6,7 @@ import HTTP_STATUS_CODES from 'http-status-enum';
 
 export const recipeRouter = (dependencies: IDependencies) => {
     const { recipeController } = dependencies;
-    
+
     const router = express.Router();
 
     router
@@ -15,7 +15,7 @@ export const recipeRouter = (dependencies: IDependencies) => {
             try {
                 const recipe = await recipeController.createRecipe(context, req.body);
                 res.status(HTTP_STATUS_CODES.CREATED).json({ recipe });
-            } catch(err) {
+            } catch (err) {
                 next(enrichError(err, context));
             }
         })
@@ -24,7 +24,7 @@ export const recipeRouter = (dependencies: IDependencies) => {
             try {
                 const recipes = await recipeController.getRecipes(context);
                 res.status(HTTP_STATUS_CODES.OK).json({ recipes });
-            } catch(err) {
+            } catch (err) {
                 next(enrichError(err, context));
             }
         })
@@ -33,7 +33,7 @@ export const recipeRouter = (dependencies: IDependencies) => {
             try {
                 const recipe = await recipeController.getRecipe(context, req.params.recipeId);
                 res.status(HTTP_STATUS_CODES.OK).json({ recipe });
-            } catch(err) {
+            } catch (err) {
                 next(enrichError(err, context));
             }
         })
@@ -42,7 +42,7 @@ export const recipeRouter = (dependencies: IDependencies) => {
             try {
                 const recipe = await recipeController.updateRecipe(context, req.params.recipeId, req.body);
                 res.status(HTTP_STATUS_CODES.OK).json({ recipe });
-            } catch(err) {
+            } catch (err) {
                 next(enrichError(err, context));
             }
         })
@@ -51,7 +51,7 @@ export const recipeRouter = (dependencies: IDependencies) => {
             try {
                 await recipeController.deleteRecipe(context, req.params.recipeId);
                 res.sendStatus(HTTP_STATUS_CODES.NO_CONTENT);
-            } catch(err) {
+            } catch (err) {
                 next(enrichError(err, context));
             }
         })
@@ -60,7 +60,7 @@ export const recipeRouter = (dependencies: IDependencies) => {
             try {
                 const parsedRecipe = await recipeController.parseRecipe(context, req.body);
                 res.status(HTTP_STATUS_CODES.CREATED).json({ parsedRecipe });
-            } catch(err) {
+            } catch (err) {
                 next(enrichError(err, context));
             }
         })
@@ -104,5 +104,5 @@ export const recipePermissions: IRoutePermissions = {
     'POST /recipes/parse': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
     'POST /recipes/:id/comments': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
     'GET /recipes/:id/comments': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'DELETE /recipes/:id/comments/:commentId': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }],
+    'DELETE /recipes/:id/comments/:commentId': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }]
 };
