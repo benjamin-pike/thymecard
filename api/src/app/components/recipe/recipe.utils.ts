@@ -27,9 +27,9 @@ export class RecipeParser {
         this.resource = resource;
     }
 
-    public parseRecipe(): IRecipeCreate {
+    public parseRecipe(): Partial<IRecipeCreate> {
         return {
-            name: validateWithFallback(this.resource.name, isNonEmptyString, ''), // Required
+            name: validateWithFallback(this.resource.name, isNonEmptyString, undefined),
             description: validateWithFallback(this.resource.description, isNonEmptyString, undefined),
             images: this.parseImages(this.resource.image),
             authors: this.parseAuthors(this.resource.author),
@@ -39,11 +39,11 @@ export class RecipeParser {
             prepTime: this.parseDuration(this.resource.prepTime),
             cookTime: this.parseDuration(this.resource.cookTime),
             totalTime: this.parseDuration(this.resource.totalTime),
-            yield: this.parseYield(this.resource.recipeYield) ?? { quantity: [], units: null }, // Required
+            yield: this.parseYield(this.resource.recipeYield),
             diet: this.parseDietInformation(this.resource.suitableForDiet),
             nutrition: this.parseNutritionInformation(this.resource.nutrition),
-            ingredients: this.parseIngredients(this.resource.recipeIngredient) ?? [], // Required
-            method: this.parseMethod(this.resource.recipeInstructions) ?? [] // Required
+            ingredients: this.parseIngredients(this.resource.recipeIngredient),
+            method: this.parseMethod(this.resource.recipeInstructions)
         };
     }
 
@@ -248,7 +248,7 @@ export class RecipeParser {
                 if (isSchemaOrgHowToStep(element)) {
                     const step = {
                         instructions: element.text,
-                        stepTitle: element.name,
+                        stepTitle: element.name !== element.text ? element.name : undefined,
                         image: this.parseImages(element.image)
                     };
                     result.push({ steps: [step] });
@@ -368,8 +368,8 @@ export class IngredientsParser {
             quantity,
             unit,
             item,
-            prepStyles,
-            notes,
+            prepStyles: prepStyles.length ? prepStyles : undefined,
+            notes: notes.length ? notes : undefined,
             source: input
         };
     }

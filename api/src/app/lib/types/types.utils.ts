@@ -80,7 +80,7 @@ export const validateWithFallback = <T>(val: unknown, typeGuard: TypeGuard<T>, f
     return val;
 };
 
-export const isValidMongoId = (val: string): boolean => {
+export const isValidMongoId = (val: any): val is string => {
     try {
         new Types.ObjectId(val);
         return true;
