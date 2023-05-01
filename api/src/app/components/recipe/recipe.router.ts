@@ -1,7 +1,7 @@
 import express from 'express';
 import { IDependencies } from '../../lib/types/server.types';
 import { AccessScope, IRoutePermissions, Permission } from '../../lib/auth/permissions';
-import { enrichError } from '../../lib/error/error.utils';
+import { errorHandler } from '../../lib/error/error.utils';
 import HTTP_STATUS_CODES from 'http-status-enum';
 
 export const recipeRouter = (dependencies: IDependencies) => {
@@ -10,97 +10,97 @@ export const recipeRouter = (dependencies: IDependencies) => {
     const router = express.Router();
 
     router
-        .post('/', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.create');
-            try {
+        .post(
+            '/',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 const recipe = await recipeController.createRecipe(context, req.body);
                 res.status(HTTP_STATUS_CODES.CREATED).json({ recipe });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .get('/', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.getAll');
-            try {
-                const recipes = await recipeController.getRecipes(context);
-                res.status(HTTP_STATUS_CODES.OK).json({ recipes });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .get('/:recipeId', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.getById');
-            try {
+            })
+        )
+        .get(
+            '/:recipeId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 const recipe = await recipeController.getRecipe(context, req.params.recipeId);
                 res.status(HTTP_STATUS_CODES.OK).json({ recipe });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .put('/:recipeId', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.update');
-            try {
+            })
+        )
+        .put(
+            '/:recipeId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 const recipe = await recipeController.updateRecipe(context, req.params.recipeId, req.body);
                 res.status(HTTP_STATUS_CODES.OK).json({ recipe });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .delete('/:recipeId', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.delete');
-            try {
+            })
+        )
+        .delete(
+            '/:recipeId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 await recipeController.deleteRecipe(context, req.params.recipeId);
                 res.sendStatus(HTTP_STATUS_CODES.NO_CONTENT);
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .post('/parse', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.parse');
-            try {
+            })
+        )
+        .get(
+            '/summary',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const summaries = await recipeController.getSummaries(context);
+                res.status(HTTP_STATUS_CODES.OK).json({ summaries });
+            })
+        )
+        .get(
+            '/:recipeId/summary',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const summary = await recipeController.getSummary(context, req.params.recipeId);
+                res.status(HTTP_STATUS_CODES.OK).json({ summary });
+            })
+        )
+        .post(
+            '/parse',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 const parsedRecipe = await recipeController.parseRecipe(context, req.body);
                 res.status(HTTP_STATUS_CODES.CREATED).json({ parsedRecipe });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .post('/:recipeId/comments', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.createComment');
-            try {
+            })
+        )
+        .post(
+            '/:recipeId/comments',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 const comments = await recipeController.createComment(context, req.params.recipeId, req.body);
                 res.status(HTTP_STATUS_CODES.CREATED).json({ comments });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .get('/:recipeId/comments', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.getComments');
-            try {
+            })
+        )
+        .get(
+            '/:recipeId/comments',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 const comments = await recipeController.getComments(context, req.params.recipeId);
                 res.status(HTTP_STATUS_CODES.OK).json({ comments });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .delete('/:recipeId/comments/:commentId', async (req, res, next) => {
-            const context = req.context.validateAuthContext('recipeRouter.deleteComment');
-            try {
+            })
+        )
+        .delete(
+            '/:recipeId/comments/:commentId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 await recipeController.deleteComment(context, req.params.recipeId, req.params.commentId);
                 res.sendStatus(HTTP_STATUS_CODES.NO_CONTENT);
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        });
+            })
+        );
 
     return router;
 };
 
 export const recipePermissions: IRoutePermissions = {
     'POST /recipes': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
-    'GET /recipes': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
     'GET /recipes/:id': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
     'PUT /recipes/:id': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
     'DELETE /recipes/:id': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }],
+    'GET /recipes/summary': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
+    'GET /recipes/:recipeId/summary': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
     'POST /recipes/parse': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
     'POST /recipes/:id/comments': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
     'GET /recipes/:id/comments': [{ scope: AccessScope.Recipe, permission: Permission.READ }],

@@ -127,7 +127,7 @@ export class RequestContext {
         return splitCandidatePath.every((routePart, i) => routePart.startsWith(':') || routePart === splitReqPath[i]);
     }
 
-    public validateContext (origin: string): IRequestContext {
+    public getAnonContext(): IRequestContext {
         const context = {
             requestId: this.requestId,
             resource: this.resource,
@@ -140,13 +140,13 @@ export class RequestContext {
             context,
             isRequestContext,
             new ForbiddenError(ErrorCode.InvalidContext, 'Invalid context', {
-                origin,
+                origin: 'middleware.context.getAnonContext',
                 data: { context: this }
             })
         );
     };
     
-    public validateAuthContext (origin: string): IAuthenticatedContext {
+    public getAuthContext (): IAuthenticatedContext {
         const context = {
             requestId: this.requestId,
             resource: this.resource,
@@ -161,7 +161,7 @@ export class RequestContext {
             context,
             isAuthenticatedContext,
             new ForbiddenError(ErrorCode.InvalidContext, 'Invalid context', {
-                origin,
+                origin: 'middleware.context.getAuthContext',
                 data: { context }
             })
         );
