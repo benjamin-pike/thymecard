@@ -15,7 +15,7 @@ import {
     updateRecipeSchema
 } from './recipe.types';
 import { formatZodError } from '../../lib/error/error.utils';
-import { isPlainObject } from '../../lib/types/types.utils';
+import { isPlainObject, isValidMongoId } from '../../lib/types/types.utils';
 
 interface IRecipeControllerDependencies {
     recipeService: IRecipeService;
@@ -66,11 +66,24 @@ export class RecipeController implements IRecipeController {
     }
 
     public async getRecipe(context: IAuthenticatedContext, recipeId: string): Promise<IRecipe> {
+        if (!isValidMongoId(recipeId)) {
+            throw new UnprocessableError(ErrorCode.InvalidRecipeId, 'Invalid recipe ID', {
+                origin: 'RecipeController.getRecipe',
+                data: { recipeId }
+            });
+        }
         return await this.recipeService.getRecipe(recipeId, context.userId);
     }
 
     public async updateRecipe(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IRecipe> {
         try {
+            if (!isValidMongoId(recipeId)) {
+                throw new UnprocessableError(ErrorCode.InvalidRecipeId, 'Invalid recipe ID', {
+                    origin: 'RecipeController.getRecipe',
+                    data: { recipeId }
+                });
+            }
+
             const recipeResource: IRecipeUpdate = updateRecipeSchema.parse(resource);
 
             return await this.recipeService.updateRecipe(recipeId, recipeResource, context.userId);
@@ -87,6 +100,13 @@ export class RecipeController implements IRecipeController {
     }
 
     public async deleteRecipe(context: IAuthenticatedContext, recipeId: string): Promise<void> {
+        if (!isValidMongoId(recipeId)) {
+            throw new UnprocessableError(ErrorCode.InvalidRecipeId, 'Invalid recipe ID', {
+                origin: 'RecipeController.getRecipe',
+                data: { recipeId }
+            });
+        }
+        
         await this.recipeService.deleteRecipe(recipeId, context.userId);
     }
 
@@ -110,6 +130,13 @@ export class RecipeController implements IRecipeController {
     }
 
     public async createComment(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IComment[]> {
+        if (!isValidMongoId(recipeId)) {
+            throw new UnprocessableError(ErrorCode.InvalidRecipeId, 'Invalid recipe ID', {
+                origin: 'RecipeController.getRecipe',
+                data: { recipeId }
+            });
+        }
+        
         if (!isCommentCreateResource(resource)) {
             throw new UnprocessableError(ErrorCode.InvalidCommentCreateResource, 'Invalid comment', {
                 origin: 'RecipeController.createComment',
@@ -127,10 +154,24 @@ export class RecipeController implements IRecipeController {
     }
 
     public async getComments(context: IAuthenticatedContext, recipeId: string): Promise<IComment[]> {
+        if (!isValidMongoId(recipeId)) {
+            throw new UnprocessableError(ErrorCode.InvalidRecipeId, 'Invalid recipe ID', {
+                origin: 'RecipeController.getRecipe',
+                data: { recipeId }
+            });
+        }
+        
         return await this.recipeService.getComments(recipeId, context.userId);
     }
 
     public async deleteComment(context: IAuthenticatedContext, recipeId: string, commentId: string): Promise<void> {
+        if (!isValidMongoId(recipeId)) {
+            throw new UnprocessableError(ErrorCode.InvalidRecipeId, 'Invalid recipe ID', {
+                origin: 'RecipeController.getRecipe',
+                data: { recipeId }
+            });
+        }
+        
         return await this.recipeService.deleteComment(recipeId, context.userId, commentId);
     }
 }
