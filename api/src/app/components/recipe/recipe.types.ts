@@ -26,6 +26,30 @@ export interface IRecipe {
     isPublic?: boolean;
 }
 
+export type IRecipeSummary = Pick<
+    IRecipe,
+    | '_id'
+    | 'name'
+    | 'category'
+    | 'cuisine'
+    | 'keywords'
+    | 'prepTime'
+    | 'cookTime'
+    | 'totalTime'
+    | 'yield'
+    | 'diet'
+    | 'rating'
+    | 'isBookmarked'
+    | 'isPublic'
+> & {
+    primaryImage: string | null;
+    calories?: number;
+    ingredientsCount: number;
+    commentsCount: number;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
 export type IRecipeCreate = Omit<IRecipe, '_id'>;
 export type IRecipeUpdate = Partial<IRecipeCreate>;
 

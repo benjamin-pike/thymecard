@@ -1,5 +1,5 @@
 import express from 'express';
-import { enrichError } from '../../lib/error/error.utils';
+import { errorHandler } from '../../lib/error/error.utils';
 import { AuthProvider } from '../user/user.types';
 import { IDependencies } from '../../lib/types/server.types';
 import { IRoutePermissions } from '../../lib/auth/permissions';
@@ -12,54 +12,49 @@ export const authRouter = (dependencies: IDependencies) => {
 
     // Local
     router
-        .post('/login', async (req, res, next) => {
-            const context = req.context.validateContext('authRouter.login');
-            try {
+        .post(
+            '/login',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAnonContext();
                 const { email, password } = req.body;
                 const { user, tokens } = await authController.validatePasswordAndLogin(context, email, password);
 
                 res.status(HTTP_STATUS_CODES.OK).json({ user, tokens });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .post('/register', async (req, res, next) => {
-            const context = req.context.validateContext('authRouter.register');
-            try {
+            })
+        )
+        .post(
+            '/register',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAnonContext();
                 const user = await userController.createLocalUser(context, req.body);
                 const tokens = await authController.loginPrevalidatedUser(context, user);
 
                 res.status(HTTP_STATUS_CODES.CREATED).json({ user, tokens });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .post('/tokens', async (req, res, next) => {
-            const context = req.context.validateContext('authRouter.tokens');
-            try {
+            })
+        )
+        .post(
+            '/tokens',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAnonContext();
                 const { refreshToken } = req.body;
                 const newTokens = await authController.refreshAccessToken(context, refreshToken);
 
                 res.status(HTTP_STATUS_CODES.OK).json({ tokens: newTokens });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        });
-
-    // OAuth
+            })
+        );
     router
-        .get('/google', async (req, res, next) => {
-            const context = req.context.validateContext('authRouter.google');
-            try {
+        .get(
+            '/google',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAnonContext();
                 const redirectUrl = await authController.getGoogleAuthUrl(context);
                 res.redirect(redirectUrl);
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .get('/google/callback', async (req, res, next) => {
-            const context = req.context.validateContext('authRouter.googleCallback');
-            try {
+            })
+        )
+        .get(
+            '/google/callback',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAnonContext();
                 const { code } = req.query;
 
                 const googleUser = await authController.getGoogleUserProfile(context, code);
@@ -73,22 +68,20 @@ export const authRouter = (dependencies: IDependencies) => {
                 const tokens = await authController.loginPrevalidatedUser(context, user);
 
                 res.status(HTTP_STATUS_CODES.OK).json({ user, tokens });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .get('/facebook', async (req, res, next) => {
-            const context = req.context.validateContext('authRouter.facebook');
-            try {
+            })
+        )
+        .get(
+            '/facebook',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAnonContext();
                 const redirectUrl = await authController.getFacebookAuthUrl(context);
                 res.redirect(redirectUrl);
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .get('/facebook/callback', async (req, res, next) => {
-            const context = req.context.validateContext('authRouter.facebookCallback');
-            try {
+            })
+        )
+        .get(
+            '/facebook/callback',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAnonContext();
                 const { code, state } = req.query;
 
                 const facebookProfile = await authController.getFacebookUserProfile(context, code, state);
@@ -101,11 +94,9 @@ export const authRouter = (dependencies: IDependencies) => {
                 );
                 const tokens = await authController.loginPrevalidatedUser(context, user);
 
-                return res.status(HTTP_STATUS_CODES.OK).json({ user, tokens });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        });
+                res.status(HTTP_STATUS_CODES.OK).json({ user, tokens });
+            })
+        );
     return router;
 };
 

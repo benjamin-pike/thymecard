@@ -5,7 +5,7 @@ import { Server } from './server';
 import { LRUCache } from 'lru-cache';
 import { UserService } from './app/components/user/user.service';
 import { UserController } from './app/components/user/user.controller';
-import { UserCache } from './app/lib/types/cache.types';
+import { PlannerCache, RecipeCache, RecipeSummaryCache, UserCache } from './app/lib/types/cache.types';
 import { userPermissions, userRouter } from './app/components/user/user.router';
 import { AuthService } from './app/components/auth/auth.service';
 import { AuthController } from './app/components/auth/auth.controller';
@@ -18,6 +18,10 @@ import { IResourcePermissions } from './app/lib/auth/permissions';
 import { RecipeService } from './app/components/recipe/recipe.service';
 import { RecipeController } from './app/components/recipe/recipe.controller';
 import { recipePermissions, recipeRouter } from './app/components/recipe/recipe.router';
+import { PlannerService } from './app/components/planner/planner.service';
+import { PlannerController } from './app/components/planner/planner.controller';
+import { plannerPermissions, plannerRouter } from './app/components/planner/planner.router';
+import { parseFloatOrNull } from './app/lib/types/types.utils';
 
 dotenv.config();
 
@@ -45,12 +49,27 @@ const start = async () => {
     const facebookAppSecret = getEnvironmentVariable('FACEBOOK_APP_SECRET');
 
     // Caches
-    const userCacheItems = 1000;
-    const userCacheAge = 5 * 60 * 1000; // 5 minutes
     const userCache: UserCache = new LRUCache({
-        max: userCacheItems,
-        ttl: userCacheAge
+        max: parseFloatOrNull(process.env.USER_CACHE_MAX_ITEMS) ?? 100,
+        ttl: parseFloatOrNull(process.env.USER_CACHE_MAX_AGE) ?? 5 * 60 * 1000 // 5 minutes
     });
+
+    const recipeCache: RecipeCache = new LRUCache({
+        max: parseFloatOrNull(process.env.RECIPE_CACHE_MAX_ITEMS) ?? 100,
+        ttl: parseFloatOrNull(process.env.RECIPE_CACHE_MAX_AGE) ?? 5 * 60 * 1000 // 5 minutes
+    });
+
+    const recipeSummaryCache: RecipeSummaryCache = new LRUCache({
+        max: parseFloatOrNull(process.env.RECIPE_SUMMARY_CACHE_MAX_ITEMS) ?? 1000,
+        ttl: parseFloatOrNull(process.env.RECIPE_SUMMARY_CACHE_MAX_AGE) ?? 5 * 60 * 1000 // 5 minutes
+    });
+
+    const plannerCache: PlannerCache = new LRUCache({
+        max: parseFloatOrNull(process.env.PLANNER_CACHE_MAX_ITEMS) ?? 100,
+        ttl: parseFloatOrNull(process.env.PLANNER_CACHE_MAX_AGE) ?? 5 * 60 * 1000 // 5 minutes
+    });
+
+
 
     // Database connections
     const redisRepository = new RedisRepository({ host: redisHost, port: redisPort, password: redisPassword });
@@ -75,24 +94,28 @@ const start = async () => {
         }
     });
     const userService = new UserService({ userCache, authService });
-    const recipeService = new RecipeService();
+    const recipeService = new RecipeService({ recipeCache, recipeSummaryCache });
+    const plannerService = new PlannerService({ plannerCache });
 
     // Controllers
     const authController = new AuthController({ authService, userService });
     const userController = new UserController({ userService });
     const recipeController = new RecipeController({ recipeService });
+    const plannerController = new PlannerController({ plannerService })
 
     const dependencies = {
         authController,
         userController,
-        recipeController
+        recipeController,
+        plannerController
     };
 
-    // ACLs
+    // Permissions
     const resourcePermissions: IResourcePermissions = {
         auth: authPermissions,
         users: userPermissions,
-        recipes: recipePermissions
+        recipes: recipePermissions,
+        planners: plannerPermissions
     }
 
     // Middleware
@@ -106,7 +129,8 @@ const start = async () => {
     const routers = {
         auth: authRouter(dependencies),
         user: userRouter(dependencies),
-        recipe: recipeRouter(dependencies)
+        recipe: recipeRouter(dependencies),
+        planner: plannerRouter(dependencies)
     };
 
     const server = new Server(routers, middleware);

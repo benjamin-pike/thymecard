@@ -7,6 +7,7 @@ import {
     IComment,
     IRecipe,
     IRecipeCreate,
+    IRecipeSummary,
     IRecipeUpdate,
     createRecipeSchema,
     isCommentCreateResource,
@@ -23,9 +24,10 @@ interface IRecipeControllerDependencies {
 export interface IRecipeController {
     createRecipe(context: IAuthenticatedContext, resource: unknown): Promise<IRecipe>;
     getRecipe(context: IAuthenticatedContext, recipeId: string): Promise<IRecipe>;
-    getRecipes(context: IAuthenticatedContext): Promise<IRecipe[]>;
     updateRecipe(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IRecipe>;
     deleteRecipe(context: IAuthenticatedContext, recipeId: string): Promise<void>;
+    getSummary(context: IAuthenticatedContext, recipeId: string): Promise<IRecipeSummary>;
+    getSummaries(context: IAuthenticatedContext): Promise<IRecipeSummary[]>;
     parseRecipe(context: IAuthenticatedContext, reqBody: unknown): Promise<Partial<IRecipeCreate>>;
     createComment(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IComment[]>;
     getComments(context: IAuthenticatedContext, recipeId: string): Promise<IComment[]>;
@@ -67,10 +69,6 @@ export class RecipeController implements IRecipeController {
         return await this.recipeService.getRecipe(recipeId, context.userId);
     }
 
-    public async getRecipes(context: IAuthenticatedContext): Promise<IRecipe[]> {
-        return await this.recipeService.getRecipes(context.userId);
-    }
-
     public async updateRecipe(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IRecipe> {
         try {
             const recipeResource: IRecipeUpdate = updateRecipeSchema.parse(resource);
@@ -90,6 +88,14 @@ export class RecipeController implements IRecipeController {
 
     public async deleteRecipe(context: IAuthenticatedContext, recipeId: string): Promise<void> {
         await this.recipeService.deleteRecipe(recipeId, context.userId);
+    }
+
+    public async getSummary(context: IAuthenticatedContext, recipeId: string): Promise<IRecipeSummary> {
+        return await this.recipeService.getSummary(recipeId, context.userId);
+    }
+
+    public async getSummaries(context: IAuthenticatedContext): Promise<IRecipeSummary[]> {
+        return await this.recipeService.getSummaries(context.userId);
     }
 
     public async parseRecipe(_context: IAuthenticatedContext, reqBody: unknown): Promise<Partial<IRecipeCreate>> {
