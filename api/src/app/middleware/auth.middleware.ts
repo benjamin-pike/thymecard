@@ -31,7 +31,7 @@ export const createAuthMiddleware = (accessTokenSecret: string, resourcePermissi
             });
         }
 
-        const context = req.context.validateContext('authMiddleware.authenticate')
+        const context = req.context.getAnonContext()
         const resource = context.resource;
         const method = req.method;
         const route = context.route;

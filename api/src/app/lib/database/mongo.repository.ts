@@ -1,4 +1,4 @@
-import { Document, FilterQuery, UpdateQuery, Types, Model, model, Schema } from 'mongoose';
+import { Document, FilterQuery, UpdateQuery, ProjectionFields, Types, Model, model, Schema } from 'mongoose';
 import { ErrorCode } from '../error/errorCode';
 import { ConflictError } from '../error/sironaError';
 import { isArray, isPlainObject } from '../types/types.utils';
@@ -10,6 +10,7 @@ type Doc = Document<string>;
 
 type Create<Entity> = Partial<Omit<Entity, keyof IEntityKey>>;
 type Update<Entity> = UpdateQuery<Entity & Doc>;
+type Projection<Entity> = ProjectionFields<Entity & Doc>;
 
 // Query and Sort do not support nested paths; use dot notation
 type Query<Entity> = FilterQuery<Entity & Doc>;
@@ -63,9 +64,9 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
         }
     }
 
-    public async findOneAndUpdate(query: Query<Entity>, update: Update<Entity>): Promise<Entity | null> {
+    public async findOneAndUpdate<T = Entity>(query: Query<Entity>, update: Update<Entity>, projection?: Projection<Entity>): Promise<T | null> {
         try {
-            const doc = await this.model.findOneAndUpdate(query, update, { new: true }).exec();
+            const doc = await this.model.findOneAndUpdate(query, update, { new: true, projection }).exec();
             
             if (!doc) {
                 return null;
@@ -115,8 +116,8 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
         }
     }
 
-    public async getOne(query: Query<Entity>): Promise<Entity | null> {
-        const doc = await this.model.findOne(query).exec();
+    public async getOne<T = Entity>(query: Query<Entity>, projection?: Projection<Entity>): Promise<T | null> {
+        const doc = await this.model.findOne(query, projection).exec();
         if (!doc) {
             return null;
         }
@@ -124,8 +125,8 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
         return convertObjectIdsToStrings(obj);
     }
 
-    public async getAll(query: Query<Entity>): Promise<Entity[]> {
-        const docs = await this.model.find(query).exec();
+    public async getAll<T = Entity>(query: Query<Entity>, projection?: Projection<Entity>): Promise<T[]> {
+        const docs = await this.model.find(query, projection).exec();
         return docs.map((entity) => {
             const obj = entity.toObject();
             return convertObjectIdsToStrings(obj);

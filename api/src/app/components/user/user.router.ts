@@ -1,7 +1,7 @@
 import express from 'express';
 import HTTP_STATUS_CODES from 'http-status-enum';
 import { IDependencies } from '../../lib/types/server.types';
-import { enrichError } from '../../lib/error/error.utils';
+import { errorHandler } from '../../lib/error/error.utils';
 import { excludeResFields, includeResFields } from '../../middleware/resFilter.middleware';
 import { AccessScope, IRoutePermissions, Permission } from '../../lib/auth/permissions';
 
@@ -14,33 +14,30 @@ export const userRouter = (dependencies: IDependencies) => {
     router.use(includeResFields('user', ['createdAt', 'updatedAt']));
 
     return router
-        .get('/:userId', async (req, res, next) => {
-            const context = req.context.validateAuthContext('userRouter.get');
-            try {
+        .get(
+            '/:userId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 const user = await userController.getUserById(context, req.params.userId);
                 res.status(HTTP_STATUS_CODES.OK).json({ user });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .put('/:userId', async (req, res, next) => {
-            const context = req.context.validateAuthContext('userRouter.put');
-            try {
+            })
+        )
+        .put(
+            '/:userId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 const user = await userController.updateUser(context, req.params.userId, req.body);
                 res.status(HTTP_STATUS_CODES.OK).json({ user });
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        })
-        .delete('/:userId', async (req, res, next) => {
-            const context = req.context.validateAuthContext('userRouter.delete');
-            try {
+            })
+        )
+        .delete(
+            '/:userId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
                 await userController.deleteUser(context, req.params.userId);
                 res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
-            } catch (err) {
-                next(enrichError(err, context));
-            }
-        });
+            })
+        );
 };
 
 export const userPermissions: IRoutePermissions = {

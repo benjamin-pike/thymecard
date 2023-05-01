@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from 'express';
 import { ZodError, ZodIssue } from 'zod';
 import { SironaError } from './sironaError';
 
@@ -21,4 +22,16 @@ export const enrichError = (err: unknown, context: any) => {
         requestId: context.requestId,
         url: context.path
     });
+};
+
+export const errorHandler = (
+    routeHandler: (req: Request, res: Response, next: NextFunction) => Promise<void>
+): ((req: Request, res: Response, next: NextFunction) => Promise<void>) => {
+    return async (req, res, next) => {
+        try {
+            await routeHandler(req, res, next);
+        } catch (err) {
+            next(enrichError(err, req.context));
+        }
+    };
 };

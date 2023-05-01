@@ -89,12 +89,18 @@ export const isValidMongoId = (val: any): val is string => {
     }
 };
 
-export const parseIntOrUndefined = (val: string): number | undefined => {
-    const parsed = parseInt(val);
-    return validateWithFallback(parsed, isNumber, undefined)
+export const parseIntOrUndefined = (val: string | undefined): number | undefined => {
+    return validateWithFallback(parseInt(val ?? ''), isNumber, undefined)
 };
 
-export const parseFloatOrUndefined = (val: string): number | undefined => {
-    const parsed = parseFloat(val);
-    return validateWithFallback(parsed, isNumber, undefined)
+export const parseIntOrNull = (val: string | undefined): number | null => {
+    return validateWithFallback(parseFloat(val ?? ''), isNumber, null)
+};
+
+export const parseFloatOrUndefined = (val: string | undefined): number | undefined => {
+    return validateWithFallback(parseFloat(val ?? ''), isNumber, undefined)
+};
+
+export const parseFloatOrNull = (val: string | undefined): number | null => {
+    return validateWithFallback(parseFloat(val ?? ''), isNumber, null)
 };
