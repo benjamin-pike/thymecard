@@ -2,7 +2,7 @@ import { IAuthService } from './auth.service';
 import { IRequestContext } from '../../middleware/context.middleware';
 import { IUserService } from '../user/user.service';
 import { ITokenPair, IGoogleUser, IFacebookUser } from './auth.types';
-import { isString } from '../../lib/types/types.utils';
+import { isString } from '../../lib/types/typeguards.utils';
 import { SironaError, UnprocessableError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { IUser } from '../user/user.types';

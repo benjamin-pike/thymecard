@@ -17,7 +17,7 @@ import {
     isGoogleUser
 } from './auth.types';
 import { RedisRepository } from '../../lib/database/redis.repository';
-import { validateWithError } from '../../lib/types/types.utils';
+import { validateWithError } from '../../lib/types/typeguards.utils';
 import { Role, permissions } from '../../lib/auth/permissions';
 
 interface IAuthServiceDependencies {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../common/logger';
 import { v1 as uuid } from 'uuid';
-import { isDefined, isNumber, isRecord, isString, validateWithError, validateWithFallback } from '../lib/types/types.utils';
+import { isDefined, isNumber, isRecord, isString, validateWithError, validateWithFallback } from '../lib/types/typeguards.utils';
 import { Logger } from 'winston';
 import { ForbiddenError, NotFoundError } from '../lib/error/sironaError';
 import { ErrorCode } from '../lib/error/errorCode';
@@ -77,7 +77,7 @@ export class RequestContext {
     }
 
     private setResource(): string {
-        return this.req.originalUrl.split('/')[1];
+        return this.req.originalUrl.split('?')[0].split('/')[1];
     }
 
     private setRoute(): string {
@@ -117,7 +117,7 @@ export class RequestContext {
             return false;
         }
 
-        const splitReqPath = reqPath.split('/');
+        const splitReqPath = reqPath.split('?')[0].split('/');
         const splitCandidatePath = candidatePath.split('/');
 
         if (splitReqPath.length !== splitCandidatePath.length) {
