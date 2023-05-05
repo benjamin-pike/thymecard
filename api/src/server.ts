@@ -48,7 +48,7 @@ export class Server {
         this.application.use(express.urlencoded({ extended: true }));
         this.application.use(cookieParser());
         this.application.use(this.middleware.context);
-        // this.application.use(this.middleware.matchRoute)
+        this.application.use(this.middleware.anonRateLimiter)
 
         return this;
     }
@@ -61,6 +61,8 @@ export class Server {
 
     public initAuthenticatedRoutes() {
         this.application.use(this.middleware.auth);
+        this.application.use(this.middleware.authRateLimiter)
+        
         this.application.use('/users', this.routers.user);
         this.application.use('/recipes', this.routers.recipe);
         this.application.use('/days', this.routers.day);

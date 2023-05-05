@@ -26,6 +26,7 @@
     "he": "1.2.0",
     "http": "0.0.1-security",
     "jsonwebtoken": "9.0.0",
+    "limiter": "2.1.0",
     "lru-cache": "9.0.1",
     "luxon": "3.3.0",
     "mongoose": "7.0.3",

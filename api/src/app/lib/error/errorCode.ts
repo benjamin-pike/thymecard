@@ -52,9 +52,10 @@ export enum ErrorCode {
     MissingAccessToken = 407,
     InvalidAccessToken = 408,
     InvalidRefreshToken = 409,
-    MissingRoutePermissions = 4010,
-    InsufficientPermissions = 4011,
-    InvalidContext = 4012,
+    MissingRoutePermissions = 410,
+    InsufficientPermissions = 411,
+    InvalidContext = 412,
+    TooManyRequests = 413,
 
     
     // Database errors (05xx)
