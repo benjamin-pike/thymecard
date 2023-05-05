@@ -1,4 +1,4 @@
-import { isBoolean, isOptional, isString, isValidMongoId, isRecord, isNumber } from '../../lib/types/types.utils';
+import { isBoolean, isOptional, isString, isValidMongoId, isRecord, isNumber } from '../../lib/types/typeguards.utils';
 
 export interface ITokenPair {
     accessToken: string;

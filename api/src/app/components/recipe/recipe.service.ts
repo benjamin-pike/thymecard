@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
-import { isString } from '../../lib/types/types.utils';
+import { isString } from '../../lib/types/typeguards.utils';
 import { RecipeParser, parseJsonLinkedData } from './recipe.utils';
 import { IComment, IRecipe, IRecipeCreate, IRecipeSummary, IRecipeUpdate } from './recipe.types';
 import { recipeRepository } from './recipe.model';
@@ -15,10 +15,10 @@ interface IRecipeServiceDependencies {
 export interface IRecipeService {
     createRecipe(recipe: IRecipeCreate, userId: string): Promise<IRecipe>;
     getRecipe(recipeId: string, userId: string): Promise<IRecipe>;
-    getSummary(recipeId: string, userId: string): Promise<IRecipeSummary>;
-    getSummaries(userId: string): Promise<IRecipeSummary[]>;
     updateRecipe(recipeId: string, recipe: IRecipeUpdate, userId: string): Promise<IRecipe>;
     deleteRecipe(recipeId: string, userId: string): Promise<void>;
+    getSummary(recipeId: string, userId: string): Promise<IRecipeSummary>;
+    getSummaries(userId: string): Promise<IRecipeSummary[]>;
     getRecipeFromUrl(url: string): Promise<Partial<IRecipeCreate>>;
     createComment(recipeId: string, userId: string, comment: IComment): Promise<IComment[]>;
     getComments(recipeId: string, userId: string): Promise<IComment[]>;
@@ -68,6 +68,39 @@ export class RecipeService implements IRecipeService {
         return recipe;
     }
 
+    public async updateRecipe(recipeId: string, update: IRecipeUpdate, userId: string): Promise<IRecipe> {
+        const query = { _id: recipeId, userId: userId };
+        const updatedRecipe = await recipeRepository.findOneAndUpdate(query, update);
+
+        if (!updatedRecipe) {
+            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
+                origin: 'RecipeService.updateRecipe',
+                data: { recipeId, userId }
+            });
+        }
+
+        this.recipeCache.set(recipeId, updatedRecipe);
+        this.summaryCache.delete(userId);
+
+        return updatedRecipe;
+    }
+
+    public async deleteRecipe(recipeId: string, userId: string): Promise<void> {
+        const query = { _id: recipeId, userId: userId };
+        const deletedRecipe = await recipeRepository.delete(query);
+
+        if (!deletedRecipe) {
+            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
+                origin: 'RecipeService.deleteRecipe',
+                data: { recipeId, userId }
+            });
+        }
+
+        this.recipeCache.delete(recipeId);
+
+        return;
+    }
+    
     public async getSummary(recipeId: string, userId: string): Promise<IRecipeSummary> {
         const cachedSummaries = this.summaryCache.get(userId);
         const cachedSummary = cachedSummaries?.find((summary) => summary._id === recipeId);
@@ -108,39 +141,6 @@ export class RecipeService implements IRecipeService {
         this.summaryCache.set(userId, summaries);
 
         return summaries;
-    }
-
-    public async updateRecipe(recipeId: string, recipe: IRecipeUpdate, userId: string): Promise<IRecipe> {
-        const query = { _id: recipeId, userId: userId };
-        const updatedRecipe = await recipeRepository.findOneAndUpdate(query, recipe);
-
-        if (!updatedRecipe) {
-            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
-                origin: 'RecipeService.updateRecipe',
-                data: { recipeId, userId }
-            });
-        }
-
-        this.recipeCache.set(recipeId, updatedRecipe);
-        this.summaryCache.delete(userId);
-
-        return updatedRecipe;
-    }
-
-    public async deleteRecipe(recipeId: string, userId: string): Promise<void> {
-        const query = { _id: recipeId, userId: userId };
-        const deletedRecipe = await recipeRepository.delete(query);
-
-        if (!deletedRecipe) {
-            throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
-                origin: 'RecipeService.deleteRecipe',
-                data: { recipeId, userId }
-            });
-        }
-
-        this.recipeCache.delete(recipeId);
-
-        return;
     }
 
     public async getRecipeFromUrl(url: string): Promise<Partial<IRecipeCreate>> {

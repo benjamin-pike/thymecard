@@ -19,6 +19,22 @@ export const recipeRouter = (dependencies: IDependencies) => {
             })
         )
         .get(
+            '/summary',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const summaries = await recipeController.getSummaries(context);
+                res.status(HTTP_STATUS_CODES.OK).json({ summaries });
+            })
+        )
+        .post(
+            '/parse',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const parsedRecipe = await recipeController.parseRecipe(context, req.body);
+                res.status(HTTP_STATUS_CODES.CREATED).json({ parsedRecipe });
+            })
+        )
+        .get(
             '/:recipeId',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
@@ -43,27 +59,11 @@ export const recipeRouter = (dependencies: IDependencies) => {
             })
         )
         .get(
-            '/summary',
-            errorHandler(async (req, res) => {
-                const context = req.context.getAuthContext();
-                const summaries = await recipeController.getSummaries(context);
-                res.status(HTTP_STATUS_CODES.OK).json({ summaries });
-            })
-        )
-        .get(
             '/:recipeId/summary',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
                 const summary = await recipeController.getSummary(context, req.params.recipeId);
                 res.status(HTTP_STATUS_CODES.OK).json({ summary });
-            })
-        )
-        .post(
-            '/parse',
-            errorHandler(async (req, res) => {
-                const context = req.context.getAuthContext();
-                const parsedRecipe = await recipeController.parseRecipe(context, req.body);
-                res.status(HTTP_STATUS_CODES.CREATED).json({ parsedRecipe });
             })
         )
         .post(
@@ -96,13 +96,13 @@ export const recipeRouter = (dependencies: IDependencies) => {
 
 export const recipePermissions: IRoutePermissions = {
     'POST /recipes': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
-    'GET /recipes/:id': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'PUT /recipes/:id': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
-    'DELETE /recipes/:id': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }],
     'GET /recipes/summary': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'GET /recipes/:recipeId/summary': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
     'POST /recipes/parse': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'POST /recipes/:id/comments': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
-    'GET /recipes/:id/comments': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'DELETE /recipes/:id/comments/:commentId': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }]
+    'GET /recipes/:recipeId': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
+    'PUT /recipes/:recipeId': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
+    'DELETE /recipes/:recipeId': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }],
+    'GET /recipes/:recipeId/summary': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
+    'POST /recipes/:recipeId/comments': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
+    'GET /recipes/:recipeId/comments': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
+    'DELETE /recipes/:recipeId/comments/:commentId': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }]
 };

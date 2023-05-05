@@ -1,34 +1,63 @@
-// TODO - order these in a logical manner
 export enum ErrorCode {
-    MongoDuplicateKey = 1,
-    UserNotFound = 2,
-    DeletedUserNotFound = 3,
-    InvalidUserCreateResource = 3,
-    InvalidUserUpdateResource = 4,
-    InvalidUserId = 4,
-    InvalidContext = 5,
-    InvalidQueryParameter = 6,
-    InvalidRefreshToken = 7,
-    MissingAccessToken = 8,
-    InvalidAccessToken = 9,
-    RedisConnectionError = 8,
-    MissingLoginCredentials = 9,
-    NotLocalUser = 10,
-    InvalidAuthProvider = 11,
-    GoogleAuthError = 11,
-    FacebookAuthError = 12,
-    AppleAuthError = 13,
-    InsufficientPermissions = 14,
-    MissingRoutePermissions = 15,
-    RouteNotFound = 16,
-    InvalidRecipeParseInput = 17,
-    InvalidIngredientParseOutput = 19,
-    InvalidRecipeUrl = 20,
-    ExternalPageNotFound = 21,
-    InvalidRequestReturnType = 22,
-    InvalidRecipeCreateResource = 23,
-    InvalidRecipeUpdateResource = 24,
-    RecipeNotFound = 24,
-    InvalidCommentCreateResource = 25,
-    InternalServerError = 9999
+    // General errors
+    InternalServerError = 9999,
+
+    
+    // Not found errors (01xx)
+    RouteNotFound = 101,
+    ExternalPageNotFound = 102,
+    UserNotFound = 103,
+    DeletedUserNotFound = 104,
+    RecipeNotFound = 105,
+    DayNotFound = 106,
+
+   
+    // Typeguard errors (02xx)
+    // Resource errors (0200 - 0249)
+    InvalidUserCreateResource = 201,
+    InvalidUserUpdateResource = 202,
+    InvalidRecipeCreateResource = 203,
+    InvalidRecipeUpdateResource = 204,
+    InvalidRecipeParseRequestBody = 205,
+    InvalidCommentCreateResource = 206,
+    InvalidDayCreateResource = 207,
+    InvalidDayUpdateResource = 208,
+    InvalidMealCreateResource = 209,
+    InvalidMealUpdateResource = 210,
+    
+    // General type errors (0250 - 0299)
+    InvalidDateString = 250,
+    InvalidPageStartKey = 251,
+    InvalidPageLimit = 252,
+
+    
+    // Invalid parameter errors (03xx)
+    InvalidUserId = 301,
+    InvalidRecipeId = 302,
+    InvalidQueryParameter = 303,
+    InvalidIngredientParseOutput = 304,
+    InvalidRecipeUrl = 305,
+    InvalidRequestReturnType = 306,
+    InvalidDayId = 307,
+    InvliadEnrichedFlag = 308,
+    
+   
+    // Permission/Authentication errors (04xx)
+    MissingLoginCredentials = 401,
+    NotLocalUser = 402,
+    InvalidAuthProvider = 403,
+    GoogleAuthError = 404,
+    FacebookAuthError = 405,
+    AppleAuthError = 406,
+    MissingAccessToken = 407,
+    InvalidAccessToken = 408,
+    InvalidRefreshToken = 409,
+    MissingRoutePermissions = 4010,
+    InsufficientPermissions = 4011,
+    InvalidContext = 4012,
+
+    
+    // Database errors (05xx)
+    MongoDuplicateKey = 501,
+    RedisConnectionError = 502
 }

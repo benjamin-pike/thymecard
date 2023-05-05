@@ -8,7 +8,7 @@ import {
     isString,
     parseFloatOrUndefined,
     validateWithFallback
-} from '../../lib/types/types.utils';
+} from '../../lib/types/typeguards.utils';
 import {
     IIngredient,
     IYield,

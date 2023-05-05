@@ -5,7 +5,7 @@ import { Server } from './server';
 import { LRUCache } from 'lru-cache';
 import { UserService } from './app/components/user/user.service';
 import { UserController } from './app/components/user/user.controller';
-import { PlannerCache, RecipeCache, RecipeSummaryCache, UserCache } from './app/lib/types/cache.types';
+import { DayCache, RecipeCache, RecipeSummaryCache, UserCache } from './app/lib/types/cache.types';
 import { userPermissions, userRouter } from './app/components/user/user.router';
 import { AuthService } from './app/components/auth/auth.service';
 import { AuthController } from './app/components/auth/auth.controller';
@@ -18,10 +18,11 @@ import { IResourcePermissions } from './app/lib/auth/permissions';
 import { RecipeService } from './app/components/recipe/recipe.service';
 import { RecipeController } from './app/components/recipe/recipe.controller';
 import { recipePermissions, recipeRouter } from './app/components/recipe/recipe.router';
-import { PlannerService } from './app/components/planner/planner.service';
-import { PlannerController } from './app/components/planner/planner.controller';
-import { plannerPermissions, plannerRouter } from './app/components/planner/planner.router';
-import { parseFloatOrNull } from './app/lib/types/types.utils';
+import { DayService } from './app/components/day/day.service';
+import { DayController } from './app/components/day/day.controller';
+import { dayPermissions, dayRouter } from './app/components/day/day.router';
+import { parseFloatOrNull } from './app/lib/types/typeguards.utils';
+import { createEncryptionUtils } from './app/lib/encryption.utils';
 
 dotenv.config();
 
@@ -33,21 +34,22 @@ const getEnvironmentVariable = (key: string) => {
     return value;
 };
 
-const start = async () => {
-    // Environment variables
-    const nodeEnv = getEnvironmentVariable('NODE_ENV');
-    const rootUrl = getEnvironmentVariable('ROOT_URL');
-    const mongoConnectionString = getEnvironmentVariable('MONGO_URI');
-    const redisHost = getEnvironmentVariable('REDIS_HOST');
-    const redisPort = parseInt(getEnvironmentVariable('REDIS_PORT'), 10);
-    const redisPassword = getEnvironmentVariable('REDIS_PASSWORD');
-    const jwtAccessSecret = getEnvironmentVariable('JWT_ACCESS_SECRET');
-    const jwtRefreshSecret = getEnvironmentVariable('JWT_REFRESH_SECRET');
-    const googleClientId = getEnvironmentVariable('GOOGLE_CLIENT_ID');
-    const googleClientSecret = getEnvironmentVariable('GOOGLE_CLIENT_SECRET');
-    const facebookAppId = getEnvironmentVariable('FACEBOOK_APP_ID');
-    const facebookAppSecret = getEnvironmentVariable('FACEBOOK_APP_SECRET');
+// Environment variables
+const NODE_ENV = getEnvironmentVariable('NODE_ENV');
+const ROOT_URL = getEnvironmentVariable('ROOT_URL');
+const MONGO_CONNECTION_STRING = getEnvironmentVariable('MONGO_URI');
+const REDIS_HOST = getEnvironmentVariable('REDIS_HOST');
+const REDIS_PORT = parseInt(getEnvironmentVariable('REDIS_PORT'), 10);
+const REDIS_PASSWORD = getEnvironmentVariable('REDIS_PASSWORD');
+const JWT_ACCESS_SECRET = getEnvironmentVariable('JWT_ACCESS_SECRET');
+const JWT_REFRESH_SECRET = getEnvironmentVariable('JWT_REFRESH_SECRET');
+const GOOGLE_CLIENT_ID = getEnvironmentVariable('GOOGLE_CLIENT_ID');
+const GOOGLE_CLIENT_SECRET = getEnvironmentVariable('GOOGLE_CLIENT_SECRET');
+const FACEBOOK_APP_ID = getEnvironmentVariable('FACEBOOK_APP_ID');
+const FACEBOOK_APP_SECRET = getEnvironmentVariable('FACEBOOK_APP_SECRET');
+const AES_ENCRYPTION_KEY = getEnvironmentVariable('AES_ENCRYPTION_KEY');
 
+(async () => {
     // Caches
     const userCache: UserCache = new LRUCache({
         max: parseFloatOrNull(process.env.USER_CACHE_MAX_ITEMS) ?? 100,
@@ -64,50 +66,48 @@ const start = async () => {
         ttl: parseFloatOrNull(process.env.RECIPE_SUMMARY_CACHE_MAX_AGE) ?? 5 * 60 * 1000 // 5 minutes
     });
 
-    const plannerCache: PlannerCache = new LRUCache({
+    const dayCache: DayCache = new LRUCache({
         max: parseFloatOrNull(process.env.PLANNER_CACHE_MAX_ITEMS) ?? 100,
         ttl: parseFloatOrNull(process.env.PLANNER_CACHE_MAX_AGE) ?? 5 * 60 * 1000 // 5 minutes
     });
 
-
-
     // Database connections
-    const redisRepository = new RedisRepository({ host: redisHost, port: redisPort, password: redisPassword });
+    const redisRepository = new RedisRepository({ host: REDIS_HOST, port: REDIS_PORT, password: REDIS_PASSWORD });
     await redisRepository.connect();
-    await establishMongoConnection(mongoConnectionString);
+    await establishMongoConnection(MONGO_CONNECTION_STRING);
 
     // Services
     const authService = new AuthService({
         redisRepository,
-        jwtAccessSecret,
-        jwtRefreshSecret,
+        jwtAccessSecret: JWT_ACCESS_SECRET,
+        jwtRefreshSecret: JWT_REFRESH_SECRET,
         googleConfig: {
-            clientId: googleClientId,
-            clientSecret: googleClientSecret,
-            redirectUrl: `${rootUrl}/auth/google/callback`
+            clientId: GOOGLE_CLIENT_ID,
+            clientSecret: GOOGLE_CLIENT_SECRET,
+            redirectUrl: `${ROOT_URL}/auth/google/callback`
         },
         facebookAuthConfig: {
-            clientId: facebookAppId,
-            clientSecret: facebookAppSecret,
-            redirectUrl: `${rootUrl}/auth/facebook/callback`,
+            clientId: FACEBOOK_APP_ID,
+            clientSecret: FACEBOOK_APP_SECRET,
+            redirectUrl: `${ROOT_URL}/auth/facebook/callback`,
             state: uuid.v4()
         }
     });
     const userService = new UserService({ userCache, authService });
     const recipeService = new RecipeService({ recipeCache, recipeSummaryCache });
-    const plannerService = new PlannerService({ plannerCache });
+    const dayService = new DayService({ dayCache });
 
     // Controllers
     const authController = new AuthController({ authService, userService });
     const userController = new UserController({ userService });
     const recipeController = new RecipeController({ recipeService });
-    const plannerController = new PlannerController({ plannerService })
+    const dayController = new DayController({ dayService });
 
     const dependencies = {
         authController,
         userController,
         recipeController,
-        plannerController
+        dayController
     };
 
     // Permissions
@@ -115,13 +115,13 @@ const start = async () => {
         auth: authPermissions,
         users: userPermissions,
         recipes: recipePermissions,
-        planners: plannerPermissions
-    }
+        days: dayPermissions
+    };
 
     // Middleware
     const middleware = {
-        context: createContextMiddleware(nodeEnv, resourcePermissions),
-        auth: createAuthMiddleware(jwtAccessSecret, resourcePermissions),
+        context: createContextMiddleware(NODE_ENV, resourcePermissions),
+        auth: createAuthMiddleware(JWT_ACCESS_SECRET, resourcePermissions),
         errors: errorsMiddleware
     };
 
@@ -130,17 +130,13 @@ const start = async () => {
         auth: authRouter(dependencies),
         user: userRouter(dependencies),
         recipe: recipeRouter(dependencies),
-        planner: plannerRouter(dependencies)
+        day: dayRouter(dependencies)
     };
 
     const server = new Server(routers, middleware);
 
-    server
-        .initMiddleware()
-        .initAnonymousRoutes()
-        .initAuthenticatedRoutes()
-        .initErrorHandler()
-        .start();
-};
+    server.initMiddleware().initAnonymousRoutes().initAuthenticatedRoutes().initErrorHandler().start();
+})();
 
-start();
+// Initialize utiliy functions that require environment variables
+export const { compressAndEncrypt, decryptAndDecompress } = createEncryptionUtils(AES_ENCRYPTION_KEY);

@@ -1,4 +1,4 @@
-import { isArrayOf, isOptional, isString, isValidMongoId } from '../../lib/types/types.utils';
+import { isArrayOf, isOptional, isString, isValidMongoId } from '../../lib/types/typeguards.utils';
 import { z } from 'zod';
 
 export interface IRecipe {
