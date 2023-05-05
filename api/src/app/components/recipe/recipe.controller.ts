@@ -15,7 +15,7 @@ import {
     updateRecipeSchema
 } from './recipe.types';
 import { formatZodError } from '../../lib/error/error.utils';
-import { isPlainObject, isValidMongoId } from '../../lib/types/types.utils';
+import { isPlainObject, isValidMongoId } from '../../lib/types/typeguards.utils';
 
 interface IRecipeControllerDependencies {
     recipeService: IRecipeService;
@@ -120,7 +120,7 @@ export class RecipeController implements IRecipeController {
 
     public async parseRecipe(_context: IAuthenticatedContext, reqBody: unknown): Promise<Partial<IRecipeCreate>> {
         if (!isParseRecipeRequestBody(reqBody)) {
-            throw new UnprocessableError(ErrorCode.InvalidRecipeParseInput, 'Invalid parse recipe request body', {
+            throw new UnprocessableError(ErrorCode.InvalidRecipeParseRequestBody, 'Invalid recipe parse request body', {
                 origin: 'RecipeController.parseRecipe',
                 data: { reqBody }
             });

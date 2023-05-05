@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
-import { isString } from '../../lib/types/types.utils';
+import { isString } from '../../lib/types/typeguards.utils';
 import { RecipeParser, parseJsonLinkedData } from './recipe.utils';
 import { IComment, IRecipe, IRecipeCreate, IRecipeSummary, IRecipeUpdate } from './recipe.types';
 import { recipeRepository } from './recipe.model';
@@ -68,9 +68,9 @@ export class RecipeService implements IRecipeService {
         return recipe;
     }
 
-    public async updateRecipe(recipeId: string, recipe: IRecipeUpdate, userId: string): Promise<IRecipe> {
+    public async updateRecipe(recipeId: string, update: IRecipeUpdate, userId: string): Promise<IRecipe> {
         const query = { _id: recipeId, userId: userId };
-        const updatedRecipe = await recipeRepository.findOneAndUpdate(query, recipe);
+        const updatedRecipe = await recipeRepository.findOneAndUpdate(query, update);
 
         if (!updatedRecipe) {
             throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
@@ -100,6 +100,7 @@ export class RecipeService implements IRecipeService {
 
         return;
     }
+    
     public async getSummary(recipeId: string, userId: string): Promise<IRecipeSummary> {
         const cachedSummaries = this.summaryCache.get(userId);
         const cachedSummary = cachedSummaries?.find((summary) => summary._id === recipeId);

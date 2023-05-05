@@ -2,6 +2,10 @@ import { Types } from "mongoose";
 
 export type TypeGuard<T> = (v: unknown) => v is T;
 
+export type DeepPartial<T> = {
+    [P in keyof T]?: DeepPartial<T[P] | undefined >;
+};
+
 export const isDefined = <T>(val: T | undefined): val is T => {
     return val !== undefined;
 };
@@ -51,6 +55,10 @@ export const isRecord = <T>(val: unknown, typeGuard: TypeGuard<T>): val is Recor
     return Object.values(val).every(typeGuard);
 };
 
+export const isDate = (val: unknown): val is Date => {
+    return val instanceof Date;
+};
+
 export const isOptional = <T>(val: any, typeGuard: TypeGuard<T>): val is T | undefined => {
     return typeof val === 'undefined' || typeGuard(val);
 }
@@ -89,6 +97,37 @@ export const isValidMongoId = (val: any): val is string => {
     }
 };
 
+export const isDateString = (val: unknown): val is string => {
+    if (!isString(val)) {
+        return false;
+    }
+
+    const date = new Date(val);
+    return !isNaN(date.getTime())
+}
+
+export const isYearMonthDayDateString = (val: unknown): val is string => {
+    if (!isString(val)) {
+        return false;
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    return !dateRegex.test(val);
+}
+
+export const isFutureYearMonthDayDateString = (val: unknown): val is string => {
+    if (!isYearMonthDayDateString(val)) {
+        return false;
+    }
+
+    const date = new Date(val);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    return date.getTime() >= today.getTime();
+}
+
 export const parseIntOrUndefined = (val: string | undefined): number | undefined => {
     return validateWithFallback(parseInt(val ?? ''), isNumber, undefined)
 };
@@ -104,3 +143,11 @@ export const parseFloatOrUndefined = (val: string | undefined): number | undefin
 export const parseFloatOrNull = (val: string | undefined): number | null => {
     return validateWithFallback(parseFloat(val ?? ''), isNumber, null)
 };
+
+export const parseBooleanOrFalse = (val: any): boolean => {
+    if (val === 'true' || val === '1') {
+        return true;
+    }
+
+    return false;
+}

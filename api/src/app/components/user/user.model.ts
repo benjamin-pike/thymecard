@@ -4,7 +4,7 @@ import { ILocalUserCreate, IOAuthUserCreate, IUser } from './user.types';
 
 export const collectionName = 'users';
 
-export const User = new Schema(
+export const UserSchema = new Schema(
     {
         firstName: {
             type: String,
@@ -56,8 +56,8 @@ export const User = new Schema(
     }
 );
 
-User.index({ email: 1 }, { unique: true });
-User.index(
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index(
     { OAuthId: 1, authProvider: 1 },
     {
         unique: true,
@@ -67,11 +67,11 @@ User.index(
     }
 );
 
-mongoose.model('User', User);
+mongoose.model('User', UserSchema);
 
 class UserRepository extends MongoRepository<IUser, ILocalUserCreate | IOAuthUserCreate> {
     constructor() {
-        super(collectionName, User);
+        super(collectionName, UserSchema);
     }
 }
 

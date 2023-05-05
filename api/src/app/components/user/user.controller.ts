@@ -2,7 +2,7 @@ import { ZodError } from 'zod';
 import { formatZodError } from '../../lib/error/error.utils';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
-import { hasKey, isObject, isString, isValidMongoId } from '../../lib/types/types.utils';
+import { hasKey, isObject, isString, isValidMongoId } from '../../lib/types/typeguards.utils';
 import { UserService } from './user.service';
 import {
     AuthProvider,

@@ -63,6 +63,7 @@ export class Server {
         this.application.use(this.middleware.auth);
         this.application.use('/users', this.routers.user);
         this.application.use('/recipes', this.routers.recipe);
+        this.application.use('/days', this.routers.day);
 
         return this;
     }

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { filterObjectKeys } from '../lib/types/object.utils';
 import { UnprocessableError } from '../lib/error/sironaError';
-import { isDefined, isString } from '../lib/types/types.utils';
+import { isDefined, isString } from '../lib/types/typeguards.utils';
 import { ErrorCode } from '../lib/error/errorCode';
 
 export const excludeResFields = (rootKey: string | undefined, excludeFields: string[]) => {

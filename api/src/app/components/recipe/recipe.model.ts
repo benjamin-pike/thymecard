@@ -1,4 +1,4 @@
-import mongoose, { Types, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { IRecipe, IRecipeCreate } from './recipe.types';
 import { MongoRepository } from '../../lib/database/mongo.repository';
 
@@ -124,7 +124,7 @@ const MethodSection = {
 
 const Comment = {
     userId: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: true
     },
     comment: {
@@ -136,19 +136,19 @@ const Comment = {
         required: true
     },
     replyTo: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: false
     }
 };
 
-const Recipe = new Schema(
+const RecipeSchema = new Schema(
     {
         name: {
             type: String,
             required: true
         },
         userId: {
-            type: Types.ObjectId,
+            type: Schema.Types.ObjectId,
             required: true
         },
         description: {
@@ -246,13 +246,13 @@ const Recipe = new Schema(
     }
 );
 
-Recipe.index({ _id: 1, userId: 1 });
+RecipeSchema.index({ _id: 1, userId: 1 });
 
-mongoose.model('Recipe', Recipe);
+mongoose.model('Recipe', RecipeSchema);
 
 class RecipeRepository extends MongoRepository<IRecipe, IRecipeCreate & { userId: string }> {
     constructor() {
-        super(collectionName, Recipe);
+        super(collectionName, RecipeSchema);
     }
 }
 
