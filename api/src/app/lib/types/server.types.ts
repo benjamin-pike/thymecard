@@ -6,6 +6,7 @@ import { IDayController } from "../../components/day/day.controller";
 import { AuthMiddleware } from "../../middleware/auth.middleware";
 import { ContextMiddleware } from "../../middleware/context.middleware";
 import { ErrorsMiddleware } from "../../middleware/error.middleware";
+import { RateLimiterMiddleware } from "../../middleware/rate-limiter.middleware";
 
 export interface IDependencies {
     authController: IAuthController;
@@ -24,4 +25,6 @@ export interface IMiddleware {
     context: ContextMiddleware;
     auth: AuthMiddleware;
     errors: ErrorsMiddleware;
+    anonRateLimiter: RateLimiterMiddleware;
+    authRateLimiter: RateLimiterMiddleware;
 }

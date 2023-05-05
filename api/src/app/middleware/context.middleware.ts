@@ -44,6 +44,8 @@ export class RequestContext {
     private userId?: string;
     private permissions?: Record<string, number>;
 
+    public isAuthenticated: boolean = false;
+
     constructor(req: Request, res: Response, nodeEnv: string, resourcePermissions: IResourcePermissions) {
         this.req = req;
         this.res = res;
@@ -110,6 +112,8 @@ export class RequestContext {
     public appendAuthData = (userId: string, permissions: Record<string, number>): void => {
         this.userId = userId;
         this.permissions = permissions;
+
+        this.isAuthenticated = true;
     };
 
     private isMatchingRoute(reqMethod: string, reqPath: string, candidateMethod: string, candidatePath: string): boolean {
