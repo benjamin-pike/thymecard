@@ -3,7 +3,7 @@ import { ErrorCode } from '../error/errorCode';
 import { BadRequestError, ConflictError } from '../error/sironaError';
 import { DeepPartial, isArray, isDateString, isDefined, isPlainObject, isValidMongoId } from '../types/typeguards.utils';
 import { IPagedResult } from '../types/common.types';
-import { compressAndEncrypt, decryptAndDecompress } from '../../../app';
+import { compressAndEncrypt, decryptAndDecompress } from '../encryption.utils'
 import { getPath } from '../types/object.utils';
 
 interface IEntityKey {

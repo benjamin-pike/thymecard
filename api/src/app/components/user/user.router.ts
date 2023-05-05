@@ -2,7 +2,7 @@ import express from 'express';
 import HTTP_STATUS_CODES from 'http-status-enum';
 import { IDependencies } from '../../lib/types/server.types';
 import { errorHandler } from '../../lib/error/error.utils';
-import { excludeResFields, includeResFields } from '../../middleware/resFilter.middleware';
+import { excludeResFields, includeResFields } from '../../middleware/res-filter.middleware';
 import { AccessScope, IRoutePermissions, Permission } from '../../lib/auth/permissions';
 
 export const userRouter = (dependencies: IDependencies) => {
