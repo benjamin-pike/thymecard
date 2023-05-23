@@ -1,0 +1,17 @@
+.upgradeButton {
+    padding: 0.5rem 1rem;
+    
+    border-radius: 0.25rem;
+
+    color: white;
+    background-color: var(--mono-800);
+    box-shadow: 0 0 0 1px var(--mono-800);
+
+    transition: color 100ms ease, background-color 100ms ease, scale 100ms ease;
+}
+
+.upgradeButton:hover {
+    background-color: white;
+    color: var(--mono-800);
+    scale: 1.025;
+}
