@@ -112,7 +112,7 @@ export class TooManyRequestsError extends SironaError { // 429
     }
 }
 
-export class InternalServerError extends SironaError { // 500
+export class InternalError extends SironaError { // 500
     constructor(internalCode: ErrorCode, message: string | undefined, logBody: ErrorLogBody) {
         super(internalCode, message ?? 'Internal Server Error', HttpCode.INTERNAL_SERVER_ERROR, logBody);
     }

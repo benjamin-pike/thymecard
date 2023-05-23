@@ -10,7 +10,7 @@ export const errorsMiddleware = (err: any, req: Request, res: Response, _next: N
         return res.status(err.httpCode).json(err.toResponseBody());
     }
     return res.status(HttpCode.INTERNAL_SERVER_ERROR).json({
-        code: standardizeErrorCode(ErrorCode.InternalServerError),
+        code: standardizeErrorCode(ErrorCode.InternalError),
         message: err.message
     });
 };

@@ -1,6 +1,6 @@
 export enum ErrorCode {
     // General errors
-    InternalServerError = 9999,
+    InternalError = 9999,
 
     
     // Not found errors (01xx)
@@ -43,7 +43,7 @@ export enum ErrorCode {
     
    
     // Permission/Authentication errors (04xx)
-    MissingLoginCredentials = 401,
+    InvalidLoginCredentials = 401,
     NotLocalUser = 402,
     InvalidAuthProvider = 403,
     GoogleAuthError = 404,

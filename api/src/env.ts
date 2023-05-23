@@ -1,13 +1,18 @@
 import * as dotenv from 'dotenv';
 import { isNumber, validateWithError, validateWithNull } from "./app/lib/types/typeguards.utils";
 import { isRateLimiterInterval } from "./app/middleware/rate-limiter.middleware";
+import { ErrorCode } from './app/lib/error/errorCode';
+import { InternalError } from './app/lib/error/sironaError';
 
 dotenv.config();
 
 const getEnvironmentVariable = (key: string) => {
     const value = process.env[key];
     if (!value) {
-        throw new Error(`${key} must be defined`);
+        throw new InternalError(ErrorCode.InternalError, `${key} must be defined`, {
+            origin: 'getEnvironmentVariable',
+            data: { key }
+        });
     }
     return value;
 };
