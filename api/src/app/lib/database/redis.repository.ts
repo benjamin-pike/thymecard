@@ -1,5 +1,5 @@
 import { createClient, RedisClientType } from 'redis';
-import { InternalServerError } from '../error/sironaError';
+import { InternalError } from '../error/sironaError';
 import { ErrorCode } from '../error/errorCode';
 
 interface IEntityKey {
@@ -33,7 +33,7 @@ export class RedisRepository {
         await this.client.connect();
 
         this.client.on('error', (err) => {
-            throw new InternalServerError(ErrorCode.RedisConnectionError, 'A Redis error occured', {
+            throw new InternalError(ErrorCode.RedisConnectionError, 'A Redis error occured', {
                 origin: 'RedisRepository.constructor',
                 data: { err }
             });

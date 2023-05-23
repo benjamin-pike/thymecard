@@ -118,7 +118,9 @@ export class AuthService {
 
         const isPasswordValid = await this.verifyPassword(password, user.password);
         if (!isPasswordValid) {
-            throw new Error('Invalid password');
+            throw new UnauthorizedError(ErrorCode.InvalidLoginCredentials, 'Invalid email address or password', {
+                origin: 'AuthService.loginUser'
+            });
         }
 
         return this.initializeSession(user, deviceId);

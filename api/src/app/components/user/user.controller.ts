@@ -1,7 +1,7 @@
 import { ZodError } from 'zod';
 import { formatZodError } from '../../lib/error/error.utils';
 import { ErrorCode } from '../../lib/error/errorCode';
-import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
+import { UnprocessableError } from '../../lib/error/sironaError';
 import { hasKey, isObject, isString, isValidMongoId } from '../../lib/types/typeguards.utils';
 import { UserService } from './user.service';
 import {
@@ -22,7 +22,6 @@ interface IUserControllerDependencies {
 export interface IUserController {
     createLocalUser(context: any, resource: unknown): Promise<IUser>;
     getUserById(context: any, userId: string): Promise<IUser>;
-    getUserByEmailNoError(context: any, email: string): Promise<IUser | null>;
     updateUser(context: any, userId: string, resource: unknown): Promise<IUser>;
     deleteUser(context: any, userId: string): Promise<void>;
     getOrCreateOAuthUser(
@@ -69,18 +68,6 @@ export class UserController implements IUserController {
             });
         }
         return await this.userService.getUserById(userId);
-    }
-
-    public async getUserByEmailNoError(_context: any, email: string) {
-        try {
-            return await this.userService.getUserByEmail(email);
-        } catch (err: any) {
-            if (err instanceof NotFoundError) {
-                return null;
-            }
-
-            throw err;
-        }
     }
 
     public async updateUser(_context: any, userId: string, resource: unknown) {

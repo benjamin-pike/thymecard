@@ -14,7 +14,7 @@ export interface IUserService {
     createUser(user: ILocalUserCreate | IOAuthUserCreate): Promise<IUser>;
     updateUser(userId: string, update: Partial<IUser>): Promise<IUser>;
     getUserById(userId: string): Promise<IUser>;
-    getUserByEmail(email: string): Promise<IUser>;
+    getUserByEmail(email: string): Promise<IUser | null>;
     deleteUser(userId: string): Promise<void>;
 }
 
@@ -90,22 +90,12 @@ export class UserService implements IUserService {
         return user;
     }
 
-    public async getUserByEmail(email: string): Promise<IUser> {
+    public async getUserByEmail(email: string): Promise<IUser | null> {
         const query = { email };
         const user = await userRepository.getOne(query);
 
-        if (!user) {
-            throw new NotFoundError(ErrorCode.UserNotFound, 'User not found', {
-                origin: 'UserService.getUser',
-                data: { email }
-            });
-        }
-
-        if (user.deleted) {
-            throw new NotFoundError(ErrorCode.DeletedUserNotFound, 'The requested account no longer exists', {
-                origin: 'UserService.getUser',
-                data: { email }
-            });
+        if (!user || user.deleted) {
+            return null
         }
 
         return user;
