@@ -4,7 +4,7 @@ import { Brand } from './components/Brand';
 import { NavLinks } from './components/NavLinks';
 import { MobileDropdownWrapper } from './components/MobileDropdownWrapper';
 import { UpgradeButton } from './components/UpgradeButton';
-import { Avatar } from './components/Avatar';
+import { Avatar } from '../common/Avatar';
 import styles from './header.module.css';
 
 export const Header = () => {

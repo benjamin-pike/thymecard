@@ -1,38 +1,34 @@
 export default {
-    "parser": "@typescript-eslint/parser",
-    "extends": [
-        "next/core-web-vitals",
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:prettier/recommended"
-    ],
-    "plugins": ["@typescript-eslint", "prettier"],
-    "env": {
-        "node": true,
-        "es6": true
+    parser: '@typescript-eslint/parser',
+    extends: ['next/core-web-vitals', 'eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+    plugins: ['@typescript-eslint', 'prettier'],
+    env: {
+        node: true,
+        es6: true
     },
-    "parserOptions": {
-        "ecmaVersion": 2020,
-        "sourceType": "module",
-        "tsconfigRootDir": "./"
+    parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+        tsconfigRootDir: './'
     },
-    "rules": {
-        "prettier/prettier": [
-            "error",
+    rules: {
+        'prettier/prettier': [
+            'error',
             {},
             {
-                "usePrettierrc": true
+                usePrettierrc: true
             }
         ],
-        "@typescript-eslint/no-explicit-any": 0,
-        "@typescript-eslint/no-unused-vars": [
-            "error",
+        '@typescript-eslint/no-explicit-any': 0,
+        '@typescript-eslint/no-unused-vars': [
+            'error',
             {
-                "argsIgnorePattern": "^_",
-                "varsIgnorePattern": "^_",
-                "ignoreRestSiblings": true
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_',
+                ignoreRestSiblings: true
             }
         ],
-        "max-len": ["error", { "code": 140, "ignoreTrailingComments": true, "ignoreStrings": true, "ignoreTemplateLiterals": true }]
+        'max-len': ['error', { code: 140, ignoreTrailingComments: true, ignoreStrings: true, ignoreTemplateLiterals: true }],
+        'sort-imports': 2
     }
-}
+};
