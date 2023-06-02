@@ -1,0 +1,30 @@
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer > p {
+    color: var(--mono-600);
+    font-size: var(--fs-12);
+    font-weight: 400;
+    white-space: pre;
+    
+    user-select: none;
+}
+
+.footer span {
+    transition: color 100ms ease;
+}
+
+.footer span:not(.year):hover {
+    color: var(--mono-500);
+    cursor: pointer;
+}
+
+.year {
+    color: var(--mono-700);
+    font-weight: 600;
+    white-space: pre;
+}

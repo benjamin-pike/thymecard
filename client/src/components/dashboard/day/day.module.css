@@ -1,0 +1,21 @@
+.currentTime,
+.currentDate {
+    background-color: var(--mono-100);
+    color: var(--mono-600);
+    font-size: var(--fs-12);
+    font-weight: 500;
+    
+    padding: 0.3rem 0.6rem;
+    
+    border-radius: 100vmax;
+    
+    user-select: none;
+}
+
+.events {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    
+    overflow: hidden;
+}

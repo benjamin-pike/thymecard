@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import { MdOutlineSpaceDashboard, MdOutlineCalendarMonth } from 'react-icons/md';
 import { BiFoodMenu } from 'react-icons/bi';
 import { FiActivity } from 'react-icons/fi';
@@ -9,7 +10,7 @@ interface INavLinksComponentProps {
     setActivePage: (name: string) => void;
 }
 
-export const NavLinks = ({ activePage, setActivePage }: INavLinksComponentProps) => (
+export const NavLinks: FC<INavLinksComponentProps> = ({ activePage, setActivePage }) => (
     <nav className={styles.links}>
         {LINKS.map(({ name, icon }) => (
             <a key={name} className={styles.link} href="#" data-active={activePage === name} onClick={() => setActivePage(name)}>

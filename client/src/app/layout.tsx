@@ -13,6 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div id = 'box-768' />
                 <div id = 'box-480' /> */}
                 {children}
+                <div id = 'modal-root' />
             </body>
         </html>
     );

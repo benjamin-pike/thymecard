@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import styles from './mobile-dropdown-wrapper.module.css';
 
@@ -9,12 +9,12 @@ interface IMobileDropdownComponentProps {
     setIsMobileNavDropdownOpen: (isOpen: boolean) => void;
 }
 
-export const MobileDropdownWrapper = ({
+export const MobileDropdownWrapper: FC<IMobileDropdownComponentProps> = ({
     children,
     mobileNavDropdownRef,
     isMobileNavDropdownOpen,
     setIsMobileNavDropdownOpen
-}: IMobileDropdownComponentProps) => (
+}) => (
     <div className={styles.mobileNavDropdownWrapper}>
         <button className={styles.mobileNavDropdownButton} onClick={() => setIsMobileNavDropdownOpen(!isMobileNavDropdownOpen)}>
             <RxHamburgerMenu />

@@ -1,0 +1,51 @@
+.day {
+    position: relative;
+    
+    background-color: var(--mono-200);
+    
+    box-shadow: 0 0 0 1px var(--mono-300);
+    
+    padding: 1rem;
+    
+    border-radius: 1rem;
+}
+
+.events {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.date {
+    position: absolute;
+    top: 0;
+    left: 1.5rem;
+    
+    translate: 0 -60%;
+    
+    color: var(--mono-600);
+    font-size: var(--fs-10);
+    
+    font-weight: 500;
+    z-index: 1;
+}
+
+.date::before {
+    content: '';
+    position: absolute;
+    left: -0.5rem;
+    bottom: 40%;
+    
+    height: 1px;
+    width: calc(100% + 1rem);
+    
+    background-color: var(--mono-200);
+
+    z-index: -1;
+}
+
+@media (max-width: 480px) {
+    .day {
+        border-radius: 0;
+    }
+}

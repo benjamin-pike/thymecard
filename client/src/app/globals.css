@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 :root {
-    --mono-100: rgb(247, 248, 250);
+    --mono-100: rgb(243, 245, 250);
     --mono-200: rgb(238, 241, 246);
     --mono-300: rgb(207, 215, 229);
     --mono-400: rgb(177, 188, 211);
@@ -10,12 +10,70 @@
     --mono-700: rgb(52, 64, 90);
     --mono-800: rgb(26, 34, 51);
     --mono-900: rgb(17, 23, 34);
+
+    --red: rgb(255, 51, 102);
+    --orange: rgb(255, 102, 51);
+    --yellow: rgb(255, 191, 0);
+    --green: rgb(78, 210, 45);
+    --aqua: rgb(51, 204, 255);
+    --blue: rgb(0, 123, 255);
+    --purple: rgb(178, 77, 255);
+    --pink: rgb(255, 0, 157);
+
+    --red-dark: hsl(340, 100%, 45%);
+    --orange-dark: hsl(15, 100%, 48%);
+    --yellow-dark: hsl(38, 100%, 50%);
+    --green-dark: hsl(120, 65%, 45%);
+    --aqua-dark: hsl(195, 100%, 47%);
+    --blue-dark: hsl(217, 100%, 50%);
+    --purple-dark: hsl(275, 100%, 50%);
+    --pink-dark: hsl(323, 100%, 47%);
+
+    --red-light: hsl(345, 100%, 64%);
+    --orange-light: hsl(15, 100%, 67%);
+    --yellow-light: hsl(45, 100%, 65%);
+    --green-light: hsl(108, 58%, 62%);
+    --aqua-light: hsl(195, 100%, 69%);
+    --blue-light: hsl(211, 100%, 57%);
+    --purple-light: hsl(274, 100%, 63%);
+    --pink-light: hsl(323, 100%, 64%);
+
+    --red-10: rgba(255, 51, 102, 0.1);
+    --orange-10: rgba(255, 102, 51, 0.1);
+    --yellow-10: rgba(255, 191, 0, 0.1);
+    --green-10: rgba(78, 210, 45, 0.1);
+    --aqua-10: rgba(51, 204, 255, 0.1);
+    --blue-10: rgba(0, 123, 255, 0.1);
+    --purple-10: rgba(156, 26, 255, 0.1);
+    --pink-10: rgba(255, 0, 157, 0.1);
+
+    --red-rgb: 255, 51, 102;
+    --orange-rgb: 255, 102, 51;
+    --yellow-rgb: 255, 191, 0;
+    --green-rgb: 78, 210, 45;
+    --aqua-rgb: 51, 204, 255;
+    --blue-rgb: 0, 123, 255;
+    --purple-rgb: 156, 26, 255;
+    --pink-rgb: 255, 0, 157;
+
+    --green-dark-rgb: 40, 189, 40;
+
+    --fs-24: 1.5rem;
+    --fs-20: 1.25rem;
+    --fs-18: 1.125rem;
+    --fs-16: 1rem;
+    --fs-14: 0.875rem;
+    --fs-12: 0.75rem;
+    --fs-11: 0.6875rem;
+    --fs-10: 0.625rem;
+    --fs-9: 0.5625rem;
 }
 
 * {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    flex-shrink: 0;
 }
 
 html,
@@ -67,4 +125,9 @@ a {
 button {
     all: unset;
     cursor: pointer;
+}
+
+#modal-root {
+    position: fixed;
+    z-index: 200;
 }

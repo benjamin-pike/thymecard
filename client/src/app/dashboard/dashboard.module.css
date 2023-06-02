@@ -1,11 +1,225 @@
-.page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+.content {
+    display: grid;
+    grid-template-columns: 3fr 4fr 21rem;
+    gap: 2rem;
+    
+    margin: auto;
+    padding: 2rem;
+    
+    max-width: 1400px;
 }
 
-.title {
-    font-size: 2em;
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    
+    height: fit-content;
+}
+
+.card.overview {
+    margin-top: 2.5rem;
+}
+
+.mobileNav {
+    display: none;
+}
+
+.mobilePopupBackdrop {
+    opacity: 0;
+}
+
+@media (max-width: 1200px) {
+    .content {
+        grid-template:
+            'right center'
+            'left center';
+        grid-template-columns: 21rem 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .column.left {
+        grid-area: left;
+    }
+
+    .column.center {
+        grid-area: center;
+    }
+
+    .column.right {
+        grid-area: right;
+    }
+}
+
+@media (max-width: 768px) {
+    .content {
+        grid-template: 'center center' 'right left';
+
+        padding-bottom: 3rem;
+    }
+
+    .column.left {
+        grid-area: left;
+        flex-direction: row;
+    }
+
+    .column.center {
+        grid-area: center;
+    }
+
+    .column.right {
+        grid-area: right;
+        flex-direction: row;
+    }
+
+    .mobileNav {
+        position: fixed;
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        
+        left: 50%;
+        bottom: 0;
+        translate: -50%;
+        
+        width: 100%;
+        height: 3.5rem;
+        
+        margin: auto;
+        padding: 0 2rem;
+        
+        background-color: white;
+        
+        box-shadow: 0 0 0 1px var(--mono-200);
+        
+        z-index: 5;
+    }
+
+    .mobileNav > button {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .mobileNav > button > p {
+        color: var(--mono-600);
+        font-size: var(--fs-14);
+    }
+
+    .mobileNav > button > svg {
+        color: var(--mono-500);
+        
+        scale: 1.25;
+    }
+
+    .mobilePopupBackdrop {
+        position: fixed;
+        display: block;
+        
+        inset: 0;
+        
+        height: 100vh;
+        width: 100vw;
+        
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(0px);
+        
+        pointer-events: none;
+        
+        z-index: 3;
+        
+        transition: opacity 200ms ease, backdrop-filter 200ms ease;
+    }
+
+    .mobilePopupBackdrop.visible {
+        opacity: 1;
+        
+        backdrop-filter: blur(5px);
+        
+        pointer-events: all;
+    }
+
+    .card {
+        position: fixed;
+        top: 100%;
+        left: 50%;
+        translate: -50%;
+        
+        height: fit-content;
+        
+        padding: 1.5rem;
+        
+        border-radius: 1rem 1rem 0 0;
+        
+        z-index: 4;
+        
+        transition: translate 200ms ease, box-shadow 200ms ease;
+    }
+
+    .card::after {
+        content: '';
+        
+        position: absolute;
+        top: 100%;
+        left: 0;
+        
+        width: 100%; 
+        height: 3rem;
+        
+        background: linear-gradient(to-bottom, white, rgba(255, 255, 255, 0));
+    }
+
+    .card.overview {
+        width: 21rem;
+    }
+
+    .card.progress {
+        width: 21rem;
+        max-height: 87.5%;
+        
+        overflow: scroll;
+    }
+
+    .card.day,
+    .card.bookmarks {
+        width: min(80%, 27.5rem);
+    }
+
+    .card.visible {
+        translate: -50% calc(-100% - 3rem);
+    }
+
+    .card.overview.visible {
+        translate: -50% calc(-100% - 5.5rem);
+    }
+
+    .footer {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .content {
+        padding: 2rem 0;
+    }
+
+    .mobileNav {
+        gap: 4rem;
+    }
+
+
+    .mobileNav > button > svg {
+        scale: 1.5;
+    }
+
+    .mobileNav > button > p {
+        display: none;
+    }
+
+    .card.day,
+    .card.bookmarks {
+        width: 95%;
+    }
 }

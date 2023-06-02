@@ -25,9 +25,11 @@
         position: absolute;
         top: 2.5rem;
         width: fit-content;
-        box-shadow: 0 0 0 1px var(--mono-200) inset;
+        box-shadow: 0 0 0 1px var(--mono-200) inset, 4px 4px 20px rgba(0, 0, 0, 0.1);
         background-color: white;
         border-radius: 0.5rem;
+
+        z-index: 100;
     }
 
     .mobileNavDropdownContainer[data-dropdown-is-open = 'true'] {
