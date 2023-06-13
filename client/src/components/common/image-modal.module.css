@@ -23,7 +23,7 @@
 
 .modalImage {
     max-width: 800px;
-    max-height: 70vh;
+    max-height: 70svh;
 
     object-fit: cover;
 
@@ -118,7 +118,7 @@
 @media (max-width: 1024px) {
     .modalImage {
         max-width: 600px;
-        max-height: 70vh;
+        max-height: 70svh;
     }
 
     .modalButton {
@@ -129,7 +129,7 @@
 @media (max-width: 768px) {
     .modalImage {
         max-width: 80vw;
-        max-height: 80vh;
+        max-height: 80svh;
     }
 
     .modalButton {

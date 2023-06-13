@@ -1,7 +1,6 @@
-// ImageGrid.tsx
 import React, { useState } from 'react';
-import styles from './image-grid.module.css';
 import ImageModal from './ImageModal';
+import styles from './image-grid.module.css';
 
 interface ImageGridProps {
     urls: string[];

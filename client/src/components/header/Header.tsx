@@ -1,14 +1,14 @@
 import { useState, useRef } from 'react';
-import useClickOutside from '@/hooks/useClickOutside';
-import { Brand } from './components/Brand';
-import { NavLinks } from './components/NavLinks';
-import { MobileDropdownWrapper } from './components/MobileDropdownWrapper';
-import { UpgradeButton } from './components/UpgradeButton';
-import { Avatar } from '../common/Avatar';
+import { useClickOutside } from '@/hooks/useClickOutside';
+import Brand from './components/Brand';
+import NavLinks from './components/NavLinks';
+import MobileDropdownWrapper from './components/MobileDropdownWrapper';
+import UpgradeButton from './components/UpgradeButton';
+import Avatar from '../common/Avatar';
 import styles from './header.module.css';
 
-export const Header = () => {
-    const [activePage, setActivePage] = useState('dashboard');
+const Header = ({ page }: { page?: string }) => {
+    const [activePage, setActivePage] = useState(page ?? 'dashboard');
     const [isMobileNavDropdownOpen, setIsMobileNavDropdownOpen] = useState(false);
     const mobileNavDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -36,3 +36,5 @@ export const Header = () => {
         </header>
     );
 };
+
+export default Header;

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import Card, { CardBody } from '@/components/common/Card';
+import { CardBody } from '@/components/common/Card';
+import Avatar from '@/components/common/Avatar';
 import SliderToggle from '@/components/common/SliderToggle';
 import LatestEvent from './LatestEvent';
 import { formatClasses } from '@/lib/common.utils';
-import { Avatar } from '@/components/common/Avatar';
 import styles from './overview.module.css';
 
 type Interval = 'Week' | 'Month' | 'Year' | 'All Time';

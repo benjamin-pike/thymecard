@@ -1,31 +1,25 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { Header } from '@/components/header/Header';
+import { useCallback, useState } from 'react';
+import { useWindowResize } from '@/hooks/useWindowResize';
+import Header from '@/components/header/Header';
 import Card from '@/components/common/Card';
 import Feed from '@/components/dashboard/feed/Feed';
 import OverviewCardContent from '@/components/dashboard/overview/Overview';
 import ProgressCardContent from '@/components/dashboard/progress/Progress';
 import DayCardContent from '../../components/dashboard/day/Day';
 import BookmarksCardContent from '../../components/dashboard/bookmarks/Bookmarks';
+import Footer from '@/components/common/Footer';
 import { formatClasses } from '@/lib/common.utils';
 import { CgProfile } from 'react-icons/cg';
-import { SlGraph } from 'react-icons/sl';
-import { FiSun } from 'react-icons/fi';
-import { BiBookmarks } from 'react-icons/bi';
+import { CgCalendarToday } from 'react-icons/cg';
+import { MdDataUsage } from 'react-icons/md';
+import { BiBookmarkAlt } from 'react-icons/bi';
 import styles from './dashboard.module.css';
-import Footer from '@/components/common/Footer';
 
 const Dashboard = () => {
-    // const [overviewCardIsVisible, setOverviewCardIsVisible] = useState(false);
-    // const [progressCardIsVisible, setProgressCardIsVisible] = useState(false);
-    // const [dayCardIsVisible, setDayCardIsVisible] = useState(false);
-    // const [bookmarksCardIsVisible, setBookmarksCardIsVisible] = useState(false);
-
-    // const popupIsVisible = overviewCardIsVisible || progressCardIsVisible || dayCardIsVisible || bookmarksCardIsVisible;
-
     const [visibleCard, setVisibleCard] = useState<string | null>(null);
 
-    const toggleCard = (cardName: string) => {
+    const toggleCard = useCallback((cardName: string) => {
         if (visibleCard) {
             if (visibleCard === cardName) {
                 setVisibleCard(null);
@@ -39,19 +33,9 @@ const Dashboard = () => {
         } else {
             setVisibleCard(cardName);
         }
-    };
+    }, [visibleCard]);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setVisibleCard(null);
-        }
-
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [setVisibleCard]);
+    useWindowResize(() => setVisibleCard(null));
 
     return (
         <>
@@ -77,24 +61,24 @@ const Dashboard = () => {
                         <ProgressCardContent />
                     </Card>
                 </div>
-                <section className={styles.mobileNav}>
+                <section className={formatClasses(styles, ['mobileNav', visibleCard ? 'visibleCard' : ''])}>
                     <button onClick={() => toggleCard('overview')}>
                         <CgProfile />
-                        <p>Overview</p>
                     </button>
+                    <div className={styles.divider} />
                     <button onClick={() => toggleCard('progress')}>
-                        <SlGraph />
-                        <p>Progress</p>
+                        <MdDataUsage />
                     </button>
+                    <div className={styles.divider} />
                     <button onClick={() => toggleCard('day')}>
-                        <FiSun />
-                        <p>Day</p>
+                        <CgCalendarToday />
                     </button>
+                    <div className={styles.divider} />
                     <button onClick={() => toggleCard('bookmarks')}>
-                        <BiBookmarks />
-                        <p>Bookmarks</p>
+                        <BiBookmarkAlt />
                     </button>
                 </section>
+                <div className={styles.fader} />
                 <div
                     className={`${styles.mobilePopupBackdrop} ${visibleCard ? styles.visible : styles.hidden}`}
                     onClick={() => setVisibleCard(null)}

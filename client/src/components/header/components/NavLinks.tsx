@@ -10,10 +10,10 @@ interface INavLinksComponentProps {
     setActivePage: (name: string) => void;
 }
 
-export const NavLinks: FC<INavLinksComponentProps> = ({ activePage, setActivePage }) => (
+const NavLinks: FC<INavLinksComponentProps> = ({ activePage, setActivePage }) => (
     <nav className={styles.links}>
-        {LINKS.map(({ name, icon }) => (
-            <a key={name} className={styles.link} href="#" data-active={activePage === name} onClick={() => setActivePage(name)}>
+        {LINKS.map(({ name, icon, link }) => (
+            <a key={name} className={styles.link} href={link} data-active={activePage === name} onClick={() => setActivePage(name)}>
                 {icon}
                 <p>{name}</p>
             </a>
@@ -21,25 +21,32 @@ export const NavLinks: FC<INavLinksComponentProps> = ({ activePage, setActivePag
     </nav>
 );
 
+export default NavLinks;
+
 const LINKS = [
     {
         name: 'dashboard',
-        icon: <MdOutlineSpaceDashboard />
+        icon: <MdOutlineSpaceDashboard />,
+        link: '/dashboard'
     },
     {
         name: 'planner',
-        icon: <MdOutlineCalendarMonth />
+        icon: <MdOutlineCalendarMonth />,
+        link: '/planner'
     },
     {
         name: 'log',
-        icon: <RiMarkPenLine />
+        icon: <RiMarkPenLine />,
+        link: '#'
     },
     {
         name: 'recipes',
-        icon: <BiFoodMenu />
+        icon: <BiFoodMenu />,
+        link: '#'
     },
     {
         name: 'activities',
-        icon: <FiActivity />
+        icon: <FiActivity />,
+        link: '#'
     }
 ];

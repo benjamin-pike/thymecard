@@ -11,8 +11,7 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' ./src/app.ts --unhandled-rejections=strict",
-    "debug": "node --inspect -r ts-node/register -r source-map-support/register src/app.ts --unhandled-rejections=strict",
-    "count-lines": "git ls-files | grep '\\.ts' | xargs wc -l"
+    "debug": "node --inspect -r ts-node/register -r source-map-support/register src/app.ts --unhandled-rejections=strict"
   },
   "author": "Benjamin Pike",
   "license": "ISC",

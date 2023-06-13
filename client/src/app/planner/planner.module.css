@@ -1,0 +1,155 @@
+.content {
+    display: grid;
+    grid-template-columns: max(25vw, 22.5rem) auto;
+    gap: 3rem;
+
+    margin: auto;
+    padding: 2rem;
+
+    max-width: 1600px;
+    max-height: calc(100svh - 4rem);
+
+    overflow: hidden;
+}
+
+.content.dayOverlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    width: 100vw;
+    height: 100svh;
+    
+    backdrop-filter: blur(0) brightness(1);
+    
+    pointer-events: none;
+    
+    z-index: 1;
+    
+    transition: backdrop-filter 500ms ease;
+}
+
+.column {
+    height: calc(100svh - 8rem);
+}
+
+.column.left {
+    display: flex;
+    flex-direction: column;
+    
+    background-color: white;
+    
+    border-radius: 1rem;
+    
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.1), 0 0 0 1rem var(--mono-200), 0 0 0 calc(1rem + 1px) var(--mono-300);
+}
+
+.column.left.preventTransition {
+    transition: none;
+}
+
+@media (max-width: 1024px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+
+    .content.dayOverlay::before {
+        backdrop-filter: blur(2px) brightness(0.5);
+        pointer-events: auto;
+    }
+
+    .column.left {
+        position: absolute;
+        left: 2rem;
+        
+        width: 22.5rem;
+        
+        translate: calc(-100% - 2rem - 24px);
+        
+        box-shadow: none;
+        
+        z-index: 10;
+        
+        transition: translate 500ms ease;
+    }
+
+    .dayOverlay .column.left {
+        translate: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+
+    .content.dayOverlay::before {
+        backdrop-filter: blur(2px) brightness(0.5);
+        pointer-events: auto;
+    }
+
+    .column.left {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        
+        translate: -50% calc(100% - 4rem);
+        
+        width: 100%;
+        height: 4rem;
+        max-width: 25rem;
+        
+        border-radius: 1rem 1rem 0 0;
+
+        box-shadow: -4px -4px 20px rgba(0, 0, 0, 0.025);
+        
+        overflow: hidden;
+        
+        z-index: 10;
+        
+        transition: translate 500ms ease, height 500ms ease;
+    }
+
+    .column.left::before {
+        content: '';
+
+        position: absolute;
+        top: 100%;
+        left: 1rem;
+
+        width: calc(100% - 2rem);
+        height: 1px;
+
+        background-color: var(--mono-200);
+
+        z-index: 1;
+    }
+
+    .column.left::after {
+        content: '';
+        
+        position: absolute;
+        top: 100%;
+        left: 0;
+        
+        width: 100%;
+        height: 2rem;
+        
+        background-color: white;
+    }
+
+    .dayOverlay .column.left {
+        height: calc(100svh - 8rem);
+        
+        translate: -50% -2rem;
+        
+        overflow: unset;
+        
+        transition: translate 250ms ease, height 250ms ease;
+    }
+
+    .column.right {
+        height: calc(100svh - 12rem);
+    }
+}

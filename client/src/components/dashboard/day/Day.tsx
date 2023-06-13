@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
-import Card, { CardBody } from '@/components/common/Card';
+import { CardBody } from '@/components/common/Card';
 import { DashboardCardHeader } from '../common/DashboardCardHeader';
 import Event, { IEventProps } from './Event';
 import styles from './day.module.css';
