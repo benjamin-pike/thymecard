@@ -2,18 +2,23 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 1rem;
+
     height: 4rem;
+    padding: 0 1rem;
+
     background-color: white;
-    box-shadow: 0 1px var(--mono-200);
+    box-shadow: 0 -1px var(--mono-200) inset;
+
     transition: padding 200ms ease;
 }
 
 .content {
     display: flex;
     justify-content: space-between;
+
     width: 100%;
     max-width: 1100px;
+
     padding: 0 1rem;
 }
 
@@ -24,15 +29,18 @@
 }
 
 .separator {
+    flex-shrink: 0;
+
     height: 1.25rem;
     width: 1px;
-    flex-shrink: 0;
-    background-color: var(--mono-300);
+
     margin-left: 1.5rem;
     margin-right: 1rem;
+    
+    background-color: var(--mono-300);
 }
 
-@media (max-width: 768px) and (min-width: 481px) {
+@media (max-width: 768px) {
     .header {
         padding: 0;
     }

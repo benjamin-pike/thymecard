@@ -1,7 +1,7 @@
 'use client'
 import { FC, useState } from 'react';
 import { DateTime } from 'luxon';
-import Card, { CardBody } from '@/components/common/Card';
+import { CardBody } from '@/components/common/Card';
 import { DashboardCardHeader } from '../common/DashboardCardHeader';
 import SliderToggle from '@/components/common/SliderToggle';
 import { getOrdinalSuffix } from '@/lib/date.utils';

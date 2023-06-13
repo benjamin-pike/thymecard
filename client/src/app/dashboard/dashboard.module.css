@@ -2,10 +2,10 @@
     display: grid;
     grid-template-columns: 3fr 4fr 21rem;
     gap: 2rem;
-    
+
     margin: auto;
     padding: 2rem;
-    
+
     max-width: 1400px;
 }
 
@@ -13,7 +13,7 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    
+
     height: fit-content;
 }
 
@@ -74,27 +74,47 @@
 
     .mobileNav {
         position: fixed;
-        
+
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 2rem;
-        
+        gap: 1.5rem;
+
         left: 50%;
         bottom: 0;
         translate: -50%;
-        
-        width: 100%;
+
+        width: fit-content;
         height: 3.5rem;
-        
+
         margin: auto;
         padding: 0 2rem;
-        
+
         background-color: white;
-        
-        box-shadow: 0 0 0 1px var(--mono-200);
-        
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05), 0 -2px 5px rgba(0, 0, 0, 0.025);
+
+        border-radius: 1rem 1rem 0 0;
+
         z-index: 5;
+
+        transition: bottom 200ms ease;
+    }
+
+    .mobileNav.visibleCard {
+        bottom: -3.5rem;
+    }
+
+    .fader {
+        content: '';
+
+        position: fixed;
+        top: calc(100% - 6rem);
+        left: 0;
+
+        width: 100vw;
+        height: 6rem;
+
+        background: linear-gradient(0deg, var(--mono-200), rgba(255, 255, 255, 0));
     }
 
     .mobileNav > button {
@@ -102,42 +122,42 @@
         align-items: center;
         gap: 0.75rem;
     }
-
-    .mobileNav > button > p {
+    .mobileNav > button > svg {
         color: var(--mono-600);
-        font-size: var(--fs-14);
+
+        scale: 1.2;
     }
 
-    .mobileNav > button > svg {
-        color: var(--mono-500);
-        
-        scale: 1.25;
+    .divider {
+        width: 1px;
+        height: 1rem;
+        background-color: var(--mono-300);
     }
 
     .mobilePopupBackdrop {
         position: fixed;
         display: block;
-        
+
         inset: 0;
-        
-        height: 100vh;
+
+        height: 100svh;
         width: 100vw;
-        
+
         background-color: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(0px);
-        
+
         pointer-events: none;
-        
+
         z-index: 3;
-        
+
         transition: opacity 200ms ease, backdrop-filter 200ms ease;
     }
 
     .mobilePopupBackdrop.visible {
         opacity: 1;
-        
+
         backdrop-filter: blur(5px);
-        
+
         pointer-events: all;
     }
 
@@ -146,40 +166,34 @@
         top: 100%;
         left: 50%;
         translate: -50%;
-        
+
         height: fit-content;
-        
+
         padding: 1.5rem;
-        
+
         border-radius: 1rem 1rem 0 0;
-        
+
         z-index: 4;
-        
+
         transition: translate 200ms ease, box-shadow 200ms ease;
     }
 
     .card::after {
         content: '';
-        
+
         position: absolute;
         top: 100%;
         left: 0;
-        
-        width: 100%; 
+
+        width: 100%;
         height: 3rem;
-        
+
         background: linear-gradient(to-bottom, white, rgba(255, 255, 255, 0));
     }
 
-    .card.overview {
-        width: 21rem;
-    }
-
+    .card.overview,
     .card.progress {
         width: 21rem;
-        max-height: 87.5%;
-        
-        overflow: scroll;
     }
 
     .card.day,
@@ -188,11 +202,11 @@
     }
 
     .card.visible {
-        translate: -50% calc(-100% - 3rem);
+        translate: -50% calc(-100%);
     }
 
     .card.overview.visible {
-        translate: -50% calc(-100% - 5.5rem);
+        translate: -50% calc(-100% - 2.5rem);
     }
 
     .footer {
@@ -206,20 +220,30 @@
     }
 
     .mobileNav {
-        gap: 4rem;
+        gap: 2rem;
+
+        width: 100%;
+        height: 4rem;
     }
 
+    .mobileNav.visibleCard {
+        bottom: -4rem;
+    }
 
     .mobileNav > button > svg {
-        scale: 1.5;
+        scale: 1.25;
     }
 
     .mobileNav > button > p {
         display: none;
     }
 
-    .card.day,
-    .card.bookmarks {
+    .card.day {
         width: 95%;
+    }
+
+    .card.bookmarks {
+        width: 75%;
+        min-width: 20rem;
     }
 }

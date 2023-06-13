@@ -118,7 +118,17 @@
         gap: 0.5rem;
         width: 100%;
         border-radius: 0 0.125rem 0.125rem 0;
-        padding-left: 1.5rem;
+        padding-left: 1.75rem;
+        translate: -0.25rem 0;
+    }
+
+    .link[data-active='true'],
+    .link[data-active='false']:hover {
+        translate: 0 0;
+    }
+
+    .link:hover::after {
+        opacity: 0;
     }
 
     .link p {

@@ -9,7 +9,7 @@ interface IMobileDropdownComponentProps {
     setIsMobileNavDropdownOpen: (isOpen: boolean) => void;
 }
 
-export const MobileDropdownWrapper: FC<IMobileDropdownComponentProps> = ({
+const MobileDropdownWrapper: FC<IMobileDropdownComponentProps> = ({
     children,
     mobileNavDropdownRef,
     isMobileNavDropdownOpen,
@@ -24,3 +24,5 @@ export const MobileDropdownWrapper: FC<IMobileDropdownComponentProps> = ({
         </div>
     </div>
 );
+
+export default MobileDropdownWrapper;

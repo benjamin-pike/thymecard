@@ -40,7 +40,6 @@ const data: IFeedData[] = [
                     'https://blog.myfitnesspal.com/wp-content/uploads/2021/02/Banana-Blueberry-French-Toast.jpg',
                     'https://i.pinimg.com/564x/27/7e/9f/277e9fd4b31b1546f1f100d306dd3315.jpg',
                     'https://i.pinimg.com/564x/27/7e/9f/277e9fd4b31b1546f1f100d306dd3315.jpg'
-                    // 'https://i.pinimg.com/564x/27/7e/9f/277e9fd4b31b1546f1f100d306dd3315.jpg'
                 ]
             },
             {

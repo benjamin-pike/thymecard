@@ -1,11 +1,10 @@
-// ImageModal.tsx
 import React, { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import styles from './image-modal.module.css';
-import useClickOutside from '@/hooks/useClickOutside';
-import { formatClasses } from '@/lib/common.utils';
+import { useClickOutside } from '@/hooks/useClickOutside';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { IoMdClose } from 'react-icons/io';
+import { formatClasses } from '@/lib/common.utils';
+import { createPortal } from 'react-dom';
 
 interface ImageModalProps {
     urls: string[];
