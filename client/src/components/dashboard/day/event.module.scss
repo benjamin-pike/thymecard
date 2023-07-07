@@ -1,0 +1,99 @@
+.event {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    &.past {
+        opacity: 0.5;
+    }
+}
+
+.icon {
+    position: relative;
+
+    &::before {
+        bottom: 100%;
+    }
+
+    &::after {
+        top: 100%;
+
+        .event:not(.event:last-of-type) & {
+            content: '';
+            position: absolute;
+            top: calc(100% + 0.25rem);
+            left: 50%;
+
+            width: 1px;
+            height: 1rem;
+
+            translate: -50%;
+
+            background-color: $mono-300;
+
+            border-radius: 100vmax;
+
+            @include dark-mode {
+                background-color: $mono-600;
+            }
+        }
+    }
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    & .chips,
+    & .name {
+        color: $mono-600;
+        font-size: $fs-12;
+        font-weight: 400;
+
+        padding-left: 0.1rem;
+
+        @include dark-mode {
+            color: $mono-200;
+        }
+    }
+
+    & .chips {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+
+        color: $mono-600;
+        font-weight: 400;
+
+        @include dark-mode {
+            color: $mono-200;
+        }
+
+        & .time {
+            font-weight: 500;
+        }
+
+        & > * {
+            background-color: $mono-100;
+            font-size: $fs-10;
+
+            padding: 0.25rem 0.5rem;
+
+            width: fit-content;
+
+            border-radius: 100vmax;
+
+            @include dark-mode {
+                background-color: $mono-800;
+                box-shadow: 0 0 0 1px $mono-700;
+            }
+        }
+    }
+
+    & .name {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}

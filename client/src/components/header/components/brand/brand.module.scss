@@ -1,0 +1,38 @@
+.logo {
+    flex-shrink: 0;
+
+    height: 1.75rem;
+    width: 1.75rem;
+
+    cursor: pointer;
+
+    & * {
+        fill: $mono-700;
+
+        @include dark-mode {
+            fill: $mono-100;
+        }
+    }
+}
+
+.brand {
+    font-size: 2rem;
+    margin-left: 0.75rem;
+
+    color: $mono-700;
+
+    letter-spacing: -0.05rem;
+    user-select: none;
+    translate: 0 -0.2rem;
+
+    transition: font-size 200ms ease, margin-left 200ms ease;
+
+    @include dark-mode {
+        color: $mono-100;
+    }
+
+    @include responsive(('small', 'mobile')) {
+        margin-left: 0;
+        font-size: 0;
+    }
+}

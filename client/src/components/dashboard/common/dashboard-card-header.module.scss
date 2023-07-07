@@ -1,0 +1,30 @@
+.cardTitle {
+    color: $mono-800;
+    font-size: $fs-16;
+    font-weight: 600;
+    
+    user-select: none;
+
+    @include dark-mode {
+        color: $mono-100;
+    }
+}
+
+.cardTitlePrefix {
+    font-weight: 400;
+}
+
+.cardTitleSuffix {
+    color: $mono-500;
+    font-weight: 400;
+
+
+    @include dark-mode {
+        color: $mono-400;
+    }
+}
+
+.cardHeaderFeature {
+    display: flex;
+    gap: 0.5rem;
+}

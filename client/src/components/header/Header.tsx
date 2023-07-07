@@ -1,31 +1,19 @@
-import { useState, useRef } from 'react';
-import { useClickOutside } from '@/hooks/useClickOutside';
-import Brand from './components/Brand';
-import NavLinks from './components/NavLinks';
-import MobileDropdownWrapper from './components/MobileDropdownWrapper';
-import UpgradeButton from './components/UpgradeButton';
-import Avatar from '../common/Avatar';
-import styles from './header.module.css';
+import Brand from './components/brand/Brand';
+import NavLinks from './components/nav-links/NavLinks';
+import MobileDropdownWrapper from './components/mobile-dropdown/MobileDropdownWrapper';
+import UpgradeButton from './components/upgrade-button/UpgradeButton';
+import Avatar from '../common/avatar/Avatar';
+import styles from './header.module.scss';
 
-const Header = ({ page }: { page?: string }) => {
-    const [activePage, setActivePage] = useState(page ?? 'dashboard');
-    const [isMobileNavDropdownOpen, setIsMobileNavDropdownOpen] = useState(false);
-    const mobileNavDropdownRef = useRef<HTMLDivElement>(null);
-
-    useClickOutside(mobileNavDropdownRef, () => setIsMobileNavDropdownOpen(false));
-
+const Header = () => {
     return (
         <header className={styles.header}>
             <div className={styles.content}>
                 <section className={styles.left}>
                     <Brand />
                     <div className={styles.separator} />
-                    <MobileDropdownWrapper
-                        mobileNavDropdownRef={mobileNavDropdownRef}
-                        isMobileNavDropdownOpen={isMobileNavDropdownOpen}
-                        setIsMobileNavDropdownOpen={setIsMobileNavDropdownOpen}
-                    >
-                        <NavLinks activePage={activePage} setActivePage={setActivePage} />
+                    <MobileDropdownWrapper>
+                        <NavLinks />
                     </MobileDropdownWrapper>
                 </section>
                 <section className={styles.right}>

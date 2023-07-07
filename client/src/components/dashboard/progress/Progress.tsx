@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DateTime } from 'luxon';
-import Card, { CardBody } from '@/components/common/Card';
+import { CardBody } from '@/components/common/card/Card';
 import { DashboardCardHeader } from '../common/DashboardCardHeader';
 import DayCircle from './DayCircle';
 import WeekGraph from './WeekGraph';
 import LongTermBars from './LongTermBars';
-import { mockData } from './mock-data';
-import styles from './progress.module.css';
+import { generateMockProgressData } from '@/test/mock-data/dashboard';
+import styles from './progress.module.scss';
 
 const Progress = () => {
     const [hoveredDay, setHoveredDay] = useState<number | null>(null);
@@ -14,13 +14,17 @@ const Progress = () => {
     const inTarget = 2000;
     const outTarget = 2500;
 
-    const [dayInValues, dayOutValues] = getDayValues(mockData, hoveredDay);
+    const data = useMemo(
+        () => generateMockProgressData(DateTime.now(), DateTime.local().ordinal),
+    []);
+
+    const [dayInValues, dayOutValues] = getDayValues(data, hoveredDay);
     const dayDelta = dayInValues.reduce((a, b) => a + b, 0) - dayOutValues.reduce((a, b) => a + b, 0);
 
-    const [weekInValues, weekOutValues] = getWeekValues(mockData);
+    const [weekInValues, weekOutValues] = getWeekValues(data);
 
-    const [monthInValues, monthOutValues] = getMonthValues(mockData);
-    const [yearInValues, yearOutValues] = getYearValues(mockData);
+    const [monthInValues, monthOutValues] = getMonthValues(data);
+    const [yearInValues, yearOutValues] = getYearValues(data);
     
     return (
         <>
@@ -74,12 +78,9 @@ interface ICalorieEntry {
 const getDayValues = (mockData: ICalorieEntry[], hoveredDay: number | null): [number[], number[]] => {
     let targetDay = DateTime.local();
 
-    // If hoveredDay is not null, get the corresponding day of the week
     if (hoveredDay !== null) {
         const currentWeekday = targetDay.weekday - 1;
         const diff = hoveredDay - currentWeekday;
-
-        console.log(diff)
 
         targetDay = targetDay.plus({ days: diff });
     }

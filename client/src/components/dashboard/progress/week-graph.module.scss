@@ -1,0 +1,132 @@
+.svg {
+    width: 100%;
+    height: 100%;
+}
+
+.gridLine {
+    stroke: $mono-600;
+    stroke-dasharray: 5, 5;
+
+    @include dark-mode {
+        stroke: $mono-400;
+    }
+}
+
+.text {
+    fill: $mono-800;
+    font-size: 1.5rem;
+    font-weight: 400;
+    text-anchor: middle;
+
+    @include dark-mode {
+        fill: $mono-100;
+    }
+}
+
+.textYAxis {
+    font-size: 1.25rem;
+    text-anchor: end;
+}
+
+.positiveArea {
+    fill: transparentize($pink, 0.9);
+}
+
+.negativeArea {
+    fill: transparentize($blue, 0.9);
+}
+
+.deltaArea {
+    fill: transparentize($purple, 0.9);
+}
+
+.positiveLine {
+    stroke: $pink;
+    fill: none;
+}
+
+.negativeLine {
+    stroke: $blue;
+    fill: none;
+}
+
+.deltaLine {
+    stroke: $purple;
+    fill: none;
+}
+
+.circle {
+    fill: white;
+    stroke-width: 3;
+
+    @include dark-mode {
+        fill: $mono-dark;
+    }
+}
+
+.circlePositive {
+    stroke: $pink;
+}
+
+.circleNegative {
+    stroke: $blue;
+}
+
+.circleDelta {
+    stroke: $purple;
+}
+
+.targetLine {
+    stroke-width: 1.5;
+    opacity: 0.75;
+}
+
+.targetLinePositive {
+    stroke: $pink;
+}
+
+.targetLineNegative {
+    stroke: $blue;
+}
+
+.targetLineDelta {
+    stroke: $purple;
+}
+
+.hoverLine {
+    stroke-width: 2;
+}
+
+.hoverLinePositive {
+    stroke: $pink;
+}
+
+.hoverLineNegative {
+    stroke: $blue;
+}
+
+.hoverLineDelta {
+    stroke: $purple;
+}
+
+.hoverCircle {
+    fill: white;
+    stroke-width: 4;
+
+
+    @include dark-mode {
+        fill: $mono-dark;
+    }
+}
+
+.hoverCirclePositive {
+    stroke: $pink;
+}
+
+.hoverCircleNegative {
+    stroke: $blue;
+}
+
+.hoverCircleDelta {
+    stroke: $purple;
+}

@@ -1,6 +1,6 @@
-import React, { FC, useState } from 'react';
+import { FC } from 'react';
 import { formatClasses } from '@/lib/common.utils';
-import styles from './week-graph.module.css';
+import styles from './week-graph.module.scss';
 
 type IWeekGraphProps = {
     positiveData: number[];
@@ -39,7 +39,7 @@ const WeekGraph: FC<IWeekGraphProps> = ({
     const basePadding = 10;
     const leftPadding = 60;
     const xAxisChartPadding = 20;
-    const bottomPadding = 60;
+    const bottomPadding = 100;
     const xPadding = basePadding + xAxisChartPadding + leftPadding;
     const yPadding = bottomPadding;
 
@@ -147,6 +147,10 @@ const Graph: FC<IGraphProps> = ({ positiveData, negativeData, deltaData, scaleX,
         deltaAreaPoints += point;
         deltaLinePoints += i === 0 ? `M${scaleX(i)},${scaleY(d)} ` : point;
     });
+
+    positiveAreaPoints = `${positiveAreaPoints} L${scaleX(positiveData.length - 1)},${zeroY} Z`;
+    negativeAreaPoints = `${negativeAreaPoints} L${scaleX(negativeData.length - 1)},${zeroY} Z`;
+    deltaAreaPoints = `${deltaAreaPoints} L${scaleX(deltaData.length - 1)},${zeroY} Z`;
 
     const positiveDeltaMaskPoints = `${deltaAreaPoints} M${padding.left},${height - padding.base} L${width - padding.base},${
         height - padding.base

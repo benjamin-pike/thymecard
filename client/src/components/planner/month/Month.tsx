@@ -1,8 +1,9 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
-import { IEvent, PlannerData } from '@/app/planner/mockData';
 import { formatClasses } from '@/lib/common.utils';
-import styles from './month.module.css';
+import { PlannerData } from '../planner.types';
+import { IEvent } from '@/lib/global.types';
+import styles from './month.module.scss';
 
 interface IMonthProps {
     data: PlannerData;
@@ -41,7 +42,7 @@ const Month = ({
                 </div>
                 <div className={styles.body}>
                     {dates.flat().map((date, index) => {
-                        const events = data[date.toFormat('yyyy-MM-dd')];
+                        const events = data[date.toFormat('yyyy-MM-dd')] ?? [];
                         const isVisibleWhenTwoColumns = isInDivisibleSubArray(dates.flat(), index, 2);
                         const isVisibleWhenThreeColumns = isInDivisibleSubArray(dates.flat(), index, 3);
                         const dayCellProps = {
@@ -130,7 +131,7 @@ const DayCell: FC<IDayCellProps> = ({
                 }
 
                 return (
-                    <div key={k} className={formatClasses(styles, ['event', event.type, eventDisplayFormat])}>
+                    <div key={k} className={formatClasses(styles, ['event', eventDisplayFormat])} data-event={event.type}>
                         <p className={styles.eventName}>{event.name}</p>
                         {displayTime && <p className={styles.eventTime}>{event.time}</p>}
                     </div>

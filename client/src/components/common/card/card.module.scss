@@ -1,0 +1,31 @@
+.card {
+    position: relative;
+    background-color: white;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.05);
+    width: fit-content;
+    border-radius: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+
+    @include dark-mode {
+        background-color: $mono-900;
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    box-shadow: 0 0.5px 0 $mono-200, 0 -0.5px 0 $mono-200 inset;
+
+    @include dark-mode {
+        box-shadow: 0 0.5px 0 $mono-700, 0 -0.5px 0 $mono-700 inset;
+    }
+}
+
+.cardBody {
+    padding: 1rem;
+    padding-top: 2rem;
+}

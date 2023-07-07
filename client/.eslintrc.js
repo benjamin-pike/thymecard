@@ -1,17 +1,12 @@
-export default {
+module.exports = {
+    env: { browser: true, es2020: true },
+    extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:react-hooks/recommended'],
     parser: '@typescript-eslint/parser',
-    extends: ['next/core-web-vitals', 'eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
-    plugins: ['@typescript-eslint', 'prettier'],
-    env: {
-        node: true,
-        es6: true
-    },
-    parserOptions: {
-        ecmaVersion: 2020,
-        sourceType: 'module',
-        tsconfigRootDir: './'
-    },
+    parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+    settings: { react: { version: '18.2' } },
+    plugins: ['react-refresh'],
     rules: {
+        'react-refresh/only-export-components': 'warn',
         'prettier/prettier': [
             'error',
             {},

@@ -1,0 +1,24 @@
+.timeChip {
+    background-color: $mono-100;
+    color: $mono-600;
+    font-size: $fs-12;
+    font-weight: 500;
+    
+    padding: 0.3rem 0.6rem;
+    
+    border-radius: 100vmax;
+    
+    user-select: none;
+
+    @include dark-mode {
+        color: $mono-300;
+        background-color: $mono-800;
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+}
+
+.events {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}

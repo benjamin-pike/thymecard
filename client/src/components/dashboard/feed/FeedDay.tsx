@@ -1,9 +1,9 @@
-import { FC } from 'react';
+import { FC, ReactElement } from 'react';
 import { DateTime } from 'luxon';
-import styles from './feed-day.module.css';
+import styles from './feed-day.module.scss';
 
 interface IFeedDayProps {
-    children: React.ReactNode;
+    children: ReactElement;
     date: Date;
 }
 

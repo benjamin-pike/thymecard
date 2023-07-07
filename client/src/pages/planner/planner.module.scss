@@ -1,0 +1,116 @@
+.content {
+    display: grid;
+    grid-template-areas: 'day month';
+    grid-template-columns: auto 1fr;
+    gap: 3rem;
+
+    margin: auto;
+    padding: 2rem;
+
+    max-width: 1600px;
+    max-height: calc(100svh - 4rem);
+
+    overflow: hidden;
+
+    @include responsive(('medium', 'small', 'mobile')) {
+        grid-template-areas: 'month';
+        grid-template-columns: unset;
+    }
+}
+
+.column {
+    height: calc(100svh - 8rem);
+
+    &.left {
+        display: flex;
+        flex-direction: column;
+
+        grid-area: day;
+
+        width: max(25vw, 22.5rem);
+        max-width: 25rem;
+
+        background-color: white;
+
+        border-radius: 1rem;
+
+        box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.1), 0 0 0 1rem $mono-200, 0 0 0 calc(1rem + 1px) $mono-300;
+
+        @include dark-mode {
+            background-color: $mono-900;
+            box-shadow: 0 0 0 1px $mono-700, 0 0 0 1rem black, 0 0 0 calc(1rem + 1px) $mono-700;
+        }
+
+        &::after {
+            @include responsive(('medium', 'small', 'mobile')) {
+                content: '';
+                position: absolute;
+                top: calc(100% - 3.25rem);
+                left: 2.25rem;
+        
+                height: 1px;
+                width: calc(100% - 4.5rem);
+        
+                background-color: $mono-200;
+        
+                z-index: 1;
+        
+                @include dark-mode {
+                    background-color: $mono-700;
+                }
+            }
+        
+            @include responsive(('twoColumns', 'oneColumn')) {
+                top: calc(100% - 2rem);
+                left: 1rem;
+        
+                width: calc(100% - 2rem);
+            }
+        }
+
+        @include responsive(('medium', 'small', 'mobile')) {
+            width: 22.5rem;
+
+            box-shadow: none;
+
+            @include dark-mode() {
+                box-shadow: 0 0 0 1px $mono-700;
+            }
+        }
+
+        @include responsive(('medium', 'small')) {
+            height: 100%;
+            padding: 1.25rem;
+
+            width: 27.5rem;
+
+            border-radius: 0;
+        }
+
+        @include responsive(('twoColumns', 'oneColumn')) {
+            padding: unset;
+
+            position: relative;
+
+            box-sizing: content-box;
+            padding-bottom: 2rem;
+
+            width: 97.5%;
+            max-width: 25rem;
+
+            box-shadow: -4px -4px 20px rgba(0, 0, 0, 0.025);
+
+            border-radius: 1rem 1rem 0 0;
+        }
+    }
+
+    &.right {
+        grid-area: month;
+        
+        width: 100%;
+
+        @include responsive(('twoColumns', 'oneColumn')) {
+            height: calc(100svh - 12rem);
+        }
+    }
+}

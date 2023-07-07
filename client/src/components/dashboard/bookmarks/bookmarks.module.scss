@@ -1,0 +1,86 @@
+.bookmarks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    width: 100%;
+
+    @include responsive(('mobile')) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.bookmark {
+    border-radius: 0.25rem;
+
+    padding: 0.75rem;
+
+    color: $mono-800;
+    box-shadow: 0 0 0 1.5px $mono-200;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;
+
+    @include dark-mode {
+        color: $mono-200;
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+
+    @include responsive(('mobile')) {
+        &:nth-of-type(n + 6):nth-of-type(-n + 12) {
+            display: none;
+        }
+    }
+
+    &:hover {
+        color: white;
+        background-color: $mono-700;
+
+        box-shadow: 0 0 0 1.5px $mono-700;
+
+        cursor: pointer;
+
+        @include dark-mode {
+            color: $mono-700;
+            background-color: white;
+            box-shadow: 0 0 0 1px white;
+        }
+    }
+
+    & strong {
+        font-weight: 500;
+    }
+
+    & * {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    & .name {
+        font-size: $fs-12;
+        font-weight: 600;
+
+        white-space: nowrap;
+    }
+
+    & .calories {
+        font-size: $fs-12;
+        font-weight: 300;
+
+        padding-left: 0.25rem;
+
+        border-radius: 0.25rem;
+
+        white-space: nowrap;
+    }
+
+    & .lastDate {
+        font-size: $fs-10;
+        font-weight: 300;
+
+        white-space: nowrap;
+
+        margin-top: 0.25rem;
+    }
+}

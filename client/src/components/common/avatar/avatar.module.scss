@@ -1,0 +1,15 @@
+.avatar {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+
+    margin-left: 1rem;
+
+    background-color: $mono-800;
+
+    cursor: pointer;
+
+    @include dark-mode {
+        box-shadow: 0 0 0 4px $mono-900, 0 0 0 5px $mono-600;
+    }
+}

@@ -1,18 +1,19 @@
 import { FC } from 'react';
 import { DateTime, Duration } from 'luxon';
-import { IEvent } from '@/app/planner/mockData';
+import { IViewport } from '@/hooks/dom/useBreakpoints';
 import { BiPlus } from 'react-icons/bi';
-import { IoMdClose } from 'react-icons/io';
+import { IEvent } from '@/lib/global.types';
+import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
+import styles from './day.module.scss';
 import { formatClasses } from '@/lib/common.utils';
-import styles from './day.module.css';
 
 interface IDayProps {
     data: IEvent[];
     date: DateTime | null;
-    closeOverlay: () => void;
+    viewport: IViewport;
 }
 
-const Day: FC<IDayProps> = ({ data, date, closeOverlay }) => {
+const Day: FC<IDayProps> = ({ data, date, viewport }) => {
     const isEmptyDay = data.length === 0;
     const periods = splitEvents(data, 15, 30);
 
@@ -20,48 +21,53 @@ const Day: FC<IDayProps> = ({ data, date, closeOverlay }) => {
     const hasLunch = data.some((event) => event.type === 'lunch');
     const hasDinner = data.some((event) => event.type === 'dinner');
 
+
+    const isSideDrawer = (viewport.current.isMedium || viewport.current.isSmall) && !viewport.current.isTwoColumns;
+    const height = `calc(100vh - ${isSideDrawer ? '8.5rem' : '12rem'})`;
+
     return (
         date && (
-            <section className={styles.day}>
-                <button className={styles.closeDayOverlay} onClick={closeOverlay}>
-                    <IoMdClose />
-                </button>
-                <Header date={date} displayButtons={data.length > 0} />
-                {periods.map(({ period, events }, index) => {
-                    const gap = formatGapDuration(period.end, periods[index + 1]?.period.start);
+            <div className={styles.wrapper}>
+                <ScrollWrapper height={height} padding={1} buttonMargin={{ up: '1px' }}>
+                    <section className={styles.day}>
+                        <Header date={date} displayButtons={data.length > 0} />
+                        {periods.map(({ period, events }, index) => {
+                            const gap = formatGapDuration(period.end, periods[index + 1]?.period.start);
 
-                    const addNamedEventButtons = getNamedEventButtons(periods, index, {
-                        breakfast: !hasBreakfast,
-                        lunch: !hasLunch,
-                        dinner: !hasDinner
-                    });
+                            const addNamedEventButtons = getNamedEventButtons(periods, index, {
+                                breakfast: !hasBreakfast,
+                                lunch: !hasLunch,
+                                dinner: !hasDinner
+                            });
 
-                    const isFinalPeriod = index === periods.length - 1;
+                            const isFinalPeriod = index === periods.length - 1;
 
-                    return (
-                        <Period
-                            key={index}
-                            events={events}
-                            period={period}
-                            gap={gap}
-                            isFinalPeriod={isFinalPeriod}
-                            addNamedEventButtons={addNamedEventButtons}
-                        />
-                    );
-                })}
-                {isEmptyDay && (
-                    <div className={styles.emptyDay}>
-                        <h1>Your day is empty!</h1>
-                        <h2>Start by adding an event</h2>
-                        {namedEventRows.breakfast}
-                        {namedEventRows.lunch}
-                        {namedEventRows.dinner}
-                        <div className={styles.gap}>
-                            <button className={styles.addNamedEvent}>Add activity</button>
-                        </div>
-                    </div>
-                )}
-            </section>
+                            return (
+                                <Period
+                                    key={JSON.stringify(period)}
+                                    events={events}
+                                    period={period}
+                                    gap={gap}
+                                    isFinalPeriod={isFinalPeriod}
+                                    addNamedEventButtons={addNamedEventButtons}
+                                />
+                            );
+                        })}
+                        {isEmptyDay && (
+                            <div className={styles.emptyDay}>
+                                <h1>Your day is empty!</h1>
+                                <h2>Start by adding an event</h2>
+                                {namedEventRows.breakfast}
+                                {namedEventRows.lunch}
+                                {namedEventRows.dinner}
+                                <div className={styles.gap}>
+                                    <button className={formatClasses(styles, ['addEvent', 'named', 'pill'])}>Add activity</button>
+                                </div>
+                            </div>
+                        )}
+                    </section>
+                </ScrollWrapper>
+            </div>
         )
     );
 };
@@ -113,7 +119,7 @@ interface IPeriodProps {
 const Period: FC<IPeriodProps> = ({ events, period, gap, isFinalPeriod, addNamedEventButtons }) => {
     const length = period.end - period.start;
     const hasMultipleMiddleButtons = addNamedEventButtons.middle.length !== 1;
-    
+
     return (
         <>
             {...addNamedEventButtons.before}
@@ -123,7 +129,7 @@ const Period: FC<IPeriodProps> = ({ events, period, gap, isFinalPeriod, addNamed
                     <GridLine key={i} startHour={period.start} i={i} periodLength={length} />
                 ))}
 
-                {events.map((event, i) => {
+                {events.map((event) => {
                     const duration = Duration.fromObject({ minutes: event.duration })
                         .toFormat("h'h' mm'm'")
                         .replace(new RegExp('^0h'), '')
@@ -131,8 +137,9 @@ const Period: FC<IPeriodProps> = ({ events, period, gap, isFinalPeriod, addNamed
 
                     return (
                         <div
-                            key={i}
-                            className={formatClasses(styles, ['event', event.type])}
+                            key={JSON.stringify(event)}
+                            className={styles.event}
+                            data-type = {event.type}
                             style={{
                                 top: `calc(${timeToPercent(event.time, period.start, length)}% + 1px)`,
                                 height: `calc(${durationToPercent(event.duration, length)}% - 1px)`
@@ -149,11 +156,11 @@ const Period: FC<IPeriodProps> = ({ events, period, gap, isFinalPeriod, addNamed
 
             {!isFinalPeriod && (
                 <div className={styles.gap}>
-                    <p className={styles.duration}>{gap}</p>
+                    <p className={styles.pill}>{gap}</p>
                     {!hasMultipleMiddleButtons ? (
                         addNamedEventButtons.middle[0]
                     ) : (
-                        <button className={styles.addGenericEvent}>
+                        <button className={formatClasses(styles, ['addEvent', 'generic'] )}>
                             <BiPlus />
                         </button>
                     )}
@@ -262,15 +269,39 @@ const formatGapDuration = (currentEventEnd: number, nextEventStart?: number): st
 };
 
 const namedEventButtons = {
-    breakfast: <button className={styles.addNamedEvent}>Add breakfast</button>,
-    lunch: <button className={styles.addNamedEvent}>Add lunch</button>,
-    dinner: <button className={styles.addNamedEvent}>Add dinner</button>
+    breakfast: (
+        <button key="addBreakfastButton" className={formatClasses(styles, ['addEvent', 'named', 'pill'])}>
+            Add breakfast
+        </button>
+    ),
+    lunch: (
+        <button key="addLunchButton" className={formatClasses(styles, ['addEvent', 'named', 'pill'])}>
+            Add lunch
+        </button>
+    ),
+    dinner: (
+        <button key="addDinnerButton" className={formatClasses(styles, ['addEvent', 'named', 'pill'])}>
+            Add dinner
+        </button>
+    )
 };
 
 const namedEventRows = {
-    breakfast: <div className={styles.gap}>{namedEventButtons.breakfast}</div>,
-    lunch: <div className={styles.gap}>{namedEventButtons.lunch}</div>,
-    dinner: <div className={styles.gap}>{namedEventButtons.dinner}</div>
+    breakfast: (
+        <div key="addBreakfastRow" className={styles.gap}>
+            {namedEventButtons.breakfast}
+        </div>
+    ),
+    lunch: (
+        <div key="addLunchRow" className={styles.gap}>
+            {namedEventButtons.lunch}
+        </div>
+    ),
+    dinner: (
+        <div key="addDinnerRow" className={styles.gap}>
+            {namedEventButtons.dinner}
+        </div>
+    )
 };
 
 const getNamedEventButtons = (
@@ -281,7 +312,7 @@ const getNamedEventButtons = (
     const events = ['breakfast', 'lunch', 'dinner'] as const;
     const eventTimes = {
         breakfast: 9,
-        lunch: 14,
+        lunch: 13,
         dinner: 19
     };
 
@@ -291,13 +322,12 @@ const getNamedEventButtons = (
     const requiredEvents = events.filter((event) => required[event]);
 
     const before = requiredEvents.filter((event) => periodEndsAfter(eventTimes[event]) === 0 && index === 0);
-    const middle = requiredEvents.filter((event) => periodEndsAfter(eventTimes[event]) === index + 1 && !before.includes(event));
+    const middle = requiredEvents.filter((event) => periodStartsAfter(eventTimes[event]) === index + 1 && !before.includes(event));
     const after = requiredEvents.filter(
         (event) =>
             (periodEndsAfter(eventTimes[event]) === -1 || periodEndsAfter(eventTimes[event]) === index) &&
             periodStartsAfter(eventTimes[event]) !== index &&
-            index === periods.length - 1 &&
-            !middle.includes(event)
+            index === periods.length - 1
     );
 
     return {

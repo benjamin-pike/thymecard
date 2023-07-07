@@ -1,0 +1,235 @@
+.content {
+    display: grid;
+    grid-template-columns: 3fr 4fr 22.5rem;
+    grid-template-areas: 'organization feed profile';
+    margin: auto;
+    padding: 0 1rem;
+    max-width: 1400px;
+    height: calc(100svh - 4rem);
+    overflow: hidden;
+
+    @include responsive(('large', 'medium')) {
+        grid-template:
+            'profile feed'
+            'organization feed';
+        grid-template-columns: 22.5rem 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    @include responsive(('small', 'mobile')) {
+        grid-template: 'feed feed' 'profile organization';
+
+        padding-bottom: 3rem;
+    }
+
+    @include responsive(('mobile')) {
+        padding: 0;
+    }
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0 1rem;
+    box-sizing: border-box;
+
+    @include responsive(('large', 'medium', 'small', 'mobile')) {
+        &.profile {
+            grid-area: profile;
+            margin-bottom: 2rem;
+        }
+
+        &.organization {
+            grid-area: organization;
+        }
+
+        &.feed {
+            grid-area: feed;
+        }
+    }
+
+    @include responsive(('small', 'mobile')) {
+        &.profile {
+            flex-direction: row;
+        }
+
+        &.organization {
+            flex-direction: row;
+        }
+    }
+
+    @include responsive(('mobile')) {
+        padding: 1.5rem 0 0.5rem 0;
+        overflow: scroll;
+
+        &.feed {
+            width: calc(100% + 2px);
+
+            margin-left: -1px;
+        }
+    }
+}
+
+.wrapper {
+    &.organization {
+        grid-area: organization;
+    }
+
+    &.feed {
+        grid-area: feed;
+    }
+
+    &.profile {
+        grid-area: profile;
+    }
+}
+
+.card {
+    &.overview {
+        margin-top: 2.5rem;
+    }
+
+    @include responsive(('small', 'mobile')) {
+        height: fit-content;
+
+        padding: 1.5rem;
+
+        border-radius: 1rem 1rem 0 0;
+
+        z-index: 4;
+
+        &.overview,
+        &.progress {
+            width: 21rem;
+        }
+    }
+
+    @include responsive(('small')) {
+        &.day,
+        &.bookmarks {
+            width: min(80%, 27.5rem);
+        }
+    }
+
+    @include responsive(('mobile')) {
+        &.day {
+            width: 95%;
+        }
+
+        &.bookmarks {
+            width: 75%;
+            min-width: 20rem;
+        }
+    }
+}
+
+.navbar {
+    display: none;
+
+    @include responsive(('small', 'mobile')) {
+        position: fixed;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        left: 50%;
+        bottom: 0;
+        translate: -50%;
+
+        margin: auto;
+        padding: 0 2rem;
+
+        background-color: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05), 0 -2px 5px rgba(0, 0, 0, 0.025);
+
+        border-radius: 1rem 1rem 0 0;
+
+        z-index: 5;
+
+        transition: bottom 200ms ease;
+
+        @include dark-mode {
+            background-color: $mono-900;
+            box-shadow: 0 0 0 1px $mono-700;
+        }
+
+        & button {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            & svg {
+                color: $mono-600;
+
+                scale: 1.2;
+
+                @include dark-mode {
+                    color: $mono-300;
+                }
+            }
+        }
+
+        & .divider {
+            width: 1px;
+            height: 1rem;
+            background-color: $mono-300;
+
+            @include dark-mode {
+                background-color: $mono-600;
+            }
+        }
+    }
+
+    @include responsive(('small')) {
+        gap: 1.5rem;
+
+        width: fit-content;
+        height: 3.5rem;
+    }
+
+    @include responsive(('mobile')) {
+        gap: 2rem;
+
+        width: 97.5%;
+        height: 4rem;
+
+        &.visibleCard {
+            bottom: -4rem;
+        }
+
+        & svg {
+            scale: 1.25;
+        }
+
+        & p {
+            display: none;
+        }
+    }
+}
+
+.fader {
+    @include responsive(('small', 'mobile')) {
+        content: '';
+
+        position: fixed;
+        top: calc(100% - 6rem);
+        left: 0;
+
+        width: 100vw;
+        height: 6rem;
+
+        background: linear-gradient(0deg, $mono-200, rgba(255, 255, 255, 0));
+
+        @include dark-mode {
+            background: linear-gradient(0deg, $mono-dark, rgba(0, 0, 0, 0));
+        }
+    }
+}
+
+.footer {
+    @include responsive(('small', 'mobile')) {
+        display: none;
+    }
+}

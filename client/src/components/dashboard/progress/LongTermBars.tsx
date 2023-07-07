@@ -1,6 +1,6 @@
 import { FC, useState, useRef, useEffect } from 'react';
 import { DateTime } from 'luxon';
-import styles from './long-term-bars.module.css';
+import styles from './long-term-bars.module.scss';
 
 interface ILongTermBarsProps {
     dailyInTarget: number;
@@ -84,11 +84,6 @@ interface IProgressBarProps {
     translateY: number;
 }
 
-const color: Record<IProgressBarProps['type'], string> = {
-    in: 'pink',
-    out: 'blue'
-};
-
 const ProgressBar: FC<IProgressBarProps> = ({ type, timespan, values, dailyTarget, translateY }) => {
     const height = 3;
     const daysInTotal = timespan === 'month' ? DateTime.local().daysInMonth ?? 30 : DateTime.local().daysInYear ?? 365;
@@ -111,18 +106,26 @@ const ProgressBar: FC<IProgressBarProps> = ({ type, timespan, values, dailyTarge
                     <rect x="0" y="0" width={barWidth} rx={height / 2} ry={height / 2} height={height} />
                 </clipPath>
             </defs>
-            <rect x="0" y="0" width="100" height={height} fill="var(--mono-200)" clipPath="url(#container-clip)" />
+            <rect className={styles.background} x="0" y="0" width="100" height={height} clipPath="url(#container-clip)" />
             <g clipPath="url(#container-clip)">
                 <g clipPath={`url(#${barClipPathName})`}>
                     {values.map((value, index) => {
                         const segmentWidth = (value / valueSum) * barWidth;
-                        const fill = `var(--${color[type]}-${index % 2 === 0 ? 'light' : 'dark'})`;
-
-                        const segment = <rect key={index} x={offset} y="0" width={segmentWidth} height={height} fill={fill} />;
-
+                        const currentOffset = offset;
+                        
                         offset += segmentWidth;
 
-                        return segment;
+                        return (
+                            <rect
+                                key={index + value + type}
+                                className={styles.segment}
+                                data-type={type}
+                                x={currentOffset}
+                                y="0"
+                                width={segmentWidth}
+                                height={height}
+                            />
+                        );
                     })}
                 </g>
             </g>
@@ -195,7 +198,6 @@ const TodayLine: FC<ITodayLineProps> = ({
     const dayOfYear = DateTime.local().ordinal;
     const dayOfYearPosition = (dayOfYear / daysInYear) * 100;
 
-    const lineColor = 'var(--mono-500)';
     const lineWidth = 0.3;
 
     return (
@@ -204,7 +206,6 @@ const TodayLine: FC<ITodayLineProps> = ({
                 dayOfMonthPosition={dayOfMonthPosition}
                 svgHeight={svgHeight}
                 verticalOffset={verticalOffset}
-                lineColor={lineColor}
                 lineWidth={lineWidth}
                 barHeight={barHeight}
                 barGap={barGap}
@@ -216,7 +217,6 @@ const TodayLine: FC<ITodayLineProps> = ({
                 dayOfYearPosition={dayOfYearPosition}
                 svgHeight={svgHeight}
                 verticalOffset={verticalOffset}
-                lineColor={lineColor}
                 lineWidth={lineWidth}
                 barHeight={barHeight}
                 barGap={barGap}
@@ -225,11 +225,11 @@ const TodayLine: FC<ITodayLineProps> = ({
                 isOutOnTarget={isYearOutOnTarget}
             />
             <line
+                className={styles.todayLine}
                 x1={dayOfMonthPosition}
                 x2={dayOfYearPosition}
                 y1={verticalOffset + svgHeight / 2}
                 y2={verticalOffset + svgHeight / 2}
-                stroke={lineColor}
                 strokeWidth={lineWidth}
                 strokeLinecap="round"
             />
@@ -246,7 +246,6 @@ const TodayLine: FC<ITodayLineProps> = ({
 interface ILineProps {
     svgHeight: number;
     verticalOffset: number;
-    lineColor: string;
     lineWidth: number;
     barHeight: number;
     barGap: number;
@@ -267,7 +266,6 @@ const MonthLine: FC<IMonthLineProps> = ({
     dayOfMonthPosition,
     svgHeight,
     verticalOffset,
-    lineColor,
     lineWidth,
     barHeight,
     barGap,
@@ -277,29 +275,29 @@ const MonthLine: FC<IMonthLineProps> = ({
 }) => (
     <>
         <line
+            className={styles.todayLine}
             x1={dayOfMonthPosition}
             x2={dayOfMonthPosition}
             y1={verticalOffset * 2 + lineWidth / 2}
             y2={verticalOffset + svgHeight / 2}
-            stroke={lineColor}
             strokeWidth={lineWidth}
             strokeLinecap="round"
         />
         <line
+            className={styles.todayLineMask}
             x1={dayOfMonthPosition}
             x2={dayOfMonthPosition}
             y1={verticalOffset + svgHeight / 2 - groupGap / 2 - barHeight - 0.5}
             y2={verticalOffset + svgHeight / 2 - groupGap / 2 + 0.5}
-            stroke="white"
             display={isOutOnTarget ? 'block' : 'none'}
             strokeWidth={lineWidth}
         />
         <line
+            className={styles.todayLineMask}
             x1={dayOfMonthPosition}
             x2={dayOfMonthPosition}
             y1={verticalOffset + svgHeight / 2 - groupGap / 2 - barHeight - barGap + 0.5}
             y2={verticalOffset + svgHeight / 2 - groupGap / 2 - barHeight - barGap - barHeight - 0.5}
-            stroke="white"
             display={isInOnTarget ? 'block' : 'none'}
             strokeWidth={lineWidth}
         />{' '}
@@ -310,7 +308,6 @@ const YearLine: FC<IYearLineProps> = ({
     dayOfYearPosition,
     svgHeight,
     verticalOffset,
-    lineColor,
     lineWidth,
     barHeight,
     barGap,
@@ -320,29 +317,29 @@ const YearLine: FC<IYearLineProps> = ({
 }) => (
     <>
         <line
+            className={styles.todayLine}
             x1={dayOfYearPosition}
             x2={dayOfYearPosition}
             y1={verticalOffset + svgHeight / 2}
             y2={verticalOffset + svgHeight - lineWidth / 2}
-            stroke={lineColor}
             strokeWidth={lineWidth}
             strokeLinecap="round"
         />
         <line
+            className={styles.todayLineMask}
             x1={dayOfYearPosition}
             x2={dayOfYearPosition}
             y1={verticalOffset + svgHeight / 2 + groupGap / 2 - 0.5}
             y2={verticalOffset + svgHeight / 2 + groupGap / 2 + barHeight + 0.5}
-            stroke="white"
             strokeWidth={lineWidth}
             display={isInOnTarget ? 'block' : 'none'}
         />
         <line
+            className={styles.todayLineMask}
             x1={dayOfYearPosition}
             x2={dayOfYearPosition}
             y1={verticalOffset + svgHeight / 2 + groupGap / 2 + barHeight + barGap - 0.5}
             y2={verticalOffset + svgHeight / 2 + groupGap / 2 + barHeight + barGap + barHeight + 0.5}
-            stroke="white"
             strokeWidth={lineWidth}
             display={isOutOnTarget ? 'block' : 'none'}
         />
@@ -373,11 +370,11 @@ const TodayText: FC<ITodayTextProps> = ({ dayOfMonthPosition, dayOfYearPosition,
     return (
         <>
             <rect
+                className={styles.todayTextBackground}
                 x={(dayOfMonthPosition + dayOfYearPosition) / 2 - textWidth / 2 - textPadding / 2}
                 y={verticalOffset + svgHeight / 2 - textHeight / 2 - textPadding / 2}
                 width={textWidth + textPadding}
                 height={textHeight + textPadding}
-                fill="white"
             />
             <text
                 ref={textRef}

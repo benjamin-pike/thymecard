@@ -1,15 +1,23 @@
-import { useState } from 'react';
-import { CardBody } from '@/components/common/Card';
-import Avatar from '@/components/common/Avatar';
-import SliderToggle from '@/components/common/SliderToggle';
+import { useMemo, useState } from 'react';
+import { CardBody } from '@/components/common/card/Card';
+import Avatar from '@/components/common/avatar/Avatar';
+import SliderToggle from '@/components/common/slider-toggle/SliderToggle';
 import LatestEvent from './LatestEvent';
 import { formatClasses } from '@/lib/common.utils';
-import styles from './overview.module.css';
+import { abbreviateNumber } from '@/lib/number.utils';
+import { generateMockLatestEventData, generateMockOverviewData } from '@/test/mock-data/dashboard';
+import styles from './overview.module.scss';
 
-type Interval = 'Week' | 'Month' | 'Year' | 'All Time';
+type Interval = 'week' | 'month' | 'year' | 'allTime';
 
 export default () => {
-    const [selectedInterval, setSelectedInterval] = useState<Interval>('Week');
+    const [selectedInterval, setSelectedInterval] = useState<Interval>('week');
+
+    const numericdata = useMemo(() => generateMockOverviewData(), []);
+    const selectedNumericData = numericdata[selectedInterval];
+
+    const eventData = useMemo(() => generateMockLatestEventData(), []);
+
     return (
         <>
             <Avatar className={styles.profileImage} />
@@ -18,10 +26,15 @@ export default () => {
                     <h1 className={styles.title}>
                         <span>Your</span> Overview
                     </h1>
-                    <SliderToggle options={['Week', 'Month', 'Year', 'All Time']} onOptionSelected={setSelectedInterval} />
+                    <SliderToggle
+                        localStorageKey={'overview'}
+                        options={['week', 'month', 'year', 'allTime']}
+                        labels={{ week: 'Week', month: 'Month', year: 'Year', allTime: 'All Time' }}
+                        onOptionSelected={setSelectedInterval}
+                    />
                     <section className={styles.completed}>
                         <div className={styles.meals}>
-                            <p className={styles.value}>674</p>
+                            <p className={styles.value}>{selectedNumericData.events.meals}</p>
                             <p className={styles.type}>
                                 Meals
                                 <br />
@@ -30,7 +43,7 @@ export default () => {
                         </div>
                         <div className={formatClasses(styles, ['divider', 'vertical'])} />
                         <div className={styles.activities}>
-                            <p className={styles.value}>456</p>
+                            <p className={styles.value}>{selectedNumericData.events.activities}</p>
                             <p className={styles.type}>
                                 Activities
                                 <br />
@@ -41,21 +54,33 @@ export default () => {
                     <div className={formatClasses(styles, ['divider', 'horizontal'])} />
                     <section className={styles.calories}>
                         <div className={styles.in}>
-                            <p className={styles.value}>23.6k</p>
+                            <p className={styles.value}>{abbreviateNumber(selectedNumericData.calories.in)}</p>
                             <p className={styles.type}>Calories In</p>
                         </div>
                         <div className={styles.delta}>
-                            <p className={styles.value}>-2.8k</p>
+                            <p className={styles.value}>
+                                {abbreviateNumber(selectedNumericData.calories.in - selectedNumericData.calories.out)}
+                            </p>
                             <p className={styles.type}>Delta</p>
                         </div>
                         <div className={styles.out}>
-                            <p className={styles.value}>26.4k</p>
+                            <p className={styles.value}>{abbreviateNumber(selectedNumericData.calories.out)}</p>
                             <p className={styles.type}>Calories Out</p>
                         </div>
                     </section>
                     <section className={styles.latest}>
-                        <LatestEvent category={'Meal'} name={'Pulled Pork Tacos'} calories={652} lastDate={new Date()} />
-                        <LatestEvent category={'Activity'} name={'Evening Walk'} calories={-1430} lastDate={new Date()} />
+                        <LatestEvent
+                            category={'Meal'}
+                            name={eventData.meals.name}
+                            calories={eventData.meals.calories}
+                            lastCompleted={eventData.meals.lastCompleted}
+                        />
+                        <LatestEvent
+                            category={'Activity'}
+                            name={eventData.activities.name}
+                            calories={eventData.activities.calories}
+                            lastCompleted={eventData.activities.lastCompleted}
+                        />
                     </section>
                 </article>
             </CardBody>

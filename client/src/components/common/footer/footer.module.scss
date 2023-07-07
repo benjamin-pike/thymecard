@@ -1,0 +1,44 @@
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+
+    @include responsive(('small', 'mobile')) {
+        display: none;
+    }
+
+    & p {
+        color: $mono-600;
+        font-size: $fs-12;
+        font-weight: 400;
+        white-space: pre;
+
+        user-select: none;
+
+        @include dark-mode {
+            color: $mono-400;
+        }
+    }
+
+    & span {
+        transition: color 100ms ease;
+    }
+
+    &:not(.year) {
+        &:hover {
+            color: $mono-500;
+            cursor: pointer;
+        }
+    }
+}
+
+.year {
+    color: $mono-700;
+    font-weight: 600;
+    white-space: pre;
+
+    @include dark-mode {
+        color: $mono-300;
+    }
+}

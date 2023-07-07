@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { MdOutlineFastfood } from 'react-icons/md';
 import { FiActivity } from 'react-icons/fi';
 import { TbDelta } from 'react-icons/tb';
-import styles from './day-circle.module.css';
+import styles from './day-circle.module.scss';
 
 interface IDayCircleProps {
     type: 'in' | 'out' | 'delta';
@@ -16,15 +16,7 @@ const icon = {
     delta: <TbDelta />
 };
 
-const colors = {
-    in: 'pink',
-    out: 'blue',
-    delta: 'purple'
-};
-
 const DayCircle: FC<IDayCircleProps> = ({ type, values, target }) => {
-    const color = colors[type];
-
     const strokeWidth = 7.5;
     const radius = 70;
     const diameter = radius * 2;
@@ -63,13 +55,11 @@ const DayCircle: FC<IDayCircleProps> = ({ type, values, target }) => {
             <svg viewBox={`0 0 ${diameter} ${diameter}`}>
                 <circle
                     className={styles.circleTrack}
+                    data-type={type}
                     cx={radius}
                     cy={radius}
                     r={radius - strokeWidth / 2}
-                    style={{
-                        stroke: `var(--${color}-10)`,
-                        strokeWidth: strokeWidth
-                    }}
+                    strokeWidth={strokeWidth}
                 />
                 {segments.map((value, i) => {
                     const dashOffsetEnd = dashArray - (dashArray * value) / absTarget;
@@ -77,14 +67,14 @@ const DayCircle: FC<IDayCircleProps> = ({ type, values, target }) => {
                         <circle
                             key={i}
                             className={styles.circleBar}
+                            data-type={type}
                             cx={radius}
                             cy={radius}
                             r={radius - strokeWidth / 2}
+                            strokeWidth={strokeWidth}
+                            strokeDasharray={dashArray}
+                            strokeDashoffset={dashOffsetEnd + segmentGap}
                             style={{
-                                stroke: `var(--${color}-${i % 2 === 0 ? 'light' : 'dark'})`,
-                                strokeWidth: strokeWidth,
-                                strokeDasharray: dashArray,
-                                strokeDashoffset: dashOffsetEnd + segmentGap,
                                 rotate: `${-90 + (360 * cumulativeValue) / absTarget}deg`
                             }}
                         />
@@ -95,15 +85,13 @@ const DayCircle: FC<IDayCircleProps> = ({ type, values, target }) => {
                     return segment;
                 })}
                 <circle
-                    className={styles.circleBar}
+                    className={styles.circleComplete}
+                    data-type={type}
+                    data-active={quotient > 0}
                     cx={radius}
                     cy={radius}
                     r={radius - strokeWidth * 1.75}
-                    style={{
-                        stroke: `var(--${color})`,
-                        strokeWidth: strokeWidth / 3,
-                        opacity: quotient > 0 ? 1 : 0.15
-                    }}
+                    strokeWidth={strokeWidth / 3}
                 />
             </svg>
             <div className={styles.content}>

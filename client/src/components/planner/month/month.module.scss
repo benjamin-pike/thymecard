@@ -1,0 +1,334 @@
+.month {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+
+    padding: 1rem;
+
+    background-color: white;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.1), 0 0 0 1rem $mono-200, 0 0 0 calc(1rem + 1px) $mono-300;
+
+    border-radius: 1rem;
+
+    @include dark-mode {
+        background-color: $mono-900;
+        box-shadow: 0 0 0 1px $mono-700, 0 0 0 1rem black, 0 0 0 calc(1rem + 1px) $mono-700;
+    }
+}
+
+.calendar {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+
+    height: 2.5rem;
+
+    @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+        display: none;
+        width: 100%;
+    }
+}
+
+.day {
+    font-weight: 500;
+    font-size: $fs-11;
+    color: white;
+    background-color: $mono-700;
+
+    width: fit-content;
+
+    padding: 0.25rem 0.6rem;
+    margin: auto auto 0.25rem auto;
+
+    border-radius: 100vmax;
+
+    @include dark-mode {
+        color: $mono-300;
+        background-color: $mono-800;
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+}
+
+.body {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+
+    flex: 1;
+    min-height: 0;
+
+    @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+        grid-auto-rows: unset;
+
+        min-height: unset;
+
+        overflow: scroll;
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    @include responsive(('threeColumns')) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @include responsive(('twoColumns')) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include responsive(('oneColumn')) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cell {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 0 0.5rem 0 0.5rem;
+
+    box-shadow: 0.5px 1px 0 0 $mono-200, -0.5px 1px 0 0 $mono-200;
+
+    overflow: scroll;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    @include dark-mode {
+        box-shadow: 0.5px 1px 0 0 $mono-700, -0.5px 1px 0 0 $mono-700;
+    }
+
+    @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+        padding: 0.5rem 1.5rem;
+
+        overflow: unset;
+    }
+
+    @include responsive(('mobile')) {
+        gap: 0.35rem;
+
+        height: unset;
+
+        overflow: unset;
+    }
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    &.outsideCurrentMonth {
+        opacity: 0.6;
+
+        .event.expanded {
+            .eventTime {
+                opacity: calc(0.6 * 0.6);
+            }
+        }
+
+        @include responsive(('mobile')) {
+            display: none;
+        }
+    }
+
+    &.hiddenWhenThreeColumns {
+        @include responsive(('threeColumns')) {
+            display: none;
+        }
+    }
+
+    &.hiddenWhenTwoColumns {
+        @include responsive(('twoColumns')) {
+            display: none;
+        }
+    }
+}
+
+.date {
+    color: $mono-600;
+    font-size: $fs-10;
+    text-align: center;
+
+    padding: 0.125rem 0.4rem;
+    margin-top: 0.5rem;
+
+    @include dark-mode {
+        color: $mono-400;
+    }
+
+    @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+        white-space: pre;
+        font-size: $fs-12;
+    }
+
+    @include responsive(('mobile')) {
+        margin: 0.5rem 0;
+    }
+
+    .selected & {
+        @include responsive(('xlarge')) {
+            color: white;
+            background-color: $mono-700;
+
+            border-radius: 100vmax;
+
+            @include dark-mode {
+                color: $mono-100;
+                background-color: $mono-800;
+                box-shadow: 0 0 0 1px $mono-700;
+            }
+        }
+    }
+}
+
+.dayName {
+    display: none;
+
+    @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+        display: unset;
+    }
+}
+
+.event {
+    position: relative;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 0.05rem;
+
+    width: calc(100% - 1.5px);
+
+    padding: 0.25rem 0.4rem;
+
+    border-radius: 0.2rem;
+
+    &:last-of-type {
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        font-size: $fs-10;
+        font-weight: 400;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        overflow: hidden;
+
+        @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+            font-size: $fs-11;
+        }
+
+        @include responsive(('mobile')) {
+            font-size: $fs-12;
+        }
+    }
+
+    &.compact {
+        width: calc(100% - 2rem);
+        height: 0.35rem;
+
+        max-width: 15rem;
+
+        padding: 0;
+
+        border-radius: 100vmax;
+
+        & > p {
+            display: none;
+        }
+    }
+
+    &.detailed {
+        background-color: transparent;
+        box-shadow: none;
+
+        padding: 0 0.4rem;
+
+        &::before {
+            content: '';
+
+            position: absolute;
+            left: -0.925rem;
+            top: 50%;
+
+            transform: translate(0, -50%);
+
+            height: 0.75rem;
+            width: 0.75rem;
+
+            border-radius: 50%;
+
+            background-color: currentColor;
+
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+
+            @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+                left: -1.925rem;
+            }
+        }
+    }
+
+    &.expanded {
+        & .eventTime {
+            color: $mono-900;
+            opacity: 0.6;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+    }
+}
+
+.eventName {
+    flex-shrink: 1;
+
+    color: $mono-700;
+
+    @include dark-mode {
+        color: $mono-200;
+    }
+}
+
+.eventTime {
+    position: relative;
+
+    color: $mono-500;
+
+    @include responsive(('mobile')) {
+        translate: 1.5rem;
+    }
+}
+
+@each $event, $color in $event-colors {
+    .event.compact[data-event='#{$event}'],
+    .event.detailed[data-event='#{$event}']::before {
+        background-color: $color;
+    }
+
+    .event.expanded[data-event='#{$event}'] {
+        box-shadow: 0 0 0 1px transparentize($color, 0.25);
+        background-color: transparentize($color, 0.9);
+    }
+}

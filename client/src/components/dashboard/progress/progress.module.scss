@@ -1,0 +1,41 @@
+.progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    
+    max-width: 17rem;
+}
+
+.day {
+    display: flex;
+    gap: 0.5rem;
+    
+    padding: 0.5rem;
+    
+    box-shadow: 0 0 0 1px $mono-200;
+    
+    border-radius: 100vmax;
+
+    @include dark-mode {
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+}
+
+.longTerm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    
+    width: 100%;
+}
+
+.longTerm > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    
+    width: 100%;
+}
