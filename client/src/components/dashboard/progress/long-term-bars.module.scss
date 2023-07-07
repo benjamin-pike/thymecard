@@ -1,0 +1,76 @@
+$bar-colors: (
+    'in': $pink,
+    'out': $blue
+);
+
+.background {
+    fill: $mono-200;
+
+    @include dark-mode {
+        fill: $mono-700;
+    }
+}
+
+.segment {
+    @each $type, $color in $bar-colors {
+        &:nth-of-type(even)[data-type='#{$type}'] {
+            fill: lighten($color, 10%);
+        }
+
+        &:nth-of-type(odd)[data-type='#{$type}'] {
+            fill: darken($color, 5%);
+        }
+    }
+}
+
+.todayLine {
+    stroke: $mono-500;
+}
+
+.todayLineMask {
+    stroke: $mono-light;
+
+    @include dark-mode {
+        stroke: $mono-900;
+    }
+}
+
+.todayText {
+    fill: $mono-600;
+    font-size: 0.25rem;
+    font-weight: 400;
+    text-anchor: middle;
+
+    @include dark-mode {
+        fill: $mono-200;
+    }
+}
+
+.todayTextBackground {
+    fill: $mono-light;
+
+    @include dark-mode {
+        fill: $mono-900;
+    }
+}
+
+.barTitle {
+    font-size: 0.25rem;
+    fill: $mono-600;
+
+    @include dark-mode {
+        fill: $mono-400;
+    }
+
+    & .this {
+        font-weight: 300;
+    }
+
+    &.timespan {
+        fill: $mono-700;
+
+        @include dark-mode {
+            fill: $mono-100;
+        }
+    }
+}

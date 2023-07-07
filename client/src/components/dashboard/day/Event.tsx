@@ -1,19 +1,20 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
 import EventIcon from '../common/EventIcon';
-import { EventType } from '../dashboard.types';
 import { formatClasses } from '@/lib/common.utils';
-import styles from './event.module.css';
+import { EventType } from '@/lib/global.types';
+import { capitalize } from '@/lib/string.utils';
+import styles from './event.module.scss';
 
 export interface IEventProps {
     type: EventType;
-    time: Date;
+    time: string;
     name: string;
 }
 
 const Event: FC<IEventProps> = ({ type, time, name }) => {
-    const formattedTime = DateTime.fromJSDate(time).toFormat('HH:mm');
-    const isPast = DateTime.fromJSDate(time) < DateTime.local();
+    const formattedTime = DateTime.fromISO(time).toFormat('HH:mm');
+    const isPast = DateTime.fromISO(time) < DateTime.local();
     return (
         <div className={formatClasses(styles, ['event', type.toLowerCase(), isPast ? 'past' : ''])}>
             <div className={styles.icon}>
@@ -26,7 +27,7 @@ const Event: FC<IEventProps> = ({ type, time, name }) => {
             <div className={styles.details}>
                 <div className={styles.chips}>
                     <p className={styles.time}>{formattedTime}</p>
-                    <p className={styles.type}>{type}</p>
+                    <p className={styles.type}>{capitalize(type)}</p>
                 </div>
                 <p className={styles.name}>{name}</p>
             </div>

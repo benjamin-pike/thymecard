@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
-import styles from './latest-event.module.css';
+import styles from './latest-event.module.scss';
 
 type Category = 'Meal' | 'Activity';
 
@@ -8,11 +8,11 @@ interface ILatestEventProps {
     category: Category;
     name: string;
     calories: number;
-    lastDate: Date;
+    lastCompleted: string;
 }
 
-const LatestEvent: FC<ILatestEventProps> = ({ category, name, calories, lastDate }) => {
-    const dateLuxon = DateTime.fromJSDate(lastDate);
+const LatestEvent: FC<ILatestEventProps> = ({ category, name, calories, lastCompleted }) => {
+    const dateLuxon = DateTime.fromISO(lastCompleted);
     const includeYear = dateLuxon.year !== DateTime.now().year;
     return (
         <a className={styles.event}>

@@ -1,5 +1,11 @@
 {
 	"version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Debug + Launch Client",
+            "configurations": ["Debug Client", "Launch Client"]
+        }
+    ],
 	"configurations": [
 		{
 			"type": "node",
@@ -20,6 +26,22 @@
                 "${workspaceFolder}/<node_internals>/**",
                 "${workspaceFolder}/node_modules/**"
             ]
-		}
+		},
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Client",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/client",
+        },
+        {
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Client",
+            "console": "integratedTerminal",
+            "runtimeExecutable": "npm",
+            "cwd": "${workspaceFolder}/client",
+            "args": ["run", "dev"]
+		},
 	]
 }

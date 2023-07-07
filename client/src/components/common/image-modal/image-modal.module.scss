@@ -1,0 +1,135 @@
+.container {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+
+    border-radius: 0.5rem;
+}
+
+.image {
+    max-width: 800px;
+    max-height: 70svh;
+
+    object-fit: cover;
+
+    border-radius: 0.25rem;
+
+    @include responsive(('medium')) {
+        max-width: 600px;
+        max-height: 70svh;
+    }
+
+    @include responsive(('small', 'mobile')) {
+        max-width: 80vw;
+        max-height: 80svh;
+    }
+}
+
+.nagivateButton {
+    background-color: rgba(0, 0, 0, 0.25);
+
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+
+    width: 3rem;
+
+    transition: background-color 100ms ease;
+
+    @include dark-mode {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.4);
+
+        @include dark-mode {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        & svg {
+            color: rgb(255, 255, 255, 0.75);
+        }
+    }
+
+    &.prev {
+        border-radius: 0.5rem 0.25rem 0.25rem 0.5rem;
+        margin-right: 1rem;
+
+        @include responsive(('small', 'mobile')) {
+            translate: 100%;
+            margin-right: 0;
+            border-radius: 0.25rem 0 0 0.25rem;
+
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0));
+        }
+    }
+
+    &.next {
+        border-radius: 0.25rem 0.5rem 0.5rem 0.25rem;
+        margin-left: 1rem;
+
+        @include responsive(('small', 'mobile')) {
+            translate: -100%;
+            margin-left: 0;
+            border-radius: 0 0.25rem 0.25rem 0;
+
+            background: linear-gradient(to left, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0));
+        }
+    }
+
+    & svg {
+        height: 2rem;
+        width: 2rem;
+
+        color: rgb(255, 255, 255, 0.25);
+
+        transition: color 100ms ease;
+
+        @include responsive(('small', 'mobile')) {
+            color: rgba(255, 255, 255, 1);
+        }
+    }
+
+    @include responsive(('medium', 'small', 'mobile')) {
+        width: 2.5rem;
+    }
+
+    @include responsive(('small', 'mobile')) {
+        max-width: 10vw;
+        opacity: 0.5;
+
+        transition: opacity 100ms ease;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.navigateDots {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 1.5rem);
+    translate: -50%;
+
+    display: flex;
+    justify-content: center;
+
+    gap: 1rem;
+
+    & .dot {
+        height: 0.5rem;
+        aspect-ratio: 1;
+
+        background-color: white;
+        border-radius: 50%;
+
+        transition: box-shadow 200ms ease;
+        cursor: pointer;
+
+        &.active {
+            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+        }
+    }
+}

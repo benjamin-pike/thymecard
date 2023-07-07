@@ -1,0 +1,9 @@
+.wrapper {
+    min-height: 100svh;
+
+    background-color: $mono-100;
+
+    &[data-theme = 'dark'] {
+        background-color: $mono-dark;
+    }
+}

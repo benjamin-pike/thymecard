@@ -1,0 +1,128 @@
+.wrapper {
+    position: relative;
+}
+
+.column {
+    height: 100%;
+
+    overflow-y: scroll;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.scrollbar {
+    position: absolute;
+    top: 2rem;
+    left: 100%;
+
+    translate: -50%;
+
+    width: 5px;
+
+    border-radius: 100vmax;
+
+    background: $mono-300;
+
+    opacity: 0.5;
+
+    z-index: 100;
+
+    transition: width 100ms ease, opacity 150ms ease;
+
+    @include dark-mode {
+        background: $mono-600;
+    }
+
+    &:hover,
+    &[data-active='true'] {
+        width: 7px;
+
+        opacity: 0.75;
+    }
+
+    .wrapper:not(:hover) &:not([data-active='true']):not(:hover) {
+        opacity: 0;
+    }
+}
+
+.segment {
+    position: absolute;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 8rem;
+    width: 100%;
+
+    z-index: 100;
+
+    pointer-events: none;
+
+    &.upper {
+        top: 0;
+    }
+
+    &.lower {
+        bottom: 0;
+    }
+}
+
+.scrollButton {
+    position: absolute;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 0 0 100vmax 100vmax;
+
+    color: $mono-light;
+    background-color: transparentize($mono-700, 0.35);
+    backdrop-filter: blur(2.5px);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: opacity 100ms ease;
+
+    [data-hovered='true'] & {
+        opacity: 1;
+
+        pointer-events: auto;
+    }
+
+    svg {
+        width: 0.75rem;
+        height: 0.75rem;
+    }
+
+    &.up {
+        top: 0;
+
+        border-radius: 0 0 100vmax 100vmax;
+
+        padding: 0.3rem 1rem 0.5rem 1rem;
+    }
+
+    &.down {
+        bottom: 0;
+
+        border-radius: 100vmax 100vmax 0 0;
+
+        padding: 0.5rem 1rem 0.3rem 1rem;
+    }
+
+    @include dark-mode {
+        color: $mono-light;
+        background-color: transparentize($mono-900, 0.35);
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+}

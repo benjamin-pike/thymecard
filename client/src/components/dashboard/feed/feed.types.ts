@@ -1,4 +1,4 @@
-import { EventType } from "../dashboard.types";
+import { EventType } from "@/lib/global.types";
 
 export interface IFeedEventProps {
     type: EventType;
@@ -19,12 +19,12 @@ export interface IFeedData {
     events: IFeedEventProps[];
 }
 
-interface IPrimaryMetric {
+export interface IPrimaryMetric {
     measurement: 'calories';
     value: number;
 }
 
-interface ISecondaryMetric {
+export interface ISecondaryMetric {
     measurement: 'carbs' | 'fat' | 'protein';
     value: number;
 }

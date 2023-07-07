@@ -1,0 +1,48 @@
+.mobileNavDropdownWrapper {
+    position: relative;
+    display: flex;
+}
+
+.mobileNavDropdownContainer {
+    @include responsive(('mobile')) {
+        display: grid;
+        grid-template-rows: 0fr;
+        overflow: hidden;
+
+        position: absolute;
+        top: 2.5rem;
+        width: fit-content;
+        box-shadow: 0 0 0 1px $mono-200 inset, 4px 4px 20px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        border-radius: 0.5rem;
+
+        padding: 0 0;
+
+        z-index: 100;
+
+        transition: grid-template-rows 200ms ease, padding 200ms ease;
+
+        &[data-dropdown-is-open='true'] {
+            grid-template-rows: 1fr;
+
+            padding: 0.75rem 0;
+       }
+
+       @include dark-mode {
+           box-shadow: 0 0 0 1px $mono-700 inset;
+           background-color: $mono-900;
+       }
+    }
+}
+
+.mobileNavDropdownButton {
+    display: none;
+
+    @include responsive(('mobile')) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: $mono-500;
+    }
+}

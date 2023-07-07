@@ -1,9 +1,9 @@
-import { FC, ReactNode } from 'react';
-import { CardHeader } from '@/components/common/Card';
-import styles from './dashboard-card-header.module.css';
+import { FC, ReactElement } from 'react';
+import { CardHeader } from '@/components/common/card/Card';
+import styles from './dashboard-card-header.module.scss';
 
 interface IDashboardCardHeaderProps {
-    children: ReactNode;
+    children: ReactElement;
     titlePrefix?: string;
     titleMain: string;
     titleSuffix?: string;
@@ -12,11 +12,13 @@ interface IDashboardCardHeaderProps {
 export const DashboardCardHeader: FC<IDashboardCardHeaderProps> = ({ children, titlePrefix, titleMain, titleSuffix }) => {
     return (
         <CardHeader>
-            <h1 className={styles.cardTitle}>
-                <span className={styles.cardTitlePrefix}>{titlePrefix ?? ''}</span> {titleMain}{' '}
-                <span className={styles.cardTitleSuffix}>{titleSuffix ?? ''}</span>
-            </h1>
-            <div className={styles.cardHeaderFeature}>{children}</div>
+            <>
+                <h1 className={styles.cardTitle}>
+                    <span className={styles.cardTitlePrefix}>{titlePrefix ?? ''}</span> {titleMain}{' '}
+                    <span className={styles.cardTitleSuffix}>{titleSuffix ?? ''}</span>
+                </h1>
+                <div className={styles.cardHeaderFeature}>{children}</div>
+            </>
         </CardHeader>
     );
 };

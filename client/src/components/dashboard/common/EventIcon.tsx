@@ -1,18 +1,17 @@
 import { FC } from 'react';
-import { formatClasses } from '@/lib/common.utils';
-import { EventType } from '../dashboard.types';
-import BreakfastIcon from '@/assets/breakfast.svg';
-import LunchIcon from '@/assets/lunchv2.svg';
-import DinnerIcon from '@/assets/dinner.svg';
-import HeartIcon from '@/assets/heart.svg';
-import styles from './event-icon.module.css';
+import { EventType } from '@/lib/global.types';
+import { LuSalad, LuBanana, LuIceCream2, LuCoffee, LuActivity, LuGlassWater, LuSoup } from 'react-icons/lu';
+import styles from './event-icon.module.scss';
 
 const iconMap: Record<EventType, any> = {
-    Breakfast: <BreakfastIcon />,
-    Lunch: <LunchIcon />,
-    Dinner: <DinnerIcon />,
-    Walk: <HeartIcon />
-};
+    breakfast: <LuCoffee />,
+    lunch: <LuSoup />,
+    dinner: <LuSalad />,
+    snack: <LuBanana />,
+    drink: <LuGlassWater />,
+    dessert: <LuIceCream2 />,
+    activity: <LuActivity />
+}
 
 interface IEventIconProps {
     className?: string;
@@ -24,11 +23,12 @@ interface IEventIconProps {
 const EventIcon: FC<IEventIconProps> = ({ className, type, radius, background }) => {
     return (
         <div
-            className={`${formatClasses(styles, ['icon', type.toLowerCase()])}${className ? ' ' + className : ''}`}
+            className={`${styles.icon}${className ? ' ' + className : ''}`}
+            data-event={type.toLowerCase()}
             style={{
                 width: radius * 2 + 'rem',
                 height: radius * 2 + 'rem',
-                padding: background ? radius * 0.55 + 'rem' : 0
+                padding: background ? radius * 0 + 'rem' : 0
             }}
             data-background={background}
         >

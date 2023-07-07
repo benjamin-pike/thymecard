@@ -1,29 +1,34 @@
-'use client'
-import { FC, useState } from 'react';
+'use client';
+import { FC, useMemo, useState } from 'react';
 import { DateTime } from 'luxon';
-import { CardBody } from '@/components/common/Card';
+import { CardBody } from '@/components/common/card/Card';
 import { DashboardCardHeader } from '../common/DashboardCardHeader';
-import SliderToggle from '@/components/common/SliderToggle';
+import SliderToggle from '@/components/common/slider-toggle/SliderToggle';
 import { getOrdinalSuffix } from '@/lib/date.utils';
-import styles from './bookmarks.module.css';
+import { generateMockBookmarksData } from '@/test/mock-data/dashboard';
+import styles from './bookmarks.module.scss';
 
-type Category = 'Recipes' | 'Activities';
+type Category = 'recipes' | 'activities';
 
 export default () => {
-    const [selectedType, setSelectedType] = useState<Category>('Recipes');
+    const [selectedType, setSelectedType] = useState<Category>('recipes');
+
+    const data = useMemo(() => generateMockBookmarksData(10), []);
 
     return (
         <>
             <DashboardCardHeader titlePrefix={'Your'} titleMain={'Bookmarks'}>
                 <SliderToggle
-                    options={['Recipes', 'Activities']}
+                    localStorageKey = {'bookmarks'}
+                    options={['recipes', 'activities']}
+                    labels={{ recipes: 'Recipes', activities: 'Activities' }}
                     onOptionSelected={setSelectedType}
                 />
             </DashboardCardHeader>
             <CardBody>
                 <div className={styles.bookmarks}>
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <Bookmark key={i} category={selectedType} name={'Pulled Pork Tacos'} calories={652} lastDate={new Date()} />
+                    {data[selectedType].map(({ name, calories, lastCompleted }, i) => (
+                        <Bookmark key={i} category={selectedType} name={name} calories={calories} lastCompleted={lastCompleted} />
                     ))}
                 </div>
             </CardBody>
@@ -35,22 +40,23 @@ interface IBookmarkProps {
     category: Category;
     name: string;
     calories: number;
-    lastDate: Date;
+    lastCompleted: string;
 }
 
-const Bookmark: FC<IBookmarkProps> = ({ category, name, calories, lastDate }) => {
-    const lastDateFormatted =
-        DateTime.fromJSDate(lastDate).year === DateTime.now().year
-            ? DateTime.fromJSDate(lastDate).toFormat('MMMM d') + getOrdinalSuffix(lastDate)
-            : DateTime.fromJSDate(lastDate).toLocaleString({
+const Bookmark: FC<IBookmarkProps> = ({ category, name, calories, lastCompleted }) => {
+    const lastCompletedDate = DateTime.fromISO(lastCompleted);
+    const formattedDate =
+        lastCompletedDate.year === DateTime.now().year
+            ? lastCompletedDate.toFormat('MMMM d') + getOrdinalSuffix(lastCompletedDate)
+            : lastCompletedDate.toLocaleString({
                   day: '2-digit',
                   month: '2-digit',
                   year: '2-digit'
               });
 
     const lastDatePrefix: Record<Category, string> = {
-        Recipes: 'Last made on',
-        Activities: 'Last completed'
+        recipes: 'Last made on',
+        activities: 'Last completed'
     };
 
     return (
@@ -64,7 +70,7 @@ const Bookmark: FC<IBookmarkProps> = ({ category, name, calories, lastDate }) =>
                 calories
             </p>
             <p className={styles.lastDate}>
-                {lastDatePrefix[category]} <strong>{lastDateFormatted}</strong>
+                {lastDatePrefix[category]} <strong>{formattedDate}</strong>
             </p>
         </a>
     );

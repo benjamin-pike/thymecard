@@ -1,0 +1,89 @@
+.event {
+    color: $mono-700;
+    
+    border-radius: 0.25rem;
+    
+    padding: 0.75rem;
+    
+    box-shadow: 0 0 0 1.5px $mono-200;
+    
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;
+
+    @include dark-mode {
+        color: $mono-200;
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+
+    &:hover {
+        color: white;
+        background-color: $mono-700;
+        box-shadow: 0 0 0 1.5px $mono-700;
+        
+        cursor: pointer;
+    
+        @include dark-mode {
+            color: $mono-700;
+            background-color: $mono-light;
+            box-shadow: 0 0 0 1px $mono-light;
+        }
+    }
+
+    & * {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    
+        & strong {
+            font-weight: 500;
+        }
+    }
+}
+
+.category {
+    font-size: $fs-11;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+}
+
+.name {
+    font-size: $fs-12;
+    font-weight: 600;
+    
+    white-space: nowrap;
+}
+
+.calories {
+    font-size: $fs-12;
+    font-weight: 300;
+    
+    padding-left: 0.25rem;
+    
+    white-space: nowrap;   
+}
+
+.lastDate {
+    color: $mono-600;
+    font-size: $fs-11;
+    font-weight: 500;
+    
+    white-space: pre;
+    
+    margin-top: 0.5rem;
+
+    @include dark-mode {
+        color: $mono-400;
+    }
+
+    & .date {
+        font-weight: 400;
+    }
+
+    .event:hover & {
+        color: $mono-400;
+    
+        @include dark-mode {
+            color: $mono-200;
+        }
+    }
+}

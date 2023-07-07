@@ -1,0 +1,63 @@
+.day {
+    position: relative;
+
+    background-color: $mono-200;
+
+    box-shadow: 0 0 0 1px $mono-300 inset;
+
+    padding: 1rem;
+
+    border-radius: 1rem;
+
+    @include dark-mode {
+        background-color: black;
+
+        box-shadow: 0 0 0 1px $mono-700 inset;
+    }
+
+    @include responsive(('mobile')) {
+        border-radius: 0;
+    }
+}
+
+.events {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.date {
+    position: absolute;
+    top: 0;
+    left: 1.5rem;
+
+    translate: 0 -60%;
+
+    color: $mono-700;
+    font-size: $fs-10;
+
+    font-weight: 500;
+    z-index: 1;
+
+    @include dark-mode {
+        color: $mono-200;
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: -0.5rem;
+        bottom: calc(40% - 1px);
+
+        height: 1px;
+        width: calc(100% + 1rem);
+
+        background-color: $mono-200;
+
+        z-index: -1;
+
+        @include dark-mode {
+            background-color: black;
+        }
+    }
+}

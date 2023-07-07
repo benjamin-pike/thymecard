@@ -1,0 +1,45 @@
+.icon {
+    position: relative;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 100%;
+
+    @each $event, $color in $event-colors {
+        $light-adjusted-color: contrastize($color, 'light');
+        $dark-adjusted-color: contrastize($color, 'dark');
+
+        &[data-event='#{$event}'] {
+            color: $light-adjusted-color;
+            background-color: transparentize($light-adjusted-color, 0.9);
+            box-shadow: 0 0 0 1px transparentize($light-adjusted-color, 0.6) inset, 0 0 0 3px white inset;
+
+            @include dark-mode {
+                color: $dark-adjusted-color;
+                background-color: transparentize($dark-adjusted-color, 0.9);
+                box-shadow: 0 0 0 1px transparentize($dark-adjusted-color, 0.5) inset, 0 0 0 3px $mono-900 inset;
+            }
+        }
+    }
+
+    &[data-event='breakfast'] svg {
+        translate: 5%;
+    }
+
+    &[data-event='dessert'] svg {
+        scale: 1.1;
+    }
+
+    &[data-background='false'] {
+        box-shadow: none;
+        background-color: transparent;
+    }
+
+    & svg {
+        width: 45%;
+        height: 45%;
+
+        stroke-width: 2;
+    }
+}

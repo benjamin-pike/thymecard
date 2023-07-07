@@ -1,0 +1,272 @@
+$metric-colors: (
+    carbs: $aqua,
+    protein: $green,
+    fat: $orange
+);
+
+.header {
+    position: relative;
+
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+
+    border-bottom: 1px solid $mono-100;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    @include dark-mode {
+        border-bottom: 1px solid $mono-700;
+    }
+}
+
+.metadata {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.leftContent {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    color: $mono-600;
+    font-size: $fs-12;
+    font-weight: 400;
+
+    @include dark-mode {
+        color: $mono-200;
+    }
+}
+
+.type {
+    display: flex;
+    align-items: center;
+
+    gap: 0.65rem;
+
+    & .indicator {
+        height: 0.35rem;
+        aspect-ratio: 1;
+    
+        border-radius: 100vmax;
+        
+        @each $event, $color in $event-colors {
+            &[data-event='#{$event}'] {
+                background-color: transparentize($color, 0.25);
+                box-shadow: 0 0 0 1px white inset, 0 0 0 1px transparentize($color, 0.5);
+    
+                @include dark-mode {
+                    background-color: lighten($color, 10%);
+                    box-shadow: 0 0 0 1px $mono-900 inset, 0 0 0 1px lighten($color, 10%);
+                }
+            }
+        }
+    }
+
+    @include responsive(('medium', 'mobile')) {
+        & .text {
+            display: none;
+        }
+
+        & + p {
+            display: none;
+        }
+    }
+}
+
+.time {
+    font-weight: 500;
+}
+
+.location {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    & svg {
+        opacity: 0.75;
+    }
+
+    & p {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 20ch;
+    }
+    
+}
+
+.rating {
+    display: flex;
+    gap: 0.25rem;
+
+    & .circle {
+        position: relative;
+
+        height: 0.35rem;
+        width: 0.35rem;
+
+        border-radius: 100vmax;
+
+        box-shadow: 0 0 0 1.25px $mono-700;
+
+        @include dark-mode {
+            box-shadow: 0 0 0 1.25px $mono-300;
+        }
+
+        &[data-fill='full'] {
+            background-color: $mono-700;
+
+            @include dark-mode {
+                background-color: $mono-200;
+            }
+        }
+
+        [data-fill='half'] {
+            &::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+
+                height: 100%;
+                width: 50%;
+
+                @include dark-mode {
+                    background-color: $mono-200;
+                }
+            }
+        }
+    }
+}
+
+.name {
+    padding: 0 1rem;
+
+    color: $mono-700;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: color 100ms ease;
+
+    @include dark-mode {
+        color: $mono-200;
+    }
+
+    &:hover {
+        color: $mono-500;
+
+        @include dark-mode {
+            color: $mono-500;
+        }
+    }
+}
+
+.body {
+    padding: 0 1rem 1rem 1rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.metrics {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.secondaryMetrics {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &.primary {
+        color: $mono-600;
+
+        @include dark-mode {
+            color: $mono-200;
+        }
+
+        & .value {
+            font-size: $fs-14;
+        }
+    }
+
+    &.secondary {
+        align-items: center;
+        padding: 0.4rem 0.6rem;
+
+        border-radius: 0.25rem;
+
+        @each $metric, $color in $metric-colors {
+            $light-adjusted-color: contrastize($color, 'light');
+            $dark-adjusted-color: contrastize($color, 'dark');
+
+            &[data-metric='#{$metric}'] {
+                color: $light-adjusted-color;
+                background-color: transparentize($light-adjusted-color, 0.9);
+
+                @include dark-mode {
+                    color: $dark-adjusted-color;
+                    background-color: transparentize($dark-adjusted-color, 0.9);
+                    box-shadow: 0 0 0 1px transparentize($dark-adjusted-color, 0.6);
+                }
+            }
+        }
+    }
+
+    & .value {
+        font-size: $fs-12;
+        font-weight: 500;
+    }
+
+    & .measurement {
+        font-size: $fs-10;
+        font-weight: 400;
+    }
+}
+
+.divider {
+    height: 1.5rem;
+    width: 1px;
+
+    border-radius: 100vmax;
+
+    background-color: $mono-300;
+
+    @include dark-mode {
+        background-color: $mono-700;
+    }
+}
+
+.journal {
+    color: $mono-700;
+    font-size: $fs-11;
+    font-weight: 400;
+    white-space: pre-line;
+
+    @include dark-mode {
+        color: $mono-300;
+    }
+}
+
+.visuals {
+    box-shadow: 0 0 0 1px $mono-100;
+
+    padding: 0.35rem;
+
+    border-radius: 0.5rem;
+
+    @include dark-mode {
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+}
