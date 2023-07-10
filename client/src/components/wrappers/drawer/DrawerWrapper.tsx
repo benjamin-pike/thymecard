@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { useEventListener } from '@/hooks/events/useEventListener';
 import { useSuppressTransitionsOnMount } from '@/hooks/lifecycle/useSuppressTransitionsOnMount';
 import styles from './drawer-wrapper.module.scss';
+import { capitalize } from '@/lib/string.utils';
 
 export interface IDrawerWrapperProps {
     children: ReactElement;
@@ -59,7 +60,7 @@ const DrawerWrapper: FC<IDrawerWrapperProps> = ({ children, direction, transitio
                 ref={containerRef}
                 className={`${styles.drawer} ${styles[direction]} ${isVisible ? styles.visible : ''}`}
                 style={{
-                    [`margin-${direction}`]: `${currentMargin}rem`,
+                    [`margin${capitalize(direction)}`]: `${currentMargin}rem`,
                     transitionDuration: `${transitionDuration}ms`
                 }}
             >
