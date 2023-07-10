@@ -1,8 +1,10 @@
 import styles from './upgrade-button.module.scss';
+import { TbDiamond } from 'react-icons/tb';
 
 const UpgradeButton = () => (
     <button className={styles.upgradeButton}>
-        <p>upgrade</p>
+        <TbDiamond />
+        <p>Premium</p>
     </button>
 );
 

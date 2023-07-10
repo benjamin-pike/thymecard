@@ -4,8 +4,11 @@ import MobileDropdownWrapper from './components/mobile-dropdown/MobileDropdownWr
 import UpgradeButton from './components/upgrade-button/UpgradeButton';
 import Avatar from '../common/avatar/Avatar';
 import styles from './header.module.scss';
+import usePremium from '@/hooks/usePremium';
 
 const Header = () => {
+    const isPremium = usePremium();
+
     return (
         <header className={styles.header}>
             <div className={styles.content}>
@@ -17,7 +20,7 @@ const Header = () => {
                     </MobileDropdownWrapper>
                 </section>
                 <section className={styles.right}>
-                    <UpgradeButton />
+                    {!isPremium && <UpgradeButton />}
                     <Avatar />
                 </section>
             </div>

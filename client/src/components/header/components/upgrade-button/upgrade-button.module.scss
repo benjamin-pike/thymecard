@@ -1,28 +1,41 @@
 .upgradeButton {
-    padding: 0.5rem 1rem;
-    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    padding: 0.65rem 0.9rem;
+
     border-radius: 0.25rem;
 
     color: white;
-    background-color: $mono-800;
+    background-color: $mono-900;
     box-shadow: 0 0 0 1px $mono-800;
 
     transition: color 100ms ease, background-color 100ms ease, scale 100ms ease;
 
+    & svg {
+        scale: 1.25;
+    }
+
+    & p {
+        font-size: $fs-14;
+        font-weight: 600;
+
+        @include responsive(('small', 'mobile')) {
+            display: none;
+        }
+    }
+
     @include dark-mode {
-        color: $mono-800;
-        background-color: $mono-light;
-        box-shadow: 0 0 0 1px $mono-light;
+        color: $mono-light;
+        background-color: $mono-800;
+        box-shadow: 0 0 0 1px $mono-700;
     }
 
     &:hover {
         background-color: white;
         color: $mono-800;
         scale: 1.025;
-    
-        @include dark-mode {
-            background-color: $mono-900;
-            color: $mono-100;
-        }
     }
 }
