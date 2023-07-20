@@ -3,4 +3,12 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+
+    @include responsive(('feedOnly')) {
+        margin-bottom: 3rem;
+    }
+
+    @include responsive(('compressed')) {
+        margin-bottom: 2.25rem;
+    }
 }

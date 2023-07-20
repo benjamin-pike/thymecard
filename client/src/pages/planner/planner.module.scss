@@ -2,13 +2,8 @@
     display: grid;
     grid-template-areas: 'day month';
     grid-template-columns: auto 1fr;
-    gap: 3rem;
 
-    margin: auto;
-    padding: 2rem;
-
-    max-width: 1600px;
-    max-height: calc(100svh - 4rem);
+    flex: 1 1;
 
     overflow: hidden;
 
@@ -19,7 +14,7 @@
 }
 
 .column {
-    height: calc(100svh - 8rem);
+    min-height: 0;
 
     &.left {
         display: flex;
@@ -27,18 +22,20 @@
 
         grid-area: day;
 
-        width: max(25vw, 22.5rem);
-        max-width: 25rem;
+        width: max(25vw, 24rem);
+        max-width: 24rem;
 
         background-color: white;
 
-        border-radius: 1rem;
-
-        box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.1), 0 0 0 1rem $mono-200, 0 0 0 calc(1rem + 1px) $mono-300;
+        border-right: 1px solid $mono-200;
 
         @include dark-mode {
             background-color: $mono-900;
-            box-shadow: 0 0 0 1px $mono-700, 0 0 0 1rem black, 0 0 0 calc(1rem + 1px) $mono-700;
+            border-right: 1px solid $mono-700;
+        }
+
+        @include responsive(('medium', 'small', 'mobile')) {
+            border-right: none;
         }
 
         &::after {
@@ -47,23 +44,23 @@
                 position: absolute;
                 top: calc(100% - 3.25rem);
                 left: 2.25rem;
-        
+
                 height: 1px;
                 width: calc(100% - 4.5rem);
-        
+
                 background-color: $mono-200;
-        
+
                 z-index: 1;
-        
+
                 @include dark-mode {
                     background-color: $mono-700;
                 }
             }
-        
+
             @include responsive(('twoColumns', 'oneColumn')) {
                 top: calc(100% - 2rem);
                 left: 1rem;
-        
+
                 width: calc(100% - 2rem);
             }
         }
@@ -78,13 +75,20 @@
             }
         }
 
-        @include responsive(('medium', 'small')) {
+        @include responsive(('medium')) {
             height: 100%;
+        }
+
+        @include responsive(('medium', 'small')) {
             padding: 1.25rem;
 
             width: 27.5rem;
 
             border-radius: 0;
+        }
+
+        @include responsive(('small')) {
+            left: calc(3.25rem / 2)
         }
 
         @include responsive(('twoColumns', 'oneColumn')) {
@@ -98,7 +102,7 @@
             width: 97.5%;
             max-width: 25rem;
 
-            box-shadow: -4px -4px 20px rgba(0, 0, 0, 0.025);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
 
             border-radius: 1rem 1rem 0 0;
         }
@@ -106,11 +110,7 @@
 
     &.right {
         grid-area: month;
-        
-        width: 100%;
 
-        @include responsive(('twoColumns', 'oneColumn')) {
-            height: calc(100svh - 12rem);
-        }
+        width: 100%;
     }
 }

@@ -3,13 +3,14 @@ import { Provider as ContextProvider } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import Header from './components/header/Header';
-import Dashboard from './pages/dashboard/dashboard';
-import Planner from './pages/planner/planner';
+import Dashboard from './pages/dashboard/Dashboard';
+import Planner from './pages/planner/Planner';
 
 import { store } from './store/index';
 import ThemeWrapper from './components/wrappers/theme/ThemeWrapper';
 import ResponsiveWrapper from './components/wrappers/responsive/ResponsiveWrapper';
+import Recipes from './pages/recipes/Recipes';
+import Navbar from './components/navbar/Navbar';
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,10 @@ const routes = [
         element: <Planner />
     },
     {
+        path: '/recipes',
+        element: <Recipes />
+    },
+    {
         path: '/*',
         element: <Navigate to="/dashboard" replace={true} />
     }
@@ -30,14 +35,17 @@ const routes = [
 
 export function CoreApp() {
     return (
-        <Router>
-            <Header />
-            <Routes>
-                {routes.map(({ path, element }) => (
-                    <Route path={path} element={element} key={path} />
-                ))}
-            </Routes>
-        </Router>
+        <div className="app">
+            <Router>
+                {/* <Header /> */}
+                <Navbar />
+                <Routes>
+                    {routes.map(({ path, element }) => (
+                        <Route path={path} element={element} key={path} />
+                    ))}
+                </Routes>
+            </Router>
+        </div>
     );
 }
 

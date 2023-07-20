@@ -76,12 +76,12 @@
         background-color: $mono-700;
     }
 
-    & .vertical {
+    &.vertical {
         width: 1px;
         height: 1.25rem;
     }
 
-    & .horizontal {
+    &.horizontal {
         height: 1px;
         width: 80%;
     }

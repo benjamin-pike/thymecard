@@ -21,7 +21,7 @@
             @return $color;
         }
     }
-    
+
     @if $theme == 'light' {
         @if $color == $yellow {
             @return saturate(darken($color, 2.5%), 50%);
@@ -68,7 +68,7 @@ $mono-500: rgb(143, 160, 198);
 $mono-600: rgb(77, 93, 128);
 $mono-700: rgb(52, 64, 90);
 $mono-800: rgb(26, 34, 51);
-$mono-900: rgb(17, 23, 34);
+$mono-900: hsl(219, 33%, 9%);
 $mono-dark: rgb(9, 11, 17);
 
 $red: rgb(255, 51, 102);
@@ -131,15 +131,51 @@ button {
     cursor: pointer;
 }
 
+input {
+    all: unset;
+    cursor: text;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    all: unset;
+}
+
+li {
+    all: unset;
+}
+
+* {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.app {
+    display: flex;
+    height: 100svh;
+
+    main {
+        flex: 1 1;
+    }
+}
+
 #modal-root {
     position: fixed;
-    z-index: 1000;
+    z-index: 1000000;
 }
 
 #drawer-root {
     position: fixed;
     isolation: isolate;
-    z-index: 1000;
+    z-index: 10000000;
 }
 
 .no-transition * {

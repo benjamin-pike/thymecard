@@ -32,7 +32,7 @@ export default () => {
     });
 
     const { ref, entry } = useIntersection({
-        root: document ? document.body : null,
+        root: document.body,
         threshold: 1
     });
 
