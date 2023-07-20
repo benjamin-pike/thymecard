@@ -103,6 +103,8 @@ const DayCell: FC<IDayCellProps> = ({
     const isCurrentDay = currentDay && date.hasSame(currentDay, 'day');
     const isCurrentMonth = date.month === currentMonth.month;
     const isToday = date.hasSame(DateTime.local(), 'day');
+    const isFirstDayOfCurrentMonth = isCurrentMonth && date.day === 1;
+    const isLastDayOfCurrentMonth = isCurrentMonth && date.day === date.daysInMonth;
     const displayMonth = date.day === 1;
 
     return (
@@ -116,6 +118,8 @@ const DayCell: FC<IDayCellProps> = ({
                 isVisibleWhenTwoColumns ? '' : 'hiddenWhenTwoColumns',
                 isVisibleWhenThreeColumns ? '' : 'hiddenWhenThreeColumns'
             ])}
+            data-first = {isFirstDayOfCurrentMonth}
+            data-last = {isLastDayOfCurrentMonth}
             onClick={() => handleDayClick(date)}
         >
             <p className={styles.date}>

@@ -10,10 +10,9 @@ import { formatClasses } from '@/lib/common.utils';
 interface IDayProps {
     data: IEvent[];
     date: DateTime | null;
-    viewport: IViewport;
 }
 
-const Day: FC<IDayProps> = ({ data, date, viewport }) => {
+const Day: FC<IDayProps> = ({ data, date }) => {
     const isEmptyDay = data.length === 0;
     const periods = splitEvents(data, 15, 30);
 
@@ -21,14 +20,10 @@ const Day: FC<IDayProps> = ({ data, date, viewport }) => {
     const hasLunch = data.some((event) => event.type === 'lunch');
     const hasDinner = data.some((event) => event.type === 'dinner');
 
-
-    const isSideDrawer = (viewport.current.isMedium || viewport.current.isSmall) && !viewport.current.isTwoColumns;
-    const height = `calc(100vh - ${isSideDrawer ? '8.5rem' : '12rem'})`;
-
     return (
         date && (
             <div className={styles.wrapper}>
-                <ScrollWrapper height={height} padding={1} buttonMargin={{ up: '1px' }}>
+                <ScrollWrapper height={'100%'} padding={1} buttonMargin={{ up: '1px' }}>
                     <section className={styles.day}>
                         <Header date={date} displayButtons={data.length > 0} />
                         {periods.map(({ period, events }, index) => {

@@ -1,5 +1,6 @@
 .wrapper {
     position: relative;
+
 }
 
 .column {
@@ -84,8 +85,8 @@
     border-radius: 0 0 100vmax 100vmax;
 
     color: $mono-light;
-    background-color: transparentize($mono-700, 0.35);
-    backdrop-filter: blur(2.5px);
+    background-color: transparentize($mono-600, 0.5);
+    backdrop-filter: blur(1.5px) brightness(1.15);
 
     opacity: 0;
 

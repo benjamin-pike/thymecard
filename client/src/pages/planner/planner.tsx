@@ -189,7 +189,6 @@ const Planner = () => {
                     <Day
                         data={selectedDay ? data[selectedDay.toFormat('yyyy-MM-dd')] ?? [] : []}
                         date={selectedDay}
-                        viewport= {viewport}
                     />
                 </div>
             </DrawerWrapper>

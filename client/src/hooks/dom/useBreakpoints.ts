@@ -9,8 +9,8 @@ type DefaultBreakpoint = 'mobile' | 'small' | 'medium' | 'large' | 'xlarge';
 
 interface BreakpointParams<T = string> {
     name: T;
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
 }
 
 interface IViewportBase {

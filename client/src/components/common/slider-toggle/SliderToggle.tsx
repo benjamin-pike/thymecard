@@ -1,6 +1,5 @@
-import { useEffect, useRef, CSSProperties } from 'react';
-import { useLocalStorage } from '@mantine/hooks';
-import { useSuppressTransitionsOnMount } from '@/hooks/lifecycle/useSuppressTransitionsOnMount';
+import { useEffect, useRef, CSSProperties, useState } from 'react';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import styles from './slider-toggle.module.scss';
 
 interface ISliderToggleProps<T extends string = string> {
@@ -13,9 +12,16 @@ interface ISliderToggleProps<T extends string = string> {
 
 type RefRecord<T> = Record<string, React.RefObject<T>>;
 
-const SliderToggle = <T extends string = string>({ localStorageKey, options, labels, defaultOption, onOptionSelected }: ISliderToggleProps<T>) => {
-    const [selectedOption, setSelectedOption] = useLocalStorage({ key: localStorageKey, defaultValue: defaultOption ?? options[0] });
-    const sliderRef = useSuppressTransitionsOnMount();
+const SliderToggle = <T extends string = string>({
+    localStorageKey,
+    options,
+    labels,
+    defaultOption,
+    onOptionSelected
+}: ISliderToggleProps<T>) => {
+    const [isInitialRender, setIsInitialRender] = useState(true);
+    const [selectedOption, setSelectedOption] = useLocalStorage(localStorageKey, defaultOption ?? options[0]);
+    const sliderRef = useRef<HTMLDivElement>(null);
     const buttonRefs: RefRecord<HTMLButtonElement> = options.reduce<RefRecord<HTMLButtonElement>>((acc, option) => {
         acc[option] = useRef<HTMLButtonElement>(null);
         return acc;
@@ -38,14 +44,19 @@ const SliderToggle = <T extends string = string>({ localStorageKey, options, lab
         if (slider && selectedButton) {
             const sliderStyle: CSSProperties = {
                 width: `${selectedButton.offsetWidth}px`,
-                translate: `calc(${baseOffset}px + ${0.25 * buttonWidths.length}rem)`
+                translate: `calc(${baseOffset}px + ${0.25 * buttonWidths.length}rem)`,
+                transition: isInitialRender ? 'none' : 'width 200ms ease, translate 200ms ease',
             };
 
             Object.assign(slider.style, sliderStyle);
+
+            if (isInitialRender) {
+                setIsInitialRender(false);
+            }
         }
 
         onOptionSelected(selectedOption as T);
-    }, [selectedOption]);
+    }, [selectedOption, isInitialRender]);
 
     return (
         <div className={styles.selector}>

@@ -4,16 +4,16 @@
 
     height: 100%;
 
-    padding: 1rem;
+    padding: 1rem 1rem 1rem 0;
 
     background-color: white;
-    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.1), 0 0 0 1rem $mono-200, 0 0 0 calc(1rem + 1px) $mono-300;
-
-    border-radius: 1rem;
 
     @include dark-mode {
         background-color: $mono-900;
-        box-shadow: 0 0 0 1px $mono-700, 0 0 0 1rem black, 0 0 0 calc(1rem + 1px) $mono-700;
+    }
+
+    @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+        padding: 0;
     }
 }
 
@@ -131,6 +131,14 @@
         height: unset;
 
         overflow: unset;
+
+        &[data-first = 'true'] {
+            padding-top: 1rem;
+        }
+
+        &[data-last = 'true'] {
+            padding-bottom: 5rem;
+        }
     }
 
     &::-webkit-scrollbar {
@@ -265,6 +273,10 @@
 
         padding: 0 0.4rem;
 
+        @include responsive(('mobile')) {
+            padding-left: 2.25rem;
+        }
+
         &::before {
             content: '';
 
@@ -285,6 +297,15 @@
 
             @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
                 left: -1.925rem;
+            }
+
+            @include responsive(('mobile')) {
+                left: 0.5rem;
+
+                height: 0.5rem;
+                width: 0.5rem;
+
+                clip-path: unset;
             }
         }
     }
@@ -315,10 +336,6 @@
     position: relative;
 
     color: $mono-500;
-
-    @include responsive(('mobile')) {
-        translate: 1.5rem;
-    }
 }
 
 @each $event, $color in $event-colors {

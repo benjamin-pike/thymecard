@@ -42,7 +42,7 @@ const LINKS = [
     {
         name: 'recipes',
         icon: <BiFoodMenu />,
-        link: '#'
+        link: 'recipes'
     },
     {
         name: 'activities',

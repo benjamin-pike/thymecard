@@ -1,0 +1,219 @@
+.navbar {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    height: 100svh;
+    width: 3.25rem;
+    background-color: $mono-dark;
+
+    z-index: 100000;
+
+    transition: box-shadow 200ms ease;
+
+    @include dark-mode {
+        box-shadow: 1px 0 $mono-800;
+    }
+
+    @include responsive(('mobile')) {
+        position: absolute;
+
+        margin-left: 0;
+
+        transition: margin 200ms ease;
+
+        @include dark-mode {
+            box-shadow: none;
+        }
+
+        &[data-visible = 'false'] {
+            margin-left: -3.25rem;
+        }
+
+        &[data-visible = 'true'] {
+            .handle {
+                opacity: 0;
+            }
+        }
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 100%;
+        aspect-ratio: 1;
+
+        padding: 0.4rem;
+
+        * {
+            fill: $mono-100;
+        }
+    }
+
+    nav {
+        margin-top: 5svh;
+
+        ul {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            height: 100%;
+
+            li {
+                position: relative;
+
+                color: $mono-light;
+                width: 100%;
+
+                a {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    height: 3rem;
+                    width: 100%;
+
+                    svg {
+                        height: 1.25rem;
+                        width: 1.25rem;
+
+                        transition: translate 200ms ease;
+                    }
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0.5rem;
+                    left: 50%;
+
+                    width: 0.25rem;
+                    height: 0.25rem;
+
+                    background-color: $mono-light;
+                    opacity: 0;
+
+                    border-radius: 50%;
+
+                    translate: -50%;
+
+                    transition: opacity 200ms ease;
+                }
+
+                &:hover,
+                &[data-active='true'] {
+                    svg {
+                        translate: 0 -0.25rem;
+                    }
+
+                    &::after {
+                        opacity: 1;
+                    }
+                }
+
+                &[data-active='true'] {
+                    background-color: $mono-800;
+                }
+            }
+        }
+    }
+
+    .handle {
+        position: absolute;
+        top: 50%;
+        left: 3.25rem;
+
+        translate: 0 -50%;
+
+        height: 8rem;
+        width: 0.5rem;
+
+        border-radius: 0 100vmax 100vmax 0;
+
+        background-color: $mono-dark;
+        opacity: 0.25;
+
+        transition: opacity 200ms ease;
+
+        @include dark-mode {
+            background-color: $mono-600;
+        }
+    }
+
+    .upgrade {
+        display: grid;
+        place-items: center;
+
+        margin-top: auto;
+
+        width: 100%;
+        aspect-ratio: 1;
+
+        color: $mono-light;
+
+        transition: color 100ms ease, background-color 100ms ease;
+
+        &:hover {
+            color: $mono-700;
+            background-color: $mono-100;
+        }
+
+        button {
+            display: grid;
+            place-items: center;
+
+            padding: 0.5rem;
+
+            border-radius: 0.25rem;
+
+            svg {
+                height: 1.5rem;
+                width: 1.5rem;
+            }
+        }
+    }
+
+    .avatar {
+        display: grid;
+        place-items: center;
+
+        width: 100%;
+        aspect-ratio: 1;
+
+        padding: 0.4rem;
+
+        .image {
+            width: 1.75rem;
+            height: 1.75rem;
+        }
+    }
+}
+
+.backdrop {
+    position: absolute;
+
+    inset: 0;
+    height: 100%;
+    width: 100%;
+
+    background-color: transparent;
+    backdrop-filter: blur(0);
+
+    pointer-events: none;
+
+    z-index: 10000;
+
+    transition: background-color 200ms ease, backdrop-filter 200ms ease;
+
+    &[data-visible='true'] {
+        background-color: transparentize($mono-dark, 0.5);
+        backdrop-filter: blur(0.25rem);
+
+        pointer-events: all;
+    }
+}

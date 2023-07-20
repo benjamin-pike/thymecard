@@ -15,9 +15,21 @@ interface IScrollWrapperProps {
     buttonMargin?: { up?: string; down?: string };
     active?: boolean;
     useAutoScroll?: boolean;
+    useScrollButtons?: boolean;
+    useScrollBar?: boolean;
 }
 
-const ScrollWrapper: FC<IScrollWrapperProps> = ({ children, className, height, padding, buttonMargin, active, useAutoScroll }) => {
+const ScrollWrapper: FC<IScrollWrapperProps> = ({
+    children,
+    className,
+    height,
+    padding,
+    buttonMargin,
+    active,
+    useAutoScroll,
+    useScrollButtons,
+    useScrollBar
+}) => {
     if (!(active ?? true)) {
         return <>{children}</>;
     }
@@ -34,35 +46,41 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({ children, className, height, p
     const [upperIsHovered, setUpperIsHovered] = useState(false);
     const [lowerIsHovered, setLowerIsHovered] = useState(false);
 
-    const handleSegmentHoverState = useCallback((event: MouseEvent) => {
-        if (!upperSegmentRef.current || !lowerSegmentRef.current || !columnRef.current) return;
-  
-        const upperRect = upperSegmentRef.current.getBoundingClientRect();
-        const lowerRect = lowerSegmentRef.current.getBoundingClientRect();
+    const displayScrollButtons = useScrollButtons !== false;
+    const displayScrollBar = useScrollBar !== false;
 
-        const scrollIsAtTop = columnRef.current.scrollTop < 10;
-        const scrollIsAtBottom = columnRef.current.scrollTop > columnRef.current.scrollHeight - columnRef.current.clientHeight - 10;
+    const handleSegmentHoverState = useCallback(
+        (event: MouseEvent) => {
+            if (!upperSegmentRef.current || !lowerSegmentRef.current || !columnRef.current) return;
 
-        const isInsideUpper =
-          event.clientX >= upperRect.left &&
-          event.clientX <= upperRect.right &&
-          event.clientY >= upperRect.top &&
-          event.clientY <= upperRect.bottom;
+            const upperRect = upperSegmentRef.current.getBoundingClientRect();
+            const lowerRect = lowerSegmentRef.current.getBoundingClientRect();
 
-        const isInsideLower =
-            event.clientX >= lowerRect.left &&
-            event.clientX <= lowerRect.right &&
-            event.clientY >= lowerRect.top &&
-            event.clientY <= lowerRect.bottom;
+            const scrollIsAtTop = columnRef.current.scrollTop < 10;
+            const scrollIsAtBottom = columnRef.current.scrollTop > columnRef.current.scrollHeight - columnRef.current.clientHeight - 10;
+
+            const isInsideUpper =
+                event.clientX >= upperRect.left &&
+                event.clientX <= upperRect.right &&
+                event.clientY >= upperRect.top &&
+                event.clientY <= upperRect.bottom;
+
+            const isInsideLower =
+                event.clientX >= lowerRect.left &&
+                event.clientX <= lowerRect.right &&
+                event.clientY >= lowerRect.top &&
+                event.clientY <= lowerRect.bottom;
 
             if (isInsideUpper !== upperIsHovered && (!scrollIsAtTop || isInsideUpper === false)) {
-            setUpperIsHovered(isInsideUpper);
-        }
+                setUpperIsHovered(isInsideUpper);
+            }
 
-        if (isInsideLower !== lowerIsHovered && (!scrollIsAtBottom || isInsideLower === false)) {
-            setLowerIsHovered(isInsideLower);
-        }
-    }, [upperIsHovered, lowerIsHovered]);
+            if (isInsideLower !== lowerIsHovered && (!scrollIsAtBottom || isInsideLower === false)) {
+                setLowerIsHovered(isInsideLower);
+            }
+        },
+        [upperIsHovered, lowerIsHovered]
+    );
 
     const handleScroll = useCallback(() => {
         if (columnRef.current && scrollbarRef.current) {
@@ -185,38 +203,34 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({ children, className, height, p
 
     return (
         <div className={`${styles.wrapper}${className ? ' ' + className : ''}`} style={{ height }}>
-            <div
-                ref={upperSegmentRef} 
-                className={formatClasses(styles, ['segment', 'upper'])}
-                data-hovered = {upperIsHovered}
-            >
-                <button
-                    className={formatClasses(styles, ['scrollButton', 'up'])}
-                    style={{ top: buttonMargin?.up }}
-                    onClick = {handleScrollToTop}
-                >
-                    <FaChevronUp />
-                </button>
-            </div>
+            {displayScrollButtons && (
+                <div ref={upperSegmentRef} className={formatClasses(styles, ['segment', 'upper'])} data-hovered={upperIsHovered}>
+                    <button
+                        className={formatClasses(styles, ['scrollButton', 'up'])}
+                        style={{ top: buttonMargin?.up }}
+                        onClick={handleScrollToTop}
+                    >
+                        <FaChevronUp />
+                    </button>
+                </div>
+            )}
             <div className={styles.column} style={{ padding: `${padding}rem 0` }} ref={columnRef}>
                 {children}
             </div>
-            {scrollbarIsVisible && (
+            {displayScrollBar && scrollbarIsVisible && (
                 <div ref={scrollbarRef} className={styles.scrollbar} onMouseDown={handleMouseDown} data-active={isDragging} />
             )}
-            <div
-                ref={lowerSegmentRef}
-                className={formatClasses(styles, ['segment', 'lower'])}
-                data-hovered = {lowerIsHovered}
-            >
-                <button
-                    className={formatClasses(styles, ['scrollButton', 'down'])}
-                    style={{ bottom: buttonMargin?.down }}
-                    onClick={handleScrollToBottom}
-                >
+            {displayScrollButtons && (
+                <div ref={lowerSegmentRef} className={formatClasses(styles, ['segment', 'lower'])} data-hovered={lowerIsHovered}>
+                    <button
+                        className={formatClasses(styles, ['scrollButton', 'down'])}
+                        style={{ bottom: buttonMargin?.down }}
+                        onClick={handleScrollToBottom}
+                    >
                         <FaChevronDown />
-                </button>
-            </div>
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

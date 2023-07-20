@@ -1,4 +1,7 @@
 .event {
+    display: flex;
+    flex-direction: column;
+
     color: $mono-700;
     
     border-radius: 0.25rem;
@@ -43,6 +46,8 @@
 .category {
     font-size: $fs-11;
     font-weight: 300;
+    white-space: nowrap;
+
     margin-bottom: 0.5rem;
 }
 
@@ -83,7 +88,7 @@
         color: $mono-400;
     
         @include dark-mode {
-            color: $mono-200;
+            color: $mono-600;
         }
     }
 }

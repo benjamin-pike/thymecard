@@ -30,8 +30,6 @@
 
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.05);
 
-    transition: width 200ms ease, translate 200ms ease;
-
     @include dark-mode {
         background-color: $mono-800;
         box-shadow: 0 0 0 0.5px $mono-700 inset, 0 0 0 0.5px $mono-700;

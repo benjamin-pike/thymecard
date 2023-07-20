@@ -10,8 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "npm run dev --prefix client",
     "api": "npm run start:dev --prefix api",
-    "count-lines": "git ls-files | grep '\\.ts' | xargs wc -l"
-  },
+    "count-lines": "git ls-files | egrep '\\.ts$|\\.scss$' | xargs cat | grep -v '^[[:space:]]*$' | wc -l"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benjamin-pike/sirona.git"

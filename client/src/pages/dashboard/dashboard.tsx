@@ -22,13 +22,17 @@ import { BiBookmarkAlt } from 'react-icons/bi';
 import styles from './dashboard.module.scss';
 
 const Dashboard = () => {
-    const viewport = useBreakpoints();
+    const viewport = useBreakpoints([
+        { name: 'compressed', min: 0, max: 600 },
+        { name: 'feedOnly', min: 601, max: 850 },
+        { name: 'unregulated', min: 851 }
+    ]);
     const [visibleCard, setVisibleCard] = useState<string | null>(null);
 
     const initialColumns = window.innerWidth > 1200 ? 3 : window.innerWidth > 768 ? 2 : window.innerWidth > 480 ? 1 : 0;
     const [columns, setColumns] = useState(initialColumns);
 
-    const displayMobileNav = columns === 1 || columns === 0;
+    const displayMobileNav = columns === 0 || columns === 1;
 
     const toggleCard = useCallback(
         (cardName: string) => {
@@ -57,15 +61,16 @@ const Dashboard = () => {
 
     const checkColumns = useCallback(() => {
         const viewportColumnMapping = new Map([
-            ['isXLarge', 3],
-            ['isLarge', 2],
+            ['isFeedOnly', 1],
             ['isMedium', 2],
-            ['isSmall', 1]
+            ['isLarge', 2],
+            ['isXLarge', 3],
         ]);
 
         for (const [viewportType, columnCount] of viewportColumnMapping) {
             if (viewport.current[viewportType]) {
                 if (columns !== columnCount) {
+                    console.log('viewportType', viewportType, 'columnCount', columnCount)
                     setColumns(columnCount);
                 }
                 return;
@@ -92,7 +97,7 @@ const Dashboard = () => {
 
     const buildScrollbarWrapperProps = (columnName: string, active: boolean) => ({
         className: formatClasses(styles, ['wrapper', columnName]),
-        height: 'calc(100svh - 4rem)',
+        height: '100svh',
         buttonMargin: { down: displayMobileNav ? 'calc(3.5rem + 1px)' : undefined },
         padding: 2,
         active
@@ -100,7 +105,7 @@ const Dashboard = () => {
 
     return (
         <main className={styles.content}>
-            <ScrollWrapper {...buildScrollbarWrapperProps('feed', columns !== 0)} useAutoScroll>
+            <ScrollWrapper {...buildScrollbarWrapperProps('feed', !viewport.current.isCompressed)} useAutoScroll>
                 <div className={formatClasses(styles, ['column', 'feed'])}>
                     <Feed />
                 </div>
@@ -143,25 +148,25 @@ const Dashboard = () => {
             <section className={formatClasses(styles, ['navbar', visibleCard ? 'visibleCard' : ''])}>
                 <button onClick={() => toggleCard('overview')}>
                     <CgProfile />
+                    <p>Overview</p>
                 </button>
                 <div className={styles.divider} />
                 <button onClick={() => toggleCard('progress')}>
                     <MdDataUsage />
+                    <p>Progress</p>
                 </button>
                 <div className={styles.divider} />
                 <button onClick={() => toggleCard('day')}>
                     <CgCalendarToday />
+                    <p>Your Day</p>
                 </button>
                 <div className={styles.divider} />
                 <button onClick={() => toggleCard('bookmarks')}>
                     <BiBookmarkAlt />
+                    <p>Bookmarks</p>
                 </button>
             </section>
             <div className={styles.fader} />
-            <div
-                className={`${styles.mobilePopupBackdrop} ${visibleCard ? styles.visible : styles.hidden}`}
-                onClick={() => setVisibleCard(null)}
-            />
         </main>
     );
 };
