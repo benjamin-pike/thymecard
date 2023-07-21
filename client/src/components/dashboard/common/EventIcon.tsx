@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { EventType } from '@/lib/global.types';
 import { LuSalad, LuBanana, LuIceCream2, LuCoffee, LuActivity, LuGlassWater, LuSoup } from 'react-icons/lu';
 import styles from './event-icon.module.scss';
@@ -20,7 +20,7 @@ interface IEventIconProps {
     background: boolean;
 }
 
-const EventIcon: FC<IEventIconProps> = ({ className, type, radius, background }) => {
+const EventIcon: FC<IEventIconProps> = memo(({ className, type, radius, background }) => {
     return (
         <div
             className={`${styles.icon}${className ? ' ' + className : ''}`}
@@ -35,6 +35,6 @@ const EventIcon: FC<IEventIconProps> = ({ className, type, radius, background })
             {iconMap[type]}
         </div>
     );
-};
+});
 
 export default EventIcon;

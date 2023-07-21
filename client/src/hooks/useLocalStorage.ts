@@ -4,7 +4,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
     const readValue = (): T => {
         try {
             const item = window.localStorage.getItem(key);
-            return item ? JSON.parse(item) : initialValue;
+            return item ? JSON.parse(item) : initialValue as T;
         } catch (error) {
             return initialValue;
         }

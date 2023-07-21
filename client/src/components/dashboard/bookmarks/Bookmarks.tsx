@@ -1,5 +1,5 @@
 'use client';
-import { FC, useMemo, useState } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { CardBody } from '@/components/common/card/Card';
 import { DashboardCardHeader } from '../common/DashboardCardHeader';
@@ -7,11 +7,12 @@ import SliderToggle from '@/components/common/slider-toggle/SliderToggle';
 import { getOrdinalSuffix } from '@/lib/date.utils';
 import { generateMockBookmarksData } from '@/test/mock-data/dashboard';
 import styles from './bookmarks.module.scss';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 type Category = 'recipes' | 'activities';
 
-export default () => {
-    const [selectedType, setSelectedType] = useState<Category>('recipes');
+const Bookmarks = () => {
+    const [selectedType, setSelectedType] = useLocalStorage<Category>('bookmarks', 'recipes');
 
     const data = useMemo(() => generateMockBookmarksData(10), []);
 
@@ -19,7 +20,7 @@ export default () => {
         <>
             <DashboardCardHeader titlePrefix={'Your'} titleMain={'Bookmarks'}>
                 <SliderToggle
-                    localStorageKey = {'bookmarks'}
+                    localStorageKey={'bookmarks'}
                     options={['recipes', 'activities']}
                     labels={{ recipes: 'Recipes', activities: 'Activities' }}
                     onOptionSelected={setSelectedType}
@@ -35,6 +36,8 @@ export default () => {
         </>
     );
 };
+
+export default Bookmarks;
 
 interface IBookmarkProps {
     category: Category;
@@ -61,7 +64,7 @@ const Bookmark: FC<IBookmarkProps> = ({ category, name, calories, lastCompleted 
 
     return (
         <a className={styles.bookmark}>
-            <h1 className={styles.name}>{name}</h1>
+            <p className={styles.name}>{name}</p>
             <p className={styles.calories}>
                 <strong>
                     {calories < 0 ? '−' : '+'}

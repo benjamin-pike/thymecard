@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { formatClasses } from '@/lib/common.utils';
 import styles from './week-graph.module.scss';
 
@@ -15,7 +15,7 @@ type IWeekGraphProps = {
     setHoveredDay: (day: number | null) => void;
 };
 
-const WeekGraph: FC<IWeekGraphProps> = ({
+const WeekGraph: FC<IWeekGraphProps> = memo(({
     positiveData,
     positiveTarget,
     negativeData,
@@ -97,7 +97,7 @@ const WeekGraph: FC<IWeekGraphProps> = ({
             {hoveredDay !== null && <HoverLine {...{ hoveredDay, positiveData, negativeData, deltaData, scaleX, scaleY, height, padding, strokeWidth }} />}
         </svg>
     );
-};
+});
 
 interface IPadding {
     base: number;

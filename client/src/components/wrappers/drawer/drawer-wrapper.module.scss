@@ -31,8 +31,8 @@
 }
 
 .drawer {
-    display: flex;
     position: fixed;
+    display: flex;
     pointer-events: auto;
     transition:
         margin 200ms ease,

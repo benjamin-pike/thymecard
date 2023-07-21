@@ -75,7 +75,7 @@
             }
         }
 
-        @include responsive(('medium')) {
+        @include responsive(('medium', 'threeColumns')) {
             height: 100%;
         }
 

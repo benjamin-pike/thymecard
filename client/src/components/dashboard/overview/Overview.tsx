@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { CardBody } from '@/components/common/card/Card';
 import Avatar from '@/components/common/avatar/Avatar';
 import SliderToggle from '@/components/common/slider-toggle/SliderToggle';
 import LatestEvent from './LatestEvent';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { formatClasses } from '@/lib/common.utils';
 import { abbreviateNumber } from '@/lib/number.utils';
 import { generateMockLatestEventData, generateMockOverviewData } from '@/test/mock-data/dashboard';
@@ -10,11 +11,11 @@ import styles from './overview.module.scss';
 
 type Interval = 'week' | 'month' | 'year' | 'allTime';
 
-export default () => {
-    const [selectedInterval, setSelectedInterval] = useState<Interval>('week');
+const Overview = () => {
+    const [selectedInterval, setSelectedInterval] = useLocalStorage<Interval>('overview', 'week');
 
-    const numericdata = useMemo(() => generateMockOverviewData(), []);
-    const selectedNumericData = numericdata[selectedInterval];
+    const numericData = useMemo(() => generateMockOverviewData(), []);
+    const selectedNumericData = numericData[selectedInterval];
 
     const eventData = useMemo(() => generateMockLatestEventData(), []);
 
@@ -87,3 +88,5 @@ export default () => {
         </>
     );
 };
+
+export default Overview;
