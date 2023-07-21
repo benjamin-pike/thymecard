@@ -1,4 +1,4 @@
-import { FC, ReactElement } from 'react';
+import { FC, ReactElement, memo } from 'react';
 import { CardHeader } from '@/components/common/card/Card';
 import styles from './dashboard-card-header.module.scss';
 
@@ -9,7 +9,7 @@ interface IDashboardCardHeaderProps {
     titleSuffix?: string;
 }
 
-export const DashboardCardHeader: FC<IDashboardCardHeaderProps> = ({ children, titlePrefix, titleMain, titleSuffix }) => {
+export const DashboardCardHeader: FC<IDashboardCardHeaderProps> = memo(({ children, titlePrefix, titleMain, titleSuffix }) => {
     return (
         <CardHeader>
             <>
@@ -21,4 +21,4 @@ export const DashboardCardHeader: FC<IDashboardCardHeaderProps> = ({ children, t
             </>
         </CardHeader>
     );
-};
+});

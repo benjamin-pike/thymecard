@@ -1,11 +1,11 @@
 'use client';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWindowResize } from '@/hooks/events/useWindowResize';
 
 import Card from '@/components/common/card/Card';
 import Feed from '@/components/dashboard/feed/Feed';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
-import DrawerWrapper from '@/components/wrappers/drawer/DrawerWrapper';
+import DrawerWrapper, { IDrawerWrapperProps } from '@/components/wrappers/drawer/DrawerWrapper';
 import OverviewCardContent from 'components/dashboard/overview/Overview';
 import ProgressCardContent from 'components/dashboard/progress/Progress';
 import DayCardContent from 'components/dashboard/day/Day';
@@ -59,18 +59,20 @@ const Dashboard = () => {
         setVisibleCard(null);
     }, [visibleCard]);
 
-    const checkColumns = useCallback(() => {
+    useWindowResize(hideCard);
+
+    useEffect(() => {
         const viewportColumnMapping = new Map([
             ['isFeedOnly', 1],
             ['isMedium', 2],
             ['isLarge', 2],
-            ['isXLarge', 3],
+            ['isXLarge', 3]
         ]);
 
         for (const [viewportType, columnCount] of viewportColumnMapping) {
             if (viewport.current[viewportType]) {
                 if (columns !== columnCount) {
-                    console.log('viewportType', viewportType, 'columnCount', columnCount)
+                    console.log('viewportType', viewportType, 'columnCount', columnCount);
                     setColumns(columnCount);
                 }
                 return;
@@ -82,64 +84,107 @@ const Dashboard = () => {
         }
     }, [viewport, columns]);
 
-    const buildDrawerWrapperProps = (cardName: string) =>
-        ({
+
+    const buildDrawerWrapperProps = useCallback(
+        (cardName: string): Omit<IDrawerWrapperProps, 'children'> => ({
             direction: 'bottom',
             transitionDuration: 200,
             margin: { closed: -0.5, open: 0 },
             isVisible: visibleCard === cardName,
             isActive: displayMobileNav,
             closeDrawer: hideCard
-        } as const);
+        }),
+        [visibleCard, displayMobileNav, hideCard]
+    );
 
-    useWindowResize(hideCard);
-    useWindowResize(checkColumns);
+    const overviewDrawerWrapperProps = useMemo(() => buildDrawerWrapperProps('overview'), [buildDrawerWrapperProps]);
+    const progressDrawerWrapperProps = useMemo(() => buildDrawerWrapperProps('progress'), [buildDrawerWrapperProps]);
+    const dayDrawerWrapperProps = useMemo(() => buildDrawerWrapperProps('day'), [buildDrawerWrapperProps]);
+    const bookmarksDrawerWrapperProps = useMemo(() => buildDrawerWrapperProps('bookmarks'), [buildDrawerWrapperProps]);
 
-    const buildScrollbarWrapperProps = (columnName: string, active: boolean) => ({
-        className: formatClasses(styles, ['wrapper', columnName]),
-        height: '100svh',
-        buttonMargin: { down: displayMobileNav ? 'calc(3.5rem + 1px)' : undefined },
-        padding: 2,
-        active
-    });
+    const buildScrollbarWrapperProps = useCallback(
+        (columnName: string, active: boolean) => ({
+            className: formatClasses(styles, ['wrapper', columnName]),
+            height: '100svh',
+            buttonMargin: { down: displayMobileNav ? 'calc(3.5rem + 1px)' : undefined },
+            padding: 2,
+            active
+        }),
+        [displayMobileNav]
+    );
+
+    const feedScrollbarWrapperProps = useMemo(
+        () => buildScrollbarWrapperProps('feed', !viewport.current.isCompressed),
+        [buildScrollbarWrapperProps, viewport]
+    );
+    const profileAndOrganizationScrollbarWrapperProps = useMemo(
+        () => buildScrollbarWrapperProps('profile', columns === 2),
+        [buildScrollbarWrapperProps, columns]
+    );
+    const profileScrollbarWrapperProps = useMemo(
+        () => buildScrollbarWrapperProps('profile', columns === 3),
+        [buildScrollbarWrapperProps, columns]
+    );
+    const organizationScrollbarWrapperProps = useMemo(
+        () => buildScrollbarWrapperProps('organization', columns === 3),
+        [buildScrollbarWrapperProps, columns]
+    );
+
+    const ProgressCard = useMemo(
+        () => (
+            <Card className={formatClasses(styles, ['card', 'progress', visibleCard === 'progress' ? 'visible' : ''])}>
+                <ProgressCardContent />
+            </Card>
+        ),
+        [visibleCard]
+    );
+
+    const OverviewCard = useMemo(
+        () => (
+            <Card className={formatClasses(styles, ['card', 'overview', visibleCard === 'overview' ? 'visible' : ''])}>
+                <OverviewCardContent />
+            </Card>
+        ),
+        [visibleCard]
+    );
+
+    const DayCard = useMemo(
+        () => (
+            <Card className={formatClasses(styles, ['card', 'day', visibleCard === 'day' ? 'visible' : ''])}>
+                <DayCardContent />
+            </Card>
+        ),
+        [visibleCard]
+    );
+
+    const BookmarksCard = useMemo(
+        () => (
+            <Card className={formatClasses(styles, ['card', 'bookmarks', visibleCard === 'bookmarks' ? 'visible' : ''])}>
+                <BookmarksCardContent />
+            </Card>
+        ),
+        [visibleCard]
+    );
 
     return (
         <main className={styles.content}>
-            <ScrollWrapper {...buildScrollbarWrapperProps('feed', !viewport.current.isCompressed)} useAutoScroll>
+            <ScrollWrapper {...feedScrollbarWrapperProps} useAutoScroll>
                 <div className={formatClasses(styles, ['column', 'feed'])}>
                     <Feed />
                 </div>
             </ScrollWrapper>
-            <ScrollWrapper {...buildScrollbarWrapperProps('profile', columns === 2)}>
+            <ScrollWrapper {...profileAndOrganizationScrollbarWrapperProps}>
                 <>
-                    <ScrollWrapper {...buildScrollbarWrapperProps('profile', columns === 3)}>
+                    <ScrollWrapper {...profileScrollbarWrapperProps}>
                         <div className={formatClasses(styles, ['column', 'profile'])}>
-                            <DrawerWrapper {...buildDrawerWrapperProps('overview')}>
-                                <Card className={formatClasses(styles, ['card', 'overview', visibleCard === 'overview' ? 'visible' : ''])}>
-                                    <OverviewCardContent />
-                                </Card>
-                            </DrawerWrapper>
-                            <DrawerWrapper {...buildDrawerWrapperProps('progress')}>
-                                <Card className={formatClasses(styles, ['card', 'progress', visibleCard === 'progress' ? 'visible' : ''])}>
-                                    <ProgressCardContent />
-                                </Card>
-                            </DrawerWrapper>
+                            <DrawerWrapper {...overviewDrawerWrapperProps}>{OverviewCard}</DrawerWrapper>
+                            <DrawerWrapper {...progressDrawerWrapperProps}>{ProgressCard}</DrawerWrapper>
                         </div>
                     </ScrollWrapper>
-                    <ScrollWrapper {...buildScrollbarWrapperProps('organization', columns === 3)}>
+                    <ScrollWrapper {...organizationScrollbarWrapperProps}>
                         <div className={formatClasses(styles, ['column', 'organization'])}>
-                            <DrawerWrapper {...buildDrawerWrapperProps('day')}>
-                                <Card className={formatClasses(styles, ['card', 'day', visibleCard === 'day' ? 'visible' : ''])}>
-                                    <DayCardContent />
-                                </Card>
-                            </DrawerWrapper>
-                            <DrawerWrapper {...buildDrawerWrapperProps('bookmarks')}>
-                                <Card
-                                    className={formatClasses(styles, ['card', 'bookmarks', visibleCard === 'bookmarks' ? 'visible' : ''])}
-                                >
-                                    <BookmarksCardContent />
-                                </Card>
-                            </DrawerWrapper>
+                            <DrawerWrapper {...dayDrawerWrapperProps}>{DayCard}</DrawerWrapper>
+                            <DrawerWrapper {...bookmarksDrawerWrapperProps}>{BookmarksCard}</DrawerWrapper>
                             <Footer />
                         </div>
                     </ScrollWrapper>
@@ -158,7 +203,7 @@ const Dashboard = () => {
                 <div className={styles.divider} />
                 <button onClick={() => toggleCard('day')}>
                     <CgCalendarToday />
-                    <p>Your Day</p>
+                    <p>Day</p>
                 </button>
                 <div className={styles.divider} />
                 <button onClick={() => toggleCard('bookmarks')}>

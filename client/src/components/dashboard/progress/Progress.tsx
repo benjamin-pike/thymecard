@@ -10,22 +10,23 @@ import styles from './progress.module.scss';
 
 const Progress = () => {
     const [hoveredDay, setHoveredDay] = useState<number | null>(null);
-   
+
     const inTarget = 2000;
     const outTarget = 2500;
 
-    const data = useMemo(
-        () => generateMockProgressData(DateTime.now(), DateTime.local().ordinal),
-    []);
+    const data = useMemo(() => generateMockProgressData(DateTime.now(), DateTime.local().ordinal), []);
 
     const [dayInValues, dayOutValues] = getDayValues(data, hoveredDay);
-    const dayDelta = dayInValues.reduce((a, b) => a + b, 0) - dayOutValues.reduce((a, b) => a + b, 0);
+    const dayDelta = useMemo(
+        () => dayInValues.reduce((a, b) => a + b, 0) - dayOutValues.reduce((a, b) => a + b, 0),
+        [dayInValues, dayOutValues]
+    );
 
     const [weekInValues, weekOutValues] = getWeekValues(data);
 
     const [monthInValues, monthOutValues] = getMonthValues(data);
     const [yearInValues, yearOutValues] = getYearValues(data);
-    
+
     return (
         <>
             <DashboardCardHeader titlePrefix={'Your'} titleMain={'Progress'}>
@@ -97,14 +98,13 @@ const getDayValues = (mockData: ICalorieEntry[], hoveredDay: number | null): [nu
             } else {
                 dayOutValues.push(Math.abs(entry.cal));
             }
-        } else if (hoveredDay === null){
+        } else if (hoveredDay === null) {
             break;
         }
     }
 
     return [dayInValues.reverse(), dayOutValues.reverse()];
 };
-
 
 const getWeekValues = (mockData: ICalorieEntry[]): [number[], number[]] => {
     const today = DateTime.local();
@@ -150,7 +150,7 @@ const getMonthValues = (mockData: ICalorieEntry[]): [number[], number[]] => {
     }
 
     return [monthInValues.filter((val) => val > 0), monthOutValues.filter((val) => val > 0)];
-}
+};
 
 const getYearValues = (mockData: ICalorieEntry[]): [number[], number[]] => {
     const today = DateTime.local();
@@ -173,4 +173,4 @@ const getYearValues = (mockData: ICalorieEntry[]): [number[], number[]] => {
     }
 
     return [yearInValues.slice(0, today.month), yearOutValues.slice(0, today.month)];
-}
+};

@@ -39,6 +39,7 @@ const defaultBreakpoints: BreakpointParams<DefaultBreakpoint>[] = [
 
 export const useBreakpoints = (customBreakpoints: BreakpointParams[] = []): IViewport => {
     const dispatch = useDispatch();
+    const provider = document.querySelector('.responsive-wrapper');
     
     const currentDefaultSize = useSelector((state: RootState) => state.viewport.viewportSize);
     const currentCustomSize = useSelector((state: RootState) => state.viewport.customViewportSize);
@@ -64,14 +65,25 @@ export const useBreakpoints = (customBreakpoints: BreakpointParams[] = []): IVie
     useEffect(() => {
         for (let i = 0; i < defaultQueries.length; i++) {
             if (defaultQueries[i].mq) {
-                dispatch(setViewportSize(defaultQueries[i].name));
+                const currentDefaultSize = defaultQueries[i].name;
+                dispatch(setViewportSize(currentDefaultSize));
+
+                if (provider) {
+                    provider.setAttribute('data-viewport', currentDefaultSize);
+                }
                 break;
             }
         }
 
         for (let i = 0; i < customQueries.length; i++) {
             if (customQueries[i].mq) {
-                dispatch(setCustomViewportSize(customQueries[i].name));
+                const currentCustomSize = customQueries[i].name;
+                dispatch(setCustomViewportSize(currentCustomSize));
+
+                if (provider) {
+                    provider.setAttribute('data-custom-viewport', currentCustomSize);
+                }
+
                 break;
             }
         }

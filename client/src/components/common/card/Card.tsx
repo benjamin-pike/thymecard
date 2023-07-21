@@ -1,4 +1,4 @@
-import { FC, ReactElement } from "react";
+import { FC, ReactElement, memo } from 'react';
 import styles from './card.module.scss';
 
 interface ICardComponentProps {
@@ -6,28 +6,16 @@ interface ICardComponentProps {
     className?: string;
 }
 
-const Card: FC<ICardComponentProps> = ({ children, className }) => {
-    return (
-        <article className = {`${styles.card}${className ? ' ' + className : ''}`}>
-            {children}
-        </article>
-    );
-}
+const Card: FC<ICardComponentProps> = memo(({ children, className }) => {
+    return <article className={`${styles.card}${className ? ' ' + className : ''}`}>{children}</article>;
+});
 
 export default Card;
 
 export const CardHeader: FC<ICardComponentProps> = ({ children, className }) => {
-    return (
-        <header className = {`${styles.cardHeader}${className ? ' ' + className : ''}`}>
-            {children}
-        </header>
-    );
-}
+    return <header className={`${styles.cardHeader}${className ? ' ' + className : ''}`}>{children}</header>;
+};
 
 export const CardBody: FC<ICardComponentProps> = ({ children, className }) => {
-    return (
-        <article className = {`${styles.cardBody}${className ? ' ' + className : ''}`}>
-            {children}
-        </article>
-    );
-}
+    return <article className={`${styles.cardBody}${className ? ' ' + className : ''}`}>{children}</article>;
+};

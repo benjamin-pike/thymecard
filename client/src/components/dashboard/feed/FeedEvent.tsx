@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { DateTime } from 'luxon';
 import Card from '@/components/common/card/Card';
 import ImageGrid from '@/components/common/image-grid/ImageGrid';
@@ -14,8 +14,8 @@ const UNITS: Record<string, string> = {
     protein: 'g'
 };
 
-const FeedEvent: FC<IFeedEventProps> = ({ type, time, location, rating, name, metrics, journal, visuals }) => {
-    const formattedTime = DateTime.fromJSDate(time).toFormat('HH:mm');
+const FeedEvent: FC<IFeedEventProps> = memo(({ type, time, location, rating, name, metrics, journal, visuals }) => {
+    const formattedTime = useMemo(() => DateTime.fromJSDate(time).toFormat('HH:mm'), [time]);
     return (
         <Card>
             <>
@@ -76,7 +76,7 @@ const FeedEvent: FC<IFeedEventProps> = ({ type, time, location, rating, name, me
             </>
         </Card>
     );
-};
+});
 
 export default FeedEvent;
 
