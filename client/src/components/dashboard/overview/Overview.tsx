@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
+import useLocalStorage from '@/hooks/useLocalStorage';
+
 import { CardBody } from '@/components/common/card/Card';
 import Avatar from '@/components/common/avatar/Avatar';
 import SliderToggle from '@/components/common/slider-toggle/SliderToggle';
 import LatestEvent from './LatestEvent';
-import useLocalStorage from '@/hooks/useLocalStorage';
+
 import { formatClasses } from '@/lib/common.utils';
 import { abbreviateNumber } from '@/lib/number.utils';
 import { generateMockLatestEventData, generateMockOverviewData } from '@/test/mock-data/dashboard';
+
 import styles from './overview.module.scss';
 
 type Interval = 'week' | 'month' | 'year' | 'allTime';
@@ -35,12 +38,12 @@ const Overview = () => {
                     />
                     <section className={styles.completed}>
                         <div className={styles.meals}>
-                            <p className={styles.value}>{selectedNumericData.events.meals}</p>
                             <p className={styles.type}>
-                                Meals
+                                Portions
                                 <br />
                                 Consumed
                             </p>
+                            <p className={styles.value}>{selectedNumericData.events.meals}</p>
                         </div>
                         <div className={formatClasses(styles, ['divider', 'vertical'])} />
                         <div className={styles.activities}>

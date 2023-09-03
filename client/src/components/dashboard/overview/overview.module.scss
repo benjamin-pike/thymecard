@@ -37,34 +37,52 @@
 
 .completed {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     align-items: center;
 
-    & .meals,
-    & .activities {
+    .meals,
+    .activities {
         display: flex;
         gap: 0.5rem;
         align-items: center;
     }
 
-    & .value {
-        font-size: $fs-24;
+    .value {
+        padding: 0.5rem 0.8rem;
+        
+        font-size: $fs-18;
         font-weight: 600;
-        color: $mono-800;
+        color: $mono-light;
+        background-color: $mono-800;
+
+        border-radius: 0.5rem;
 
         @include dark-mode {
-            color: $mono-100;
+            color: $mono-light;
+            background-color: $mono-800;
+            box-shadow: 0 0 0 1px $mono-700;
         }
     }
 
-    & .type {
+    .type {
         font-size: $fs-11;
         font-weight: 400;
         color: $mono-500;
-        text-align: center;
 
         @include dark-mode {
-            color: $mono-400;
+            color: $mono-600;
+        }
+    }
+
+    .meals {
+        .type {
+            text-align: right;
+        }
+    }
+
+    .activities {
+        .type {
+            text-align: left;
         }
     }
 }
@@ -92,7 +110,7 @@
     align-items: center;
     gap: 0.75rem;
 
-    & .value {
+    .value {
         font-size: $fs-18;
         padding: 0.6rem 0.9rem;
         font-weight: 400;
@@ -104,8 +122,8 @@
         }
     }
 
-    & .in {
-        & .value {
+    .in {
+        .value {
             border-radius: 0.25rem 1rem 0.25rem 1rem;
             background-color: transparentize($pink, 0.9);
             color: $pink;
@@ -116,8 +134,8 @@
         }
     }
 
-    & .out {
-        & .value {
+    .out {
+        .value {
             border-radius: 1rem 0.25rem 1rem 0.25rem;
             background-color: transparentize($blue, 0.9);
             color: $blue;
@@ -128,8 +146,8 @@
         }
     }
 
-    & .delta {
-        & .value {
+    .delta {
+        .value {
             color: $purple;
             background-color: transparentize($purple, 0.9);
             border-radius: 0.5rem;
@@ -141,7 +159,7 @@
         }
     }
 
-    & .type {
+    .type {
         font-size: $fs-11;
         font-weight: 400;
         color: $mono-500;

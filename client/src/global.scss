@@ -61,7 +61,7 @@
 
 $mono-light: rgb(255, 255, 255);
 $mono-100: rgb(243, 245, 250);
-$mono-200: rgb(235, 238, 244);
+$mono-200: hsl(220, 27%, 93%);
 $mono-300: rgb(205, 214, 228);
 $mono-400: rgb(177, 188, 211);
 $mono-500: rgb(143, 160, 198);
@@ -85,6 +85,7 @@ $fs-20: 1.25rem;
 $fs-18: 1.125rem;
 $fs-16: 1rem;
 $fs-14: 0.875rem;
+$fs-13: 0.8125rem;
 $fs-12: 0.75rem;
 $fs-11: 0.6875rem;
 $fs-10: 0.625rem;
@@ -99,6 +100,15 @@ $event-colors: (
     'snack': $orange,
     'drink': $yellow,
     'dessert': $aqua
+);
+
+$metric-colors: (
+    carbs: $aqua,
+    protein: $green,
+    fat: $orange,
+    minerals: $pink,
+    vitamins: $purple,
+    pregnancy: $blue,
 );
 
 * {

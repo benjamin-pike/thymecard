@@ -1,12 +1,18 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { Duration } from 'luxon';
-import { PiBookmarkSimpleFill, PiCookingPotBold, PiForkKnifeBold, PiKnifeFill } from 'react-icons/pi';
-import { AiOutlineStar } from 'react-icons/ai';
 import { formatClasses } from '@/lib/common.utils';
 import { isDefined } from '@/lib/type.utils';
 import styles from './list-entry.module.scss';
+import { MaterialSymbol } from '@/lib/material-symbols/MaterialSymbol';
+import { ICONS } from '@/assets/icons';
+
+const ServingsIcon = ICONS.recipes.servings;
+const PrepTimeIcon = ICONS.recipes.prepTime;
+const StarIcon = ICONS.common.star;
+const BookmarkIcon = ICONS.recipes.bookmarkFill;
 
 interface IListEntryProps {
+    id: string;
     name: string;
     imageUrl: string;
     servings?: number;
@@ -20,6 +26,7 @@ interface IListEntryProps {
 }
 
 const ListEntry: FC<IListEntryProps> = ({
+    id,
     name,
     imageUrl,
     servings,
@@ -37,39 +44,39 @@ const ListEntry: FC<IListEntryProps> = ({
         {
             name: 'servings',
             value: servings?.toString(),
-            icon: <PiForkKnifeBold />
+            icon: <ServingsIcon />
         },
         {
             name: 'prepTime',
             value: Duration.fromObject({ minutes: prepTime }).toFormat('h:mm'),
-            icon: <PiKnifeFill />
+            icon: <PrepTimeIcon />
         },
         {
             name: 'cookTime',
             value: Duration.fromObject({ minutes: cookTime }).toFormat('h:mm'),
-            icon: <PiCookingPotBold />
+            icon: <MaterialSymbol icon="oven_gen" style="outlined" />
         },
         {
             name: 'rating',
             value: rating?.toString(),
-            icon: <AiOutlineStar />
+            icon: <StarIcon />
         }
     ];
 
     return (
-        <li key={name} className={styles.listItem}>
+        <li key={id} className={styles.listItem}>
             <div className={styles.image}>
                 <img src={imageUrl} alt={`Image of ${name}`} />
             </div>
             <div className={styles.text}>
                 <span className={styles.topLine}>
                     <h1 className={styles.title}>{name}</h1>
-                    {bookmarked && <PiBookmarkSimpleFill />}
+                    {bookmarked && <BookmarkIcon />}
                 </span>
-                <Details details={details} />
+                <Details recipeId={id} details={details} />
                 <div className={styles.tags}>
                     {orderedTags.map((tag) => (
-                        <button key={`${name}${tag}`} data-selected={selectedTags.includes(tag)} onClick={() => handleTagClick(tag)}>
+                        <button key={`${id}${tag}`} data-selected={selectedTags.includes(tag)} onClick={() => handleTagClick(tag)}>
                             {tag}
                         </button>
                     ))}
@@ -88,22 +95,23 @@ interface IDetail {
 }
 
 interface IDetailsProps {
+    recipeId: string;
     details: IDetail[];
 }
 
-const Details: FC<IDetailsProps> = ({ details }) => {
+const Details: FC<IDetailsProps> = ({ recipeId, details }) => {
     return (
         <ul className={styles.details}>
             {details.map(
                 (detail, index) =>
                     isDefined(detail.value) && (
-                        <>
+                        <Fragment key={`${recipeId}${detail.name}`}>
                             <li className={formatClasses(styles, ['detail', detail.name])}>
                                 {detail.icon}
                                 <p>{detail.value}</p>
                             </li>
                             {index !== details.length - 1 && <div className={styles.divider} />}
-                        </>
+                        </Fragment>
                     )
             )}
         </ul>

@@ -1,8 +1,11 @@
+import { DateTime } from 'luxon';
+import { v4 as uuidv4 } from 'uuid';
+
 import { srngFloat, srngInt } from '@/lib/random.utils';
 import { RECIPES, TAGS } from './data/recipes';
-import { IRecipe } from '@/types/recipe.types';
 import RECIPE_IMAGES from './data/recipe-images.json';
-import { DateTime } from 'luxon';
+import NUTRITIONAL_INFO from './data/nutritional-info.json';
+import { IRecipe } from '@/types/recipe.types';
 
 const IMAGES: Record<string, string[]> = RECIPE_IMAGES;
 
@@ -10,6 +13,10 @@ export const generateMockRecipeList = (): IRecipe[] => {
     const recipeNames = RECIPES.map((recipe) => recipe.name).sort((a, b) => 0.5 - srngFloat([a, b]));
 
     return recipeNames.map(generateRecipeEntry);
+};
+
+export const generateNutitionalInfo = () => {
+    return [...NUTRITIONAL_INFO].sort((a, b) => 0.5 - srngFloat([a.code.toString(), b.code.toString()])).slice(0, 15);
 };
 
 const generateRecipeEntry = (name: string): IRecipe => {
@@ -29,6 +36,7 @@ const generateRecipeEntry = (name: string): IRecipe => {
         .toJSDate();
 
     return {
+        id: uuidv4(),
         name,
         imageUrl,
         servings,

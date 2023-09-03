@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, FC } from 'react';
 import { createPortal } from 'react-dom';
 import { useWindowKeyDown } from '@/hooks/events/useWindowKeydown';
 
@@ -17,7 +17,7 @@ interface ImageModalProps {
     closeModal: () => void;
 }
 
-const ImageModal: React.FC<ImageModalProps> = ({ urls, currentImage, changeSelectedImage, closeModal }) => {
+const ImageModal: FC<ImageModalProps> = ({ urls, currentImage, changeSelectedImage, closeModal }) => {
     const handleNext = useCallback(() => {
         if (currentImage < urls.length - 1) {
             changeSelectedImage(currentImage + 1);

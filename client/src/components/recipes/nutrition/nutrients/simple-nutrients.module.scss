@@ -1,0 +1,109 @@
+.wrapper {
+    position: relative;
+    
+    display: grid;
+    grid-template-rows: 0fr;
+
+    width: 100%;
+
+    opacity: 0;
+    
+    overflow: hidden;
+    
+    transition: grid-template-rows 150ms ease, opacity 150ms ease;
+
+    &[data-active='true'] {
+        grid-template-rows: 1fr;
+        
+        opacity: 1;
+    }
+
+    .container {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 0.5rem;
+        
+        width: 100%;
+        min-height: 0;
+
+        .chips {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+            padding: 1px;
+
+            width: 100%;
+            max-height: 2rem;
+
+            overflow: hidden;
+
+            p {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                height: 1.875rem;
+
+                padding: 0.75rem 0;
+
+                border-radius: 0.4rem;
+
+                font-weight: 500;
+                font-size: $fs-11;
+
+                cursor: default;
+
+                @include dark-mode {
+                    border-radius: 0.25rem;
+                }
+
+                span {
+                    display: block;
+                }
+
+                .value {
+                    text-align: center;
+                }
+
+                .unit {
+                    white-space: pre;
+                    font-weight: 400;
+                    margin-left: 1px;
+                }
+
+                &[data-metric='energy'] {
+                    color: $mono-light;
+                    background-color: $mono-800;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                        background-color: transparentize($mono-800, 0.5);
+                        box-shadow: 0 0 0 1px $mono-600;
+                    }
+                }
+
+                @each $metric, $color in $metric-colors {
+                    $light-adjusted-color: contrastize($color, 'light');
+                    $dark-adjusted-color: contrastize($color, 'dark');
+
+                    &[data-metric='#{$metric}'] {
+                        color: $light-adjusted-color;
+                        background-color: transparentize($light-adjusted-color, 0.875);
+                        text-shadow: 0 0 0.25rem $mono-light;
+
+                        @include dark-mode {
+                            color: $dark-adjusted-color;
+                            background-color: transparentize($dark-adjusted-color, 0.9);
+                            box-shadow: 0 0 0 1px transparentize($dark-adjusted-color, 0.6);
+                            text-shadow: 0 0 1rem $mono-dark;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

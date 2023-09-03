@@ -1,15 +1,17 @@
-import { MdOutlineCalendarMonth, MdOutlineSpaceDashboard } from 'react-icons/md';
-import { ReactComponent as Logo } from 'assets/logo.svg';
-import styles from './navbar.module.scss';
+import { Fragment, useCallback, useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
+import { useBreakpoints } from '@/hooks/dom/useBreakpoints';
+import Avatar from '../common/avatar/Avatar';
+import Tooltip from '../common/tooltip/Tooltip';
 import { RiMarkPenLine } from 'react-icons/ri';
 import { BiFoodMenu } from 'react-icons/bi';
 import { FiActivity } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
-import { useCallback, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
-import Avatar from '../common/avatar/Avatar';
+import { MdOutlineCalendarMonth, MdOutlineSpaceDashboard } from 'react-icons/md';
+import { ReactComponent as Logo } from 'assets/logo.svg';
 import { TbDiamond } from 'react-icons/tb';
-import { useBreakpoints } from '@/hooks/dom/useBreakpoints';
+import { capitalize } from '@/lib/string.utils';
+import styles from './navbar.module.scss';
 
 const Navbar = () => {
     const viewport = useBreakpoints();
@@ -37,17 +39,25 @@ const Navbar = () => {
                 <nav>
                     <ul>
                         {LINKS.map(({ name, icon, link }) => (
-                            <li key={name} data-active={currentPage === name}>
-                                <a href={link}>{icon}</a>
-                            </li>
+                            <Fragment key={name}>
+                                <li data-active={currentPage === name} data-tooltip-id={name}>
+                                    <a href={link}>{icon}</a>
+                                </li>
+                                <Tooltip id={name} place="right">
+                                    {capitalize(name)}
+                                </Tooltip>
+                            </Fragment>
                         ))}
                     </ul>
                 </nav>
                 {viewport.current.isMobile && <button className={styles.handle} onClick={() => setIsOpen(true)} />}
                 <div className={styles.upgrade}>
-                    <button>
+                    <button data-tooltip-id="upgrade">
                         <TbDiamond />
                     </button>
+                    <Tooltip id="upgrade" place="right" offset={20}>
+                        Upgrade to Premium
+                    </Tooltip>
                 </div>
                 <div className={styles.avatar}>
                     <Avatar className={styles.image} />

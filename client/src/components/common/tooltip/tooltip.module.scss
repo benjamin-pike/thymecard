@@ -1,0 +1,57 @@
+.tooltip {
+    padding: 0.5rem 0.75rem !important;
+
+    background-color: $mono-800 !important;
+    color: $mono-light !important;
+    font-size: $fs-12 !important;
+    font-weight: 500 !important;
+
+    border-radius: 0.25rem !important;
+
+    z-index: 100000000000000;
+
+    &.tooltip-place-bottom {
+        div {
+            clip-path: polygon(-1px -1px, -1px calc(100% + 1px), calc(100% + 1px) -1px);
+        }
+    }
+    &.tooltip-place-right {
+        div {
+            clip-path: polygon(-1px -1px, -1px calc(100% + 1px), calc(100% + 1px) calc(100% + 1px));
+        }
+    }
+    &.tooltip-place-top {
+        div {
+            clip-path: polygon(-1px calc(100% + 1px), calc(100% + 1px) -1px, calc(100% + 1px) calc(100% + 1px))
+        }
+    }
+    &.tooltip-place-left {
+        div {
+            clip-path: polygon(-1px -1px, calc(100% + 1px) -1px, calc(100% + 1px) calc(100% + 1px));
+        }
+    }
+
+    &.tooltip-font-size-small {
+        padding: 0.45rem 0.6rem !important;
+        
+        font-size: $fs-10 !important;
+    }
+
+    &.tooltip-font-size-large {
+        padding: 0.6rem 0.9rem !important;
+        
+        font-size: $fs-14 !important;
+    }
+
+    @include dark-mode {
+        background-color: $mono-800 !important;
+        color: $mono-light !important;
+        box-shadow: 0 0 0 1px $mono-600 !important;
+
+        > div {
+            box-shadow: 0 0 0 1px $mono-600 !important;
+            
+            z-index: -1;
+        }
+    }
+}

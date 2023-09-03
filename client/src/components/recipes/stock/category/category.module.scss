@@ -1,0 +1,211 @@
+.section {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 1rem 0.75rem;
+
+    &:first-of-type {
+        padding-top: 0;
+    }
+
+    .category {
+        position: relative;
+
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        color: $mono-700;
+        font-size: $fs-14;
+        font-weight: 500;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+
+        .toggle {
+            svg {
+                rotate: -90deg;
+                scale: 0.8;
+                
+                transition: rotate 200ms ease;
+            }
+        }
+
+        input {
+            width: 10rem;
+            
+            padding: 0 0.5rem 0.25rem 0;
+            
+            border-bottom: 1px solid $mono-100;
+
+            @include dark-mode {
+                border-bottom: 1px solid $mono-700;
+            }
+
+            &::placeholder {
+                color: $mono-400;
+                font-weight: 400;
+
+                @include dark-mode {
+                    color: $mono-600;
+                }
+            }
+        }
+
+        &[data-active='true'] {
+            .toggle {
+                svg {
+                    rotate: 0deg;
+                }
+            }
+        }
+
+        .count {
+            margin-left: auto;
+            margin-right: 0;
+            
+            color: $mono-600;
+            font-size: $fs-12;
+            font-weight: 400;
+
+            transition: margin-right 200ms ease;
+
+            @include dark-mode {
+                color: $mono-400;
+            }
+        }
+
+        .deleteCategory {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            height: 1rem;
+            width: 1rem;
+            
+            margin-top: 0.2rem;
+
+            color: $mono-400;
+
+            transition: color 200ms ease;
+
+            &:hover {
+                color: $mono-700;
+            }
+
+            svg {
+                scale: 1.1;
+
+                path {
+                    stroke-width: 40px;
+                }
+            }
+
+            @include dark-mode {
+                color: $mono-600;
+
+                &:hover {
+                    color: $mono-400;
+                }
+            }
+        }
+    }
+
+    .itemsWrapper {
+        position: relative;
+
+        display: grid;
+        grid-template-rows: 0fr;
+        overflow: hidden;
+
+        margin-top: 0;
+
+        transition: grid-template-rows 200ms ease, margin-top 200ms ease;
+
+        &[data-active='true'] {
+            grid-template-rows: 1fr;
+            
+            margin-top: 0.5rem;
+        }
+    }
+
+    .items {
+        min-height: 0;
+    }
+}
+
+.addItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    margin-top: 0.5rem;
+    padding-left: 0.25rem;
+    
+    height: 2rem;
+    width: calc(100% - 0.25rem);
+    
+    color: $mono-500;
+    box-shadow: 0 0 0 1px $mono-200 inset;
+    
+    border-radius: 0.5rem;
+
+    transition: box-shadow 100ms ease, background-color 100ms ease, color 100ms ease;
+
+    &.category {
+        margin-top: 1rem;
+        
+        height: 2.25rem;
+    }
+
+    &:hover {
+        color: $mono-600;
+        background-color: transparentize($mono-100, 0.75);
+        box-shadow: 0 0 0 1px $mono-300 inset;
+    }
+
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        height: 1rem;
+        
+        font-size: $fs-12;
+        font-weight: 400;
+
+        svg {
+            stroke-width: 10px;
+        }
+    }
+
+    @include dark-mode {
+        color: $mono-500;
+        box-shadow: 0 0 0 1px $mono-700 inset;
+
+        &:hover {
+            color: $mono-400;
+            background-color: transparentize($mono-700, 0.75);
+            box-shadow: 0 0 0 1px $mono-600 inset;
+        }
+    }
+}
+
+.divider {
+    height: 1px;
+    width: 100%;
+    
+    background-color: $mono-200;
+
+    &:last-of-type {
+        margin-bottom: 1rem;
+    }
+
+    @include dark-mode {
+        background-color: $mono-700;
+    }
+}
+

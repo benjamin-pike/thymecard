@@ -1,0 +1,120 @@
+.stock {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 1;
+
+    padding: 1.25rem 1.5rem 0 1.5rem;
+
+    width: 100%;
+
+    background-color: $mono-light;
+    border-right: 1px solid $mono-200;
+
+    @include dark-mode {
+        background-color: $mono-900;
+        border-right: 1px solid $mono-700;
+    }
+
+    @include responsive(('all')) {
+        width: 55%;
+    }
+
+    @include responsive(('listPlus')) {
+        width: 100%;
+        
+        border-right: none;
+    }
+
+    @include responsive(('listOnly')) {
+        padding: 1.75rem 1.75rem 0 1.75rem;
+        
+        height: 90svh;
+        width: 100%;
+
+        @include dark-mode {
+            border-top: 1px solid $mono-700;
+        }
+    }
+
+    @include responsive(('mobile')) {
+        border-radius: 1rem 1rem 0 0;
+
+        @include dark-mode {
+            border-radius: 0;
+            
+            border-top: 1px solid $mono-700;
+        }
+    }
+}
+
+.divider {
+    height: 1px;
+    width: 100%;
+    
+    background-color: $mono-200;
+
+    @include dark-mode {
+        background-color: $mono-700;
+    }
+}
+
+.scrollContainer {
+    flex: 1 1;
+
+    min-height: 0;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+}
+
+.addCategory {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    padding-left: 0.25rem;
+    
+    width: calc(100% - 0.25rem);
+    height: 2.25rem;
+    
+    color: $mono-500;
+    box-shadow: 0 0 0 1px $mono-200 inset;
+    
+    border-radius: 0.5rem;
+
+    transition: box-shadow 100ms ease, background-color 100ms ease, color 100ms ease;
+
+    &:hover {
+        color: $mono-600;
+        background-color: transparentize($mono-100, 0.5);
+        box-shadow: 0 0 0 1px $mono-300 inset;
+    }
+
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        height: 1rem;
+        
+        font-size: $fs-12;
+        font-weight: 400;
+
+        svg {
+            stroke-width: 10px;
+        }
+    }
+
+    @include dark-mode {
+        color: $mono-500;
+        box-shadow: 0 0 0 1px $mono-700 inset;
+
+        &:hover {
+            color: $mono-400;
+            background-color: transparentize($mono-700, 0.75);
+            box-shadow: 0 0 0 1px $mono-600 inset;
+        }
+    }
+}

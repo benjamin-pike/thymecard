@@ -72,7 +72,6 @@ const Dashboard = () => {
         for (const [viewportType, columnCount] of viewportColumnMapping) {
             if (viewport.current[viewportType]) {
                 if (columns !== columnCount) {
-                    console.log('viewportType', viewportType, 'columnCount', columnCount);
                     setColumns(columnCount);
                 }
                 return;

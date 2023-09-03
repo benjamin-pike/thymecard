@@ -16,3 +16,7 @@ export const debounce = (func: (...args: any[]) => void, delay: number) => {
         }, delay);
     };
 };
+
+export const queue = (fn: () => void) => {
+    setTimeout(fn, 0);
+}

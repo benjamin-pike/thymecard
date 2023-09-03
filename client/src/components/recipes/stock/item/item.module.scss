@@ -1,0 +1,158 @@
+.row {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    
+    border-radius: 0.25rem;
+
+    &:nth-of-type(even) {
+        background-color: transparentize($mono-100, 0.15);
+
+        @include dark-mode {
+            background-color: transparentize($mono-800, 0.15);
+        }
+    }
+
+    &:hover,
+    &:focus-within,
+    &[data-active='true'] {
+        .buttons {
+            opacity: 1;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+    }
+
+    input {
+        height: 1.75rem;
+        
+        padding-right: 1rem;
+        
+        font-size: $fs-12;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
+        &.item {
+            padding-left: 1.25rem;
+            
+            width: fit-content;
+
+            color: $mono-800;
+            font-weight: 400;
+
+            border-radius: 0.25rem 0 0 0.25rem;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+
+        &.quantity,
+        &.note {
+            color: $mono-600;
+            font-weight: 300;
+
+            &[data-populated='false'] {
+                color: $mono-400;
+            }
+
+            @include dark-mode {
+                color: $mono-400;
+
+                &[data-populated='false'] {
+                    color: $mono-600;
+                }
+            }
+        }
+
+        &.quantity {
+            width: fit-content;
+        }
+
+        &.note {
+            width: 100%;
+        }
+
+        &::placeholder {
+            color: $mono-400;
+
+            @include dark-mode {
+                color: $mono-600;
+            }
+        }
+    }
+
+    .buttons {
+        display: flex;
+        align-items: center;
+        color: $mono-700;
+
+        padding: 0 0.25rem;
+        
+        opacity: 0;
+
+        transition: opacity 100ms ease;
+
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            height: 1rem;
+            width: 1rem;
+
+            transition: opacity 100ms ease;
+
+            &:hover {
+                opacity: 0.75;
+            }
+
+            &.moveToPantry {
+                margin-right: 0.2rem;
+
+                svg {
+                    stroke-width: 2px;
+                    
+                    scale: 0.8;
+                }
+            }
+
+            &.addToShoppingList {
+                margin-right: 0.2rem;
+
+                svg {
+                    stroke-width: 1.5px;
+                    
+                    scale: 1.15;
+                }
+            }
+
+            &.addToFavorites {
+                svg {
+                    scale: 0.8;
+                }
+            }
+
+            &.deleteItem {
+                svg {
+                    path {
+                        stroke-width: 35px;
+                    }
+                }
+            }
+
+            &[data-active='true'] {
+                svg {
+                    color: $mono-400;
+
+                    @include dark-mode {
+                        color: $mono-600;
+                    }
+                }
+            }
+        }
+    }
+}

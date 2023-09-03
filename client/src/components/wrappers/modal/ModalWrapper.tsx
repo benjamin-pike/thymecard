@@ -1,3 +1,4 @@
+import { FC, ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useClickOutside } from '@mantine/hooks';
@@ -8,11 +9,11 @@ import { IoMdClose } from 'react-icons/io';
 import styles from './modal-wrapper.module.scss';
 
 interface ImageModalProps {
-    children: React.ReactElement;
+    children: ReactElement;
     closeModal: () => void;
 }
 
-const ImageModal: React.FC<ImageModalProps> = ({ children, closeModal }) => {
+const ImageModal: FC<ImageModalProps> = ({ children, closeModal }) => {
     const ref = useClickOutside(closeModal);
 
     useWindowKeyDown('Escape', closeModal);

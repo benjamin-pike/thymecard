@@ -13,7 +13,7 @@
     transition: box-shadow 200ms ease;
 
     @include dark-mode {
-        box-shadow: 1px 0 $mono-800;
+        box-shadow: 1px 0 $mono-700;
     }
 
     @include responsive(('mobile')) {

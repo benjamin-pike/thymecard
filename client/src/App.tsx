@@ -2,15 +2,15 @@ import { StrictMode } from 'react';
 import { Provider as ContextProvider } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { store } from './store/index';
 
+import Navbar from './components/navbar/Navbar';
 import Dashboard from './pages/dashboard/Dashboard';
 import Planner from './pages/planner/Planner';
+import Recipes from './pages/recipes/Recipes';
 
-import { store } from './store/index';
 import ThemeWrapper from './components/wrappers/theme/ThemeWrapper';
 import ResponsiveWrapper from './components/wrappers/responsive/ResponsiveWrapper';
-import Recipes from './pages/recipes/Recipes';
-import Navbar from './components/navbar/Navbar';
 
 const queryClient = new QueryClient();
 
@@ -37,7 +37,6 @@ export function CoreApp() {
     return (
         <div className="app">
             <Router>
-                {/* <Header /> */}
                 <Navbar />
                 <Routes>
                     {routes.map(({ path, element }) => (

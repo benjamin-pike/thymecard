@@ -63,11 +63,36 @@
             color: $mono-light;
         }
 
+        z-index: 1;
+
         .topLine {
             display: flex;
             align-items: center;
 
             gap: 0.25rem;
+
+            .title {
+                font-size: $fs-14;
+                font-weight: 500;
+
+                cursor: pointer;
+
+                width: 100%;
+
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                transition: color 100ms ease;
+
+                @include dark-mode {
+                    font-weight: 400;
+                }
+
+                &:hover {
+                    color: $mono-500;
+                }
+            }
 
             svg {
                 color: $mono-300;
@@ -75,29 +100,6 @@
                 @include dark-mode {
                     color: $mono-700;
                 }
-            }
-        }
-
-        .title {
-            font-size: $fs-14;
-            font-weight: 500;
-
-            cursor: pointer;
-
-            width: 100%;
-
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-
-            transition: color 100ms ease;
-
-            @include dark-mode {
-                font-weight: 400;
-            }
-
-            &:hover {
-                color: $mono-500;
             }
         }
 
@@ -126,12 +128,6 @@
                     place-items: center;
 
                     height: 0.8rem;
-                }
-
-                &.rating {
-                    path {
-                        stroke-width: 1rem;
-                    }
                 }
             }
 
