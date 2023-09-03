@@ -14,35 +14,39 @@
 
     box-shadow: 0 0 0 1px $mono-200;
 
+    overflow: hidden;
+
     transition: box-shadow 100ms ease;
 
     @include dark-mode {
         box-shadow: 0 0 0 1px $mono-700;
     }
 
+    .icon {
+        display: grid;
+        place-items: center;
+
+        width: 2rem;
+    }
+
     &:has(input:focus) {
         box-shadow: 0 0 0 1.25px $mono-300;
 
-        & svg {
+        svg {
             color: $mono-600;
         }
 
         @include dark-mode {
             box-shadow: 0 0 0 1.25px $mono-500;
 
-            & svg {
+            svg {
                 color: $mono-500;
             }
         }
     }
 
-    & svg {
+    svg {
         color: $mono-500;
-
-        width: 1.75rem;
-        height: 1.75rem;
-
-        scale: -1 1;
 
         transition: color 100ms ease;
 
@@ -50,18 +54,18 @@
             color: $mono-400;
         }
 
-        & path {
+        path {
             stroke: unset;
         }
     }
 
-    & input {
+    input {
         flex-grow: 1;
         
         height: 3rem;
         
         font-size: $fs-14;
-        font-weight: 500;
+        font-weight: 400;
         color: $mono-700;
 
         @include dark-mode {
@@ -69,18 +73,24 @@
         }
     }
 
-    & p {
+    p {
         position: absolute;
 
-        left: 3rem;
+        left: 3.25rem;
 
-        color: $mono-600;
+        width: 100%;
+
+        color: $mono-700;
         font-size: $fs-14;
-        font-weight: 600;
+        font-weight: 500;
+
+        overflow: hidden;
+        white-space: pre;
+        text-overflow: ellipsis;
 
         pointer-events: none;
 
-        & span {
+        span {
             color: $mono-500;
             font-weight: 400;
         }
@@ -90,11 +100,16 @@
         }
     }
 
-    & > button {
+    > button {
         display: flex;
         justify-content: center;
         align-items: center;
 
         margin-left: auto;
+
+        svg {
+            width: 1.75rem;
+            height: 1.75rem;
+        }
     }
 }

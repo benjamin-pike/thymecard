@@ -44,6 +44,7 @@ const Tags: FC<ITagsProps> = ({ validTags, visibleTags, selectedTags, handleTagC
                     {!!tagLines.length ? (
                         tagLines.map((line, i, arr) => (
                             <TagLine
+                                key={JSON.stringify(line)}
                                 line={line}
                                 selectedTags={selectedTags}
                                 handleTagClick={handleTagClick}
@@ -119,7 +120,7 @@ const DummyTag: FC<IDummyTagProps> = ({ tag, count, handleWidthChange }) => {
 const DummyTags: FC<IDummyTagsProps> = ({ tags, handleWidthChange }) => (
     <div className={styles.measurements}>
         {tags.map(({ name, count }) => (
-            <DummyTag tag={name} count={count} handleWidthChange={handleWidthChange} />
+            <DummyTag key = {`dummy${name}`} tag={name} count={count} handleWidthChange={handleWidthChange} />
         ))}
     </div>
 );
@@ -127,7 +128,7 @@ const DummyTags: FC<IDummyTagsProps> = ({ tags, handleWidthChange }) => (
 const TagLine: FC<ITagLineProps> = ({ line, selectedTags, handleTagClick, fillSpace }) => (
     <div key={JSON.stringify(line)} className={styles.line} data-grow={fillSpace}>
         {line.map(({ name, count }) => (
-            <Tag tag={name} count={count} selectedTags={selectedTags} handleClick={handleTagClick} />
+            <Tag key = {`tag${name}`} tag={name} count={count} selectedTags={selectedTags} handleClick={handleTagClick} />
         ))}
     </div>
 );

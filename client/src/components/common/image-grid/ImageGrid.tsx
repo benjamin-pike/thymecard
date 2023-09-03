@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import ImageModal from '../image-modal/ImageModal';
 import styles from './image-grid.module.scss';
 
@@ -7,7 +7,7 @@ interface ImageGridProps {
     height: number;
 }
 
-const ImageGrid: React.FC<ImageGridProps> = ({ urls, height }) => {
+const ImageGrid: FC<ImageGridProps> = ({ urls, height }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImage, setCurrentImage] = useState(0);
     const length = urls.length;

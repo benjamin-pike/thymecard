@@ -15,6 +15,25 @@
     @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
         padding: 0;
     }
+
+    @include responsive(('twoColumns', 'oneColumn')) {
+        &::after {
+            content: '';
+
+            position: absolute;
+            left: 0;
+            bottom: 0;
+
+            height: 6rem;
+            width: 100%;
+
+            background: linear-gradient(180deg, transparentize($mono-100, 1) 0%, transparentize($mono-100, 0) 100%);
+
+            @include dark-mode {
+                background: linear-gradient(180deg, transparentize($mono-dark, 1) 0%, transparentize($mono-dark, 0) 100%);
+            }
+        }
+    }
 }
 
 .calendar {

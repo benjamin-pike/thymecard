@@ -1,11 +1,10 @@
 import { FC } from 'react';
 import { DateTime, Duration } from 'luxon';
-import { IViewport } from '@/hooks/dom/useBreakpoints';
-import { BiPlus } from 'react-icons/bi';
-import { IEvent } from '@/lib/global.types';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
-import styles from './day.module.scss';
+import { IEvent } from '@/lib/global.types';
+import { BiPlus } from 'react-icons/bi';
 import { formatClasses } from '@/lib/common.utils';
+import styles from './day.module.scss';
 
 interface IDayProps {
     data: IEvent[];

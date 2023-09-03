@@ -1,5 +1,5 @@
 'use client';
-import { FC, memo, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { CardBody } from '@/components/common/card/Card';
 import { DashboardCardHeader } from '../common/DashboardCardHeader';

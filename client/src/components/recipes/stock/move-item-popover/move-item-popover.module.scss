@@ -1,0 +1,218 @@
+.addToFavoritesPopover {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    min-width: 15rem;
+
+    padding: 1.75rem;
+
+    background-color: $mono-light;
+    box-shadow: 0 0 0 1px transparentize($mono-700, $amount: 0.9), 4px 4px 20px rgba(0, 0, 0, 0.05);
+    opacity: 1;
+
+    border-radius: 0.5rem;
+
+    scale: 1;
+    transform-origin: top right;
+
+    transition: scale 200ms ease, opacity 200ms ease;
+
+    z-index: 100;
+    
+    @include dark-mode {
+        background-color: $mono-900;
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+
+    &[data-open='false'] {
+        opacity: 0;
+        
+        scale: 0;
+    }
+
+    h1 {
+        margin-bottom: 0.35rem;
+
+        color: $mono-700;
+        font-size: $fs-14;
+        font-weight: 500;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+    }
+
+    h2 {
+        margin-top: 0.5rem;
+
+        color: $mono-600;
+        font-size: $fs-12;
+        font-weight: 400;
+
+        @include dark-mode {
+            color: $mono-200;
+        }
+    }
+
+    ul {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        
+        padding: 0.5rem 0 0 0.5rem;
+    }
+
+    li {
+        display: flex;
+        align-items: center;
+
+        &:last-of-type {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    input[type='radio'] {
+        box-sizing: border-box;
+
+        position: relative;
+        
+        margin: 0;
+        padding: 0;
+        
+        height: 0.5rem;
+        
+        background-color: transparent;
+        border: none;
+        
+        cursor: pointer;
+    }
+
+    input[type='radio']:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        
+        display: block;
+        
+        width: 0.5rem;
+        height: 0.5rem;
+        
+        box-shadow: 0 0 0 1px $mono-700;
+        
+        border-radius: 50%;
+        
+        transition: background-color 100ms ease, box-shadow 100ms ease;
+
+        @include dark-mode {
+            box-shadow: 0 0 0 1px $mono-light;
+        }
+    }
+
+    input[type='radio'][data-checked = 'true']:before {
+        background-color: $mono-700;
+
+        @include dark-mode {
+            background-color: $mono-light;
+        }
+    }
+
+    input[type='radio']:hover:before {
+        box-shadow: 0 0 0 1px $mono-700, 0 0 0 4px $mono-300;
+
+        @include dark-mode {
+            box-shadow: 0 0 0 1px $mono-light, 0 0 0 4px $mono-600;
+        }
+    }
+
+    label {
+        margin-left: 1.25rem;
+
+        color: $mono-700;
+        font-size: $fs-12;
+        font-weight: 400;
+
+        cursor: pointer;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+
+        input {
+            &::placeholder {
+                color: $mono-400;
+                font-weight: 400;
+
+                @include dark-mode {
+                    color: $mono-600;
+                }
+            }
+        }
+    }
+
+    .buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        margin-top: 0.5rem;
+
+        button {
+            display: grid;
+            place-items: center;
+
+            flex-grow: 1;
+
+            padding: 0.5rem 0;
+
+            font-size: $fs-12;
+            font-weight: 400;
+            color: $mono-500;
+            box-shadow: 0 0 0 1px $mono-200;
+            
+            border-radius: 0.25rem;
+
+            transition: color 100ms ease, box-shadow 100ms ease, background-color 100ms ease;
+
+            @include dark-mode {
+                box-shadow: 0 0 0 1px $mono-700;
+            }
+
+            &:hover:not(:disabled) {
+                color: $mono-light;
+                background-color: $mono-700;
+                box-shadow: 0 0 0 1px $mono-700;
+
+                @include dark-mode {
+                    color: $mono-700;
+                    background-color: $mono-light;
+                    box-shadow: 0 0 0 1px $mono-light;
+                }
+            }
+
+            &:disabled {
+                cursor: auto;
+                background-color: $mono-100;
+                box-shadow: 0 0 0 1px $mono-300;
+
+                @include dark-mode {
+                    background-color: $mono-800;
+                    box-shadow: 0 0 0 1px $mono-600;
+                }
+            }
+        }
+    }
+}
+
+.divider {
+    height: 1px;
+    width: 100%;
+    background-color: $mono-200;
+
+    @include dark-mode {
+        background-color: $mono-700;
+    }
+}

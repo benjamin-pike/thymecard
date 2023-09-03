@@ -1,13 +1,18 @@
 import { Dispatch, FC, ReactElement, useCallback, useState } from 'react';
 import { Duration } from 'luxon';
 import { useClickOutside } from '@mantine/hooks';
+
 import Accordion from './Accordion';
+
 import { FilterAction, FilterActionType, IFilterState, SortByVariable } from './filter.types';
 import { debounce } from '@/lib/common.utils';
 import { capitalize } from '@/lib/string.utils';
-import { MdFilterList } from 'react-icons/md';
 import { formatMaxTime } from './filter.functions';
+import { ICONS } from '@/assets/icons';
+
 import styles from './filter.module.scss';
+
+const FilterIcon = ICONS.recipes.filter;
 
 interface IFilterProps {
     state: IFilterState;
@@ -56,8 +61,8 @@ const Filter: FC<IFilterProps> = ({ state, dispatch }) => {
 
     return (
         <section ref={ref} className={styles.filter}>
-            <button className = {styles.toggleButton} onClick={() => setOpen(!open)}>
-                <MdFilterList />
+            <button className={styles.toggleButton} onClick={() => setOpen(!open)}>
+                <FilterIcon />
             </button>
             <div className={styles.dialog} data-open={open}>
                 <Accordion data={filters} />
@@ -135,8 +140,8 @@ const MaxTime: FC<IFilterElementProps> = ({ state, dispatch }) => {
                 />
             </div>
             <div className={styles.times}>
-                {[':30', '1:00', ':30', '2:00', ':30', '3:00', ':30', '4:00'].map((time) => (
-                    <p key={time}>{time}</p>
+                {[':30', '1:00', ':30', '2:00', ':30', '3:00', ':30', '4:00'].map((time, index) => (
+                    <p key={`${time}${index}`}>{time}</p>
                 ))}
             </div>
         </div>
@@ -164,7 +169,7 @@ interface ISortByRowProps {
 
 const SortByRow: FC<ISortByRowProps> = ({ state, dispatch, variableName, variableTitle }) => (
     <div className={styles.row}>
-        <h3>{variableTitle}</h3>
+        <h3>{variableTitle.toLocaleUpperCase()}</h3>
         <div className={styles.order}>
             <FilterButton
                 dataActive={state.sortBy.variable === variableName && state.sortBy.sort === 1}

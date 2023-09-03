@@ -1,7 +1,7 @@
 .day {
     position: relative;
 
-    background-color: $mono-200;
+    background-color: transparentize($mono-200, 0.25);
 
     box-shadow: 0 0 0 1px $mono-300 inset;
 

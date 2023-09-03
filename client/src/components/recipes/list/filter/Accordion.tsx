@@ -1,7 +1,9 @@
-import { FC, ReactElement, useState } from 'react';
+import { FC, Fragment, ReactElement, useState } from 'react';
 import { formatClasses } from '@/lib/common.utils';
-import { BsChevronDown } from 'react-icons/bs';
+import { ICONS } from '@/assets/icons';
 import styles from './accordion.module.scss';
+
+const ToggleIcon = ICONS.common.toggle;
 
 interface AccordionData {
     name: string;
@@ -29,7 +31,7 @@ const Accordion: FC<IAccordionProps> = ({ data }) => {
     return (
         <div className={styles.accordion}>
             {data.map((item, index, arr) => (
-                <>
+                <Fragment key={index}>
                     <AccordionItem
                         key={index}
                         name={item.name}
@@ -40,7 +42,7 @@ const Accordion: FC<IAccordionProps> = ({ data }) => {
                         handleClick={() => handleClick(index)}
                     />
                     {index !== arr.length - 1 && <div className={styles.divider} />}
-                </>
+                </Fragment>
             ))}
         </div>
     );
@@ -48,18 +50,18 @@ const Accordion: FC<IAccordionProps> = ({ data }) => {
 
 export default Accordion;
 
-const AccordionItem: React.FC<AccordionItemProps> = ({ name, title, values, body, isActive, handleClick }) => (
+const AccordionItem: FC<AccordionItemProps> = ({ name, title, values, body, isActive, handleClick }) => (
     <div className={formatClasses(styles, ['row', name])} data-active={isActive}>
         <div className={styles.title} onClick={handleClick}>
             <h5>{title.toUpperCase()}</h5>
-            {values.map((val) => (
-                <p className={styles.value}>
+            {values.map((val, index) => (
+                <p key={index} className={styles.value}>
                     {val.primary}
                     {val.sup && <span> • {val.sup}</span>}
                 </p>
             ))}
             <button>
-                <BsChevronDown />
+                <ToggleIcon />
             </button>
         </div>
         <div className={styles.wrapper}>

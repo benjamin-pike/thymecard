@@ -1,118 +1,103 @@
-import { useCallback, useDeferredValue, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { useIntersection } from '@mantine/hooks';
-import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
-import LoadingDots from '@/components/common/loading-dots/LoadingDots';
-import Filter from '@/components/recipes/filter/Filter';
-import Search from '@/components/recipes/search/Search';
-import Tags, { ITag } from '@/components/recipes/tags/Tags';
-import ListEntry from '@/components/recipes/list-entry/ListEntry';
-import { filterRecipes, filterReducer } from '@/components/recipes/filter/filter.functions';
-import { generateMockRecipeList } from '@/test/mock-data/recipes';
+import { useCallback, useState } from 'react';
 import { useBreakpoints } from '@/hooks/dom/useBreakpoints';
+import { useToggle } from '@mantine/hooks';
+
+import List from '@/components/recipes/list/List';
+import CreateBar from '@/components/recipes/create-bar/CreateBar';
+import Stock from '@/components/recipes/stock/Stock';
+import Nutrition from '@/components/recipes/nutrition/Nutrition';
+import DrawerWrapper from '@/components/wrappers/drawer/DrawerWrapper';
+
+import { ICONS } from '@/assets/icons';
+
 import styles from './recipes.module.scss';
 
+const ListIcon = ICONS.common.list;
+const SearchIcon = ICONS.common.search;
+
 const Recipes = () => {
-    const _viewport = useBreakpoints()
-    const listEntries = useMemo(() => generateMockRecipeList(), []);
+    const viewport = useBreakpoints([
+        { name: 'listOnly', min: 0, max: 768 },
+        { name: 'listPlus', min: 769, max: 1000 },
+        { name: 'listHidden', min: 1001, max: 1200 },
+        { name: 'all', min: 1201 }
+    ]);
 
-    const [search, setSearch] = useState('');
-    const deferredSearch = useDeferredValue(search);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [displayListDrawer, setDisplayListDrawer] = useState(false);
+    const [displayStockDrawer, setDisplayStockDrawer] = useState(false);
+    const [displayNutritionDrawer, setDisplayNutritionDrawer] = useState(false);
+    const [visibleInfo, toggleVisibleInfo] = useToggle(['stock', 'nutrition'] as const);
 
-    const [listLength, setListLength] = useState(25);
-    const listContainerRef = useRef<HTMLDivElement>(null);
+    const displayFullWidthCreateBar = viewport.current.isListPlus || viewport.current.isListOnly
+    const displayRightCreateBar = !viewport.current.isListPlus
+    const displayListDrawerButton = viewport.current.isListHidden
+    const displayInfoDrawerButtons = viewport.current.isListOnly
+    const displayStock = !viewport.current.isListPlus || (viewport.current.isListPlus && visibleInfo === 'stock')
+    const displayNutrition = !viewport.current.isListPlus || (viewport.current.isListPlus && visibleInfo === 'nutrition')
     
-    const { ref: loadingRef, entry } = useIntersection({
-        root: listContainerRef.current,
-        threshold: 1
-    });
+    const isInfoDrawersActive = viewport.current.isListOnly
 
-    useEffect(() => {
-        if (entry?.isIntersecting) {
-            setTimeout(() => setListLength((prev) => prev + 25), 500);
-        }
-    }, [entry]);
-
-    const [filterState, filterDispatch] = useReducer(filterReducer, {
-        sortBy: { variable: 'date', sort: -1 },
-        minRating: 0,
-        bookmarked: 'both',
-        maxTime: 120
-    });
-
-    const validRecipes = useMemo(() => {
-        return filterRecipes(listEntries, filterState).filter(
-            (entry) =>
-                (!deferredSearch ||
-                    entry.name.toLowerCase().includes(deferredSearch.toLowerCase()) ||
-                    entry.tags.some((tag) => tag.toLowerCase().includes(deferredSearch.toLowerCase()))) &&
-                (!selectedTags || selectedTags.every((tag) => entry.tags.includes(tag)))
-        );
-    }, [listEntries, filterState, deferredSearch, selectedTags]);
-
-    const validTags: ITag[] = validRecipes
-        .flatMap((obj) => obj.tags)
-        .reduce<ITag[]>((acc, tag) => {
-            let entry = acc.find(({ name }) => name === tag);
-
-            if (!entry) {
-                entry = { name: tag, count: 0 };
-                acc.push(entry);
-            }
-
-            entry.count++;
-
-            return acc;
-        }, [])
-        .sort((a, b) => b.count - a.count);
-    const visibleTags = validTags.filter(({ count }, i) => i < 15 || count > 1).slice(0, 15);
-
-    useEffect(() => setListLength(25), [validRecipes, filterState]);
-
-    const handleTagClick = useCallback(
-        (tag: string) => {
-            if (selectedTags.includes(tag)) {
-                return setSelectedTags(selectedTags.filter((t) => t !== tag));
-            }
-
-            setSelectedTags([...selectedTags, tag]);
-        },
-        [selectedTags]
-    );
+    const handleToggleVisibleInfo = useCallback(() => {
+        toggleVisibleInfo();
+    }, []);
 
     return (
-        <main className={styles.content}>
-            <div className={styles.recipes}>
-                <div className={styles.topBar}>
-                    <Search search={search} setSearch={setSearch} />
-                    <Filter state={filterState} dispatch={filterDispatch} />
-                </div>
-                <Tags
-                    validTags={validTags}
-                    visibleTags={visibleTags}
-                    selectedTags={selectedTags}
-                    setSelectedTags={setSelectedTags}
-                    handleTagClick={handleTagClick}
-                />
-                <div ref={listContainerRef} className={styles.scrollContainer}>
-                    <ScrollWrapper padding={0.5} height={'100%'}>
-                        <>
-                            <ul className={styles.list}>
-                                {validRecipes.slice(0, listLength).map((entryProps) => (
-                                    <ListEntry selectedTags={selectedTags} handleTagClick={handleTagClick} {...entryProps} />
-                                ))}
-                            </ul>
-                            {listLength < validRecipes.length && (
-                                <div ref={loadingRef} className={styles.loadingDots}>
-                                    <LoadingDots />
-                                </div>
-                            )}
-                        </>
-                    </ScrollWrapper>
-                </div>
-                <p className={styles.showing}>
-                    Showing <span>{validRecipes.length}</span> of <span>{listEntries.length}</span> recipes
-                </p>
+        <main className={styles.recipes}>
+            {displayFullWidthCreateBar && <CreateBar />}
+            <div className={styles.body}>
+                <section className={styles.left}>
+                    <DrawerWrapper
+                        direction="left"
+                        transitionDuration={200}
+                        isVisible={displayListDrawer}
+                        isActive={viewport.current.isListHidden}
+                        closeDrawer={() => setDisplayListDrawer(false)}
+                    >
+                        <List />
+                    </DrawerWrapper>
+                    {displayListDrawerButton && (
+                        <button className={styles.displayDrawer} onClick={() => setDisplayListDrawer(true)}>
+                            <ListIcon />
+                        </button>
+                    )}
+                    {displayInfoDrawerButtons && (
+                        <div className={styles.listHiddenButtons}>
+                            <button className={styles.stock} onClick={() => setDisplayStockDrawer(true)}>
+                                <ListIcon />
+                            </button>
+                            <button className={styles.nutrition} onClick={() => setDisplayNutritionDrawer(true)}>
+                                <SearchIcon />
+                            </button>
+                        </div>
+                    )}
+                </section>
+                <section className={styles.right}>
+                    {displayRightCreateBar && <CreateBar />}
+                    <div className={styles.bottom}>
+                        {displayStock && (
+                            <DrawerWrapper
+                                direction="bottom"
+                                transitionDuration={200}
+                                isVisible={displayStockDrawer}
+                                isActive={isInfoDrawersActive}
+                                closeDrawer={() => setDisplayStockDrawer(false)}
+                            >
+                                <Stock handleToggleVisibleInfo={handleToggleVisibleInfo} />
+                            </DrawerWrapper>
+                        )}
+                        {displayNutrition && (
+                            <DrawerWrapper
+                                direction="bottom"
+                                transitionDuration={200}
+                                isVisible={displayNutritionDrawer}
+                                isActive={isInfoDrawersActive}
+                                closeDrawer={() => setDisplayNutritionDrawer(false)}
+                            >
+                                <Nutrition handleToggleVisibleInfo={handleToggleVisibleInfo} />
+                            </DrawerWrapper>
+                        )}
+                    </div>
+                </section>
             </div>
         </main>
     );

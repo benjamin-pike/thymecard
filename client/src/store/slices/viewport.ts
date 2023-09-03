@@ -53,10 +53,16 @@ const viewportSlice = createSlice({
     initialState,
     reducers: {
         setViewportSize: (state, action: PayloadAction<string>) => {
-            state.viewportSize = action.payload;
+            const newState = { ...state };
+            newState.viewportSize = action.payload;
+            
+            return newState;
         },
         setCustomViewportSize: (state, action: PayloadAction<string>) => {
-            state.customViewportSize = action.payload;
+            const newState = { ...state };
+            newState.customViewportSize = action.payload;
+            
+            return newState;
         }
     }
 });

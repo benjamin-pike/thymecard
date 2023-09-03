@@ -44,10 +44,10 @@
         top: calc(100% + 0.5rem);
         right: 0rem;
 
-        padding: 1.5rem;
+        padding: 2rem;
 
         background-color: $mono-light;
-        box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0 0 1px transparentize($mono-700, $amount: 0.9), 4px 4px 20px rgba(0, 0, 0, 0.05);
 
         opacity: 0;
         
@@ -247,7 +247,7 @@
 
                 .thumb {
                     background-color: $mono-light;
-                    box-shadow: 0 0 0 2.5px $mono-800;
+                    box-shadow: 0 0 0 2.5px $mono-900;
                 }
             }
         }

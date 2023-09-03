@@ -1,9 +1,20 @@
 .wrapper {
-    min-height: 0;
-    max-height: 80svh;
-
     flex: 1 1;
+    
     padding: 0 0.75rem;
+    
+    height: calc(100% - 2rem);
+    min-height: 0;
+
+    @include responsive(('medium', 'small')) {
+        padding: 0 0 2rem 0;
+    }
+
+    @include responsive(('twoColumns', 'oneColumns')) {
+        max-height: 80svh;
+
+        padding: 0 0.75rem;
+    }
 }
 
 .day {
@@ -13,7 +24,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1.25rem;
-    
+
     padding: 0 1rem 1rem 1rem;
 
     width: 100%;
@@ -266,24 +277,24 @@
     &.named {
         transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;
     }
-    
+
     &.generic {
         display: flex;
         align-items: center;
         justify-content: center;
-    
+
         height: 100%;
         aspect-ratio: 1;
-    
+
         background-color: white;
         box-shadow: 0 0 0 1px $mono-200, 0 0 0 0.5rem white;
-    
+
         border-radius: 50%;
-    
+
         z-index: 1;
-    
+
         transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;
-    
+
         @include dark-mode {
             background-color: $mono-900;
             box-shadow: 0 0 0 1px $mono-700, 0 0 0 0.5rem $mono-900;
@@ -294,7 +305,7 @@
         color: white;
         background-color: $mono-700;
         box-shadow: 0 0 0 1px $mono-700, 0 0 0 0.5rem white;
-    
+
         @include dark-mode {
             color: $mono-700;
             background-color: $mono-light;

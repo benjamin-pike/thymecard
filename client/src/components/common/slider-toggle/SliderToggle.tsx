@@ -1,4 +1,4 @@
-import { useEffect, useRef, CSSProperties, useState } from 'react';
+import { useEffect, useRef, CSSProperties, useState, RefObject } from 'react';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import styles from './slider-toggle.module.scss';
 
@@ -10,7 +10,7 @@ interface ISliderToggleProps<T extends string = string> {
     onOptionSelected: (option: T) => void;
 }
 
-type RefRecord<T> = Record<string, React.RefObject<T>>;
+type RefRecord<T> = Record<string, RefObject<T>>;
 
 const SliderToggle = <T extends string = string>({
     localStorageKey,

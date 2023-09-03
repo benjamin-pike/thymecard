@@ -43,6 +43,8 @@
 .drawer.bottom {
     width: 100%;
     justify-content: center;
+    min-height: 0;
+    max-height: 90svh;
 }
 
 .drawer.left,
