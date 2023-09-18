@@ -1,0 +1,218 @@
+import { FC } from 'react';
+import { useIngredients } from './IngredientsProvider';
+import { round } from '@/lib/number.utils';
+import styles from './ingredients-display.module.scss';
+
+interface IIngredientsDisplayProps {
+    addedIngredients: Set<number>;
+    scale: number;
+    isPrintLayout: boolean;
+    handleIngredientsClick: (i: number) => () => void;
+}
+
+const IngredientsDisplay: FC<IIngredientsDisplayProps> = ({
+    addedIngredients,
+    scale,
+    isPrintLayout,
+    handleIngredientsClick
+}) => {
+    const { ingredients } = useIngredients();
+    return (
+        <ul className={styles.ingredients} data-print={isPrintLayout}>
+            {ingredients.map((ingredient, i) => {
+                const Quantity = ingredient.quantity ? ingredient.quantity.map((q) => mapDecimalToFraction(q * scale)) : null;
+                const qualifiers = [ingredient.prepStyles, ingredient.notes].filter((q) => !!q).join(', ');
+
+                return (
+                    <li onClick={handleIngredientsClick(i)}>
+                        <p data-added={addedIngredients.has(i)}>
+                            {!!ingredient.quantity && <span className={styles.quantity}>{Quantity}</span>}
+                            {!!ingredient.unit && <span className={styles.unit}>{ingredient.unit}</span>}
+                            <span className={styles.item}>
+                                {ingredient.item}
+                                {!!qualifiers && ','}
+                            </span>
+                            {!!qualifiers && <span className={styles.qualifiers}>{qualifiers}</span>}
+                        </p>
+                    </li>
+                );
+            })}
+        </ul>
+    );
+};
+
+export default IngredientsDisplay;
+
+const mapDecimalToFraction = (number: number) => {
+    const roundedDecimal = round(number, 3);
+
+    const integer = Math.floor(roundedDecimal);
+    const remainder = roundedDecimal - integer;
+
+    if (!remainder) {
+        return <>{integer}</>;
+    }
+
+    const fraction = DECIMAL_FRACTION_MAP.get(remainder);
+
+    if (fraction) {
+        if (integer) {
+            return (
+                <>
+                    {integer} {fraction}
+                </>
+            );
+        }
+
+        return fraction;
+    }
+
+    return <>{roundedDecimal}</>;
+};
+
+const DECIMAL_FRACTION_MAP = new Map([
+    [
+        0.1,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>10</sub>
+        </>
+    ],
+    [
+        0.111,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>9</sub>
+        </>
+    ],
+    [
+        0.125,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>8</sub>
+        </>
+    ],
+    [
+        0.143,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>7</sub>
+        </>
+    ],
+    [
+        0.167,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>6</sub>
+        </>
+    ],
+    [
+        0.2,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>5</sub>
+        </>
+    ],
+    [
+        0.25,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>4</sub>
+        </>
+    ],
+    [
+        0.333,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>3</sub>
+        </>
+    ],
+    [
+        0.375,
+        <>
+            <sup className={styles.numerator}>3</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>8</sub>
+        </>
+    ],
+    [
+        0.4,
+        <>
+            <sup className={styles.numerator}>2</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>5</sub>
+        </>
+    ],
+    [
+        0.5,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>2</sub>
+        </>
+    ],
+    [
+        0.6,
+        <>
+            <sup className={styles.numerator}>3</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>5</sub>
+        </>
+    ],
+    [
+        0.625,
+        <>
+            <sup className={styles.numerator}>5</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>8</sub>
+        </>
+    ],
+    [
+        0.667,
+        <>
+            <sup className={styles.numerator}>2</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>3</sub>
+        </>
+    ],
+    [
+        0.75,
+        <>
+            <sup className={styles.numerator}>3</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>4</sub>
+        </>
+    ],
+    [
+        0.8,
+        <>
+            <sup className={styles.numerator}>4</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>5</sub>
+        </>
+    ],
+    [
+        0.833,
+        <>
+            <sup className={styles.numerator}>5</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>6</sub>
+        </>
+    ],
+    [
+        0.875,
+        <>
+            <sup className={styles.numerator}>7</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>8</sub>
+        </>
+    ]
+]);

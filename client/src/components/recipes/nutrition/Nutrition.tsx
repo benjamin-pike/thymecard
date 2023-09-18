@@ -315,7 +315,7 @@ const Entry: FC<IEntryProps> = ({
                     energy={round(metrics.energy, 0)}
                     carbohydrates={round(metrics.carbohydrates, 1)}
                     protein={round(metrics.protein, 1)}
-                    fat={round(metrics.protein, 1)}
+                    fat={round(metrics.fat, 1)}
                     sodium={round((metrics.sodium ?? 0) * 1000, 0)}
                 />
                 {renderDetails && <DetailedNutrients isVisible={displayDetails} values={metrics} />}

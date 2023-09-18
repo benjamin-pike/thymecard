@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import { useToggle } from '@mantine/hooks';
 import { round } from '@/lib/number.utils';
 import { INutrients } from '@/types/recipe.types';
@@ -16,7 +16,7 @@ const DetailedNutrients: FC<IDetailedNutrientsProps> = ({ isVisible, values }) =
         toggleChildren();
     }, []);
 
-    const data = format(values);
+    const data = useMemo(() => format(values), [values]);
     const mandatoryFields = ['Carbohydrates', 'Protein', 'Fat'];
 
     const orders = {
@@ -66,13 +66,12 @@ const DetailedNutrients: FC<IDetailedNutrientsProps> = ({ isVisible, values }) =
                                                 <span className={styles.nutrient}>
                                                     {title}
                                                     <span role="button" onClick={handleToggleChildren}>
-                                                        {' '}
-                                                        ...
+                                                        {' ...'}
                                                     </span>
                                                 </span>
                                                 <span className={styles.value}>{round(value * orders[unit], 1)}</span>
                                                 <span className={styles.unit}>{unit}</span>
-                                                <span className={styles.percentage}>{round(percentage, 1)}</span>
+                                                <span className={styles.percentage}>{round(percentage, 1)}%</span>
                                             </p>
                                             <div className={styles.childrenWrapper} data-active={displayChildren}>
                                                 <div className={styles.children}>

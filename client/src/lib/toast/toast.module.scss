@@ -1,0 +1,105 @@
+.toast {
+    font-weight: 400;
+    font-size: $fs-15;
+
+    &::after {
+        content: '';
+
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+
+        height: calc(100% - 1.5rem);
+        width: 0.35rem;
+
+        background-color: $green;
+
+        border-radius: 100vmax;
+    }
+
+    &.success {
+        &::after {
+            background-color: $green;
+        }
+    }
+
+    &.error {
+        &::after {
+            background-color: $red;
+        }
+    }
+
+    &.warning {
+        &::after {
+            background-color: $orange;
+        }
+    }
+
+    &.info {
+        &::after {
+            background-color: $blue;
+        }
+    }
+}
+
+.icon {
+    display: grid;
+    place-content: center;
+
+    width: 1.5rem;
+    height: 1.5rem;
+
+    margin-left: 0.15rem;
+
+    border-radius: 100vmax;
+
+    svg {
+        height: 100%;
+        width: 100%;
+    }
+
+    &[data-type='success'] {
+        padding: 0.35rem;
+
+        color: $green;
+        background-color: transparentize($green, 0.825);
+
+        svg {
+            path {
+                stroke-width: 80;
+            }
+        }
+    }
+
+    &[data-type='error'] {
+        padding: 0.35rem;
+
+        color: $red;
+        background-color: transparentize($red, 0.85);
+
+        svg {
+            path {
+                stroke-width: 70;
+            }
+        }
+    }
+
+    &[data-type='info'] {
+        padding: 0.4rem;
+
+        color: $blue;
+        background-color: transparentize($blue, 0.85);
+
+        svg {
+            path {
+                stroke-width: 30;
+            }
+        }
+    }
+}
+
+:global {
+    .Toastify__toast-body {
+        gap: 0.5rem;
+    }
+}

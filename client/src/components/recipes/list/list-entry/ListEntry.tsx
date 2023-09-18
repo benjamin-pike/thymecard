@@ -5,10 +5,10 @@ import { isDefined } from '@/lib/type.utils';
 import styles from './list-entry.module.scss';
 import { MaterialSymbol } from '@/lib/material-symbols/MaterialSymbol';
 import { ICONS } from '@/assets/icons';
+import { numberToStars } from '@/lib/elements.utils';
 
 const ServingsIcon = ICONS.recipes.servings;
 const PrepTimeIcon = ICONS.recipes.prepTime;
-const StarIcon = ICONS.common.star;
 const BookmarkIcon = ICONS.recipes.bookmarkFill;
 
 interface IListEntryProps {
@@ -22,6 +22,7 @@ interface IListEntryProps {
     bookmarked?: boolean;
     tags: string[];
     selectedTags: string[];
+    handleSelectRecipe: (recipeId: string) => void;
     handleTagClick: (tag: string) => void;
 }
 
@@ -36,6 +37,7 @@ const ListEntry: FC<IListEntryProps> = ({
     bookmarked,
     tags,
     selectedTags,
+    handleSelectRecipe,
     handleTagClick
 }) => {
     const orderedTags = [...selectedTags, ...tags.filter((tag) => !selectedTags.includes(tag))];
@@ -55,11 +57,6 @@ const ListEntry: FC<IListEntryProps> = ({
             name: 'cookTime',
             value: Duration.fromObject({ minutes: cookTime }).toFormat('h:mm'),
             icon: <MaterialSymbol icon="oven_gen" style="outlined" />
-        },
-        {
-            name: 'rating',
-            value: rating?.toString(),
-            icon: <StarIcon />
         }
     ];
 
@@ -70,10 +67,12 @@ const ListEntry: FC<IListEntryProps> = ({
             </div>
             <div className={styles.text}>
                 <span className={styles.topLine}>
-                    <h1 className={styles.title}>{name}</h1>
+                    <button onClick={() => handleSelectRecipe(id)}>
+                        <h1 className={styles.title}>{name}</h1>
+                    </button>
                     {bookmarked && <BookmarkIcon />}
                 </span>
-                <Details recipeId={id} details={details} />
+                <Details recipeId={id} details={details} rating={rating} />
                 <div className={styles.tags}>
                     {orderedTags.map((tag) => (
                         <button key={`${id}${tag}`} data-selected={selectedTags.includes(tag)} onClick={() => handleTagClick(tag)}>
@@ -97,9 +96,10 @@ interface IDetail {
 interface IDetailsProps {
     recipeId: string;
     details: IDetail[];
+    rating?: number;
 }
 
-const Details: FC<IDetailsProps> = ({ recipeId, details }) => {
+const Details: FC<IDetailsProps> = ({ recipeId, details, rating }) => {
     return (
         <ul className={styles.details}>
             {details.map(
@@ -113,6 +113,12 @@ const Details: FC<IDetailsProps> = ({ recipeId, details }) => {
                             {index !== details.length - 1 && <div className={styles.divider} />}
                         </Fragment>
                     )
+            )}
+            {isDefined(rating) && (
+                <>
+                    <div className={styles.divider} />
+                    <li className={formatClasses(styles, ['detail', 'rating'])}>{numberToStars(rating)}</li>
+                </>
             )}
         </ul>
     );

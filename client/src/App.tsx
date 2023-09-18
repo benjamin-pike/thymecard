@@ -1,8 +1,9 @@
 import { StrictMode } from 'react';
-import { Provider as ContextProvider } from 'react-redux';
+import { Provider as ContextProvider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { store } from './store/index';
+import { ToastContainer } from 'react-toastify';
+import { RootState, store } from './store/index';
 
 import Navbar from './components/navbar/Navbar';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -11,6 +12,8 @@ import Recipes from './pages/recipes/Recipes';
 
 import ThemeWrapper from './components/wrappers/theme/ThemeWrapper';
 import ResponsiveWrapper from './components/wrappers/responsive/ResponsiveWrapper';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 const queryClient = new QueryClient();
 
@@ -28,12 +31,18 @@ const routes = [
         element: <Recipes />
     },
     {
+        path: '/recipes/:recipeId',
+        element: <Recipes />
+    },
+    {
         path: '/*',
         element: <Navigate to="/dashboard" replace={true} />
     }
 ];
 
 export function CoreApp() {
+    const theme = useSelector((state: RootState) => state.theme);
+
     return (
         <div className="app">
             <Router>
@@ -43,6 +52,7 @@ export function CoreApp() {
                         <Route path={path} element={element} key={path} />
                     ))}
                 </Routes>
+                <ToastContainer className='toast' position="bottom-right" autoClose={2000} theme={theme} />
             </Router>
         </div>
     );

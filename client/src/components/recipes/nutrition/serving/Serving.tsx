@@ -11,7 +11,7 @@ import styles from './serving.module.scss';
 
 const PlusIcon = ICONS.common.plus;
 const MinusIcon = ICONS.common.minus;
-const RefreshIcon = ICONS.recipes.refresh;
+const RefreshIcon = ICONS.common.refresh;
 const ToggleIcon = ICONS.common.toggle;
 
 interface IServingProps {

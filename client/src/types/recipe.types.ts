@@ -93,3 +93,51 @@ export interface INutrients {
     caffeine: number | null;
     alcohol: number | null;
 }
+
+// Recipe
+export interface IRecipeMetadata {
+    author?: string;
+    url?: string;
+    yield: {
+        quantity: number[];
+        units: string | null;
+    };
+    prepTime?: number;
+    cookTime?: number;
+    totalTime?: number;
+    rating?: number;
+    created: Date;
+    lastCooked?: Date;
+    tags: string[];
+}
+
+export interface IIngredient {
+    quantity: number[] | null;
+    unit: string | null;
+    item: string;
+    prepStyles?: string | null;
+    notes?: string | null;
+    source: string;
+    match: IIngredientMatch | null;
+}
+
+export interface IIngredientMatch {
+    id: string;
+    name: string;
+    strength: Exclude<IngredientMatchStrength, 'none'>;
+}
+
+export type IngredientMatchStrength = 'confirmed' | 'strong' | 'weak' | 'none';
+
+export interface IMethodSection {
+    id: string;
+    steps: IMethodStep[];
+    sectionTitle?: string;
+}
+
+export interface IMethodStep {
+    id: string;
+    instructions: string;
+    stepTitle?: string;
+    image?: string[];
+}
