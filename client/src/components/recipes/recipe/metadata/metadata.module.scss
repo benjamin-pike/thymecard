@@ -1,0 +1,160 @@
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    padding: 0.75rem;
+
+    .origin {
+        .author {
+            color: $mono-700;
+
+            .by {
+                font-weight: 300;
+            }
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+
+        .url {
+            margin-top: 0.25rem;
+
+            color: $mono-500;
+            font-size: $fs-14;
+            font-weight: 200;
+
+            @include dark-mode {
+                color: $mono-500;
+            }
+        }
+    }
+
+    .metrics {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        li {
+            display: flex;
+            align-items: center;
+
+            p {
+                font-size: $fs-14;
+            }
+
+            .metric {
+                color: $mono-600;
+                width: 4.5rem;
+                font-weight: 600;
+
+                @include dark-mode {
+                    color: $mono-500;
+                }
+            }
+
+            .value {
+                color: $mono-700;
+                font-weight: 300;
+                font-size: $fs-13;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+            }
+
+            .scale {
+                display: grid;
+                place-content: center;
+
+                margin-left: auto;
+
+                padding: 0 0.475rem 0 0.525rem;
+
+                height: 1.75rem;
+                min-width: 1.75rem;
+                
+                font-size: $fs-11;
+                font-weight: 300;
+                color: $mono-700;
+                background-color: transparentize($mono-100, 0.25);
+
+                border-radius: 100vmax;
+
+                @include dark-mode {
+                    color: $mono-light;
+                    background-color: $mono-700;
+                }
+            }
+
+            &.rating {
+                .value {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.25rem;
+
+                    font-size: $fs-14;
+
+                    &[data-defined='false'] {
+                        color: $mono-400;
+
+                        @include dark-mode {
+                            color: $mono-500;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        padding: 0.25rem 0;
+        
+        max-width: 15rem;
+
+        p {
+            padding: 0.35rem 0.75rem;
+
+            font-size: $fs-11;
+            font-weight: 500;
+            text-align: center;
+            color: $mono-700;
+            box-shadow: 0 0 0 1px $mono-200;
+
+            border-radius: 0.35rem;
+
+            @include dark-mode {
+                color: $mono-light;
+                box-shadow: 0 0 0 1px $mono-700;
+            }
+        }
+    }
+
+    .add {
+        color: $mono-400;
+        font-weight: 300;
+
+        @include dark-mode {
+            color: $mono-500;
+        }
+    }
+
+    .divider {
+        margin: 0.1rem 0;
+
+        height: 1px;
+        width: 100%;
+
+        background-color: $mono-200;
+
+        @include dark-mode {
+            background-color: $mono-700;
+        }
+    }
+}

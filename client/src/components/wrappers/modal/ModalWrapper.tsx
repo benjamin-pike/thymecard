@@ -10,19 +10,22 @@ import styles from './modal-wrapper.module.scss';
 
 interface ImageModalProps {
     children: ReactElement;
+    isOpen: boolean;
     closeModal: () => void;
 }
 
-const ImageModal: FC<ImageModalProps> = ({ children, closeModal }) => {
+const ImageModal: FC<ImageModalProps> = ({ children, isOpen, closeModal }) => {
     const ref = useClickOutside(closeModal);
 
     useWindowKeyDown('Escape', closeModal);
 
+    if (!isOpen) {
+        return null;
+    }
+
     return createPortal(
         <div className={styles.backdrop}>
-            <div ref = {ref}>
-                {children}
-            </div>
+            <div ref={ref}>{children}</div>
             <button className={styles.closeButton} onClick={closeModal}>
                 <IoMdClose />
             </button>

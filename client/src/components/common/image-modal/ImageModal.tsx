@@ -1,5 +1,4 @@
 import { useCallback, FC } from 'react';
-import { createPortal } from 'react-dom';
 import { useWindowKeyDown } from '@/hooks/events/useWindowKeydown';
 
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
@@ -11,13 +10,14 @@ import { formatClasses } from '@/lib/common.utils';
 import styles from './image-modal.module.scss';
 
 interface ImageModalProps {
+    isOpen: boolean;
     urls: string[];
     currentImage: number;
     changeSelectedImage: (index: number) => void;
     closeModal: () => void;
 }
 
-const ImageModal: FC<ImageModalProps> = ({ urls, currentImage, changeSelectedImage, closeModal }) => {
+const ImageModal: FC<ImageModalProps> = ({ isOpen, urls, currentImage, changeSelectedImage, closeModal }) => {
     const handleNext = useCallback(() => {
         if (currentImage < urls.length - 1) {
             changeSelectedImage(currentImage + 1);
@@ -33,8 +33,8 @@ const ImageModal: FC<ImageModalProps> = ({ urls, currentImage, changeSelectedIma
     useWindowKeyDown('ArrowRight', handleNext);
     useWindowKeyDown('ArrowLeft', handlePrev);
 
-    return createPortal(
-        <ModalWrapper closeModal={closeModal}>
+    return (
+        <ModalWrapper isOpen={isOpen} closeModal={closeModal}>
             <div className={styles.container}>
                 <button className={formatClasses(styles, ['nagivateButton', 'prev'])} onClick={handlePrev} disabled={currentImage === 0}>
                     <BsChevronCompactLeft />
@@ -57,8 +57,7 @@ const ImageModal: FC<ImageModalProps> = ({ urls, currentImage, changeSelectedIma
                     <BsChevronCompactRight />
                 </button>
             </div>
-        </ModalWrapper>,
-        document.getElementById('modal-root')!
+        </ModalWrapper>
     );
 };
 

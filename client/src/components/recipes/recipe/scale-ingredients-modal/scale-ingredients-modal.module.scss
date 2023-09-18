@@ -1,0 +1,453 @@
+.modal {
+    display: flex;
+    flex-direction: column;
+
+    width: 27.5rem;
+    height: 40rem;
+
+    padding: 2.5rem;
+
+    background-color: $mono-light;
+    box-shadow: 4px 4px 50px 0 rgba(0, 0, 0, 0.35);
+
+    border-radius: 0.75rem;
+
+    @include dark-mode {
+        background-color: $mono-900;
+        box-shadow: 0 0 0 1px $mono-700;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+
+        padding-bottom: 1rem;
+
+        margin-bottom: 1rem;
+
+        border-bottom: 1px solid $mono-200;
+
+        @include dark-mode {
+            border-bottom: 1px solid $mono-700;
+        }
+
+        svg {
+            margin-right: 0.75rem;
+
+            color: $mono-700;
+
+            scale: 1.5;
+
+            @include dark-mode {
+                color: $mono-light;
+            }            
+        }
+
+        h1 {
+            color: $mono-700;
+            font-size: $fs-16;
+            font-weight: 500;
+
+            span {
+                color: $mono-600;
+                font-weight: 300;
+            }
+
+            @include dark-mode {
+                color: $mono-light;
+
+                span {
+                    color: $mono-400;
+                }
+            }
+        }
+
+        p {
+            margin-left: auto;
+            color: $mono-600;
+            font-size: $fs-13;
+            font-weight: 400;
+
+            @include dark-mode {
+                color: $mono-400;
+            }
+        }
+    }
+
+    .options {
+        position: relative;
+
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        border-bottom: 1px solid $mono-200;
+
+        padding: 0 0.5rem 1rem 0.5rem;
+
+        @include dark-mode {
+            border-bottom: 1px solid $mono-700;
+        }
+
+        .multipliers {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+
+            width: 100%;
+
+            button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-grow: 1;
+
+                height: 2.25rem;
+
+                font-weight: 400;
+                font-size: $fs-13;
+                color: $mono-700;
+
+                border-radius: 0.25rem;
+
+                transition: color 150ms ease, background-color 150ms ease;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                &:hover {
+                    color: $mono-light;
+                }
+
+                p {
+                    position: relative;
+
+                    transition: translate 150ms ease;
+
+                    &::after {
+                        content: '';
+                        position: absolute;
+                        top: calc(100% + 0.25rem);
+                        left: 50%;
+
+                        width: 0.175rem;
+                        height: 0.175rem;
+
+                        background-color: $mono-700;
+                        opacity: 0;
+
+                        border-radius: 50%;
+
+                        translate: -50%;
+
+                        transition: opacity 200ms ease;
+
+                        @include dark-mode {
+                            background-color: $mono-light;
+                        }
+                    }
+                }
+
+                &:not([data-active='true']):hover {
+                    p {
+                        translate: 0 -0.2rem;
+
+                        &::after {
+                            opacity: 1;
+                        }
+                    }
+                }
+
+                span {
+                    margin-right: -0.1rem;
+
+                    padding-left: 0.1rem;
+
+                    font-weight: 300;
+                }
+
+                &[data-active='true'] {
+                    color: $mono-light;
+                    background-color: $mono-700;
+
+                    @include dark-mode {
+                        color: $mono-700;
+                        background-color: $mono-light;
+                    }
+                }
+            }
+
+            input {
+                position: relative;
+
+                display: flex;
+                align-items: center;
+                
+                margin-left: 0.125rem;
+
+                height: 2.25rem;
+                width: 4rem;
+
+                font-weight: 400;
+                font-size: $fs-13;
+                text-align: center;
+                color: $mono-700;
+                background-color: transparentize($mono-100, 0.25);
+
+                border-radius: 0.25rem;
+
+                appearance: textfield;
+
+                transition: color 150ms ease, background-color 150ms ease;
+
+                @include dark-mode {
+                    color: $mono-light;
+                    background-color: transparentize($mono-800, 0.25);
+                }
+
+                &[data-active='true'] {
+                    color: $mono-light;
+                    background-color: $mono-700;
+
+                    @include dark-mode {
+                        color: $mono-700;
+                        background-color: $mono-light;
+                    }
+                }
+
+                &::placeholder {
+                    display: inline-block;
+
+                    translate: 0 -0.075rem;
+
+                    color: $mono-500;
+                    font-size: $fs-11;
+                    font-weight: 400;
+                }
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+
+                span {
+                    margin-right: unset;
+                }
+            }
+
+            .divider {
+                width: 1px;
+                height: 1.25rem;
+
+                margin: 0 0.125rem;
+
+                background-color: $mono-200;
+
+                @include dark-mode {
+                    background-color: $mono-700;
+                }
+            }
+        }
+    }
+
+    .scrollContainer {
+        flex-shrink: 1;
+        min-height: 0;
+
+        border-bottom: 1px solid $mono-200;
+
+        @include dark-mode {
+            border-bottom: 1px solid $mono-700;
+        }
+    }
+
+    .ingredients {
+        display: flex;
+        flex-direction: column;
+        
+        padding: 0 0.5rem;
+
+        li {
+            display: flex;
+            align-items: center;
+
+            padding: 0 1.5rem;
+
+            height: 2.75rem;
+
+            border-radius: 0.5rem;
+
+            cursor: default;
+
+            p {
+                max-width: 20rem;
+
+                color: $mono-700;
+                font-size: $fs-12;
+                font-weight: 300;
+                line-height: 2.75rem;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                user-select: none;
+
+                overflow: hidden;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                span {
+                    color: $mono-700;
+                    font-size: $fs-14;
+                    font-weight: 300;
+
+                    transition: color 100ms ease;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
+                }
+
+                .quantity {
+                    margin-right: 0.25rem;
+
+                    color: $mono-800;
+                    font-weight: 500;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
+
+                    .slash {
+                        position: relative;
+
+                        color: transparent;
+
+                        @include dark-mode {
+                            color: transparent
+                        }
+
+                        &::after {
+                            content: '';
+
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+
+                            margin-left: -0.125rem;
+
+                            height: 0.75px;
+                            width: 0.75rem;
+
+                            background-color: $mono-dark;
+
+                            translate: -50% -50%;
+                            rotate: -60deg;
+
+                            transition: background-color 100ms ease;
+
+                            @include dark-mode {
+                                background-color: $mono-light;
+                            }
+                        }
+                    }
+
+                    .numerator,
+                    .denominator {
+                        font-size: $fs-10;
+                        font-weight: 500;
+                    }
+
+                    .denominator {
+                        margin-left: -0.35rem;
+                    }
+                }
+
+                .unit {
+                    margin-right: 0.25rem;
+
+                    color: $mono-800;
+                    font-weight: 400;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
+                }
+
+                .item {
+                    color: $mono-700;
+                    font-weight: 300;
+                    margin-right: 0.25rem;
+
+                    @include dark-mode {
+                        color: $mono-100;
+                    }
+                }
+
+                .qualifiers {
+                    font-size: $fs-12;
+                    color: $mono-600;
+
+                    @include dark-mode {
+                        color: $mono-500;
+                    }
+                }
+            }
+
+            &:nth-of-type(even) {
+                background-color: transparentize($mono-100, 0.15);
+
+                @include dark-mode {
+                    background-color: transparentize($mono-800, 0.15);
+                }
+            }
+        }
+    }
+
+    .buttons {
+        display: flex;
+        gap: 0.75rem;
+
+        padding: 0 1rem;
+
+        margin-top: 1.25rem;
+
+        button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+
+            padding: 0.75rem;
+
+            font-size: $fs-13;
+            font-weight: 400;
+            color: $mono-600;
+            box-shadow: 0 0 0 1px $mono-200;
+
+            border-radius: 0.5rem;
+
+            transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+
+            &:hover {
+                color: $mono-light;
+                background-color: $mono-700;
+                box-shadow: 0 0 0 1px $mono-700;
+            }
+
+            @include dark-mode {
+                color: $mono-400;
+                box-shadow: 0 0 0 1px $mono-700;
+
+                &:hover {
+                    color: $mono-700;
+                    background-color: $mono-light;
+                    box-shadow: 0 0 0 1px $mono-light;
+                }
+            }
+        }
+    }
+}

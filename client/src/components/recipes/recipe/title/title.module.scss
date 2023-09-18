@@ -1,0 +1,135 @@
+.title {
+    display: flex;
+    align-items: center;
+
+    h1,
+    input {
+        flex-grow: 1;
+
+        color: $mono-700;
+        font-size: $fs-24;
+        font-weight: 500;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+    }
+
+    .buttons {
+        display: flex;
+        align-items: center;
+
+        margin-left: auto;
+
+        button {
+            display: grid;
+            place-items: center;
+
+            color: $mono-400;
+
+            transition: color 150ms ease, opacity 100ms ease;
+
+            &:hover {
+                color: $mono-700;
+            }
+
+            @include dark-mode {
+                color: $mono-600;
+
+                &:hover {
+                    color: $mono-light;
+                }
+            }
+
+            svg {
+                height: 100%;
+                width: 100%;
+            }
+
+            &.edit {
+                height: 1.25rem;
+                width: 1.25rem;
+
+                margin-right: 0.25rem;
+
+                opacity: 0;
+
+                svg {
+                    path {
+                        stroke-width: 3;
+                    }
+                }
+
+                @include dark-mode {
+                    height: 1.35rem;
+                    width: 1.35rem;
+
+                    svg {
+                        path {
+                            stroke-width: 2.5;
+                        }
+                    }
+                }
+            }
+
+            &.bookmark {
+                height: 1.5rem;
+                width: 1.5rem;
+
+                &[data-active='false'] {
+                    opacity: 0;
+
+                    scale: 0.96;
+
+                    svg {
+                        path {
+                            stroke-width: 10;
+                        }
+                    }
+                }
+
+                &[data-active='true'] {
+                    &:not(:hover) {
+                        opacity: 0.5;
+                    }
+                }
+            }
+
+            &.save {
+                height: 1.5rem;
+                width: 1.5rem;
+
+                svg {
+                    path {
+                        stroke-width: 55px;
+                    }
+                }
+            }
+
+            &.cancel {
+                height: 1.65rem;
+                width: 1.65rem;
+
+                svg {
+                    path {
+                        stroke-width: 55px;
+                    }
+                }
+            }
+        }
+    }
+
+    &:hover {
+        .buttons {
+            .edit {
+                opacity: 1;
+            }
+
+            .bookmark {
+                &[data-active='false'] {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+}

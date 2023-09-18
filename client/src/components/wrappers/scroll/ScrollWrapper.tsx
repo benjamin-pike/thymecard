@@ -14,6 +14,7 @@ interface IScrollWrapperProps {
     padding: number;
     buttonMargin?: { up?: string; down?: string };
     active?: boolean;
+    isScrollable?: boolean;
     useAutoScroll?: boolean;
     useScrollButtons?: boolean;
     useScrollBar?: boolean;
@@ -26,9 +27,10 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({
     padding,
     buttonMargin,
     active,
+    isScrollable,
     useAutoScroll,
     useScrollButtons,
-    useScrollBar
+    useScrollBar,
 }) => {
     if (!(active ?? true)) {
         return <>{children}</>;
@@ -46,8 +48,8 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({
     const [upperIsHovered, setUpperIsHovered] = useState(false);
     const [lowerIsHovered, setLowerIsHovered] = useState(false);
 
-    const displayScrollButtons = useScrollButtons !== false;
-    const displayScrollBar = useScrollBar !== false;
+    const displayScrollButtons = isScrollable !== false && useScrollButtons !== false;
+    const displayScrollBar = isScrollable !== false && useScrollBar !== false;
 
     const handleSegmentHoverState = useCallback(
         (event: MouseEvent) => {
@@ -214,7 +216,7 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({
                     </button>
                 </div>
             )}
-            <div className={styles.column} style={{ padding: `${padding}rem 0` }} ref={columnRef}>
+            <div className={styles.column} style={{ padding: `${padding}rem 0`, overflowY: isScrollable !== false ? 'scroll' : 'hidden' }} ref={columnRef}>
                 {children}
             </div>
             {displayScrollBar && scrollbarIsVisible && (

@@ -1,13 +1,16 @@
 import { FC, useCallback, useState } from 'react';
 import ImageModal from '../image-modal/ImageModal';
 import styles from './image-grid.module.scss';
+import { isDefined } from '@/lib/type.utils';
 
 interface ImageGridProps {
     urls: string[];
     height: number;
+    imageBorderRadius?: number;
+    imageSpacing?: number;
 }
 
-const ImageGrid: FC<ImageGridProps> = ({ urls, height }) => {
+const ImageGrid: FC<ImageGridProps> = ({ urls, height, imageBorderRadius, imageSpacing }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImage, setCurrentImage] = useState(0);
     const length = urls.length;
@@ -26,39 +29,53 @@ const ImageGrid: FC<ImageGridProps> = ({ urls, height }) => {
         setCurrentImage(index);
     }, []);
 
+    const containerStyle = isDefined(imageSpacing) ? { gap: `${imageSpacing}rem`, height: `${height}rem` } : { height: `${height}rem` };
+    const imageStyle = isDefined(imageBorderRadius) ? { borderRadius: `${imageBorderRadius}rem` } : {};
+    const halfStyle = isDefined(imageSpacing) ? { width: `calc(50% - ${imageSpacing / 2}rem)` } : {};
+    const quarterStyle = isDefined(imageSpacing) ? { height: `calc(50% - ${imageSpacing / 2}rem)` } : {};
+
     return (
         <>
-            <div className={styles.container} style={{ height: `${height}rem` }}>
+            <div className={styles.container} style={containerStyle}>
                 {length === 1 ? (
                     <div className={`${styles.imageContainer} ${styles.full}`} onClick={() => openModal(0)}>
-                        <img src={urls[0]} className={styles.image} alt="Image 1" />
+                        <img src={urls[0]} className={styles.image} style={imageStyle} alt="Image 1" />
                     </div>
                 ) : length === 3 ? (
                     <>
-                        <div className={`${styles.imageContainer} ${styles.half}`} onClick={() => openModal(0)}>
-                            <img src={urls[0]} className={styles.image} alt="Image 1" />
+                        <div className={`${styles.imageContainer} ${styles.half}`} style={halfStyle} onClick={() => openModal(0)}>
+                            <img src={urls[0]} className={styles.image} style={imageStyle} alt="Image 1" />
                         </div>
                         <div className={styles.splitContainer}>
-                            <div className={`${styles.imageContainer} ${styles.quarter}`} onClick={() => openModal(1)}>
-                                <img src={urls[1]} className={styles.image} alt="Image 2" />
+                            <div className={`${styles.imageContainer} ${styles.quarter}`} style={quarterStyle} onClick={() => openModal(1)}>
+                                <img src={urls[1]} className={styles.image} style={imageStyle} alt="Image 2" />
                             </div>
-                            <div className={`${styles.imageContainer} ${styles.quarter}`} onClick={() => openModal(2)}>
-                                <img src={urls[2]} className={styles.image} alt="Image 3" />
+                            <div className={`${styles.imageContainer} ${styles.quarter}`} style={quarterStyle} onClick={() => openModal(2)}>
+                                <img src={urls[2]} className={styles.image} style={imageStyle} alt="Image 3" />
                             </div>
                         </div>
                     </>
                 ) : (
                     urls.slice(0, Math.min(length, 4)).map((url, index) => (
-                        <div key={index} className={`${styles.imageContainer} ${styles.half}`} onClick={() => openModal(index)}>
-                            <img src={url} className={styles.image} alt={`Image ${index + 1}`} />
-                            {extra > 0 && index === 3 && <div className={styles.overlay}>{`+${extra}`}</div>}
+                        <div
+                            key={index}
+                            className={`${styles.imageContainer} ${styles.half}`}
+                            style={halfStyle}
+                            onClick={() => openModal(index)}
+                        >
+                            <img src={url} className={styles.image} style={imageStyle} alt={`Image ${index + 1}`} />
+                            {extra > 0 && index === 3 && <div className={styles.overlay} style={imageStyle}>{`+${extra}`}</div>}
                         </div>
                     ))
                 )}
             </div>
-            {isModalOpen && (
-                <ImageModal urls={urls} currentImage={currentImage} changeSelectedImage={changeSelectedImage} closeModal={closeModal} />
-            )}
+            <ImageModal
+                isOpen={isModalOpen}
+                urls={urls}
+                currentImage={currentImage}
+                changeSelectedImage={changeSelectedImage}
+                closeModal={closeModal}
+            />
         </>
     );
 };

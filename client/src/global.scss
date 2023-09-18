@@ -80,10 +80,13 @@ $blue: rgb(0, 123, 255);
 $purple: rgb(178, 77, 255);
 $pink: rgb(255, 0, 157);
 
+$fs-32: 2rem;
+$fs-28: 1.75rem;
 $fs-24: 1.5rem;
 $fs-20: 1.25rem;
 $fs-18: 1.125rem;
 $fs-16: 1rem;
+$fs-15: 0.9375rem;
 $fs-14: 0.875rem;
 $fs-13: 0.8125rem;
 $fs-12: 0.75rem;
@@ -91,6 +94,8 @@ $fs-11: 0.6875rem;
 $fs-10: 0.625rem;
 $fs-9: 0.5625rem;
 $fs-8: 0.5rem;
+
+$font-family: 'Outfit', sans-serif;
 
 $event-colors: (
     'breakfast': $green,
@@ -111,6 +116,19 @@ $metric-colors: (
     pregnancy: $blue,
 );
 
+:root {
+    --toastify-color-light: #{$mono-light};
+    --toastify-color-dark: #{$mono-800};
+    --toastify-color-info: #{$blue};
+    --toastify-color-success: #{$green};
+    --toastify-color-warning: #{$orange};
+    --toastify-color-error: #{$red};
+
+    --toastify-font-family: #{$font-family};
+    --toastify-text-color-light: #{$mono-600};
+    --toastify-text-color-dark: #{$mono-light};
+}
+
 * {
     box-sizing: border-box;
     padding: 0;
@@ -120,7 +138,7 @@ $metric-colors: (
 
 html,
 body {
-    font-family: 'Outfit', sans-serif;
+    font-family: $font-family;
     font-weight: 500;
     max-width: 100vw;
     min-height: 100svh;
@@ -142,6 +160,11 @@ button {
 }
 
 input {
+    all: unset;
+    cursor: text;
+}
+
+textarea {
     all: unset;
     cursor: text;
 }

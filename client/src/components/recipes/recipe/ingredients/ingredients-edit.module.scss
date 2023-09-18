@@ -1,0 +1,425 @@
+.ingredients {
+    display: flex;
+
+    margin-top: 1rem;
+
+    width: 100%;
+
+    ul {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        width: fit-content;
+
+        li {
+            position: relative;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 1rem;
+
+            font-size: $fs-14;
+            font-weight: 300;
+
+            span {
+                width: 100%;
+
+                line-height: 2.5rem;
+
+                &:focus {
+                    outline: none;
+                }
+            }
+
+            &:nth-of-type(even) {
+                background-color: transparentize($mono-100, 0.15);
+
+                @include dark-mode {
+                    background-color: transparentize($mono-800, 0.15);
+                }
+            }
+
+            ::after {
+                position: absolute;
+                top: 0;
+                left: 1rem;
+            }
+
+            &.quantity {
+                padding-left: 1.5rem;
+
+                color: $mono-800;
+                font-weight: 400;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                ::after {
+                    left: 1.5rem;
+                }
+
+                [data-empty='true'] {
+                    &::after {
+                        content: 'Qty.';
+                    }
+                }
+            }
+
+            &.unit {
+                color: $mono-800;
+                font-weight: 400;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                [data-empty='true'] {
+                    &::after {
+                        content: 'Unit';
+                    }
+                }
+            }
+
+            &.item {
+                color: $mono-700;
+                font-weight: 300;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                [data-empty='true'] {
+                    &::after {
+                        content: 'Ingredient';
+                    }
+                }
+            }
+
+            &.prepStyle {
+                color: $mono-600;
+
+                @include dark-mode {
+                    color: $mono-500;
+                }
+
+                [data-empty='true'] {
+                    &::after {
+                        content: 'Preparation';
+                    }
+                }
+            }
+
+            &.note {
+                width: 100%;
+
+                color: $mono-600;
+
+                @include dark-mode {
+                    color: $mono-500;
+                }
+
+                [data-empty='true'] {
+                    &::after {
+                        content: 'Notes';
+                    }
+                }
+            }
+
+            &.match {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+
+                margin-left: auto;
+
+                height: 2.5rem;
+                width: 3.25rem;
+
+                background-color: transparent;
+
+                @include dark-mode {
+                    background-color: transparent;
+                }
+
+                button {
+                    display: grid;
+                    place-content: center;
+
+                    padding: 0.3rem;
+
+                    width: 0.7rem;
+                    height: 0.7rem;
+
+                    border-radius: 0.5rem;
+
+                    transition: box-shadow 150ms ease;
+
+                    svg {
+                        width: 100%;
+                        height: 100%;
+                    }
+
+                    &[data-match='strong'] {
+                        background-color: transparentize($green, 0.85);
+
+                        @include dark-mode {
+                            background-color: transparentize($green, 0.925);
+                            box-shadow: 0 0 0 1px transparentize($green, 0.5);
+                        }
+
+                        &:hover {
+                            box-shadow: 0 0 0 0.1rem $mono-light, 0 0 0 0.25rem transparentize($green, 0.85);
+
+                            @include dark-mode {
+                                box-shadow: 0 0 0 1px transparentize($green, 0.5), 0 0 0 0.2rem $mono-900,
+                                    0 0 0 calc(0.2rem + 1px) transparentize($green, 0.5);
+                            }
+                        }
+
+                        svg {
+                            color: darken($green, 7.5%);
+
+                            @include dark-mode {
+                                color: contrastize($green, 'dark');
+                            }
+
+                            path {
+                                stroke-width: 50;
+                            }
+                        }
+                    }
+
+                    &[data-match='weak'] {
+                        background-color: transparentize($orange, 0.85);
+
+                        @include dark-mode {
+                            background-color: transparentize($orange, 0.925);
+                            box-shadow: 0 0 0 1px transparentize($orange, 0.5);
+                        }
+
+                        &:hover {
+                            box-shadow: 0 0 0 0.1rem $mono-light, 0 0 0 0.25rem transparentize($orange, 0.85);
+
+                            @include dark-mode {
+                                box-shadow: 0 0 0 1px transparentize($orange, 0.5), 0 0 0 0.2rem $mono-900,
+                                    0 0 0 calc(0.2rem + 1px) transparentize($orange, 0.5);
+                            }
+                        }
+
+                        svg {
+                            color: darken($orange, 2.5%);
+
+                            @include dark-mode {
+                                color: contrastize($orange, 'dark');
+                            }
+                        }
+                    }
+
+                    &[data-match='none'] {
+                        background-color: transparentize($red, 0.875);
+
+                        @include dark-mode {
+                            color: contrastize($red, 'dark');
+                            background-color: transparentize($red, 0.925);
+                            box-shadow: 0 0 0 1px transparentize($red, 0.5);
+                        }
+
+                        &:hover {
+                            box-shadow: 0 0 0 0.1rem $mono-light, 0 0 0 0.25rem transparentize($red, 0.875);
+
+                            @include dark-mode {
+                                box-shadow: 0 0 0 1px transparentize($red, 0.5), 0 0 0 0.2rem $mono-900,
+                                    0 0 0 calc(0.2rem + 1px) transparentize($red, 0.5);
+                            }
+                        }
+
+                        svg {
+                            color: $red;
+
+                            scale: 1.1;
+
+                            @include dark-mode {
+                                color: contrastize($red, 'dark');
+                            }
+
+                            path {
+                                stroke-width: 45;
+                            }
+                        }
+                    }
+
+                    &[data-match='confirmed'] {
+                        background-color: transparentize($blue, 0.85);
+
+                        @include dark-mode {
+                            color: contrastize($blue, 'dark');
+                            background-color: transparentize($blue, 0.925);
+                            box-shadow: 0 0 0 1px transparentize($blue, 0.5);
+                        }
+
+                        &:hover {
+                            box-shadow: 0 0 0 0.1rem $mono-light, 0 0 0 0.25rem transparentize($blue, 0.85);
+
+                            @include dark-mode {
+                                box-shadow: 0 0 0 1px transparentize($blue, 0.5), 0 0 0 0.2rem $mono-900,
+                                    0 0 0 calc(0.2rem + 1px) transparentize($blue, 0.5);
+                            }
+                        }
+
+                        svg {
+                            color: $blue;
+
+                            @include dark-mode {
+                                color: contrastize($blue, 'dark');
+                            }
+
+                            path {
+                                stroke-width: 50;
+                            }
+                        }
+                    }
+                }
+            }
+
+            [data-empty='true'] {
+                color: $mono-400;
+                font-size: $fs-12;
+                font-weight: 300;
+                white-space: pre;
+            }
+
+            [data-empty='false'] {
+                &::after {
+                    display: none;
+                }
+            }
+        }
+
+        &.quantities {
+            li {
+                border-radius: 0.5rem 0 0 0.5rem;
+            }
+        }
+
+        &.notes {
+            flex-grow: 1;
+
+            li {
+                border-radius: 0 0.5rem 0.5rem 0;
+            }
+        }
+    }
+}
+
+.popover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+
+    padding: 1.25rem;
+
+    h3 {
+        display: flex;
+        align-items: center;
+
+        padding: 0.125rem 0.125rem 0.125rem 0.9rem;
+
+        font-weight: 300;
+        font-size: $fs-12;
+        color: $mono-light;
+        background: linear-gradient(90deg, $mono-700, $mono-600 20rem);
+
+        border-radius: 100vmax;
+
+        @include dark-mode {
+            color: $mono-500;
+            background: linear-gradient(90deg, $mono-800, transparent 10rem);
+        }
+
+        .matched {
+            margin-right: 0.5ch;
+
+            font-weight: 500;
+            color: $mono-light;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+
+        .matchedItem {
+            display: block;
+
+            margin-left: 0.5rem;
+
+            padding: 0.4rem 0.75rem;
+
+            font-weight: 500;
+            color: $mono-700;
+            background-color: $mono-light;
+
+            border-radius: 100vmax;
+
+            @include dark-mode {
+                color: $mono-700;
+                background-color: $mono-light;
+            }
+        }
+    }
+
+    .check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        margin-left: 0.2rem;
+
+        padding: 0 0.5rem;
+
+        p {
+            margin-right: 0.25rem;
+
+            font-size: $fs-12;
+            font-weight: 400;
+            color: $mono-700;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+
+        button {
+            padding: 0.5rem 0.8rem;
+
+            font-size: $fs-11;
+            font-weight: 400;
+            color: $mono-600;
+            box-shadow: 0 0 0 1px $mono-200;
+
+            border-radius: 0.35rem;
+
+            transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+
+            &:hover {
+                color: $mono-light;
+                background-color: $mono-700;
+                box-shadow: 0 0 0 1px $mono-700;
+            }
+
+            @include dark-mode {
+                color: $mono-light;
+                box-shadow: 0 0 0 1px $mono-700;
+
+                &:hover {
+                    color: $mono-700;
+                    background-color: $mono-light;
+                    box-shadow: 0 0 0 1px $mono-light;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,163 @@
+.ingredients {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    width: fit-content;
+
+    &[data-print='true'] {
+        margin-top: 1rem;
+    }
+
+    li {
+        display: flex;
+
+        padding: 0 1.5rem;
+
+        border-radius: 0.5rem;
+
+        cursor: pointer;
+
+        p {
+            display: flex;
+            align-items: center;
+            
+            height: 2.5rem;
+            max-width: 20rem;
+
+            white-space: nowrap;
+            user-select: none;
+
+            span {
+                color: $mono-700;
+                font-size: $fs-14;
+                font-weight: 300;
+
+                transition: color 100ms ease;
+
+                @include dark-mode {
+                    color: $mono-400;
+                }
+            }
+
+            .quantity {
+                margin-right: 0.25rem;
+
+                color: $mono-800;
+                font-weight: 500;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                .slash {
+                    position: relative;
+
+                    color: transparent;
+
+                    @include dark-mode {
+                        color: transparent;
+                    }
+
+                    &::after {
+                        content: '';
+
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+
+                        margin-left: -0.125rem;
+
+                        height: 0.75px;
+                        width: 0.75rem;
+
+                        background-color: $mono-dark;
+
+                        translate: -50% -50%;
+                        rotate: -60deg;
+
+                        transition: background-color 100ms ease;
+
+                        @include dark-mode {
+                            background-color: $mono-light;
+                        }
+                    }
+                }
+
+                .numerator,
+                .denominator {
+                    font-size: $fs-10;
+                    font-weight: 500;
+                }
+
+                .denominator {
+                    margin-left: -0.35rem;
+                }
+            }
+
+            .unit {
+                margin-right: 0.25rem;
+
+                color: $mono-800;
+                font-weight: 400;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+            }
+
+            .item {
+                color: $mono-700;
+                font-weight: 300;
+                margin-right: 0.25rem;
+
+                @include dark-mode {
+                    color: $mono-200;
+                }
+            }
+
+            .qualifiers {
+                color: $mono-600;
+                font-size: $fs-12;
+
+                @include dark-mode {
+                    color: $mono-500;
+                }
+            }
+
+            &[data-added='true'] {
+                span {
+                    color: $mono-400;
+                    font-style: italic;
+
+                    @include dark-mode {
+                        color: $mono-600;
+                    }
+                }
+
+                .slash {
+                    color: transparent;
+
+                    &::after {
+                        background-color: $mono-400;
+
+                        translate: -40% -50%;
+                        rotate: -50deg;
+
+                        @include dark-mode {
+                            background-color: $mono-600;
+                        }
+                    }
+                }
+            }
+        }
+
+        &:nth-of-type(even) {
+            background-color: transparentize($mono-100, 0.15);
+
+            @include dark-mode {
+                background-color: transparentize($mono-800, 0.15);
+            }
+        }
+    }
+}

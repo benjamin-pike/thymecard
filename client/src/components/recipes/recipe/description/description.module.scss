@@ -1,0 +1,163 @@
+.description {
+    position: relative;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+
+    padding: 0 0.5rem;
+    
+    width: 100%;
+
+    p,
+    textarea {
+        display: -webkit-box;
+        box-orient: vertical;
+        -webkit-box-orient: vertical;
+
+        flex-grow: 1;
+        flex-shrink: 1;
+
+        width: 100%;
+
+        color: $mono-600;
+        font-size: $fs-18;
+        font-weight: 300;
+
+        line-height: 1.75rem;
+
+        cursor: default;
+        user-select: none;
+
+        line-clamp: 3;
+        -webkit-line-clamp: 3;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+    }
+
+    p {
+        &[data-expanded='true'] {
+            line-clamp: unset;
+            -webkit-line-clamp: unset;
+        }
+    }
+
+    .buttons {
+        position: absolute;
+        top: calc(100% + 0.75rem);
+        right: 0.75rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+
+        padding: 0 0.75rem;
+
+        background-color: $mono-light;
+
+        @include dark-mode {
+            background-color: $mono-900;
+        }
+
+        button {
+            display: grid;
+            place-items: center;
+
+            color: $mono-400;
+
+            transition: color 150ms ease;
+
+            &:hover {
+                color: $mono-700;
+            }
+
+            @include dark-mode {
+                color: $mono-600;
+
+                &:hover {
+                    color: $mono-light;
+                }
+            }
+
+            svg {
+                height: 100%;
+                width: 100%;
+                
+                translate: 0 -0.1rem;
+            }
+
+            &.edit {
+                height: 1.05rem;
+                width: 1.05rem;
+
+                svg {
+                    path {
+                        stroke-width: 2;
+                    }
+                }
+            }
+
+            &.expand {
+                height: 1.2rem;
+                width: 1.2rem;
+
+                svg {
+                    transition: rotate 200ms ease;
+
+                    path {
+                        stroke-width: 0.35;
+                    }
+                }
+
+                &[data-active='true'] {
+                    svg {
+                        rotate: 180deg;
+                    }
+                }
+            }
+
+            &.save {
+                margin-right: -0.25rem;
+
+                height: 1.3rem;
+                width: 1.3rem;
+
+                svg {
+                    path {
+                        stroke-width: 40;
+                    }
+                }
+            }
+
+            &.cancel {
+                height: 1.35rem;
+                width: 1.35rem;
+
+                svg {
+                    path {
+                        stroke-width: 40;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media print {
+    .description {
+        p {
+            line-clamp: unset;
+            -webkit-line-clamp: unset
+        }
+
+        .buttons {
+            display: none;
+        }
+    }
+}

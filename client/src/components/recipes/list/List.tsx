@@ -1,6 +1,5 @@
-import { useCallback, useDeferredValue, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { FC, useCallback, useDeferredValue, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useIntersection } from '@mantine/hooks';
-import { useBreakpoints } from '@/hooks/dom/useBreakpoints';
 
 import LoadingDots from '@/components/common/loading-dots/LoadingDots';
 import Filter from '@/components/recipes/list/filter/Filter';
@@ -17,9 +16,11 @@ import styles from './list.module.scss';
 
 const SearchIcon = ICONS.common.search;
 
-const List = () => {
-    useBreakpoints();
+interface IListProps {
+    handleSelectRecipe: (recipeId: string) => void;
+}
 
+const List: FC<IListProps> = ({ handleSelectRecipe }) => {
     const listEntries = useMemo(() => generateMockRecipeList(), []);
 
     const [search, setSearch] = useState('');
@@ -111,7 +112,7 @@ const List = () => {
                     <>
                         <ul className={styles.list}>
                             {validRecipes.slice(0, listLength).map((entryProps, index) => (
-                                <ListEntry key={index} selectedTags={selectedTags} handleTagClick={handleTagClick} {...entryProps} />
+                                <ListEntry key={index} selectedTags={selectedTags} handleSelectRecipe={handleSelectRecipe} handleTagClick={handleTagClick} {...entryProps} />
                             ))}
                         </ul>
                         {listLength < validRecipes.length && (
