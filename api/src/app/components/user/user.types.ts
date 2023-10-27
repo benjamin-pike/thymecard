@@ -6,12 +6,14 @@ export interface IUser {
     lastName?: string;
     email?: string;
     password?: string;
+    image?: string;
     phoneNumber?: string;
     dob?: Date;
     gender?: 'MALE' | 'FEMALE' | 'OTHER';
     authProvider: 'LOCAL' | 'GOOGLE' | 'FACEBOOK' | 'APPLE';
     OAuthId?: string;
-    deleted?: boolean;
+    isDeleted?: boolean;
+    isPremium?: boolean;
 }
 
 interface ILocalUser extends IUser {
@@ -21,7 +23,7 @@ interface ILocalUser extends IUser {
 }
 
 export type IOAuthUserCreate = Pick<IUser, 'firstName' | 'lastName' | 'OAuthId' | 'email' | 'authProvider'>;
-export type ILocalUserCreate = Omit<ILocalUser, '_id' | 'authProvider' | 'deleted'>;
+export type ILocalUserCreate = Omit<ILocalUser, '_id' | 'authProvider' | 'isDeleted' | 'isPremium'>;
 
 export type IUserUpdate = Partial<IUser>;
 
@@ -39,6 +41,7 @@ export const createLocalUserSchema = z.object({
     lastName: z.string(),
     email: z.string().email(),
     password: z.string().min(8).regex(passwordRegex),
+    image: z.string().optional(),
     phoneNumber: z.string().optional(),
     dob: z.date().optional(),
     gender: z.enum(['MALE', 'FEMALE', 'OTHER'])

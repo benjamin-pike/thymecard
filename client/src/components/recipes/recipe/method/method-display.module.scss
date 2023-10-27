@@ -5,7 +5,7 @@
     flex-grow: 1;
     flex-shrink: 1;
 
-    margin-top: -0.25rem;
+    margin-top: 1rem;
 
     padding: 0 1rem;
 
@@ -14,8 +14,11 @@
     }
 
     &[data-ingredients-visible='true'] {
-        margin-top: 1rem;
         padding: 0 0 0 1rem;
+    }
+
+    &[data-ingredients-visible='false'] {
+        margin-bottom: 1.5rem;
     }
 
     .section {

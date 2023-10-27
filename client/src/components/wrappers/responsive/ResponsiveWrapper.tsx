@@ -1,4 +1,4 @@
-import { FC, ReactElement, useCallback, useRef } from "react";
+import { FC, ReactElement, useCallback, useRef } from 'react';
 
 interface IResponsiveWrapperProps {
     children: ReactElement;
@@ -20,16 +20,12 @@ const RepsonsiveWrapper: FC<IResponsiveWrapperProps> = ({ children }) => {
 
     const dataAttributes = {
         ref,
-        className: "responsive-wrapper",
+        className: 'responsive-wrapper',
         onMouseLeave: handleMouseLeave,
         onMouseEnter: handleMouseEnter
     };
 
-    return (
-        <div {...dataAttributes}>
-            {children}
-        </div>
-    );
-}
+    return <div {...dataAttributes}>{children}</div>;
+};
 
-export default RepsonsiveWrapper
+export default RepsonsiveWrapper;

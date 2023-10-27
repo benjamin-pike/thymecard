@@ -117,10 +117,6 @@
                     color: $mono-light;
                 }
 
-                &:hover {
-                    color: $mono-light;
-                }
-
                 p {
                     position: relative;
 
@@ -255,6 +251,7 @@
 
     .scrollContainer {
         flex-shrink: 1;
+        flex-grow: 1;
         min-height: 0;
 
         border-bottom: 1px solid $mono-200;
@@ -443,9 +440,9 @@
                 box-shadow: 0 0 0 1px $mono-700;
 
                 &:hover {
-                    color: $mono-700;
-                    background-color: $mono-light;
-                    box-shadow: 0 0 0 1px $mono-light;
+                    color: $mono-light;
+                    background-color: $mono-800;
+                    box-shadow: 0 0 0 1px $mono-500;
                 }
             }
         }

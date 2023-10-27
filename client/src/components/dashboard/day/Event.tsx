@@ -18,11 +18,7 @@ const Event: FC<IEventProps> = ({ type, time, name }) => {
     return (
         <div className={formatClasses(styles, ['event', type.toLowerCase(), isPast ? 'past' : ''])}>
             <div className={styles.icon}>
-                <EventIcon 
-                    type={type} 
-                    radius={1.25}
-                    background={true}
-                />
+                <EventIcon type={type} radius={1.25} background={true} />
             </div>
             <div className={styles.details}>
                 <div className={styles.chips}>

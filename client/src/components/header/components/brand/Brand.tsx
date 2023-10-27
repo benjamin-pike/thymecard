@@ -1,4 +1,4 @@
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/common/useTheme';
 import { ReactComponent as Logo } from 'assets/logo.svg';
 import { useCallback } from 'react';
 import styles from './brand.module.scss';
@@ -12,7 +12,7 @@ const Brand = () => {
         setTimeout(() => {
             document.body.classList.remove('no-transition');
         }, 100);
-    }, [toggleTheme])
+    }, [toggleTheme]);
 
     return (
         <>

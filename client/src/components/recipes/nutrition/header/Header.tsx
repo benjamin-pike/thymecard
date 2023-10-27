@@ -4,7 +4,8 @@ import styles from './header.module.scss';
 import { capitalize } from '@/lib/string.utils';
 import { formatClasses } from '@/lib/common.utils';
 import { IAlert, IAssignButtonRefs } from '../Nutrition';
-import { StockTab } from '@/types/recipe.types';
+import { StockTab } from 'types/recipe.types';
+import { buildKey } from '@sirona/utils';
 
 const ToggleIcon = ICONS.common.toggle;
 const AddToFridgeIcon = ICONS.recipes.addToFridge;
@@ -46,7 +47,7 @@ const Header: FC<IHeaderProps> = ({
                 {alerts.map(
                     ({ name, active, metric }) =>
                         active && (
-                            <p className={styles.alert} data-metric={metric}>
+                            <p key={buildKey(name, active, metric)} className={styles.alert} data-metric={metric}>
                                 {name}
                             </p>
                         )

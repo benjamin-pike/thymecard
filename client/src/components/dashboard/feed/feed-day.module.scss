@@ -7,7 +7,7 @@
 
     padding: 1rem;
 
-    border-radius: 1rem;
+    border-radius: 1.75rem;
 
     @include dark-mode {
         background-color: black;
@@ -29,9 +29,9 @@
 .date {
     position: absolute;
     top: 0;
-    left: 1.5rem;
+    left: 2.5rem;
 
-    translate: 0 -60%;
+    translate: 0 -55%;
 
     color: $mono-700;
     font-size: $fs-10;
@@ -47,12 +47,12 @@
         content: '';
         position: absolute;
         left: -0.5rem;
-        bottom: calc(40% - 1px);
+        bottom: calc(45% - 1px);
 
         height: 1px;
         width: calc(100% + 1rem);
 
-        background-color: $mono-200;
+        background-color: $mono-100;
 
         z-index: -1;
 

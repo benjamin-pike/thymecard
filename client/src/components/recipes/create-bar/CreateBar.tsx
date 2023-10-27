@@ -1,11 +1,12 @@
-import Search from '../common/search/Search';
+import Search from '../search/Search';
 import styles from './create-bar.module.scss';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Tooltip from '@/components/common/tooltip/Tooltip';
-import usePremium from '@/hooks/usePremium';
+import usePremium from '@/hooks/common/usePremium';
 import { ICONS } from '@/assets/icons';
 import { RootState } from '@/store';
 import { useSelector } from 'react-redux';
+import { useRecipe } from '../recipe/RecipeProvider';
 
 const LinkIcon = ICONS.recipes.link;
 const CreateIcon = ICONS.recipes.create;
@@ -15,14 +16,23 @@ const UploadIcon = ICONS.recipes.upload;
 const AddRecipeIcon = ICONS.recipes.add;
 
 const CreateBar = () => {
+    const { parseRecipe, createRecipePartial } = useRecipe();
     const isPremium = usePremium();
     const { viewportSize, customViewportSize } = useSelector((state: RootState) => state.viewport);
-    
-    const [urlValue, setUrlValue] = useState('');
-    
+
+    const [value, setValue] = useState('');
+
     const condenseButtons = customViewportSize === 'listOnly';
     const displayChefButton = isPremium && viewportSize !== 'mobile';
     const tooltipPosition = customViewportSize === 'listPlus' || customViewportSize === 'listOnly' ? 'top' : 'bottom';
+
+    const create = useCallback(() => {
+        createRecipePartial({});
+    }, [createRecipePartial]);
+
+    const parse = useCallback(() => {
+        parseRecipe(value);
+    }, [parseRecipe, value]);
 
     return (
         <section className={styles.createBar}>
@@ -38,8 +48,9 @@ const CreateBar = () => {
                 primaryPlaceholder="Import"
                 secondaryPlaceholder="from website . . ."
                 icon={<LinkIcon className={styles.searchIcon} />}
-                value={urlValue}
-                setValue={setUrlValue}
+                value={value}
+                setValue={setValue}
+                goFn={parse}
             />
             <div className={styles.divider} />
 
@@ -49,7 +60,7 @@ const CreateBar = () => {
                 </button>
             ) : (
                 <>
-                    <button data-tooltip-id="add-manually">
+                    <button data-tooltip-id="add-manually" onClick={create}>
                         <CreateIcon />
                     </button>
                     <div className={styles.divider} />

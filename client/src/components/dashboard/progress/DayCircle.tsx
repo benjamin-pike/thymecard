@@ -17,26 +17,30 @@ const icon = {
 };
 
 const DayCircle: FC<IDayCircleProps> = ({ type, values, target }) => {
+    const total = values.reduce((a, b) => a + b, 0);
+
+    const absTotal = target >= 0 || total <= 0 ? Math.abs(total) : 0;
+    const absValues = values.map((value) => Math.abs(value));
+    const absTarget = Math.abs(target);
+
     const strokeWidth = 7.5;
     const radius = 70;
     const diameter = radius * 2;
     const dashArray = (radius - strokeWidth / 2) * Math.PI * 2;
 
-    const absTarget = Math.abs(target);
-    const total = values.reduce((a, b) => a + b, 0);
-    const quotient = Math.floor(total / absTarget);
-    const remainder = total % target;
+    const quotient = Math.floor(absTotal / absTarget);
+    const remainder = absTotal % absTarget;
 
-    const segmentGap = remainder / target > 0.05 ? 2.5 : 0;
+    const segmentGap = remainder / absTarget > 0.05 ? 2.5 : 0;
 
     let cumulativeValue = 0;
 
     const segments = [];
     let sum = 0;
-    
-    for (let i = values.length - 1; i >= 0; i--) {
-        const value = values[i];
-    
+
+    for (let i = absValues.length - 1; i >= 0; i--) {
+        const value = absValues[i];
+
         if (sum + value <= remainder) {
             sum += value;
             segments.push(value);
@@ -44,10 +48,10 @@ const DayCircle: FC<IDayCircleProps> = ({ type, values, target }) => {
             segments.push(remainder - sum);
             sum = remainder;
         }
-    
+
         if (sum === remainder) break;
     }
-    
+
     segments.reverse();
 
     return (

@@ -1,7 +1,7 @@
 export type TypeGuard<T> = (v: unknown) => v is T;
 
 export type DeepPartial<T> = {
-    [P in keyof T]?: DeepPartial<T[P] | undefined >;
+    [P in keyof T]?: DeepPartial<T[P] | undefined>;
 };
 
 export const isDefined = <T>(val: T | undefined): val is T => {
@@ -36,7 +36,7 @@ export const isObject = (val: unknown): val is object => {
     return typeof val === 'object' && val !== null;
 };
 
-export const isPlainObject = (obj: any): obj is Object => {
+export const isPlainObject = (obj: any): obj is object => {
     if (!isObject(obj)) {
         return false;
     }
@@ -59,7 +59,7 @@ export const isDate = (val: unknown): val is Date => {
 
 export const isOptional = <T>(val: any, typeGuard: TypeGuard<T>): val is T | undefined => {
     return typeof val === 'undefined' || typeGuard(val);
-}
+};
 
 export function hasKey<T extends object, K extends string>(obj: T, key: K): obj is T & Record<K, unknown> {
     return key in obj;
@@ -92,8 +92,8 @@ export const isDateString = (val: unknown): val is string => {
     }
 
     const date = new Date(val);
-    return !isNaN(date.getTime())
-}
+    return !isNaN(date.getTime());
+};
 
 export const isYearMonthDayDateString = (val: unknown): val is string => {
     if (!isString(val)) {
@@ -103,7 +103,7 @@ export const isYearMonthDayDateString = (val: unknown): val is string => {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     return !dateRegex.test(val);
-}
+};
 
 export const isFutureYearMonthDayDateString = (val: unknown): val is string => {
     if (!isYearMonthDayDateString(val)) {
@@ -113,24 +113,24 @@ export const isFutureYearMonthDayDateString = (val: unknown): val is string => {
     const date = new Date(val);
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
+
     return date.getTime() >= today.getTime();
-}
+};
 
 export const parseIntOrUndefined = (val: string | undefined): number | undefined => {
-    return validateWithFallback(parseInt(val ?? ''), isNumber, undefined)
+    return validateWithFallback(parseInt(val ?? ''), isNumber, undefined);
 };
 
 export const parseIntOrNull = (val: string | undefined): number | null => {
-    return validateWithFallback(parseFloat(val ?? ''), isNumber, null)
+    return validateWithFallback(parseFloat(val ?? ''), isNumber, null);
 };
 
 export const parseFloatOrUndefined = (val: string | undefined): number | undefined => {
-    return validateWithFallback(parseFloat(val ?? ''), isNumber, undefined)
+    return validateWithFallback(parseFloat(val ?? ''), isNumber, undefined);
 };
 
 export const parseFloatOrNull = (val: string | undefined): number | null => {
-    return validateWithFallback(parseFloat(val ?? ''), isNumber, null)
+    return validateWithFallback(parseFloat(val ?? ''), isNumber, null);
 };
 
 export const parseBooleanOrFalse = (val: any): boolean => {
@@ -139,4 +139,4 @@ export const parseBooleanOrFalse = (val: any): boolean => {
     }
 
     return false;
-}
+};

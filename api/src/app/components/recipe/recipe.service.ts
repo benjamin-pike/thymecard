@@ -1,41 +1,65 @@
 import axios, { AxiosResponse } from 'axios';
+import { v4 as uuid } from 'uuid';
+import fileType from 'file-type';
+import sharp from 'sharp';
+import { S3Repository } from '../../lib/data/s3.repository';
 import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { isString } from '../../lib/types/typeguards.utils';
 import { RecipeParser, parseJsonLinkedData } from './recipe.utils';
-import { IComment, IRecipe, IRecipeCreate, IRecipeSummary, IRecipeUpdate } from './recipe.types';
 import { recipeRepository } from './recipe.model';
 import { RecipeCache, RecipeSummaryCache } from '../../lib/types/cache.types';
+import { IRecipe, IRecipeComment, IRecipeCreate, IRecipeParseResponse, IRecipeSummary, IRecipeUpdate } from '@sirona/types';
 
 interface IRecipeServiceDependencies {
     recipeCache: RecipeCache;
     recipeSummaryCache: RecipeSummaryCache;
+    s3Repository: S3Repository;
 }
 
 export interface IRecipeService {
-    createRecipe(recipe: IRecipeCreate, userId: string): Promise<IRecipe>;
-    getRecipe(recipeId: string, userId: string): Promise<IRecipe>;
-    updateRecipe(recipeId: string, recipe: IRecipeUpdate, userId: string): Promise<IRecipe>;
-    deleteRecipe(recipeId: string, userId: string): Promise<void>;
-    getSummary(recipeId: string, userId: string): Promise<IRecipeSummary>;
+    createRecipe(userId: string, recipe: IRecipeCreate, image: Express.Multer.File): Promise<IRecipe>;
+    getRecipe(userId: string, recipeId: string): Promise<IRecipe>;
+    updateRecipe(userId: string, recipeId: string, recipe: IRecipeUpdate, image?: Express.Multer.File): Promise<IRecipe>;
+    deleteRecipe(userId: string, recipeId: string): Promise<void>;
+    getSummary(userId: string, recipeId: string): Promise<IRecipeSummary>;
     getSummaries(userId: string): Promise<IRecipeSummary[]>;
-    getRecipeFromUrl(url: string): Promise<Partial<IRecipeCreate>>;
-    createComment(recipeId: string, userId: string, comment: IComment): Promise<IComment[]>;
-    getComments(recipeId: string, userId: string): Promise<IComment[]>;
-    deleteComment(recipeId: string, userId: string, commentId: string): Promise<void>;
+    getRecipeFromUrl(url: string): Promise<IRecipeParseResponse>;
+    createComment(userId: string, recipeId: string, comment: IRecipeComment): Promise<IRecipeComment[]>;
+    getComments(userId: string, recipeId: string): Promise<IRecipeComment[]>;
+    deleteComment(userId: string, recipeId: string, commentId: string): Promise<void>;
 }
 
 export class RecipeService implements IRecipeService {
     private readonly recipeCache: RecipeCache;
     private readonly summaryCache: RecipeSummaryCache;
+    private readonly s3Repository: S3Repository;
 
     constructor(deps: IRecipeServiceDependencies) {
         this.recipeCache = deps.recipeCache;
         this.summaryCache = deps.recipeSummaryCache;
+        this.s3Repository = deps.s3Repository;
     }
 
-    public async createRecipe(recipe: IRecipeCreate, userId: string): Promise<IRecipe> {
-        const query = { ...recipe, userId };
+    public async createRecipe(userId: string, recipe: IRecipeCreate, image: Express.Multer.File): Promise<IRecipe> {
+        const imageFilename = uuid();
+        const query = { ...recipe, userId, image: `${imageFilename}.jpg` };
+
+        const extension = await fileType.fromBuffer(image.buffer);
+        if (!extension) {
+            throw new UnprocessableError(ErrorCode.InvalidImageResource, 'The provided image is invalid', {
+                origin: 'RecipeService.updateRecipe',
+                data: { userId }
+            });
+        }
+
+        let imageBuffer = image.buffer;
+        if (extension.ext !== 'jpg') {
+            imageBuffer = await sharp(image.buffer).jpeg().toBuffer();
+        }
+
+        await this.s3Repository.uploadFile(image.buffer, imageFilename, 'jpg', 'images/recipes');
+
         const newRecipe = await recipeRepository.create(query);
 
         this.recipeCache.set(newRecipe._id, newRecipe);
@@ -44,7 +68,7 @@ export class RecipeService implements IRecipeService {
         return newRecipe;
     }
 
-    public async getRecipe(recipeId: string, userId: string): Promise<IRecipe> {
+    public async getRecipe(userId: string, recipeId: string): Promise<IRecipe> {
         const cachedRecipe = this.recipeCache.get(recipeId);
         if (cachedRecipe) {
             return cachedRecipe;
@@ -68,9 +92,47 @@ export class RecipeService implements IRecipeService {
         return recipe;
     }
 
-    public async updateRecipe(recipeId: string, update: IRecipeUpdate, userId: string): Promise<IRecipe> {
+    public async updateRecipe(userId: string, recipeId: string, update: IRecipeUpdate, image?: Express.Multer.File): Promise<IRecipe> {
         const query = { _id: recipeId, userId: userId };
-        const updatedRecipe = await recipeRepository.findOneAndUpdate(query, update);
+
+        let updateWithImage = update;
+        if (image) {
+            let currentRecipe: IRecipe | null = this.recipeCache.get(recipeId);
+            if (!currentRecipe) {
+                currentRecipe = await recipeRepository.getOne(query);
+            }
+
+            if (!currentRecipe) {
+                throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
+                    origin: 'RecipeService.updateRecipe',
+                    data: { recipeId, userId }
+                });
+            }
+
+            const extension = await fileType.fromBuffer(image.buffer);
+            if (!extension) {
+                throw new UnprocessableError(ErrorCode.InvalidImageResource, 'The provided image is invalid', {
+                    origin: 'RecipeService.updateRecipe',
+                    data: { recipeId, userId }
+                });
+            }
+
+            let imageBuffer = image.buffer;
+            if (extension.ext !== 'jpg') {
+                imageBuffer = await sharp(image.buffer).jpeg().toBuffer();
+            }
+
+            const newImageFilename = uuid();
+
+            await this.s3Repository.uploadFile(imageBuffer, newImageFilename, 'jpg', 'images/recipes');
+            if (currentRecipe.image) {
+                await this.s3Repository.deleteFile(`${currentRecipe.image}.jpg`, 'images/recipes');
+            }
+
+            updateWithImage = { ...update, image: `${newImageFilename}.jpg` };
+        }
+
+        const updatedRecipe = await recipeRepository.findOneAndUpdate(query, updateWithImage);
 
         if (!updatedRecipe) {
             throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found', {
@@ -85,7 +147,7 @@ export class RecipeService implements IRecipeService {
         return updatedRecipe;
     }
 
-    public async deleteRecipe(recipeId: string, userId: string): Promise<void> {
+    public async deleteRecipe(userId: string, recipeId: string): Promise<void> {
         const query = { _id: recipeId, userId: userId };
         const deletedRecipe = await recipeRepository.delete(query);
 
@@ -97,11 +159,12 @@ export class RecipeService implements IRecipeService {
         }
 
         this.recipeCache.delete(recipeId);
+        this.summaryCache.delete(userId);
 
         return;
     }
-    
-    public async getSummary(recipeId: string, userId: string): Promise<IRecipeSummary> {
+
+    public async getSummary(userId: string, recipeId: string): Promise<IRecipeSummary> {
         const cachedSummaries = this.summaryCache.get(userId);
         const cachedSummary = cachedSummaries?.find((summary) => summary._id === recipeId);
         if (cachedSummary) {
@@ -143,7 +206,7 @@ export class RecipeService implements IRecipeService {
         return summaries;
     }
 
-    public async getRecipeFromUrl(url: string): Promise<Partial<IRecipeCreate>> {
+    public async getRecipeFromUrl(url: string): Promise<IRecipeParseResponse> {
         let axiosRes: AxiosResponse;
         try {
             axiosRes = await axios(url);
@@ -174,12 +237,12 @@ export class RecipeService implements IRecipeService {
         }
 
         const recipeParser = new RecipeParser(recipeData);
-        const parsedRecipe = recipeParser.parseRecipe();
+        const { recipe, image } = recipeParser.parseRecipe();
 
-        return { ...parsedRecipe, source: url };
+        return { recipe: { ...recipe, source: url }, image };
     }
 
-    public async createComment(recipeId: string, userId: string, comment: IComment): Promise<IComment[]> {
+    public async createComment(recipeId: string, userId: string, comment: IRecipeComment): Promise<IRecipeComment[]> {
         const filter = {
             _id: recipeId,
             $or: [{ isPublic: true }, { isPublic: false, userId }]
@@ -205,7 +268,7 @@ export class RecipeService implements IRecipeService {
         return comments;
     }
 
-    public async getComments(recipeId: string, userId: string): Promise<IComment[]> {
+    public async getComments(recipeId: string, userId: string): Promise<IRecipeComment[]> {
         const cachedRecipe = this.recipeCache.get(recipeId);
         if (cachedRecipe) {
             return cachedRecipe.comments ?? [];
@@ -266,25 +329,8 @@ export class RecipeService implements IRecipeService {
 
 const summaryProjection: Record<keyof IRecipeSummary, any> = {
     _id: 1,
-    name: 1,
-    primaryImage: {
-        $cond: [
-            {
-                $gt: [
-                    {
-                        $size: {
-                            $ifNull: ['$images', []]
-                        }
-                    },
-                    0
-                ]
-            },
-            {
-                $arrayElemAt: ['$images', 0]
-            },
-            null
-        ]
-    },
+    title: 1,
+    image: 1,
     category: 1,
     cuisine: 1,
     keywords: 1,

@@ -2,12 +2,7 @@ import { DateTime, Duration } from 'luxon';
 import seedrandom from 'seedrandom';
 import { EventType, IEvent } from '@/lib/global.types';
 
-export const generateMockPlannerData = (
-    startDate: string,
-    endDate: string,
-    seed: number,
-    volume: number = 0.5
-): Record<string, IEvent[]> => {
+export const generateMockPlannerData = (startDate: string, endDate: string, seed: number, volume = 0.5): Record<string, IEvent[]> => {
     type PartOfDay = 'morning' | 'afternoon' | 'evening';
 
     const EVENT_TYPES: Record<PartOfDay, EventType[]> = {
@@ -183,17 +178,17 @@ export const generateMockPlannerData = (
     };
 
     const createRandomDay = (date: DateTime, rng: seedrandom.PRNG): IEvent[] => {
-        let daySequence = [];
-        for (let partOfDay in EVENT_TYPES) {
+        const daySequence = [];
+        for (const partOfDay in EVENT_TYPES) {
             const eventList = EVENT_TYPES[partOfDay as PartOfDay];
-            let [start, end] = EVENT_TIME_RANGE[partOfDay as PartOfDay];
+            const [start, end] = EVENT_TIME_RANGE[partOfDay as PartOfDay];
 
-            for (let eventType of eventList) {
+            for (const eventType of eventList) {
                 if (rng() < volume) {
-                    let startTime = getRandomTime(start, end, date, rng);
-                    let duration = getRandomDuration(eventType, rng);
+                    const startTime = getRandomTime(start, end, date, rng);
+                    const duration = getRandomDuration(eventType, rng);
 
-                    let startTimeStr = startTime.toISOTime()?.split(':').slice(0, 2).join(':'); // Only take hh:mm part
+                    const startTimeStr = startTime.toISOTime()?.split(':').slice(0, 2).join(':'); // Only take hh:mm part
                     if (startTimeStr) {
                         if (!daySequence.length || daySequence[daySequence.length - 1].time <= startTimeStr) {
                             daySequence.push({
@@ -210,26 +205,24 @@ export const generateMockPlannerData = (
 
         daySequence.sort((a, b) => a.time.localeCompare(b.time));
 
-        let finalSequence = [];
+        const finalSequence = [];
         let currentEndTime = DateTime.fromISO(`${date.toISODate()}T00:00`);
-        for (let event of daySequence) {
-            let eventStartTime = DateTime.fromISO(`${date.toISODate()}T${event.time}`);
+        for (const event of daySequence) {
+            const eventStartTime = DateTime.fromISO(`${date.toISODate()}T${event.time}`);
             if (eventStartTime >= currentEndTime) {
                 finalSequence.push(event);
                 currentEndTime = eventStartTime.plus({ minutes: event.duration });
             }
         }
         return finalSequence;
-        
     };
-
 
     const rng = seedrandom(seed.toString());
     const start = DateTime.fromISO(startDate);
     const end = DateTime.fromISO(endDate);
 
     let currentDate = start;
-    let data: Record<string, IEvent[]> = {};
+    const data: Record<string, IEvent[]> = {};
 
     while (currentDate <= end) {
         const dayEvents = createRandomDay(currentDate, rng);

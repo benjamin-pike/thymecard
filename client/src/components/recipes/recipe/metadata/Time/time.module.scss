@@ -1,0 +1,82 @@
+.value {
+    color: $mono-700;
+    font-weight: 400;
+    font-size: $fs-13;
+    white-space: pre;
+
+    @include dark-mode {
+        color: $mono-light;
+    }
+}
+
+.edit {
+    display: flex;
+    gap: 0.75rem;
+
+    .hours,
+    .minutes {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        font-weight: 400;
+        font-size: $fs-12;
+        color: $mono-700;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+
+        input {
+            padding: 0.35rem 0.5rem;
+
+            width: 2ch;
+
+            border: 1px dashed $mono-300;
+
+            border-radius: 0.5rem;
+
+            text-align: center;
+
+            transition:
+                background-color 150ms ease,
+                border 150ms ease;
+
+            @include dark-mode {
+                border: 1px dashed $mono-600;
+            }
+
+            &::placeholder {
+                font-weight: 300;
+                color: $mono-500;
+
+                @include dark-mode {
+                    color: $mono-600;
+                }
+            }
+
+            &:focus {
+                @include dark-mode {
+                    background-color: $mono-800;
+                    border: 1px dashed $mono-500;
+                }
+            }
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            &[type='number'] {
+                appearance: textfield;
+            }
+        }
+
+        p {
+            font-weight: 300;
+            font-size: $fs-12;
+            color: $mono-600;
+        }
+    }
+}

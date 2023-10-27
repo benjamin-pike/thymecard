@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { MongoRepository } from '../../lib/database/mongo.repository';
+import { MongoRepository } from '../../lib/data/mongo.repository';
 import { ILocalUserCreate, IOAuthUserCreate, IUser } from './user.types';
 
 export const collectionName = 'users';
@@ -19,6 +19,10 @@ export const UserSchema = new Schema(
             required: false
         },
         password: {
+            type: String,
+            required: false
+        },
+        image: {
             type: String,
             required: false
         },
@@ -44,7 +48,11 @@ export const UserSchema = new Schema(
             type: String,
             required: false
         },
-        deleted: {
+        isDeleted: {
+            type: Boolean,
+            required: false
+        },
+        isPremium: {
             type: Boolean,
             required: false
         }

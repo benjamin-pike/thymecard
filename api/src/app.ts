@@ -1,6 +1,6 @@
 import { env } from './env';
 import * as uuid from 'uuid';
-import { establishMongoConnection } from './app/lib/database/mongo.utils';
+import { establishMongoConnection } from './app/lib/data/mongo.utils';
 import { Server } from './server';
 import { LRUCache } from 'lru-cache';
 import { UserService } from './app/components/user/user.service';
@@ -10,7 +10,7 @@ import { userPermissions, userRouter } from './app/components/user/user.router';
 import { AuthService } from './app/components/auth/auth.service';
 import { AuthController } from './app/components/auth/auth.controller';
 import { authRouter, authPermissions } from './app/components/auth/auth.router';
-import { RedisRepository } from './app/lib/database/redis.repository';
+import { RedisRepository } from './app/lib/data/redis.repository';
 import { createAuthMiddleware } from './app/middleware/auth.middleware';
 import { errorsMiddleware } from './app/middleware/error.middleware';
 import { createContextMiddleware } from './app/middleware/context.middleware';
@@ -23,6 +23,11 @@ import { DayController } from './app/components/day/day.controller';
 import { dayPermissions, dayRouter } from './app/components/day/day.router';
 import { parseFloatOrNull } from './app/lib/types/typeguards.utils';
 import { createRateLimiterMiddleware } from './app/middleware/rate-limiter.middleware';
+import { PrismaClient } from '@prisma/client';
+import { PantryService } from './app/components/pantry/pantry.service';
+import { PantryController } from './app/components/pantry/pantry.controller';
+import { pantryPermissions, pantryRouter } from './app/components/pantry/pantry.router';
+import { S3Repository } from './app/lib/data/s3.repository';
 
 // Initialize server
 (async () => {
@@ -48,9 +53,11 @@ import { createRateLimiterMiddleware } from './app/middleware/rate-limiter.middl
     });
 
     // Database connections
-    const redisRepository = new RedisRepository({ host: env.REDIS_HOST, port: env.REDIS_PORT, password: env.REDIS_PASSWORD });
+    const redisRepository = new RedisRepository(env.REDIS_CONNECTION_STRING);
     await redisRepository.connect();
     await establishMongoConnection(env.MONGO_CONNECTION_STRING);
+    const s3Repository = new S3Repository(env.AWS_ACCESS_KEY_ID, env.AWS_SECRET_ACCESS_KEY, env.AWS_REGION, env.S3_BUCKET_NAME);
+    const prismaClient = new PrismaClient();
 
     // Services
     const authService = new AuthService({
@@ -70,28 +77,38 @@ import { createRateLimiterMiddleware } from './app/middleware/rate-limiter.middl
         }
     });
     const userService = new UserService({ userCache, authService });
-    const recipeService = new RecipeService({ recipeCache, recipeSummaryCache });
+    const recipeService = new RecipeService({ recipeCache, recipeSummaryCache, s3Repository });
     const dayService = new DayService({ dayCache });
+    const pantryService = new PantryService({ prismaClient });
 
     // Controllers
     const authController = new AuthController({ authService, userService });
     const userController = new UserController({ userService });
     const recipeController = new RecipeController({ recipeService });
     const dayController = new DayController({ dayService });
+    const pantryController = new PantryController({ pantryService });
 
     const dependencies = {
         authController,
         userController,
         recipeController,
-        dayController
+        dayController,
+        pantryController
     };
 
     // Permissions
+    const basePermissions = {
+        '': { 'GET /': [] },
+        proxy: { 'GET /proxy': [] }
+    };
+
     const resourcePermissions: IResourcePermissions = {
+        ...basePermissions,
         auth: authPermissions,
         users: userPermissions,
         recipes: recipePermissions,
-        days: dayPermissions
+        days: dayPermissions,
+        pantry: pantryPermissions
     };
 
     // Middleware
@@ -114,7 +131,8 @@ import { createRateLimiterMiddleware } from './app/middleware/rate-limiter.middl
         auth: authRouter(dependencies),
         user: userRouter(dependencies),
         recipe: recipeRouter(dependencies),
-        day: dayRouter(dependencies)
+        day: dayRouter(dependencies),
+        pantry: pantryRouter(dependencies)
     };
 
     const server = new Server(routers, middleware);

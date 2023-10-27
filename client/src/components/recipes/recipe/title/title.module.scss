@@ -2,16 +2,141 @@
     display: flex;
     align-items: center;
 
+    transition:
+        background-color 150ms ease,
+        box-shadow 150ms ease,
+        border 150ms ease;
+
     h1,
     input {
         flex-grow: 1;
 
-        color: $mono-700;
-        font-size: $fs-24;
-        font-weight: 500;
-
         @include dark-mode {
             color: $mono-light;
+        }
+    }
+
+    h1 {
+        color: $mono-700;
+        font-size: $fs-24;
+    }
+
+    input {
+        transition: color 150ms ease;
+    }
+
+    &[data-editing='true'] {
+        position: relative;
+
+        padding: 1.25rem 1.5rem;
+
+        box-shadow: 0 0 0 0.2rem $mono-light inset;
+        border: 1px dashed $mono-300;
+
+        border-radius: 1rem;
+
+        input {
+            font-size: $fs-20;
+            color: $mono-600;
+
+            &::placeholder {
+                font-weight: 400;
+                color: $mono-500;
+            }
+        }
+
+        @include dark-mode {
+            border: 1px dashed $mono-600;
+            box-shadow: 0 0 0 0.2rem $mono-900 inset;
+
+            input {
+                color: $mono-light;
+            }
+
+            &:focus-within {
+                background-color: $mono-800;
+                border: 1px dashed $mono-500;
+            }
+        }
+
+        &::after {
+            content: 'Title';
+
+            position: absolute;
+
+            top: 0;
+            left: 1rem;
+
+            padding: 0 0.2rem;
+
+            font-size: $fs-11;
+            font-weight: 300;
+            color: $mono-400;
+            background-color: $mono-light;
+
+            translate: 0 -50%;
+
+            transition: opacity 150ms ease;
+
+            @include dark-mode {
+                padding: 0.25rem 0.5rem;
+
+                color: $mono-300;
+                background-color: $mono-900;
+                text-shadow: 0 0 0 $mono-900;
+
+                border-radius: 100vmax;
+
+                transition:
+                    color 150ms ease,
+                    background-color 150ms ease,
+                    text-shadow 150ms ease;
+            }
+        }
+
+        &:focus-within {
+            &::after {
+                @include dark-mode {
+                    color: $mono-light;
+                    background-color: darken($blue, 5%);
+                    text-shadow: 0 0 0.5rem $mono-600;
+                }
+            }
+        }
+
+        &[data-error='true'] {
+            background-color: transparentize($red, 0.925);
+            border: 1px dashed $red;
+
+            @include dark-mode {
+                background-color: transparentize($red, 0.925);
+                border: 1px dashed $red;
+
+                &:focus-within {
+                    background-color: transparentize($red, 0.875);
+                }
+            }
+
+            &::after {
+                opacity: 0;
+            }
+
+            @include dark-mode {
+                border: 1px dashed $red;
+            }
+
+            input {
+                &::placeholder {
+                    color: $red;
+                    font-size: $fs-18;
+                }
+            }
+        }
+
+        &[data-empty='false'] {
+            &::after {
+                opacity: 1;
+            }
         }
     }
 
@@ -27,7 +152,9 @@
 
             color: $mono-400;
 
-            transition: color 150ms ease, opacity 100ms ease;
+            transition:
+                color 150ms ease,
+                opacity 100ms ease;
 
             &:hover {
                 color: $mono-700;

@@ -15,89 +15,92 @@ type IWeekGraphProps = {
     setHoveredDay: (day: number | null) => void;
 };
 
-const WeekGraph: FC<IWeekGraphProps> = memo(({
-    positiveData,
-    positiveTarget,
-    negativeData,
-    negativeTarget,
-    xLabels,
-    yInterval,
-    strokeWidth,
-    aspectRatio,
-    hoveredDay,
-    setHoveredDay
-}) => {
-    if (positiveData.length !== negativeData.length) {
-        throw new Error('positiveData and negativeData must be the same length');
+const WeekGraph: FC<IWeekGraphProps> = memo(
+    ({
+        positiveData,
+        positiveTarget,
+        negativeData,
+        negativeTarget,
+        xLabels,
+        yInterval,
+        strokeWidth,
+        aspectRatio,
+        hoveredDay,
+        setHoveredDay
+    }) => {
+        if (positiveData.length !== negativeData.length) {
+            throw new Error('positiveData and negativeData must be the same length');
+        }
+
+        negativeData = negativeData.map((d) => -d);
+        negativeTarget = -negativeTarget;
+
+        const dataLength = positiveData.length;
+
+        const basePadding = 10;
+        const leftPadding = 60;
+        const xAxisChartPadding = 20;
+        const bottomPadding = 100;
+        const xPadding = basePadding + xAxisChartPadding + leftPadding;
+        const yPadding = bottomPadding;
+
+        const padding: IPadding = {
+            base: basePadding,
+            left: leftPadding,
+            xAxisChart: xAxisChartPadding,
+            bottom: bottomPadding,
+            x: xPadding,
+            y: yPadding
+        };
+
+        const width = Math.max(dataLength * 10, 500) + xPadding;
+        const height = width * aspectRatio;
+
+        const maxValue = Math.max(...positiveData, positiveTarget);
+        const minValue = Math.min(...negativeData, negativeTarget);
+
+        const scaleX = (i: number) => xPadding + (i / (dataLength - 1)) * (width - (xPadding + basePadding));
+        const scaleY = (d: number) => height - yPadding - ((d - minValue) / (maxValue - minValue)) * (height - yPadding) + basePadding;
+
+        const zeroY = scaleY(0);
+
+        const deltaData = [];
+        for (let i = 0; i < dataLength; i++) {
+            const delta = (positiveData[i] || 0) + (negativeData[i] || 0);
+            deltaData.push(delta);
+        }
+        const deltaTarget = positiveTarget + negativeTarget;
+
+        const numPositiveGridLines = Math.floor(maxValue / yInterval);
+        const numNegativeGridLines = Math.abs(Math.floor(minValue / yInterval));
+
+        const onMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+            const svg = e.currentTarget as SVGSVGElement;
+            const pt = svg.createSVGPoint();
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+            const svgP = pt.matrixTransform(svg.getScreenCTM()?.inverse());
+            const x = svgP.x;
+            const newhoveredDay = Math.round(((x - xPadding) / (width - xPadding - basePadding)) * (dataLength - 1));
+            setHoveredDay(newhoveredDay >= 0 ? newhoveredDay : null);
+        };
+
+        const onMouseLeave = () => setHoveredDay(null);
+
+        return (
+            <svg className={styles.svg} viewBox={`0 0 ${width} ${height}`} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+                <Gridlines {...{ numPositiveGridLines, numNegativeGridLines, scaleY, width, padding, yInterval }} />
+                <YAxisLabels {...{ numPositiveGridLines, numNegativeGridLines, scaleY, padding, yInterval }} />
+                <XAxisLabels {...{ xLabels, scaleX, height, padding }} />
+                <TargetLines {...{ positiveTarget, negativeTarget, deltaTarget, scaleY, width, padding }} />
+                <Graph {...{ positiveData, negativeData, deltaData, scaleX, scaleY, width, height, padding, zeroY, strokeWidth }} />
+                {hoveredDay !== null && (
+                    <HoverLine {...{ hoveredDay, positiveData, negativeData, deltaData, scaleX, scaleY, height, padding, strokeWidth }} />
+                )}
+            </svg>
+        );
     }
-
-    negativeData = negativeData.map((d) => -d);
-    negativeTarget = -negativeTarget;
-
-    const dataLength = positiveData.length;
-
-    const basePadding = 10;
-    const leftPadding = 60;
-    const xAxisChartPadding = 20;
-    const bottomPadding = 100;
-    const xPadding = basePadding + xAxisChartPadding + leftPadding;
-    const yPadding = bottomPadding;
-
-    const padding: IPadding = {
-        base: basePadding,
-        left: leftPadding,
-        xAxisChart: xAxisChartPadding,
-        bottom: bottomPadding,
-        x: xPadding,
-        y: yPadding
-    };
-
-    const width = Math.max(dataLength * 10, 500) + xPadding;
-    const height = width * aspectRatio;
-
-    const maxValue = Math.max(...positiveData, positiveTarget);
-    const minValue = Math.min(...negativeData, negativeTarget);
-
-    const scaleX = (i: number) =>
-        xPadding + (i / (dataLength - 1)) * (width - (xPadding + basePadding));
-    const scaleY = (d: number) => height - yPadding - ((d - minValue) / (maxValue - minValue)) * (height - yPadding) + basePadding;
-
-    const zeroY = scaleY(0);
-
-    let deltaData = [];
-    for (let i = 0; i < dataLength; i++) {
-        const delta = (positiveData[i] || 0) + (negativeData[i] || 0);
-        deltaData.push(delta);
-    }
-    const deltaTarget = positiveTarget + negativeTarget;
-
-    const numPositiveGridLines = Math.floor(maxValue / yInterval);
-    const numNegativeGridLines = Math.abs(Math.floor(minValue / yInterval));
-
-    const onMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-        const svg = e.currentTarget as SVGSVGElement;
-        const pt = svg.createSVGPoint();
-        pt.x = e.clientX;
-        pt.y = e.clientY;
-        const svgP = pt.matrixTransform(svg.getScreenCTM()?.inverse());
-        const x = svgP.x;
-        const newhoveredDay = Math.round(((x - xPadding) / (width - xPadding - basePadding)) * (dataLength - 1));
-        setHoveredDay(newhoveredDay >= 0 ? newhoveredDay : null);
-    };
-
-    const onMouseLeave = () => setHoveredDay(null);
-    
-    return (
-        <svg className={styles.svg} viewBox={`0 0 ${width} ${height}`} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
-            <Gridlines {...{ numPositiveGridLines, numNegativeGridLines, scaleY, width, padding, yInterval }} />
-            <YAxisLabels {...{ numPositiveGridLines, numNegativeGridLines, scaleY, padding, yInterval }} />
-            <XAxisLabels {...{ xLabels, scaleX, height, padding }} />
-            <TargetLines {...{ positiveTarget, negativeTarget, deltaTarget, scaleY, width, padding }} />
-            <Graph {...{ positiveData, negativeData, deltaData, scaleX, scaleY, width, height, padding, zeroY, strokeWidth }} />
-            {hoveredDay !== null && <HoverLine {...{ hoveredDay, positiveData, negativeData, deltaData, scaleX, scaleY, height, padding, strokeWidth }} />}
-        </svg>
-    );
-});
+);
 
 interface IPadding {
     base: number;

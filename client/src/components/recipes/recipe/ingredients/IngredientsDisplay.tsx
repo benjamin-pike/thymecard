@@ -1,38 +1,69 @@
 import { FC } from 'react';
-import { useIngredients } from './IngredientsProvider';
+import { useRecipe } from '../RecipeProvider';
 import { round } from '@/lib/number.utils';
 import styles from './ingredients-display.module.scss';
+import { buildKey } from '@sirona/utils';
+import { isNumber } from '@sirona/types';
+import { capitalize } from '@/lib/string.utils';
 
-interface IIngredientsDisplayProps {
+interface IRecipeIngredientsDisplayProps {
     addedIngredients: Set<number>;
     scale: number;
     isPrintLayout: boolean;
     handleIngredientsClick: (i: number) => () => void;
 }
 
-const IngredientsDisplay: FC<IIngredientsDisplayProps> = ({
-    addedIngredients,
-    scale,
-    isPrintLayout,
-    handleIngredientsClick
-}) => {
-    const { ingredients } = useIngredients();
+const IngredientsDisplay: FC<IRecipeIngredientsDisplayProps> = ({ addedIngredients, scale, isPrintLayout, handleIngredientsClick }) => {
+    const { recipe } = useRecipe();
+
+    if (!recipe) {
+        return null;
+    }
+
     return (
         <ul className={styles.ingredients} data-print={isPrintLayout}>
-            {ingredients.map((ingredient, i) => {
-                const Quantity = ingredient.quantity ? ingredient.quantity.map((q) => mapDecimalToFraction(q * scale)) : null;
-                const qualifiers = [ingredient.prepStyles, ingredient.notes].filter((q) => !!q).join(', ');
+            {recipe.ingredients?.map((ingredient, i) => {
+                const Quantity = ingredient.quantity
+                    ? ingredient.quantity.reduce<JSX.Element[]>((acc, quantity, i) => {
+                          const fraction = mapDecimalToFraction(quantity * scale);
+
+                          if (i === 1) {
+                              acc.push(<span className={styles.plus}> - </span>);
+                          }
+
+                          acc.push(fraction);
+                          return acc;
+                      }, [])
+                    : null;
+                const item = Quantity || ingredient.unit ? ingredient.item : capitalize(ingredient.item);
+                const supplementaryInfo = [ingredient.prepStyles, ingredient.notes].filter((q) => !!q).join(', ');
 
                 return (
-                    <li onClick={handleIngredientsClick(i)}>
+                    <li key={buildKey(recipe._id, 'ingredients-edit', i)} onClick={handleIngredientsClick(i)}>
                         <p data-added={addedIngredients.has(i)}>
-                            {!!ingredient.quantity && <span className={styles.quantity}>{Quantity}</span>}
-                            {!!ingredient.unit && <span className={styles.unit}>{ingredient.unit}</span>}
-                            <span className={styles.item}>
-                                {ingredient.item}
-                                {!!qualifiers && ','}
+                            {!!ingredient.quantity && (
+                                <span key={buildKey(recipe._id, 'quantity', ingredient.quantity, i)} className={styles.quantity}>
+                                    {Quantity}
+                                    {!ingredient.unit && isNumber(parseInt(ingredient.item[0])) && <span className={styles.x}>{'x'}</span>}
+                                </span>
+                            )}
+                            {!!ingredient.unit && (
+                                <span key={buildKey(recipe._id, 'unit', ingredient.unit, i)} className={styles.unit}>
+                                    {ingredient.unit}
+                                </span>
+                            )}
+                            <span key={buildKey(recipe._id, 'item', ingredient.item, i)} className={styles.item}>
+                                {item}
+                                {!!supplementaryInfo && ','}
                             </span>
-                            {!!qualifiers && <span className={styles.qualifiers}>{qualifiers}</span>}
+                            {!!supplementaryInfo && (
+                                <span
+                                    key={buildKey(recipe._id, 'supplementaryInfo', supplementaryInfo, i)}
+                                    className={styles.supplementaryInfo}
+                                >
+                                    {supplementaryInfo}
+                                </span>
+                            )}
                         </p>
                     </li>
                 );

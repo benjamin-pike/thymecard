@@ -88,9 +88,8 @@
             box-shadow: 0 0 0 1px $mono-700;
 
             &:hover {
-                background-color: $mono-light;
-                color: $mono-700;
-                box-shadow: 0 0 0 1px $mono-light;
+                background-color: $mono-800;
+                box-shadow: 0 0 0 1px $mono-500;
             }
         }
     }

@@ -3,7 +3,8 @@ import styles from './scale-ingredients-modal.module.scss';
 import { ICONS } from '@/assets/icons';
 import { round } from '@/lib/number.utils';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
-import { useIngredients } from '../ingredients/IngredientsProvider';
+import { useRecipe } from '../RecipeProvider';
+import { buildKey } from '@sirona/utils';
 
 const ScaleIcon = ICONS.recipes.scales;
 
@@ -20,7 +21,7 @@ interface IScaleIngredientsModalProps {
 }
 
 const ScaleIngredientsModal: FC<IScaleIngredientsModalProps> = ({ currentMultiplier, recipeYield, handleApply, handleClose }) => {
-    const { ingredients } = useIngredients();
+    const { recipe } = useRecipe();
 
     const [selectedMultiplier, setSelectedMultiplier] = useState(currentMultiplier);
     const [customMultiplier, setCustomMultiplier] = useState<number | undefined>(undefined);
@@ -70,7 +71,11 @@ const ScaleIngredientsModal: FC<IScaleIngredientsModalProps> = ({ currentMultipl
 
     const handleResetScale = useCallback(() => {
         handleApply(1)();
-    }, []);
+    }, [handleApply]);
+
+    if (!recipe) {
+        return null;
+    }
 
     return (
         <section className={styles.modal}>
@@ -110,13 +115,13 @@ const ScaleIngredientsModal: FC<IScaleIngredientsModalProps> = ({ currentMultipl
             <div className={styles.scrollContainer}>
                 <ScrollWrapper height="100%" padding={0.75}>
                     <ul className={styles.ingredients}>
-                        {ingredients.map((ingredient) => {
+                        {recipe.ingredients?.map((ingredient, i) => {
                             const Quantity = ingredient.quantity
                                 ? ingredient.quantity.map((q) => mapDecimalToFraction(q * selectedMultiplier))
                                 : null;
                             const qualifiers = [ingredient.prepStyles, ingredient.notes].filter((q) => !!q).join(', ');
                             return (
-                                <li>
+                                <li key={buildKey(ingredient.item, i)}>
                                     <p>
                                         {ingredient.quantity && <span className={styles.quantity}>{Quantity}</span>}
                                         {ingredient.unit && <span className={styles.unit}>{ingredient.unit}</span>}

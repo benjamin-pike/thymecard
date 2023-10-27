@@ -6,6 +6,8 @@
     max-height: 100svh;
     max-width: calc(100vw - 3.25rem);
 
+    overflow: hidden;
+
     @include responsive(('listPlus', 'listOnly')) {
         flex-direction: column-reverse;
     }
@@ -190,7 +192,7 @@
         height: 100%;
         width: 100%;
 
-        background-color: $mono-dark;
+        background-color: transparentize($mono-dark, 0.9);
         backdrop-filter: blur(0);
         opacity: 0;
 
@@ -203,7 +205,7 @@
 
     &[data-mask='true'] {
         &::after {
-            opacity: 0.3;
+            opacity: 1;
         }
     }
 
@@ -219,6 +221,18 @@
     @include responsive(('listOnly')) {
         display: none;
     }
+
+    .recipeWrapper {
+        position: absolute;
+
+        height: 100%;
+        width: 100%;
+
+        z-index: 102;
+
+        transition: translate 400ms ease;
+        animation: slide-in 400ms ease;
+    }
 }
 
 .bottom {
@@ -227,4 +241,14 @@
     
     height: 100%;
     min-height: 0;
+}
+
+
+@keyframes slide-in {
+    0% {
+        translate: 0 100%;
+    }
+    100% {
+        translate: 0 0;
+    }
 }

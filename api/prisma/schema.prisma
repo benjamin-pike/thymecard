@@ -1,0 +1,68 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider     = "mysql"
+    url          = env("SQL_DATABASE_URL")
+    relationMode = "prisma"
+}
+
+model BrandedProducts {
+    id            Int    @id @default(autoincrement())
+    barcode       String @unique
+    name          String @db.VarChar(255)
+    language      String @db.VarChar(2)
+    categories    Json?
+    tags          Json?
+    brands        Json?
+    serving       Float?
+    energy        Float
+    carbohydrates Float?
+    sugars        Float?
+    fat           Float?
+    saturatedFat  Float?
+    proteins      Float?
+    fiber         Float?
+    salt          Float?
+}
+
+model GenericProducts {
+    id              Int     @id @default(autoincrement())
+    code            Int
+    name            String
+    foodGroup       String?
+    popularity      Float   @default(0)
+    servingQuantity Float
+    servingUnit     String
+    servingWeight   Float
+    altServings     Json
+    energy          Float
+    carbohydrates   Float
+    sugars          Float?
+    fat             Float
+    saturatedFat    Float?
+    cholesterol     Float?
+    protein         Float
+    fiber           Float?
+    sodium          Float?
+    potassium       Float?
+    calcium         Float?
+    magnesium       Float?
+    iron            Float?
+    zinc            Float?
+    vitaminA        Float?
+    vitaminB1       Float?
+    vitaminB2       Float?
+    vitaminB3       Float?
+    vitaminB5       Float?
+    vitaminB6       Float?
+    vitaminB9       Float?
+    vitaminB12      Float?
+    vitaminC        Float?
+    vitaminD        Float?
+    vitaminE        Float?
+    vitaminK        Float?
+    caffeine        Float?
+    alcohol         Float?
+}

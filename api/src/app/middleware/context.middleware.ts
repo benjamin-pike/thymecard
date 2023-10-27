@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../common/logger';
 import { v1 as uuid } from 'uuid';
-import { isDefined, isNumber, isRecord, isString, validateWithError, validateWithFallback } from '../lib/types/typeguards.utils';
+import { validate } from '@sirona/types';
+import { isDefined, isNumber, isRecord, isString } from '../lib/types/typeguards.utils';
 import { Logger } from 'winston';
 import { ForbiddenError, NotFoundError } from '../lib/error/sironaError';
 import { ErrorCode } from '../lib/error/errorCode';
@@ -59,7 +60,7 @@ export class RequestContext {
     }
 
     private setRequestId(): string {
-        return validateWithFallback(this.req.headers['x-sirona-request-id'], isString, uuid());
+        return validate(this.req.headers['x-sirona-request-id'], isString, uuid());
     }
 
     private setDeviceId(): string {
@@ -140,7 +141,7 @@ export class RequestContext {
             logger: this.logger
         }
 
-        return validateWithError(
+        return validate(
             context,
             isRequestContext,
             new ForbiddenError(ErrorCode.InvalidContext, 'Invalid context', {
@@ -161,7 +162,7 @@ export class RequestContext {
             permissions: this.permissions
         }
 
-        return validateWithError(
+        return validate(
             context,
             isAuthenticatedContext,
             new ForbiddenError(ErrorCode.InvalidContext, 'Invalid context', {

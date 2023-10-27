@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import bcrypt from 'bcrypt';
 import { OAuth2Client as GoogleAuthClient } from 'google-auth-library';
+import { validate } from '@sirona/types' 
 import { IUser } from '../user/user.types';
 import { BadGatewayError, BadRequestError, SironaError, UnauthorizedError } from '../../lib/error/sironaError';
 import { ErrorCode } from '../../lib/error/errorCode';
@@ -16,8 +17,7 @@ import {
     IFacebookUser,
     isGoogleUser
 } from './auth.types';
-import { RedisRepository } from '../../lib/database/redis.repository';
-import { validateWithError } from '../../lib/types/typeguards.utils';
+import { RedisRepository } from '../../lib/data/redis.repository';
 import { Role, permissions } from '../../lib/auth/permissions';
 
 interface IAuthServiceDependencies {
@@ -85,9 +85,10 @@ export class AuthService {
     private generateAccessToken(user: IUser): string {
         const payload: IAccessTokenPayload = {
             userId: user._id,
-            permissions: permissions[Role.USER]
+            permissions: permissions[Role.USER],
+            isPremium: user.isPremium ?? false,
         };
-        const expiresIn = '10h';
+        const expiresIn = '5m';
         return jwt.sign(payload, this.accessTokenSecret, { expiresIn });
     }
 
@@ -181,7 +182,7 @@ export class AuthService {
                 url: 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json'
             });
 
-            return validateWithError(
+            return validate(
                 data,
                 isGoogleUser,
                 new BadGatewayError(ErrorCode.GoogleAuthError, 'Google returned invalid user data', {
@@ -237,7 +238,7 @@ export class AuthService {
                 }
             });
 
-            return validateWithError(
+            return validate(
                 isFacebookUser,
                 data,
                 new BadGatewayError(ErrorCode.FacebookAuthError, 'Facebook returned invalid user data', {

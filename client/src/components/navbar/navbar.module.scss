@@ -23,12 +23,8 @@
 
         transition: margin 200ms ease;
 
-        @include dark-mode {
-            box-shadow: none;
-        }
-
         &[data-visible = 'false'] {
-            margin-left: -3.25rem;
+            margin-left: calc(-3.25rem - 1px);
         }
 
         &[data-visible = 'true'] {
@@ -43,13 +39,22 @@
         align-items: center;
         justify-content: center;
 
+        margin-top: 0.25rem;
+
         width: 100%;
+
         aspect-ratio: 1;
 
-        padding: 0.4rem;
 
-        * {
-            fill: $mono-100;
+        // * {
+        //     fill: $mono-100;
+        // }
+
+        img {
+            height: 1.6rem;
+            width: 1.6rem;
+
+            object-fit: contain;
         }
     }
 

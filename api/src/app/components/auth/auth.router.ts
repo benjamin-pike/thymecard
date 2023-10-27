@@ -32,11 +32,11 @@ export const authRouter = (dependencies: IDependencies) => {
                 res.status(HTTP_STATUS_CODES.CREATED).json({ user, tokens });
             })
         )
-        .post(
+        .get(
             '/tokens',
             errorHandler(async (req, res) => {
                 const context = req.context.getAnonContext();
-                const { refreshToken } = req.body;
+                const refreshToken = req.headers.authorization?.split(' ')[1];
                 const newTokens = await authController.refreshAccessToken(context, refreshToken);
 
                 res.status(HTTP_STATUS_CODES.OK).json({ tokens: newTokens });
@@ -103,7 +103,7 @@ export const authRouter = (dependencies: IDependencies) => {
 export const authPermissions: IRoutePermissions = {
     'POST /auth/login': [],
     'POST /auth/register': [],
-    'POST /auth/tokens': [],
+    'GET /auth/tokens': [],
     'GET /auth/google': [],
     'GET /auth/google/callback': [],
     'GET /auth/facebook': [],

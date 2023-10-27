@@ -3,7 +3,7 @@
     background-color: white;
     box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.05);
     width: fit-content;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     width: 100%;
     padding: 1rem;
 
@@ -17,8 +17,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 1rem;
-    box-shadow: 0 0.5px 0 $mono-200, 0 -0.5px 0 $mono-200 inset;
+    // padding-bottom: 1rem;
+    // box-shadow: 0 0.5px 0 $mono-200, 0 -0.5px 0 $mono-200 inset;
+    padding: 0.25rem 0.5rem 0 0.5rem;
 
     @include dark-mode {
         box-shadow: 0 0.5px 0 $mono-700, 0 -0.5px 0 $mono-700 inset;
@@ -27,5 +28,5 @@
 
 .cardBody {
     padding: 1rem;
-    padding-top: 2rem;
+    padding-top: 1.25rem;
 }

@@ -2,13 +2,31 @@ import { ToastOptions, toast } from 'react-toastify';
 import { ICONS } from '@/assets/icons';
 import styles from './toast.module.scss';
 
-const TickIcon = ICONS.common.tick;
-const CrossIcon = ICONS.common.XLarge;
-const IIcon = ICONS.common.info;
-
 type Type = 'success' | 'error' | 'warning' | 'info';
 
 export const createToast = (type: Type, message: string, options?: ToastOptions) => {
+    const TickIcon = ICONS.common.tick;
+    const CrossIcon = ICONS.common.XLarge;
+    const IIcon = ICONS.common.info;
+
+    const SuccessIcon = () => (
+        <div className={styles.icon} data-type="success">
+            <TickIcon />
+        </div>
+    );
+
+    const ErrorIcon = () => (
+        <div className={styles.icon} data-type="error">
+            <CrossIcon />
+        </div>
+    );
+
+    const InfoIcon = () => (
+        <div className={styles.icon} data-type="info">
+            <IIcon />
+        </div>
+    );
+
     const icon = (() => {
         switch (type) {
             case 'success':
@@ -20,7 +38,7 @@ export const createToast = (type: Type, message: string, options?: ToastOptions)
             case 'info':
                 return <InfoIcon />;
         }
-    })()
+    })();
 
     const mergedOptions = {
         className: `${styles.toast} ${styles[type]}`,
@@ -29,7 +47,7 @@ export const createToast = (type: Type, message: string, options?: ToastOptions)
         hideProgressBar: true,
         closeButton: false,
         icon,
-        ...options,
+        ...options
     };
 
     switch (type) {
@@ -43,22 +61,3 @@ export const createToast = (type: Type, message: string, options?: ToastOptions)
             return toast.info(message, mergedOptions);
     }
 };
-
-const SuccessIcon = () => (
-    <div className={styles.icon} data-type='success'>
-        <TickIcon />
-    </div>
-);
-
-const ErrorIcon = () => (
-    <div className={styles.icon} data-type='error'>
-        <CrossIcon />
-    </div>
-);
-
-const InfoIcon = () => (
-    <div className={styles.icon} data-type='info'>
-        <IIcon />
-    </div>
-);
-

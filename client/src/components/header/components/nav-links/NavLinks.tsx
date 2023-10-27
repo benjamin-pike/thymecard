@@ -7,7 +7,7 @@ import { RiMarkPenLine } from 'react-icons/ri';
 import styles from './nav-links.module.scss';
 
 const NavLinks: FC = () => {
-    const location = useLocation()
+    const location = useLocation();
     const currentPage = location.pathname.split('/')[1];
     return (
         <nav className={styles.links}>

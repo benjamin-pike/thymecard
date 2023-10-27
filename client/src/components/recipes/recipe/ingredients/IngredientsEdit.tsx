@@ -1,183 +1,181 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import PopoverWrapper, { PopoverPosition } from '@/components/wrappers/popover/PopoverWrapper';
 import Tooltip from '@/components/common/tooltip/Tooltip';
-import { useIngredients } from './IngredientsProvider';
-import { IIngredientMatch, IngredientMatchStrength } from '@/types/recipe.types';
+import { isNull } from '@sirona/types';
 import { ICONS } from '@/assets/icons';
 import styles from './ingredients-edit.module.scss';
+import { useRecipe } from '../RecipeProvider';
+import { INGREDIENTS_FIELDS } from '@/hooks/recipes/useIngredients';
+import { buildKey } from '@sirona/utils';
 
 const TickIcon = ICONS.common.tick;
 const QuestionIcon = ICONS.common.question;
 const NoMatchIcon = ICONS.common.XLarge;
+const AddIcon = ICONS.common.plus;
+const DeleteIcon = ICONS.common.XLarge;
 
 const IngredientsEdit: FC = () => {
-    const [selectedMatch, setSelectedMatch] = useState<IIngredientMatch | null>(null);
+    const { ingredients, recipe, isIncomplete } = useRecipe();
+    const { values, setValues, addIngredient, removeIngredient } = ingredients;
 
-    const {
-        ingredients,
-        quantityValues,
-        unitValues,
-        itemValues,
-        prepStyleValues,
-        noteValues,
-        setQuantityValues,
-        setUnitValues,
-        setItemValues,
-        setPrepStyleValues,
-        setNoteValues
-    } = useIngredients();
+    const [selectedMatchIndex, setSelectedMatchIndex] = useState<number | null>(null);
 
-    const handleQuantityInputChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.innerText;
-        const updatedValues = [...quantityValues];
+    const matchCandidates: Ingredient[] = useMemo(() => JSON.parse(localStorage.getItem('foodstuffs') ?? '[]'), []);
+    const matches = useMemo(
+        () =>
+            values.match.map((match, i) => {
+                if (match) {
+                    return { ...match, strength: 'confirmed' } as const;
+                }
 
-        if (!val.length) {
-            updatedValues[index] = null;
-            return setQuantityValues(updatedValues);
-        }
+                const item = values.item[i];
 
-        const parsedVal = val.includes('.') ? parseFloat(val) : parseInt(val);
+                if (!item) {
+                    return null;
+                }
 
-        if (isNaN(parsedVal)) {
-            e.target.innerText = '';
-            return;
-        }
+                const matchCandidate = matchIngredient(item, matchCandidates);
 
-        updatedValues[index] = parsedVal;
-        setQuantityValues(updatedValues);
-    };
+                if (!matchCandidate) {
+                    return null;
+                }
 
-    const handleQuantityInputBlur = (index: number) => (e: React.FocusEvent<HTMLSpanElement>) => {
-        e.target.innerText = Number(quantityValues[index]).toString();
-    };
+                return matchCandidate;
+            }),
+        [matchCandidates, values]
+    );
 
-    const handleUnitInputChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.innerText;
-        const updatedValues = [...unitValues];
-        updatedValues[index] = val.length ? val : null;
-        setUnitValues(updatedValues);
-    };
+    const handleBlur = useCallback(
+        (index: number, field: INGREDIENTS_FIELDS) => (e: React.FocusEvent<HTMLTableCellElement>) => {
+            let value: string | null = e.target.innerText;
+            value = value.length ? value : null;
 
-    const handleItemInputChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.innerText;
-        const updatedValues = [...itemValues];
-        updatedValues[index] = val.length ? val : null;
-        setItemValues(updatedValues);
-    };
-
-    const handlePrepStyleInputChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.innerText;
-        const updatedValues = [...prepStyleValues];
-        updatedValues[index] = val.length ? val : null;
-        setPrepStyleValues(updatedValues);
-    };
-
-    const handleNoteInputChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.innerText;
-        const updatedValues = [...noteValues];
-        updatedValues[index] = val.length ? val : null;
-        setNoteValues(updatedValues);
-    };
-
-    const handleSelectMatch = useCallback(
-        (match: IIngredientMatch | null) => () => {
-            if (!match) {
+            if (value === values[field][index]) {
                 return;
             }
 
-            setSelectedMatch(match);
+            setValues(field, index, value);
         },
-        []
+        [setValues, values]
     );
+
+    const handleSelectMatch = useCallback(
+        (index: number) => () => {
+            if (!matches[index]) {
+                return;
+            }
+
+            setSelectedMatchIndex(index);
+        },
+        [matches]
+    );
+
+    const handleConfirmMatch = useCallback(() => {
+        if (isNull(selectedMatchIndex)) {
+            return;
+        }
+
+        const match = matches[selectedMatchIndex];
+
+        if (!match) {
+            return;
+        }
+
+        setValues(INGREDIENTS_FIELDS.MATCH, selectedMatchIndex, {
+            itemId: match.itemId,
+            name: match.name
+        });
+    }, [matches, selectedMatchIndex, setValues]);
+
+    if (!recipe) {
+        return null;
+    }
 
     return (
         <>
-            <div className={styles.ingredients}>
-                <ul className={styles.quantities}>
-                    {ingredients.map((ingredient, i) => (
-                        <li className={styles.quantity}>
-                            <span
-                                role='textbox'
-                                contentEditable
-                                data-empty={!quantityValues[i]}
-                                onInput={handleQuantityInputChange(i)}
-                                onBlur={handleQuantityInputBlur(i)}
-                            >
-                                {!!ingredient.quantity && ingredient.quantity}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-                <ul className={styles.units}>
-                    {ingredients.map((ingredient, i) => (
-                        <li className={styles.unit}>
-                            <span role='textbox' contentEditable data-empty={!unitValues[i]} onInput={handleUnitInputChange(i)}>
-                                {!!ingredient.unit && ingredient.unit}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-                <ul className={styles.items}>
-                    {ingredients.map((ingredient, i) => (
-                        <li key={i} className={styles.item}>
-                            <span role='textbox' contentEditable data-empty={!itemValues[i]} onInput={handleItemInputChange(i)}>
-                                {!!ingredient.item && ingredient.item}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-                <ul className={styles.prepStyles}>
-                    {ingredients.map((ingredient, i) => (
-                        <li className={styles.prepStyle}>
-                            <span role='textbox' contentEditable data-empty={!prepStyleValues[i]} onInput={handlePrepStyleInputChange(i)}>
-                                {!!ingredient.prepStyles && ingredient.prepStyles}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-                <ul className={styles.notes}>
-                    {ingredients.map((ingredient, i) => (
-                        <li className={styles.note}>
-                            <span role='textbox' contentEditable data-empty={!noteValues[i]} onInput={handleNoteInputChange(i)}>
-                                {!!ingredient.notes && ingredient.notes}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-                <ul className={styles.matches}>
-                    {ingredients.map(({ match }) => {
-                        const strength = match?.strength ?? 'none';
-
-                        const tooltipContents: Record<IngredientMatchStrength, string> = {
-                            confirmed: 'You matched this ingredient',
-                            strong: 'Exact match found',
-                            weak: 'Possible match found',
-                            none: 'No match found'
-                        };
-
-                        const icon = {
-                            confirmed: <TickIcon />,
-                            strong: <TickIcon />,
-                            weak: <QuestionIcon />,
-                            none: <NoMatchIcon />
-                        };
-
+            <table className={styles.ingredients}>
+                <tbody>
+                    {values.item.map((item, i) => {
                         return (
-                            <li className={styles.match}>
-                                <button
-                                    data-tooltip-id="nutritional-details-match"
-                                    data-tooltip-content={tooltipContents[strength]}
-                                    data-match={strength}
-                                    data-popover-id={match?.strength ? 'popover-match' : undefined}
-                                    onClick={handleSelectMatch(match)}
+                            <tr key={buildKey(recipe._id, i)} className={styles.row}>
+                                <td
+                                    className={styles.quantity}
+                                    role="textbox"
+                                    contentEditable
+                                    placeholder="Qty."
+                                    data-empty={!values.quantity[i]}
+                                    onBlur={handleBlur(i, INGREDIENTS_FIELDS.QUANTITY)}
                                 >
-                                    {icon[strength]}
+                                    {!!values.quantity[i] && values.quantity[i]}
+                                </td>
+                                <td
+                                    className={styles.unit}
+                                    role="textbox"
+                                    contentEditable
+                                    placeholder="Unit"
+                                    data-empty={!values.unit[i]}
+                                    onBlur={handleBlur(i, INGREDIENTS_FIELDS.UNIT)}
+                                >
+                                    {!!values.unit[i] && values.unit[i]}
+                                </td>
+                                <td
+                                    className={styles.item}
+                                    role="textbox"
+                                    contentEditable
+                                    placeholder="Ingredient"
+                                    data-empty={!item}
+                                    data-error={isIncomplete && !item}
+                                    onBlur={handleBlur(i, INGREDIENTS_FIELDS.ITEM)}
+                                >
+                                    {!!item && item}
+                                </td>
+                                <td
+                                    className={styles.prepStyle}
+                                    role="textbox"
+                                    contentEditable
+                                    placeholder="Preparation"
+                                    data-empty={!values.prepStyle[i]}
+                                    onBlur={handleBlur(i, INGREDIENTS_FIELDS.PREP_STYLE)}
+                                >
+                                    {!!values.prepStyle[i] && values.prepStyle[i]}
+                                </td>
+                                <td
+                                    className={styles.note}
+                                    role="textbox"
+                                    contentEditable
+                                    placeholder="Notes"
+                                    data-empty={!values.note[i]}
+                                    onBlur={handleBlur(i, INGREDIENTS_FIELDS.NOTE)}
+                                >
+                                    {!!values.note[i] && values.note[i]}
+                                </td>
+                                <button
+                                    className={styles.delete}
+                                    data-tooltip-id="remove-ingredient"
+                                    data-tooltip-content="Remove Ingredient"
+                                    onClick={() => removeIngredient(i)}
+                                >
+                                    <DeleteIcon />
                                 </button>
-                            </li>
+                                <td className={styles.match}>
+                                    <button
+                                        data-tooltip-id="nutritional-details-match"
+                                        data-tooltip-content={MATCH_TOOLTIP_CONTENTS[matches[i]?.strength ?? 'none']}
+                                        data-match={matches[i]?.strength ?? 'none'}
+                                        data-popover-id={matches[i]?.strength ? 'popover-match' : undefined}
+                                        onClick={handleSelectMatch(i)}
+                                    >
+                                        {MATCH_ICONS[matches[i]?.strength ?? 'none']}
+                                    </button>
+                                </td>
+                            </tr>
                         );
                     })}
-                </ul>
-            </div>
+                </tbody>
+            </table>
+            <button className={styles.addButton} data-error={isIncomplete && values.item.length === 0} onClick={addIngredient}>
+                <AddIcon /> Add Ingredient
+            </button>
             <PopoverWrapper
                 id="popover-match"
                 position={PopoverPosition.BOTTOM_LEFT}
@@ -187,9 +185,9 @@ const IngredientsEdit: FC = () => {
                 <div className={styles.popover}>
                     <h3>
                         <span className={styles.matched}>Matched</span> Ingredient{' '}
-                        <span className={styles.matchedItem}>{selectedMatch?.name}</span>
+                        <span className={styles.matchedItem}>{!isNull(selectedMatchIndex) && matches[selectedMatchIndex]?.name}</span>
                     </h3>
-                    {selectedMatch?.strength == 'confirmed' ? (
+                    {!isNull(selectedMatchIndex) && matches[selectedMatchIndex]?.strength == 'confirmed' ? (
                         <div className={styles.check}>
                             <p>You confirmed this match</p>
                             <button>Change</button>
@@ -197,14 +195,86 @@ const IngredientsEdit: FC = () => {
                     ) : (
                         <div className={styles.check}>
                             <p>Is this correct?</p>
-                            <button>Yes</button>
+                            <button onClick={handleConfirmMatch}>Yes</button>
                             <button>No</button>
                         </div>
                     )}
                 </div>
             </PopoverWrapper>
+            <Tooltip id="remove-ingredient" place="bottom" size="small" offset={10} />
         </>
     );
 };
 
 export default IngredientsEdit;
+
+const MATCH_TOOLTIP_CONTENTS = {
+    confirmed: 'You matched this ingredient',
+    strong: 'Exact match found',
+    weak: 'Possible match found',
+    none: 'No match found'
+};
+
+const MATCH_ICONS = {
+    confirmed: <TickIcon />,
+    strong: <TickIcon />,
+    weak: <QuestionIcon />,
+    none: <NoMatchIcon />
+};
+
+type Ingredient = {
+    code: number;
+    name: string;
+};
+
+const matchIngredient = (ingredient: string, candidates: Ingredient[], threshold = 3) => {
+    let maxScore = 0;
+    let match: Ingredient | null = null;
+    let matchStrength: 'strong' | 'weak' | 'none' = 'none';
+
+    for (const candidate of candidates) {
+        const ingredientTokens = ingredient.toLowerCase().split(' ');
+        const candiateTokens = candidate.name.toLowerCase().split(' ');
+
+        const extraTokens = candiateTokens.some(
+            (candiateToken) => !ingredientTokens.some((inputToken) => inputToken.includes(candiateToken))
+        );
+
+        if (!extraTokens) {
+            let currentScore = 0;
+            for (const inputToken of ingredientTokens) {
+                for (const candiateToken of candiateTokens) {
+                    currentScore += scoreMatch(inputToken, candiateToken);
+                }
+            }
+
+            if (candidate.name.toLowerCase() === ingredient.toLowerCase()) {
+                currentScore = Infinity;
+            }
+
+            if (currentScore > maxScore) {
+                maxScore = currentScore;
+                match = candidate;
+                matchStrength = currentScore === Infinity ? 'strong' : 'weak';
+            }
+        }
+    }
+
+    if (maxScore < threshold) {
+        return null;
+    }
+
+    if (!match || matchStrength === 'none') {
+        return null;
+    }
+
+    return {
+        itemId: match.code,
+        name: match.name,
+        strength: matchStrength
+    };
+};
+
+const scoreMatch = (ingredient: string, candidate: string) => {
+    return ingredient.includes(candidate) ? candidate.length : 0;
+};

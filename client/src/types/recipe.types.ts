@@ -1,17 +1,4 @@
-import { isArrayOf, isOptional, isString } from "@/lib/type.utils";
-
-export interface IRecipe {
-    id: string;
-    name: string;
-    imageUrl: string;
-    servings: number;
-    prepTime?: number;
-    cookTime?: number;
-    rating?: number;
-    bookmarked: boolean;
-    dateAdded: Date;
-    tags: string[];
-}
+import { isArrayOf, isOptional, isString } from '@/lib/type.utils';
 
 // Stock
 export interface IStockCategory {
@@ -34,27 +21,28 @@ export type StockTab = (typeof stockTabs)[number];
 export const stockTabs = ['pantry', 'shopping-list', 'favorites'] as const;
 
 export const isStockData = (obj: any): obj is StockData => {
-    return obj &&
+    return (
+        obj &&
         isArrayOf(obj.pantry, isStockCategory) &&
         isArrayOf(obj['shopping-list'], isStockCategory) &&
-        isArrayOf(obj.favorites, isStockCategory);
-}
+        isArrayOf(obj.favorites, isStockCategory)
+    );
+};
 
 const isStockCategory = (obj: any): obj is IStockCategory => {
-    return obj &&
-        isString(obj.id) &&
-        isString(obj.name) &&
-        isArrayOf(obj.items, isStockItem);
-}
+    return obj && isString(obj.id) && isString(obj.name) && isArrayOf(obj.items, isStockItem);
+};
 
 const isStockItem = (obj: any): obj is IStockItem => {
-    return obj &&
+    return (
+        obj &&
         isString(obj.id) &&
         isString(obj.name) &&
         isOptional(obj.quantity, isString) &&
         isOptional(obj.note, isString) &&
-        isOptional(obj.expiryDate, isString);
-}
+        isOptional(obj.expiryDate, isString)
+    );
+};
 
 // Nutrition
 export interface IServing {
@@ -92,52 +80,4 @@ export interface INutrients {
     vitaminK: number | null;
     caffeine: number | null;
     alcohol: number | null;
-}
-
-// Recipe
-export interface IRecipeMetadata {
-    author?: string;
-    url?: string;
-    yield: {
-        quantity: number[];
-        units: string | null;
-    };
-    prepTime?: number;
-    cookTime?: number;
-    totalTime?: number;
-    rating?: number;
-    created: Date;
-    lastCooked?: Date;
-    tags: string[];
-}
-
-export interface IIngredient {
-    quantity: number[] | null;
-    unit: string | null;
-    item: string;
-    prepStyles?: string | null;
-    notes?: string | null;
-    source: string;
-    match: IIngredientMatch | null;
-}
-
-export interface IIngredientMatch {
-    id: string;
-    name: string;
-    strength: Exclude<IngredientMatchStrength, 'none'>;
-}
-
-export type IngredientMatchStrength = 'confirmed' | 'strong' | 'weak' | 'none';
-
-export interface IMethodSection {
-    id: string;
-    steps: IMethodStep[];
-    sectionTitle?: string;
-}
-
-export interface IMethodStep {
-    id: string;
-    instructions: string;
-    stepTitle?: string;
-    image?: string[];
 }

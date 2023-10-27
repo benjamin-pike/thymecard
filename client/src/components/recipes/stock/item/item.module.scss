@@ -2,10 +2,10 @@
     display: grid;
     grid-template-columns: auto auto 1fr auto;
     
-    border-radius: 0.25rem;
+    border-radius: 0.35rem;
 
     &:nth-of-type(even) {
-        background-color: transparentize($mono-100, 0.15);
+        background-color: transparentize($mono-100, 0.35);
 
         @include dark-mode {
             background-color: transparentize($mono-800, 0.15);
@@ -25,7 +25,7 @@
     }
 
     input {
-        height: 1.75rem;
+        height: 2rem;
         
         padding-right: 1rem;
         
@@ -40,7 +40,7 @@
             
             width: fit-content;
 
-            color: $mono-800;
+            color: $mono-700;
             font-weight: 400;
 
             border-radius: 0.25rem 0 0 0.25rem;

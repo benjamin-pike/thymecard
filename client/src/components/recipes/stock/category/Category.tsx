@@ -10,7 +10,7 @@ import CustomTooltip from '@/components/common/tooltip/Tooltip';
 import MoveItemPopover from '../move-item-popover/MoveItemPopover';
 
 import { ICONS } from '@/assets/icons';
-import { IStockCategory, StockData, StockTab } from '@/types/recipe.types';
+import { IStockCategory, StockData, StockTab } from 'types/recipe.types';
 import { formatClasses } from '@/lib/common.utils';
 
 import styles from './category.module.scss';
@@ -48,7 +48,7 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
 
     const activeToggleButton = (() => {
         if (moveItemPopoverItemIndex === null) return null;
-        
+
         switch (moveItemTarget) {
             case 'pantry':
                 return pantryButtonRefs.current[moveItemPopoverItemIndex];
@@ -114,29 +114,32 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
         switch (direction) {
             case 'up':
             case 'down':
-                let nextIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+                {
+                    const nextIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
 
-                if (nextIndex === -1) {
-                    categoryNameRef.current?.focus();
-                    return;
-                }
+                    if (nextIndex === -1) {
+                        categoryNameRef.current?.focus();
+                        return;
+                    }
 
-                if (nextIndex === items.length) {
-                    addItem();
-                    return;
-                }
+                    if (nextIndex === items.length) {
+                        addItem();
+                        return;
+                    }
 
-                switch (inputType) {
-                    case 'name':
-                        nameRefs.current[nextIndex]?.focus();
-                        return;
-                    case 'quantity':
-                        quantityRefs.current[nextIndex]?.focus();
-                        return;
-                    case 'note':
-                        noteRefs.current[nextIndex]?.focus();
-                        return;
+                    switch (inputType) {
+                        case 'name':
+                            nameRefs.current[nextIndex]?.focus();
+                            return;
+                        case 'quantity':
+                            quantityRefs.current[nextIndex]?.focus();
+                            return;
+                        case 'note':
+                            noteRefs.current[nextIndex]?.focus();
+                            return;
+                    }
                 }
+                break;
             case 'left':
                 if (inputType === 'note') {
                     quantityRefs.current[currentIndex]?.focus();

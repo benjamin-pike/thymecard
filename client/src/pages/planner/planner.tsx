@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { useToggle } from '@mantine/hooks';
-import { useWindowKeyDown } from '@/hooks/events/useWindowKeydown';
-import { useWindowResize } from '@/hooks/events/useWindowResize';
-import { useMount } from '@/hooks/lifecycle/useMount';
-import { useBreakpoints } from '@/hooks/dom/useBreakpoints';
+import { useWindowKeyDown } from '@/hooks/common/useWindowKeydown';
+import { useWindowResize } from '@/hooks/common/useWindowResize';
+import { useMount } from '@/hooks/common/useMount';
+import { useBreakpoints } from '@/hooks/common/useBreakpoints';
 
 import ControlBar from '@/components/planner/controls/Controls';
 import Day from '@/components/planner/day/Day';
@@ -70,14 +70,17 @@ const Planner = () => {
         setSelectedDay(selectedDay.minus({ days: 1 }));
     }, [selectedDay, selectedMonth]);
 
-    const handleDayClick = useCallback((date: DateTime) => {
-        setSelectedDay(date);
-        setSelectedMonth(date);
-        
-        if (!displayDayView) {
-            setDisplayDayView(true);
-        }
-    }, [displayDayView]);
+    const handleDayClick = useCallback(
+        (date: DateTime) => {
+            setSelectedDay(date);
+            setSelectedMonth(date);
+
+            if (!displayDayView) {
+                setDisplayDayView(true);
+            }
+        },
+        [displayDayView]
+    );
 
     const handleMeals = useCallback(() => {
         if (displayMeals && !displayActivities) {
@@ -117,7 +120,7 @@ const Planner = () => {
         if (selectedDay && nullifyDayTimeout.current) {
             clearTimeout(nullifyDayTimeout.current);
         }
-    }, [selectedDay, nullifyDayTimeout.current]);
+    }, [selectedDay, nullifyDayTimeout]);
 
     useEffect(() => {
         if (viewport.isLargerThan('medium')) {
@@ -129,7 +132,7 @@ const Planner = () => {
                 setDisplayDayView(true);
             }
         }
-    }, [selectedDay, viewport]);
+    }, [displayDayView, selectedDay, viewport]);
 
     const checkDayDrawerVisibility = useCallback(() => {
         if (viewport.isSmallerThan('large')) {
@@ -163,13 +166,10 @@ const Planner = () => {
             isActive: viewport.isSmallerThan('large'),
             closeDrawer: closeDrawer
         };
-    }, [viewport, displayDayView]);
+    }, [viewport, displayDayView, closeDrawer]);
 
     return (
-        <main
-            className={formatClasses(styles, ['content', displayDayView ? 'dayOverlay' : ''])}
-            data-viewport={viewport.getCurrentSize()}
-        >
+        <main className={formatClasses(styles, ['content', displayDayView ? 'dayOverlay' : ''])} data-viewport={viewport.getCurrentSize()}>
             <DrawerWrapper {...drawerWrapperProps}>
                 <div className={formatClasses(styles, ['column', 'left'])}>
                     <ControlBar
@@ -186,10 +186,7 @@ const Planner = () => {
                         toggleTime={handleTime}
                         handleToday={handleToday}
                     />
-                    <Day
-                        data={selectedDay ? data[selectedDay.toFormat('yyyy-MM-dd')] ?? [] : []}
-                        date={selectedDay}
-                    />
+                    <Day data={selectedDay ? data[selectedDay.toFormat('yyyy-MM-dd')] ?? [] : []} date={selectedDay} />
                 </div>
             </DrawerWrapper>
             <div className={formatClasses(styles, ['column', 'right'])}>

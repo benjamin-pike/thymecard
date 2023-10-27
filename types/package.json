@@ -1,0 +1,8 @@
+{
+    "name": "types",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "description": "Types shared between the Sirona client and API",
+    "author": "Benjamin Pike",
+    "license": "ISC"
+}

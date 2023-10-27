@@ -24,8 +24,8 @@ export class LoremIpsumGenerator {
         'Mauris augue neque gravida in fermentum et sollicitudin ac orci.'
     ];
 
-    public generate(n: number, uid: string, splitParagraphs: boolean = false): string {
-        let lorem: string = '';
+    public generate(n: number, uid: string, splitParagraphs = false): string {
+        let lorem = '';
         const splitAt = splitParagraphs && n > 4 ? srngInt(Math.floor(n / 2) - 1, Math.floor(n / 2) + 1, [uid, 'splitAt']) : null;
 
         for (let i = 0; i < n; i++) {

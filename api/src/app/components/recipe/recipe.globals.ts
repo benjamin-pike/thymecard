@@ -110,7 +110,9 @@ export const UNIT_MAP: Record<string, string> = {
     bunch: 'bunch',
     bunches: 'bunch',
     sprig: 'sprig',
-    sprigs: 'sprig'
+    sprigs: 'sprig',
+    clove: 'clove',
+    cloves: 'clove',
 };
 export const FRACTION_MAP: Record<string, string> = {
     '¼': '1/4',

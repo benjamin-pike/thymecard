@@ -118,8 +118,8 @@ const DayCell: FC<IDayCellProps> = ({
                 isVisibleWhenTwoColumns ? '' : 'hiddenWhenTwoColumns',
                 isVisibleWhenThreeColumns ? '' : 'hiddenWhenThreeColumns'
             ])}
-            data-first = {isFirstDayOfCurrentMonth}
-            data-last = {isLastDayOfCurrentMonth}
+            data-first={isFirstDayOfCurrentMonth}
+            data-last={isLastDayOfCurrentMonth}
             onClick={() => handleDayClick(date)}
         >
             <p className={styles.date}>
@@ -149,7 +149,7 @@ const generateMonth = (month: DateTime): DateTime[] => {
     const firstDayOfCurrentMonth = month.startOf('month');
     const lastDayOfPrevMonth = firstDayOfCurrentMonth.minus({ day: 1 });
     const firstDayOfNextMonth = firstDayOfCurrentMonth.plus({ month: 1 });
-    let days: DateTime[] = [];
+    const days: DateTime[] = [];
 
     for (let i = firstDayOfCurrentMonth.weekday; i > 1; i--) {
         days.push(lastDayOfPrevMonth.minus({ days: i - 2 }));

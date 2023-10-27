@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import seedrandom from 'seedrandom';
 import { IPrimaryMetric, ISecondaryMetric, IFeedEventProps, IFeedData } from '@/components/dashboard/feed/feed.types';
 import { srngFloat, srngInt } from '@/lib/random.utils';
-import FOOD_IMAGES from './data/food-images.json'
+import FOOD_IMAGES from './data/food-images.json';
 import { RECIPES } from './data/recipes';
 
 export const generateMockProgressData = (startDate: DateTime, days: number): any[] => {
@@ -20,29 +20,29 @@ export const generateMockProgressData = (startDate: DateTime, days: number): any
         return hour + rng() * 3 - 1.5;
     };
 
-    let data = [];
-    let rng = seedrandom(days.toString());
+    const data = [];
+    const rng = seedrandom(days.toString());
 
     for (let day = 0; day < days; day++) {
-        let date = startDate.minus({ days: day });
+        const date = startDate.minus({ days: day });
 
-        let mealTimes = [BREAKFAST_TIME, LUNCH_TIME, DINNER_TIME, SNACK_TIME];
-        let meals = mealTimes.sort(() => rng() - 0.5).slice(0, Math.floor(rng() * 3) + 1);
+        const mealTimes = [BREAKFAST_TIME, LUNCH_TIME, DINNER_TIME, SNACK_TIME];
+        const meals = mealTimes.sort(() => rng() - 0.5).slice(0, Math.floor(rng() * 3) + 1);
 
         for (let mealTime of meals) {
             mealTime = getRandomTimeAround(mealTime, rng);
-            let mealDateTime = date.set({ hour: Math.floor(mealTime), minute: Math.floor((mealTime % 1) * 60) });
+            const mealDateTime = date.set({ hour: Math.floor(mealTime), minute: Math.floor((mealTime % 1) * 60) });
             data.push({
                 time: mealDateTime?.toISO() || '',
                 cal: Math.floor(rng() * (EAT_CAL_RANGE[1] - EAT_CAL_RANGE[0])) + EAT_CAL_RANGE[0]
             });
         }
 
-        let exerciseChoices = EXERCISE_TIMES.sort(() => rng() - 0.5).slice(0, Math.floor(rng() * 3) + 1);
+        const exerciseChoices = EXERCISE_TIMES.sort(() => rng() - 0.5).slice(0, Math.floor(rng() * 3) + 1);
 
         for (let exerciseTime of exerciseChoices) {
             exerciseTime = getRandomTimeAround(exerciseTime, rng);
-            let exerciseDateTime = date.set({ hour: Math.floor(exerciseTime), minute: Math.floor((exerciseTime % 1) * 60) });
+            const exerciseDateTime = date.set({ hour: Math.floor(exerciseTime), minute: Math.floor((exerciseTime % 1) * 60) });
             data.push({
                 time: exerciseDateTime?.toISO() || '',
                 cal: -(Math.floor(rng() * (EXERCISE_CAL_RANGE[1] - EXERCISE_CAL_RANGE[0])) + EXERCISE_CAL_RANGE[0])
@@ -50,7 +50,7 @@ export const generateMockProgressData = (startDate: DateTime, days: number): any
         }
 
         while (data.filter((event) => event.time.startsWith(date.toISODate() ?? '')).reduce((a, b) => a + b.cal, 0) > 0) {
-            let exerciseDateTime = date.set({ hour: EXERCISE_TIMES[Math.floor(rng() * EXERCISE_TIMES.length)] });
+            const exerciseDateTime = date.set({ hour: EXERCISE_TIMES[Math.floor(rng() * EXERCISE_TIMES.length)] });
             data.push({
                 time: exerciseDateTime?.toISO() || '',
                 cal: -(Math.floor(rng() * (EXERCISE_CAL_RANGE[1] - EXERCISE_CAL_RANGE[0])) + EXERCISE_CAL_RANGE[0])
@@ -64,7 +64,7 @@ export const generateMockProgressData = (startDate: DateTime, days: number): any
 };
 
 export const generateMockBookmarksData = (number: number) => {
-    let ACTIVITIES = [
+    const ACTIVITIES = [
         { name: '12km Easy Run', calories: -1163 },
         { name: 'Abs and Legs Circuit', calories: -423 },
         { name: 'Yoga Flow Session', calories: -201 },
@@ -293,7 +293,7 @@ const EVENT_NAMES = {
         'Espresso',
         'Latte',
         'Matcha Latte',
-        'Coconut Water',
+        'Coconut Water'
     ],
     dinner: [
         'Chicken Stir-Fry',
@@ -372,7 +372,7 @@ const generateImages = (eventType: EventType, eventName: string, uid: string) =>
     }
 
     return images.slice(0, maxImages);
-}
+};
 
 function generateEvent(eventType: EventType, partOfDay: PartOfDay, uid: string): IFeedEventProps {
     const name = EVENT_NAMES[eventType][srngInt(0, EVENT_NAMES[eventType].length - 1, [uid, 'name'])];

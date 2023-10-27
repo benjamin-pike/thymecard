@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import useLocalStorage from '@/hooks/common/useLocalStorage';
 
 import { CardBody } from '@/components/common/card/Card';
 import Avatar from '@/components/common/avatar/Avatar';

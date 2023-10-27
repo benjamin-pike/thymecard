@@ -3,6 +3,8 @@
     flex-direction: column;
     gap: 0.25rem;
 
+    margin-bottom: 1rem;
+
     width: fit-content;
 
     &[data-print='true'] {
@@ -14,18 +16,17 @@
 
         padding: 0 1.5rem;
 
+        min-width: 17.5rem;
+        max-width: 20rem;
+
         border-radius: 0.5rem;
 
         cursor: pointer;
 
         p {
-            display: flex;
-            align-items: center;
-            
-            height: 2.5rem;
-            max-width: 20rem;
+            padding: 0.6rem 0;
+            max-width: 100%;
 
-            white-space: nowrap;
             user-select: none;
 
             span {
@@ -35,19 +36,38 @@
 
                 transition: color 100ms ease;
 
+                &.quantity,
+                &.unit {
+                    white-space: nowrap;
+                }
+
                 @include dark-mode {
                     color: $mono-400;
                 }
             }
 
             .quantity {
+                display: inline-block;
+
                 margin-right: 0.25rem;
+
+                height: 1.1rem;
 
                 color: $mono-800;
                 font-weight: 500;
 
                 @include dark-mode {
                     color: $mono-light;
+                }
+
+                .x {
+                    margin-left: 0.25rem;
+
+                    font-weight: 200;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
                 }
 
                 .slash {
@@ -116,7 +136,7 @@
                 }
             }
 
-            .qualifiers {
+            .supplementaryInfo {
                 color: $mono-600;
                 font-size: $fs-12;
 
@@ -129,6 +149,14 @@
                 span {
                     color: $mono-400;
                     font-style: italic;
+
+                    @include dark-mode {
+                        color: $mono-600;
+                    }
+                }
+
+                .x {
+                    color: $mono-400;
 
                     @include dark-mode {
                         color: $mono-600;

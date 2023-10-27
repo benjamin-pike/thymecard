@@ -1,4 +1,5 @@
 import he from 'he';
+import { v4 as uuid } from 'uuid';
 import {
     isArray,
     isArrayOf,
@@ -7,19 +8,21 @@ import {
     isPlainObject,
     isString,
     parseFloatOrUndefined,
-    validateWithFallback
+    validate
 } from '../../lib/types/typeguards.utils';
-import {
-    IIngredient,
-    IYield,
-    INutritionalInformation,
-    Method,
-    IRecipeCreate,
-    isSchemaOrgHowToStep,
-    isSchemaOrgHowToSection
-} from './recipe.types';
+import { isSchemaOrgHowToStep, isSchemaOrgHowToSection } from './recipe.types';
 import { UNIT_MAP, FRACTION_MAP, VALID_PREP_STYLES, VALID_PREP_STYLE_MODIFIERS } from './recipe.globals';
-
+import { removeHTML, toTitleCase } from '@sirona/utils';
+import {
+    IRecipeCreate,
+    IRecipeIngredient,
+    IRecipeMethodSection,
+    IRecipeNutritionalInformation,
+    IRecipeParseResponse,
+    IRecipeYield,
+    RecipeIngredients,
+    RecipeMethod
+} from '@sirona/types';
 export class RecipeParser {
     private readonly resource: Record<string, any>;
 
@@ -27,42 +30,43 @@ export class RecipeParser {
         this.resource = resource;
     }
 
-    public parseRecipe(): Partial<IRecipeCreate> {
+    public parseRecipe(): IRecipeParseResponse {
         return {
-            name: validateWithFallback(this.resource.name, isNonEmptyString, undefined),
-            description: validateWithFallback(this.resource.description, isNonEmptyString, undefined),
-            images: this.parseImages(this.resource.image),
-            authors: this.parseAuthors(this.resource.author),
-            category: this.parseCategoryOrCuisine(this.resource.recipeCategory),
-            cuisine: this.parseCategoryOrCuisine(this.resource.recipeCuisine),
-            keywords: this.parseKeywords(this.resource.keywords),
-            prepTime: this.parseDuration(this.resource.prepTime),
-            cookTime: this.parseDuration(this.resource.cookTime),
-            totalTime: this.parseDuration(this.resource.totalTime),
-            yield: this.parseYield(this.resource.recipeYield),
-            diet: this.parseDietInformation(this.resource.suitableForDiet),
-            nutrition: this.parseNutritionInformation(this.resource.nutrition),
-            ingredients: this.parseIngredients(this.resource.recipeIngredient),
-            method: this.parseMethod(this.resource.recipeInstructions)
+            recipe: {
+                title: validate(this.resource.name, isNonEmptyString, undefined, toTitleCase),
+                description: validate(this.resource.description, isNonEmptyString, undefined, removeHTML),
+                authors: this.parseAuthors(this.resource.author),
+                source: validate(this.resource.url, isNonEmptyString, undefined),
+                category: this.parseCategoryOrCuisine(this.resource.recipeCategory),
+                cuisine: this.parseCategoryOrCuisine(this.resource.recipeCuisine),
+                keywords: this.parseKeywords(this.resource.keywords),
+                prepTime: this.parseDuration(this.resource.prepTime),
+                cookTime: this.parseDuration(this.resource.cookTime),
+                totalTime: this.parseDuration(this.resource.totalTime),
+                yield: this.parseYield(this.resource.recipeYield),
+                diet: this.parseDietInformation(this.resource.suitableForDiet),
+                nutrition: this.parseNutritionInformation(this.resource.nutrition),
+                ingredients: this.parseIngredients(this.resource.recipeIngredient),
+                method: this.parseMethod(this.resource.recipeInstructions)
+            },
+            image: this.parseImages(this.resource.image)
         };
     }
 
-    private parseImages(resource: any): string[] | undefined {
-        let images: string[] | undefined;
+    private parseImages(resource: any): string | undefined {
+        let image: string | undefined;
 
         if (isNonEmptyString(resource)) {
-            images = [resource];
+            image = resource;
         } else if (this.isSchemaOrgObject(resource, 'ImageObject')) {
-            images = [resource.url];
+            image = resource.url;
         } else if (isArrayOf(resource, isNonEmptyString)) {
-            images = resource;
+            image = resource[0];
         } else if (isArray<any>(resource) && resource.every((obj) => this.isSchemaOrgObject(obj, 'ImageObject'))) {
-            images = resource.map((obj) => obj.url);
+            image = resource.map((obj) => obj.url)[0];
         }
 
-        if (images) {
-            return this.removeDuplicateImagesByBaseName(images);
-        }
+        return image;
     }
 
     private parseAuthors(resource: any): string[] | undefined {
@@ -86,11 +90,11 @@ export class RecipeParser {
         }
 
         if (isNonEmptyString(resource)) {
-            return resource.split(',').map((category) => category.trim());
+            return resource.split(',').map((category) => toTitleCase(category.trim()));
         }
 
         if (isArrayOf(resource, isNonEmptyString)) {
-            return resource.flatMap((element) => element.split(',').map((category) => category.trim()));
+            return resource.flatMap((element) => element.split(',').map((category) => toTitleCase(category.trim())));
         }
     }
 
@@ -101,7 +105,7 @@ export class RecipeParser {
 
         return resource
             .split(',')
-            .map((keyword) => keyword.trim())
+            .map((keyword) => toTitleCase(keyword.trim()))
             .filter((keyword) => keyword.length > 0);
     }
 
@@ -139,7 +143,7 @@ export class RecipeParser {
         return totalMinutes;
     }
 
-    private parseYield(resource: any): IYield | undefined {
+    private parseYield(resource: any): IRecipeYield | undefined {
         if (!resource) {
             return undefined;
         }
@@ -192,11 +196,13 @@ export class RecipeParser {
         const isolateDiet = (path: string): string => {
             const splitPath = path.split('/');
             const isolatedString = splitPath[splitPath.length - 1];
-            return isolatedString
-                .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-                .toLowerCase()
-                .replace('diet', '')
-                .trim();
+            return toTitleCase(
+                isolatedString
+                    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+                    .toLowerCase()
+                    .replace('diet', '')
+                    .trim()
+            );
         };
 
         if (isNonEmptyString(resource)) {
@@ -208,12 +214,12 @@ export class RecipeParser {
         }
     }
 
-    private parseNutritionInformation(resource: any): INutritionalInformation | undefined {
+    private parseNutritionInformation(resource: any): IRecipeNutritionalInformation | undefined {
         if (!this.isSchemaOrgObject(resource, 'NutritionInformation')) {
             return undefined;
         }
 
-        const nutritionInformation: INutritionalInformation = {
+        const nutritionInformation: IRecipeNutritionalInformation = {
             calories: parseFloatOrUndefined(resource.calories),
             sugar: parseFloatOrUndefined(resource.sugarContent),
             carbohydrate: parseFloatOrUndefined(resource.carbohydrateContent),
@@ -231,7 +237,7 @@ export class RecipeParser {
         return nutritionInformation;
     }
 
-    private parseIngredients(resource: any): IIngredient[] | undefined {
+    private parseIngredients(resource: any): RecipeIngredients | undefined {
         if (!isArrayOf(resource, isNonEmptyString)) {
             return;
         }
@@ -240,32 +246,54 @@ export class RecipeParser {
         return ingredientsParser.parseIngredients();
     }
 
-    private parseMethod(resource: any): Method | undefined {
+    private parseMethod(resource: any): RecipeMethod | undefined {
         if (isArray(resource)) {
-            const result: Method = [];
+            const result: RecipeMethod = [];
 
+            // Handle recipes that only use steps
+            if (resource.every(isSchemaOrgHowToStep)) {
+                const section: IRecipeMethodSection = {
+                    id: uuid(),
+                    steps: []
+                };
+                for (const element of resource) {
+                    const step = {
+                        id: uuid(),
+                        stepTitle: element.name?.toLowerCase() !== element.text.toLowerCase() ? element.name : undefined,
+                        instructions: removeHTML(element.text)
+                    };
+                    section.steps.push(step);
+                }
+
+                result.push(section);
+
+                return result;
+            }
+
+            // Handle recipes that use sections and steps
             for (const element of resource) {
                 if (isSchemaOrgHowToStep(element)) {
                     const step = {
-                        instructions: element.text,
-                        stepTitle: element.name !== element.text ? element.name : undefined,
-                        image: this.parseImages(element.image)
+                        id: uuid(),
+                        stepTitle: element.name?.toLowerCase() !== element.text.toLowerCase() ? element.name : undefined,
+                        instructions: removeHTML(element.text)
                     };
-                    result.push({ steps: [step] });
+                    result.push({ id: uuid(), steps: [step] });
                     continue;
                 }
                 if (isSchemaOrgHowToSection(element)) {
                     const steps = element.itemListElement.map((step: any) => {
                         return {
-                            instructions: step.text,
-                            stepTitle: step.name !== step.text ? step.name : undefined,
-                            image: this.parseImages(step.image)
+                            id: uuid(),
+                            instructions: removeHTML(step.text),
+                            stepTitle: step.name !== step.text ? step.name : undefined
                         };
                     });
 
                     result.push({
-                        steps,
-                        sectionTitle: element.name
+                        id: uuid(),
+                        sectionTitle: element.name,
+                        steps
                     });
                 }
             }
@@ -277,37 +305,6 @@ export class RecipeParser {
     private isSchemaOrgObject = (obj: any, type: string): boolean => {
         return obj && obj['@type'] === type;
     };
-
-    private removeDuplicateImagesByBaseName(imageUrls: string[]): string[] {
-        const duplicates: Set<number> = new Set();
-
-        for (let i = 0; i < imageUrls.length; i++) {
-            if (duplicates.has(i)) {
-                continue;
-            }
-
-            const url1 = new URL(imageUrls[i]);
-            const pathComponents1 = url1.pathname.split('/');
-            const fileName1 = pathComponents1[pathComponents1.length - 1].split('.')[0];
-
-            for (let j = 0; j < imageUrls.length; j++) {
-                if (i === j) {
-                    continue;
-                }
-
-                const url2 = new URL(imageUrls[j]);
-                const pathComponents2 = url2.pathname.split('/');
-                const fileName2 = pathComponents2[pathComponents2.length - 1].split('.')[0];
-
-                if (fileName2.includes(fileName1)) {
-                    duplicates.add(j);
-                }
-            }
-        }
-
-        const uniqueImages = imageUrls.filter((_, index) => !duplicates.has(index));
-        return uniqueImages;
-    }
 }
 
 export class IngredientsParser {
@@ -326,13 +323,13 @@ export class IngredientsParser {
         this.resource = resource;
     }
 
-    public parseIngredients(): IIngredient[] {
+    public parseIngredients(): RecipeIngredients {
         return this.resource.map((ingredient) => this.parseIngredient(ingredient));
     }
 
-    private parseIngredient(input: string): IIngredient {
-        let quantity: number[] | null;
-        let unit: string | null;
+    private parseIngredient(input: string): IRecipeIngredient {
+        let quantity: number[] | undefined;
+        let unit: string | undefined;
 
         let parentheticals: string[];
         let parsedPrepStyles: string[];
@@ -368,17 +365,18 @@ export class IngredientsParser {
             quantity,
             unit,
             item,
-            prepStyles: prepStyles.length ? prepStyles : undefined,
-            notes: notes.length ? notes : undefined,
-            source: input
+            prepStyles: prepStyles.length ? prepStyles.join(', ') : undefined,
+            notes: notes.length ? notes.join(', ') : undefined,
+            origin: input,
+            match: null
         };
     }
 
-    private parseQuantity(input: string): { intermediateText: string; quantity: number[] | null } {
+    private parseQuantity(input: string): { intermediateText: string; quantity: number[] | undefined } {
         const asciiString = this.replaceUnicodeFractions(input);
         const quantityMatch = asciiString.match(this.quantityRegex);
 
-        let quantity: number[] | null = null;
+        let quantity: number[] | undefined;
         let intermediateText = asciiString;
 
         if (quantityMatch) {
@@ -394,10 +392,10 @@ export class IngredientsParser {
         return { intermediateText, quantity };
     }
 
-    private parseUnit(input: string): { intermediateText: string; unit: string | null } {
+    private parseUnit(input: string): { intermediateText: string; unit: string | undefined } {
         const unitMatch = input.match(this.unitRegex);
 
-        let unit: string | null = null;
+        let unit: string | undefined;
         let intermediateText = input;
 
         if (unitMatch) {
@@ -442,12 +440,13 @@ export class IngredientsParser {
 
     private cleanupText(input: string): string {
         // Trims non-alpha chars, removes surplus spaces, removes space before comma/semicolon
-
-        return input
-            .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')
-            .replace(/\s+/g, ' ')
-            .replace(' ,', ',')
-            .replace(' ;', ';');
+        return removeHTML(
+            input
+                .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')
+                .replace(/\s+/g, ' ')
+                .replace(' ,', ',')
+                .replace(' ;', ';')
+        );
     }
 
     private extractParentheticals(input: string): { intermediateText: string; parentheticals: string[] } {

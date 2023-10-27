@@ -43,7 +43,7 @@ export class UserService implements IUserService {
     }
 
     public async updateUser(userId: string, update: Partial<IUser>): Promise<IUser> {
-        const query = { _id: userId, deleted: { $ne: true } };
+        const query = { _id: userId, isDeleted: { $ne: true } };
 
         const hashedPassword = update.password ? await this.authService.hashPassword(update.password) : undefined;
 
@@ -78,7 +78,7 @@ export class UserService implements IUserService {
             });
         }
 
-        if (user.deleted) {
+        if (user.isDeleted) {
             throw new NotFoundError(ErrorCode.DeletedUserNotFound, 'The requested account no longer exists', {
                 origin: 'UserService.getUser',
                 data: { user }
@@ -94,7 +94,7 @@ export class UserService implements IUserService {
         const query = { email };
         const user = await userRepository.getOne(query);
 
-        if (!user || user.deleted) {
+        if (!user || user.isDeleted) {
             return null
         }
 
@@ -109,7 +109,7 @@ export class UserService implements IUserService {
             return null
         }
 
-        if (user.deleted) {
+        if (user.isDeleted) {
             throw new NotFoundError(ErrorCode.DeletedUserNotFound, 'The requested account no longer exists', {
                 origin: 'UserService.getUser',
                 data: { OAuthId, authProvider }
@@ -120,11 +120,11 @@ export class UserService implements IUserService {
     }
 
     public async deleteUser(userId: string): Promise<void> {
-        const query = { _id: userId, deleted: { $ne: true } };
+        const query = { _id: userId, isDeleted: { $ne: true } };
         const update = {
             firstName: 'REDACTED',
             lastName: 'REDACTED',
-            deleted: true
+            isDeleted: true
         };
 
         const deletedUser = await userRepository.findOneAndUpdate(query, update);

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { IRecipe, IRecipeCreate } from './recipe.types';
-import { MongoRepository } from '../../lib/database/mongo.repository';
+import { MongoRepository } from '../../lib/data/mongo.repository';
+import { IRecipe, IRecipeCreate } from '@sirona/types';
 
 export const collectionName = 'recipes';
 
@@ -63,39 +63,56 @@ const Nutrition = {
     servingSize: Yield
 };
 
-const Ingredient = {
-    quantity: {
-        type: Array(Number),
-        required: false,
-        default: null
-    },
-    unit: {
-        type: String,
-        required: false,
-        default: null
-    },
-    item: {
-        type: String,
+const IngredientMatch = {
+    itemId: {
+        type: Number,
         required: true
     },
-    prepStyles: {
-        type: Array(String),
-        default: undefined,
-        required: false
-    },
-    notes: {
-        type: Array(String),
-        default: undefined,
-        required: false
-    },
-    source: {
+    name: {
         type: String,
         required: true
     }
 };
 
+const Ingredient = {
+    item: {
+        type: String,
+        required: true
+    },
+    quantity: {
+        type: Array(Number),
+        default: undefined,
+        required: false,
+    },
+    unit: {
+        type: String,
+        default: undefined,
+        required: false
+    },
+    prepStyles: {
+        type: String,
+        default: undefined,
+        required: false
+    },
+    notes: {
+        type: String,
+        default: undefined,
+        required: false
+    },
+    origin: {
+        type: String,
+        default: undefined,
+        required: false
+    },
+    match: {
+        type: IngredientMatch,
+        required: false,
+        default: null
+    }
+};
+
 const MethodStep = {
-    instructions: {
+    id: {
         type: String,
         required: true
     },
@@ -103,23 +120,26 @@ const MethodStep = {
         type: String,
         required: false
     },
-    image: {
-        type: Array(String),
-        default: undefined,
-        required: false
+    instructions: {
+        type: String,
+        required: true
     }
 };
 
 const MethodSection = {
+    id: {
+        type: String,
+        required: true
+    },
+    sectionTitle: {
+        type: String,
+        required: false
+    },
     steps: {
         type: Array(MethodStep),
         required: true,
         _id: false
     },
-    sectionTitle: {
-        type: String,
-        required: false
-    }
 };
 
 const Comment = {
@@ -143,7 +163,7 @@ const Comment = {
 
 const RecipeSchema = new Schema(
     {
-        name: {
+        title: {
             type: String,
             required: true
         },
@@ -155,15 +175,18 @@ const RecipeSchema = new Schema(
             type: String,
             required: false
         },
-        images: {
-            type: Array(String),
-            required: false,
-            default: undefined
+        image: {
+            type: String,
+            required: true
         },
         authors: {
             type: Array(String),
             required: false,
             default: undefined
+        },
+        source: {
+            type: String,
+            required: false
         },
         category: {
             type: Array(String),
@@ -171,6 +194,11 @@ const RecipeSchema = new Schema(
             default: undefined
         },
         cuisine: {
+            type: Array(String),
+            required: false,
+            default: undefined
+        },
+        diet: {
             type: Array(String),
             required: false,
             default: undefined
@@ -196,11 +224,6 @@ const RecipeSchema = new Schema(
             type: Yield,
             required: true,
             _id: false
-        },
-        diet: {
-            type: Array(String),
-            required: false,
-            default: undefined
         },
         nutrition: {
             type: Nutrition,
@@ -237,6 +260,10 @@ const RecipeSchema = new Schema(
             type: Boolean,
             required: true,
             default: false
+        },
+        lastCooked: {
+            type: Date,
+            required: false
         }
     },
     {

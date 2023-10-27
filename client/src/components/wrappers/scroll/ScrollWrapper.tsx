@@ -1,8 +1,8 @@
 import { FC, useRef, useState, useCallback, useMemo, ReactElement, useEffect } from 'react';
-import { useEventListener } from '@/hooks/events/useEventListener';
-import { useDocumentEventListener } from '@/hooks/events/useDocumentEventListener';
-import { useMount } from '@/hooks/lifecycle/useMount';
-import { useMutationObserver } from '@/hooks/dom/useMutationObserver';
+import { useEventListener } from '@/hooks/common/useEventListener';
+import { useDocumentEventListener } from '@/hooks/common/useDocumentEventListener';
+import { useMount } from '@/hooks/common/useMount';
+import { useMutationObserver } from '@/hooks/common/useMutationObserver';
 import { formatClasses } from '@/lib/common.utils';
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import styles from './scroll-wrapper.module.scss';
@@ -30,12 +30,8 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({
     isScrollable,
     useAutoScroll,
     useScrollButtons,
-    useScrollBar,
+    useScrollBar
 }) => {
-    if (!(active ?? true)) {
-        return <>{children}</>;
-    }
-
     const columnRef = useRef<HTMLDivElement>(null);
     const scrollbarRef = useRef<HTMLDivElement>(null);
     const upperSegmentRef = useRef<HTMLDivElement>(null);
@@ -164,7 +160,7 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({
 
     useEffect(() => {
         handleScroll();
-    }, [scrollbarIsVisible]);
+    }, [handleScroll, scrollbarIsVisible]);
 
     const handleContainerHeightChange = useCallback(() => {
         checkScrollbarVisibility();
@@ -185,7 +181,7 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({
         }
 
         setColumnHeight(column.scrollHeight);
-    }, [useAutoScroll, checkScrollbarVisibility]);
+    }, [checkScrollbarVisibility, useAutoScroll, columnHeight]);
 
     const handleMount = useCallback(() => {
         handleScroll();
@@ -203,6 +199,10 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({
         useMemo(() => ({ childList: true, subtree: true }), [])
     );
 
+    if (!(active ?? true)) {
+        return <>{children}</>;
+    }
+
     return (
         <div className={`${styles.wrapper}${className ? ' ' + className : ''}`} style={{ height }}>
             {displayScrollButtons && (
@@ -216,7 +216,11 @@ const ScrollWrapper: FC<IScrollWrapperProps> = ({
                     </button>
                 </div>
             )}
-            <div className={styles.column} style={{ padding: `${padding}rem 0`, overflowY: isScrollable !== false ? 'scroll' : 'hidden' }} ref={columnRef}>
+            <div
+                className={styles.column}
+                style={{ padding: `${padding}rem 0`, overflowY: isScrollable !== false ? 'scroll' : 'hidden' }}
+                ref={columnRef}
+            >
                 {children}
             </div>
             {displayScrollBar && scrollbarIsVisible && (

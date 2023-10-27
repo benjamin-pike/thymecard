@@ -1,0 +1,127 @@
+.edit {
+    display: flex;
+    gap: 0.5rem;
+
+    .quantity,
+    .units {
+        padding: 0.4rem 0.7rem;
+
+        font-weight: 400;
+        font-size: $fs-12;
+        color: $mono-700;
+        border: 1px dashed $mono-300;
+
+        border-radius: 0.5rem;
+
+        text-align: center;
+
+        transition:
+            background-color 150ms ease,
+            border-color 150ms ease;
+
+        @include dark-mode {
+            color: $mono-light;
+            border: 1px dashed $mono-600;
+
+            &:focus {
+                background-color: $mono-800;
+                border: 1px dashed $mono-500;
+            }
+        }
+    }
+
+    .quantity {
+        width: fit-content;
+        min-width: 2rem;
+
+        white-space: pre;
+
+        &:focus {
+            outline: none;
+        }
+
+        &:empty::before {
+            content: attr(placeholder);
+
+            color: $mono-500;
+            font-weight: 300;
+
+            @include dark-mode {
+                color: $mono-600;
+            }
+        }
+
+        &:empty[data-error='true'] {
+            border: 1px dashed $red;
+
+            background-color: transparentize($red, 0.925);
+
+            &::before {
+                color: $red;
+    
+                @include dark-mode {
+                    color: transparentize($red, 0.4);
+                }
+            }
+
+            @include dark-mode {
+                background-color: transparentize($red, 0.925);
+
+                &:focus {
+                    background-color: transparentize($red, 0.925);
+                    border: 1px dashed $red;
+                }
+            }
+        }
+    }
+
+    .units {
+        flex-grow: 1;
+        flex-shrink: 1;
+
+        min-width: 0;
+
+        &::placeholder {
+            font-weight: 300;
+            color: $mono-500;
+
+            @include dark-mode {
+                color: $mono-600;
+            }
+        }
+    }
+}
+
+.value {
+    color: $mono-700;
+    font-weight: 400;
+    font-size: $fs-13;
+
+    @include dark-mode {
+        color: $mono-light;
+    }
+}
+
+.scale {
+    display: grid;
+    place-content: center;
+
+    margin-left: auto;
+
+    padding: 0 0.475rem 0 0.525rem;
+
+    height: 1.75rem;
+    min-width: 1.75rem;
+
+    font-size: $fs-11;
+    font-weight: 300;
+    color: $mono-700;
+    background-color: transparentize($mono-100, 0.25);
+
+    border-radius: 100vmax;
+
+    @include dark-mode {
+        color: $mono-light;
+        background-color: $mono-800;
+    }
+}

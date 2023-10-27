@@ -1,4 +1,4 @@
-import { TypeGuard } from "./type.utils";
+import { TypeGuard } from './type.utils';
 
 export const getLocalStorageItem = <T>(key: string, typeguard: TypeGuard<T>) => {
     try {
@@ -9,12 +9,11 @@ export const getLocalStorageItem = <T>(key: string, typeguard: TypeGuard<T>) => 
         }
 
         return item;
-    }
-    catch (err) {
+    } catch (err) {
         console.error(err);
         return null;
     }
-}
+};
 
 export const setLocalStorageItem = <T>(key: string, item: T, typeguard: TypeGuard<T>) => {
     try {
@@ -26,4 +25,12 @@ export const setLocalStorageItem = <T>(key: string, item: T, typeguard: TypeGuar
     } catch (err) {
         console.error(err);
     }
-}
+};
+
+export const removeLocalStorageItem = (key: string) => {
+    try {
+        localStorage.removeItem(key);
+    } catch (err) {
+        console.error(err);
+    }
+};

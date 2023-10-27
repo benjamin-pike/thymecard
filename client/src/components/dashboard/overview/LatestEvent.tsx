@@ -16,7 +16,9 @@ const LatestEvent: FC<ILatestEventProps> = ({ category, name, calories, lastComp
     const includeYear = dateLuxon.year !== DateTime.now().year;
     return (
         <a className={styles.event}>
-            <h2 className={styles.category}>Latest <strong>{category}</strong></h2>
+            <h2 className={styles.category}>
+                Latest <strong>{category}</strong>
+            </h2>
             <h1 className={styles.name}>{name}</h1>
             <p className={styles.calories}>
                 <strong>
@@ -26,13 +28,9 @@ const LatestEvent: FC<ILatestEventProps> = ({ category, name, calories, lastComp
                 calories
             </p>
             <p className={styles.lastDate}>
-                <span className={styles.time}>
-                    {dateLuxon.toFormat('HH:mm')}
-                </span>
+                <span className={styles.time}>{dateLuxon.toFormat('HH:mm')}</span>
                 {'  •  '}
-                <span className={styles.date}>
-                    {dateLuxon.toFormat('d MMMM') + (includeYear ? dateLuxon.toFormat(' yyyy') : '')}
-                </span>
+                <span className={styles.date}>{dateLuxon.toFormat('d MMM') + (includeYear ? dateLuxon.toFormat(' yyyy') : '')}</span>
             </p>
         </a>
     );
