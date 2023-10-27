@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
 
-    padding: 1rem 0.75rem;
+    padding: 1rem 0.75rem 0.75rem 0.75rem;
 
     &:first-of-type {
         padding-top: 0;
@@ -29,16 +29,16 @@
             svg {
                 rotate: -90deg;
                 scale: 0.8;
-                
+
                 transition: rotate 200ms ease;
             }
         }
 
         input {
             width: 10rem;
-            
+
             padding: 0 0.5rem 0.25rem 0;
-            
+
             border-bottom: 1px solid $mono-100;
 
             @include dark-mode {
@@ -66,7 +66,7 @@
         .count {
             margin-left: auto;
             margin-right: 0;
-            
+
             color: $mono-600;
             font-size: $fs-12;
             font-weight: 400;
@@ -85,7 +85,7 @@
 
             height: 1rem;
             width: 1rem;
-            
+
             margin-top: 0.2rem;
 
             color: $mono-400;
@@ -123,11 +123,13 @@
 
         margin-top: 0;
 
-        transition: grid-template-rows 200ms ease, margin-top 200ms ease;
+        transition:
+            grid-template-rows 200ms ease,
+            margin-top 200ms ease;
 
         &[data-active='true'] {
             grid-template-rows: 1fr;
-            
+
             margin-top: 0.5rem;
         }
     }
@@ -141,30 +143,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    margin-top: 0.5rem;
-    padding-left: 0.25rem;
-    
+
+    margin: 0.75rem 0 0.25rem 0.25rem;
+
     height: 2rem;
-    width: calc(100% - 0.25rem);
-    
+    width: calc(100% - 0.5rem);
+
     color: $mono-500;
-    box-shadow: 0 0 0 1px $mono-200 inset;
-    
+    box-shadow: 0 0 0 1px $mono-200;
+
     border-radius: 0.5rem;
 
-    transition: box-shadow 100ms ease, background-color 100ms ease, color 100ms ease;
-
-    &.category {
-        margin-top: 1rem;
-        
-        height: 2.25rem;
-    }
+    transition:
+        box-shadow 150ms ease,
+        background-color 100ms ease,
+        color 100ms ease;
 
     &:hover {
         color: $mono-600;
-        background-color: transparentize($mono-100, 0.75);
-        box-shadow: 0 0 0 1px $mono-300 inset;
+        box-shadow:
+            0 0 0 1px $mono-200,
+            0 0 0 0.25rem $mono-100;
+    }
+    &.category {
+        margin-top: 1rem;
+
+        height: 2.25rem;
     }
 
     span {
@@ -173,7 +177,7 @@
         gap: 0.25rem;
 
         height: 1rem;
-        
+
         font-size: $fs-12;
         font-weight: 400;
 
@@ -187,9 +191,9 @@
         box-shadow: 0 0 0 1px $mono-700 inset;
 
         &:hover {
-            color: $mono-400;
-            background-color: transparentize($mono-700, 0.75);
-            box-shadow: 0 0 0 1px $mono-600 inset;
+            color: $mono-light;
+            background-color: $mono-800;
+            box-shadow: 0 0 0 1px $mono-500 inset;
         }
     }
 }
@@ -197,7 +201,7 @@
 .divider {
     height: 1px;
     width: 100%;
-    
+
     background-color: $mono-200;
 
     &:last-of-type {
@@ -208,4 +212,3 @@
         background-color: $mono-700;
     }
 }
-

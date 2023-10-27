@@ -2,7 +2,7 @@ import { FC, ReactElement } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useClickOutside } from '@mantine/hooks';
-import { useWindowKeyDown } from '@/hooks/events/useWindowKeydown';
+import { useWindowKeyDown } from '@/hooks/common/useWindowKeydown';
 
 import { IoMdClose } from 'react-icons/io';
 
@@ -16,10 +16,11 @@ interface ImageModalProps {
 
 const ImageModal: FC<ImageModalProps> = ({ children, isOpen, closeModal }) => {
     const ref = useClickOutside(closeModal);
+    const root = document.getElementById('modal-root');
 
     useWindowKeyDown('Escape', closeModal);
 
-    if (!isOpen) {
+    if (!isOpen || !root) {
         return null;
     }
 
@@ -30,7 +31,7 @@ const ImageModal: FC<ImageModalProps> = ({ children, isOpen, closeModal }) => {
                 <IoMdClose />
             </button>
         </div>,
-        document.getElementById('modal-root')!
+        root
     );
 };
 

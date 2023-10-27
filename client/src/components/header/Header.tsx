@@ -4,7 +4,7 @@ import MobileDropdownWrapper from './components/mobile-dropdown/MobileDropdownWr
 import UpgradeButton from './components/upgrade-button/UpgradeButton';
 import Avatar from '../common/avatar/Avatar';
 import styles from './header.module.scss';
-import usePremium from '@/hooks/usePremium';
+import usePremium from '@/hooks/common/usePremium';
 
 const Header = () => {
     const isPremium = usePremium();

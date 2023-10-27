@@ -1,0 +1,165 @@
+.authors {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    color: $mono-700;
+
+    .by {
+        font-weight: 400;
+    }
+
+    @include dark-mode {
+        color: $mono-light;
+    }
+
+    &[data-editing='true'] {
+        .by {
+            margin-right: 0.25rem;
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+
+            width: fit-content;
+
+            padding-right: 0.3rem;
+
+            border: 1px dashed $mono-300;
+
+            border-radius: 0.5rem;
+
+            transition: background-color 150ms ease, border-color 150ms ease;
+
+            @include dark-mode {
+                border: 1px dashed $mono-600;
+
+                &:focus-within {
+                    background-color: $mono-800;
+                    border: 1px dashed $mono-500;
+                }
+            }
+
+            p {
+                display: inline-flex;
+
+                padding: 0.4rem 0 0.4rem 0.8rem;
+
+                height: 1.75rem;
+                width: fit-content;
+
+                font-size: $fs-12;
+                font-weight: 400;
+                color: $mono-600;
+
+                cursor: text;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                &:focus {
+                    outline: none;
+                }
+
+                &[placeholder]:empty:before {
+                    content: attr(placeholder);
+                    color: $mono-400;
+
+                    @include dark-mode {
+                        color: $mono-600;
+                    }
+                }
+            }
+
+            button {
+                display: grid;
+                place-content: center;
+
+                color: $mono-400;
+
+                transition: color 150ms ease;
+
+                &:hover {
+                    color: $mono-700;
+                }
+
+                @include dark-mode {
+                    color: $mono-600;
+
+                    &:hover {
+                        color: $mono-light;
+                    }
+                }
+
+                svg {
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+        }
+
+        .addAuthor {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.3rem;
+
+            height: 1.75rem;
+            width: 1.75rem;
+
+            font-size: $fs-12;
+            font-weight: 300;
+            white-space: nowrap;
+            color: $mono-500;
+            border: 1px dashed $mono-300;
+
+            border-radius: 0.5rem;
+
+            transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+
+            &:hover {
+                color: $mono-light;
+                background-color: $mono-700;
+                border: 1px solid $mono-700;
+            }
+
+            @include dark-mode {
+                color: $mono-600;
+                border: 1px dashed $mono-600;
+
+                &:hover {
+                    color: $mono-light;
+                    background-color: $mono-800;
+                    border: 1px dashed $mono-500;
+                }
+            }
+
+            svg {
+                scale: 0.95;
+
+                path {
+                    stroke-width: 2.5;
+                }
+            }
+
+            &[data-long='true'] {
+                height: unset;
+                width: unset;
+
+                padding: 0.4rem 0.8rem 0.4rem 0.65rem;
+
+                svg {
+                    scale: 0.95;
+                }
+            }
+        }
+    }
+
+    &[data-editing='false'] {
+        gap: 0.25rem;
+    }
+}

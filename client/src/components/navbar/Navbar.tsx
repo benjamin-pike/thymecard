@@ -1,19 +1,24 @@
 import { Fragment, useCallback, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
-import { useBreakpoints } from '@/hooks/dom/useBreakpoints';
+import { useTheme } from '@/hooks/common/useTheme';
+import { useBreakpoints } from '@/hooks/common/useBreakpoints';
+import useUser from '@/hooks/user/useUser';
 import Avatar from '../common/avatar/Avatar';
 import Tooltip from '../common/tooltip/Tooltip';
 import { RiMarkPenLine } from 'react-icons/ri';
 import { BiFoodMenu } from 'react-icons/bi';
 import { FiActivity } from 'react-icons/fi';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MdOutlineCalendarMonth, MdOutlineSpaceDashboard } from 'react-icons/md';
-import { ReactComponent as Logo } from 'assets/logo.svg';
+// import { ReactComponent as Logo } from 'assets/logo.svg';
+// import { ReactComponent as Logo } from 'assets/thymecard-logo.png';
+import LogoLight from 'assets/thymecard-light.png';
 import { TbDiamond } from 'react-icons/tb';
 import { capitalize } from '@/lib/string.utils';
 import styles from './navbar.module.scss';
 
 const Navbar = () => {
+    const { logoutUser } = useUser();
+    const navigate = useNavigate();
     const viewport = useBreakpoints();
     const { toggleTheme } = useTheme();
 
@@ -30,11 +35,17 @@ const Navbar = () => {
         }, 100);
     }, [toggleTheme]);
 
+    const handleLogout = useCallback(() => {
+        logoutUser();
+        navigate('/login');
+    }, [logoutUser, navigate]);
+
     return (
         <>
             <section className={styles.navbar} data-visible={!viewport.current.isMobile || isOpen}>
-                <div className={styles.logo}>
-                    <Logo className={styles.logo} onClick={handleClick} />
+                <div className={styles.logo} onClick={handleClick}>
+                    {/* <Logo className={styles.logo} onClick={handleClick} /> */}
+                    <img src={LogoLight} alt="thymecard" />
                 </div>
                 <nav>
                     <ul>
@@ -59,7 +70,7 @@ const Navbar = () => {
                         Upgrade to Premium
                     </Tooltip>
                 </div>
-                <div className={styles.avatar}>
+                <div className={styles.avatar} onClick={handleLogout}>
                     <Avatar className={styles.image} />
                 </div>
             </section>

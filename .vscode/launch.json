@@ -4,6 +4,10 @@
         {
             "name": "Debug + Launch Client",
             "configurations": ["Debug Client", "Launch Client"]
+        },
+        {
+            "name": "Fullstack Debug",
+            "configurations": ["Debug API", "Debug Client"]
         }
     ],
 	"configurations": [

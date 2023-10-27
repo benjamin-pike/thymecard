@@ -73,23 +73,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    padding-left: 0.25rem;
-    
-    width: calc(100% - 0.25rem);
+    align-self: center;
+
+    width: calc(100% - 0.5rem);
     height: 2.25rem;
     
     color: $mono-500;
-    box-shadow: 0 0 0 1px $mono-200 inset;
+    box-shadow: 0 0 0 1px $mono-200;
     
     border-radius: 0.5rem;
 
-    transition: box-shadow 100ms ease, background-color 100ms ease, color 100ms ease;
+    transition: box-shadow 150ms ease, background-color 100ms ease, color 100ms ease;
 
     &:hover {
         color: $mono-600;
-        background-color: transparentize($mono-100, 0.5);
-        box-shadow: 0 0 0 1px $mono-300 inset;
+        box-shadow: 0 0 0 1px $mono-200, 0 0 0 0.25rem $mono-100;
     }
 
     span {
@@ -112,9 +110,9 @@
         box-shadow: 0 0 0 1px $mono-700 inset;
 
         &:hover {
-            color: $mono-400;
-            background-color: transparentize($mono-700, 0.75);
-            box-shadow: 0 0 0 1px $mono-600 inset;
+            color: $mono-light;
+            background-color: $mono-800;
+            box-shadow: 0 0 0 1px $mono-500 inset;
         }
     }
 }

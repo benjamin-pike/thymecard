@@ -10,6 +10,7 @@ export enum ErrorCode {
     DeletedUserNotFound = 104,
     RecipeNotFound = 105,
     DayNotFound = 106,
+    PantryProductNotFound = 107,
 
    
     // Typeguard errors (02xx)
@@ -24,6 +25,7 @@ export enum ErrorCode {
     InvalidDayUpdateResource = 208,
     InvalidMealCreateResource = 209,
     InvalidMealUpdateResource = 210,
+    InvalidImageResource = 211,
     
     // General type errors (0250 - 0299)
     InvalidDateString = 250,

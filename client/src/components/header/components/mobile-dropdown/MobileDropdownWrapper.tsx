@@ -7,14 +7,12 @@ interface IMobileDropdownComponentProps {
     children: ReactElement;
 }
 
-const MobileDropdownWrapper: FC<IMobileDropdownComponentProps> = ({
-    children
-}) => {
+const MobileDropdownWrapper: FC<IMobileDropdownComponentProps> = ({ children }) => {
     const [isVisible, setIsVisible] = useState(false);
 
     const toggleVisibility = useCallback(() => {
-        setIsVisible(!isVisible)
-    }, [isVisible])
+        setIsVisible(!isVisible);
+    }, [isVisible]);
 
     const closeDropdown = useCallback(() => {
         setIsVisible(false);

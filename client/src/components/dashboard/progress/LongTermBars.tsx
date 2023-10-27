@@ -112,7 +112,7 @@ const ProgressBar: FC<IProgressBarProps> = ({ type, timespan, values, dailyTarge
                     {values.map((value, index) => {
                         const segmentWidth = (value / valueSum) * barWidth;
                         const currentOffset = offset;
-                        
+
                         offset += segmentWidth;
 
                         return (

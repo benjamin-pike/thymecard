@@ -5,7 +5,7 @@ import { isDefined } from '@/lib/type.utils';
 
 interface ImageGridProps {
     urls: string[];
-    height: number;
+    height?: number;
     imageBorderRadius?: number;
     imageSpacing?: number;
 }
@@ -29,9 +29,12 @@ const ImageGrid: FC<ImageGridProps> = ({ urls, height, imageBorderRadius, imageS
         setCurrentImage(index);
     }, []);
 
-    const containerStyle = isDefined(imageSpacing) ? { gap: `${imageSpacing}rem`, height: `${height}rem` } : { height: `${height}rem` };
+    const containerStyle = {
+        gap: isDefined(imageSpacing) ? `${imageSpacing}rem` : undefined,
+        height: height ? `${height}rem` : '100%'
+    };
     const imageStyle = isDefined(imageBorderRadius) ? { borderRadius: `${imageBorderRadius}rem` } : {};
-    const halfStyle = isDefined(imageSpacing) ? { width: `calc(50% - ${imageSpacing / 2}rem)` } : {};
+    const halfStyle = isDefined(imageSpacing) ? { gap: `${imageSpacing}rem`, width: `calc(50% - ${imageSpacing / 2}rem)` } : {};
     const quarterStyle = isDefined(imageSpacing) ? { height: `calc(50% - ${imageSpacing / 2}rem)` } : {};
 
     return (
@@ -46,7 +49,7 @@ const ImageGrid: FC<ImageGridProps> = ({ urls, height, imageBorderRadius, imageS
                         <div className={`${styles.imageContainer} ${styles.half}`} style={halfStyle} onClick={() => openModal(0)}>
                             <img src={urls[0]} className={styles.image} style={imageStyle} alt="Image 1" />
                         </div>
-                        <div className={styles.splitContainer}>
+                        <div className={styles.splitContainer} style={halfStyle}>
                             <div className={`${styles.imageContainer} ${styles.quarter}`} style={quarterStyle} onClick={() => openModal(1)}>
                                 <img src={urls[1]} className={styles.image} style={imageStyle} alt="Image 2" />
                             </div>

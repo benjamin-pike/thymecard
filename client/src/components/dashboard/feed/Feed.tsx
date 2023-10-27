@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useIntersection } from '@mantine/hooks';
 
@@ -20,7 +20,7 @@ const fetchData = async (page: number) => {
     return mockData.slice((page - 1) * entriesPerPage, page * entriesPerPage);
 };
 
-export default () => {
+const Feed: FC = () => {
     const { data, fetchNextPage } = useInfiniteQuery(['feed'], async ({ pageParam = 1 }) => await fetchData(pageParam), {
         getNextPageParam: (_, pages) => {
             return pages.length + 1;
@@ -40,7 +40,7 @@ export default () => {
         if (entry?.isIntersecting) {
             fetchNextPage();
         }
-    }, [entry]);
+    }, [entry, fetchNextPage]);
 
     return (
         <>
@@ -63,3 +63,5 @@ export default () => {
         </>
     );
 };
+
+export default Feed;

@@ -15,7 +15,7 @@ import { formatClasses, queue } from '@/lib/common.utils';
 import { round } from '@/lib/number.utils';
 import { capitalize } from '@/lib/string.utils';
 import { generateNutitionalInfo } from '@/test/mock-data/recipes';
-import { INutrients, IServing, StockTab } from '@/types/recipe.types';
+import { INutrients, IServing, StockTab } from 'types/recipe.types';
 
 import styles from './nutrition.module.scss';
 
@@ -226,7 +226,7 @@ const Entry: FC<IEntryProps> = ({
             quantity: newQuantity,
             weight: servingWeight * (newQuantity / servingState.quantity)
         });
-    }, [servingState]);
+    }, [handleQuantityChange, servingState, servingWeight]);
 
     const decrementQuantity = useCallback(() => {
         const newQuantity = servingState.quantity - 1;
@@ -236,33 +236,39 @@ const Entry: FC<IEntryProps> = ({
             quantity: newQuantity,
             weight: servingWeight * (newQuantity / servingState.quantity)
         });
-    }, [servingState]);
+    }, [handleQuantityChange, servingState, servingWeight]);
 
-    const handleQuantityInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const newQuantity = parseInt(e.target.value);
-        if (isNaN(newQuantity)) return;
+    const handleQuantityInput = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newQuantity = parseInt(e.target.value);
+            if (isNaN(newQuantity)) return;
 
-        handleQuantityChange({
-            ...servingState,
-            quantity: newQuantity,
-            weight: servingWeight * (newQuantity / servingState.quantity)
-        });
-    }, []);
+            handleQuantityChange({
+                ...servingState,
+                quantity: newQuantity,
+                weight: servingWeight * (newQuantity / servingState.quantity)
+            });
+        },
+        [handleQuantityChange, servingState, servingWeight]
+    );
 
-    const handleWeightInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const newWeight = parseFloat(e.target.value);
-        if (isNaN(newWeight)) return;
+    const handleWeightInput = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newWeight = parseFloat(e.target.value);
+            if (isNaN(newWeight)) return;
 
-        handleQuantityChange({
-            ...servingState,
-            weight: newWeight,
-            quantity: servingState.quantity * (newWeight / servingWeight)
-        });
-    }, []);
+            handleQuantityChange({
+                ...servingState,
+                weight: newWeight,
+                quantity: servingState.quantity * (newWeight / servingWeight)
+            });
+        },
+        [handleQuantityChange, servingState, servingWeight]
+    );
 
     const handleResetScale = useCallback(() => {
         handleQuantityChange(defaultServing);
-    }, []);
+    }, [defaultServing, handleQuantityChange]);
 
     const handleAltQuantityClick = useCallback(
         (closeDropdown: () => void) => (index: number) => () => {
@@ -273,7 +279,7 @@ const Entry: FC<IEntryProps> = ({
             });
             closeDropdown();
         },
-        []
+        [altServings, handleQuantityChange]
     );
 
     const handleToggleDetails = useCallback(() => {
@@ -284,7 +290,7 @@ const Entry: FC<IEntryProps> = ({
         }
 
         queue(toggleDetails);
-    }, [displayDetails]);
+    }, [displayDetails, toggleDetails]);
 
     return (
         <article className={styles.entry}>

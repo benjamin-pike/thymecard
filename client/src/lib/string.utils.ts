@@ -1,4 +1,4 @@
-export const capitalize = (str: string, allWords: boolean = true) => {
+export const capitalize = (str: string, allWords = true) => {
     if (allWords) {
         return str.replace(/\w\S*/g, (text: string) => {
             return text.charAt(0).toUpperCase() + text.substr(1).toLowerCase();

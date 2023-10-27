@@ -10,4 +10,4 @@ export const srngFloat = (seeds: string[]): number => {
 
 export const srngInt = (lower: number, upper: number, seeds: string[]): number => {
     return Math.floor(srngFloat(seeds) * (upper - lower + 1)) + lower;
-}
+};

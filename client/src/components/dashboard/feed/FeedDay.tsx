@@ -9,13 +9,14 @@ interface IFeedDayProps {
 
 const FeedDay: FC<IFeedDayProps> = memo(({ children, date }) => {
     const isYesterday = useMemo(() => DateTime.fromJSDate(date).hasSame(DateTime.local(), 'day'), [date]);
-    const formattedDate = useMemo(() => isYesterday ? 'Yesterday' : DateTime.fromJSDate(date).toFormat('cccc dd LLLL'), [isYesterday, date]);
+    const formattedDate = useMemo(
+        () => (isYesterday ? 'Yesterday' : DateTime.fromJSDate(date).toFormat('cccc dd LLLL')),
+        [isYesterday, date]
+    );
     return (
         <section className={styles.day}>
             <h1 className={styles.date}>{formattedDate}</h1>
-            <section className={styles.events}>
-                {children}
-            </section>
+            <section className={styles.events}>{children}</section>
         </section>
     );
 });

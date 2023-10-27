@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { isStockData, IStockCategory, IStockItem, StockTab } from '@/types/recipe.types';
+import { isStockData, IStockCategory, IStockItem, StockTab } from 'types/recipe.types';
 import { getLocalStorageItem, setLocalStorageItem } from '@/lib/localStorage.utils';
 
 interface IUpsertPayload {
@@ -92,7 +92,7 @@ const stockSlice = createSlice({
                         c.items.splice(index, 1);
                     }
                 });
-            };
+            }
 
             setLocalStorageItem('stock-data', state, isStockData);
 

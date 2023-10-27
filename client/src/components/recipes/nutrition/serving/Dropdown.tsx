@@ -1,8 +1,8 @@
 import { FC } from 'react';
 
-import { useClickOutside } from '@/hooks/dom/useClickOutside';
+import { useClickOutside } from '@/hooks/common/useClickOutside';
 import { round } from '@/lib/number.utils';
-import { IServing } from '@/types/recipe.types';
+import { IServing } from 'types/recipe.types';
 
 import styles from './dropdown.module.scss';
 

@@ -3,18 +3,22 @@ import { IDependencies } from '../../lib/types/server.types';
 import { AccessScope, IRoutePermissions, Permission } from '../../lib/auth/permissions';
 import { errorHandler } from '../../lib/error/error.utils';
 import HTTP_STATUS_CODES from 'http-status-enum';
+import multer from 'multer';
+import { uploadImage } from '../../lib/media/media.utils';
 
 export const recipeRouter = (dependencies: IDependencies) => {
     const { recipeController } = dependencies;
 
     const router = express.Router();
+    const upload = multer();
 
     router
         .post(
             '/',
+            upload.single('image'),
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const recipe = await recipeController.createRecipe(context, req.body);
+                const recipe = await recipeController.createRecipe(context, req.body.data, req.file);
                 res.status(HTTP_STATUS_CODES.CREATED).json({ recipe });
             })
         )
@@ -30,8 +34,8 @@ export const recipeRouter = (dependencies: IDependencies) => {
             '/parse',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const parsedRecipe = await recipeController.parseRecipe(context, req.body);
-                res.status(HTTP_STATUS_CODES.CREATED).json({ parsedRecipe });
+                const { recipe, image } = await recipeController.parseRecipe(context, req.body);
+                res.status(HTTP_STATUS_CODES.CREATED).json({ recipe, image });
             })
         )
         .get(
@@ -44,9 +48,12 @@ export const recipeRouter = (dependencies: IDependencies) => {
         )
         .put(
             '/:recipeId',
+            uploadImage(),
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const recipe = await recipeController.updateRecipe(context, req.params.recipeId, req.body);
+                const { recipeId } = req.params;
+                const { data } = req.body;
+                const recipe = await recipeController.updateRecipe(context, recipeId, data, req.file);
                 res.status(HTTP_STATUS_CODES.OK).json({ recipe });
             })
         )

@@ -7,7 +7,7 @@ import SliderToggle from '@/components/common/slider-toggle/SliderToggle';
 import { getOrdinalSuffix } from '@/lib/date.utils';
 import { generateMockBookmarksData } from '@/test/mock-data/dashboard';
 import styles from './bookmarks.module.scss';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import useLocalStorage from '@/hooks/common/useLocalStorage';
 
 type Category = 'recipes' | 'activities';
 
@@ -50,7 +50,7 @@ const Bookmark: FC<IBookmarkProps> = ({ category, name, calories, lastCompleted 
     const lastCompletedDate = DateTime.fromISO(lastCompleted);
     const formattedDate =
         lastCompletedDate.year === DateTime.now().year
-            ? lastCompletedDate.toFormat('MMMM d') + getOrdinalSuffix(lastCompletedDate)
+            ? lastCompletedDate.toFormat('MMM d') + getOrdinalSuffix(lastCompletedDate)
             : lastCompletedDate.toLocaleString({
                   day: '2-digit',
                   month: '2-digit',

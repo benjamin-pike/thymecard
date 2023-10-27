@@ -1,0 +1,47 @@
+.edit {
+    padding: 0.55rem 0.8rem;
+
+    min-width: 0;
+
+    font-weight: 300;
+    font-size: $fs-12;
+    color: $mono-600;
+    border: 1px dashed $mono-300;
+
+    border-radius: 0.5rem;
+
+    transition: background-color 150ms ease, border-color 150ms ease;
+
+    &::placeholder {
+        font-weight: 300;
+        color: $mono-500;
+    }
+
+    @include dark-mode {
+        color: $mono-light;
+        border: 1px dashed $mono-600;
+
+        &::placeholder {
+            color: $mono-600;
+        }
+
+        &:focus {
+            background-color: $mono-800;
+            border: 1px dashed $mono-500;
+        }
+    }
+}
+
+.display {
+    color: $mono-500;
+    font-size: $fs-14;
+    font-weight: 200;
+
+    @include dark-mode {
+        color: $mono-500;
+    }
+
+    &[data-has-author='true'] {
+        margin-top: -0.5rem;
+    }
+}

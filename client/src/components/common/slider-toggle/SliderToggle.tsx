@@ -1,5 +1,5 @@
-import { useEffect, useRef, CSSProperties, useState, RefObject } from 'react';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { useEffect, useRef, CSSProperties, useState } from 'react';
+import useLocalStorage from '@/hooks/common/useLocalStorage';
 import styles from './slider-toggle.module.scss';
 
 interface ISliderToggleProps<T extends string = string> {
@@ -9,8 +9,6 @@ interface ISliderToggleProps<T extends string = string> {
     defaultOption?: T;
     onOptionSelected: (option: T) => void;
 }
-
-type RefRecord<T> = Record<string, RefObject<T>>;
 
 const SliderToggle = <T extends string = string>({
     localStorageKey,
@@ -22,22 +20,20 @@ const SliderToggle = <T extends string = string>({
     const [isInitialRender, setIsInitialRender] = useState(true);
     const [selectedOption, setSelectedOption] = useLocalStorage(localStorageKey, defaultOption ?? options[0]);
     const sliderRef = useRef<HTMLDivElement>(null);
-    const buttonRefs: RefRecord<HTMLButtonElement> = options.reduce<RefRecord<HTMLButtonElement>>((acc, option) => {
-        acc[option] = useRef<HTMLButtonElement>(null);
-        return acc;
-    }, {});
+
+    const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
     useEffect(() => {
         const slider = sliderRef.current;
-        const selectedButton = buttonRefs[selectedOption].current;
+        const selectedButton = buttonRefs.current[selectedOption];
 
-        let buttonWidths = [];
-        for (const [buttonName, buttonElement] of Object.entries(buttonRefs)) {
+        const buttonWidths = [];
+        for (const [buttonName, buttonElement] of Object.entries(buttonRefs.current)) {
             if (buttonName === selectedOption) {
                 break;
             }
 
-            buttonWidths.push(buttonElement.current?.offsetWidth ?? 0);
+            buttonWidths.push(buttonElement?.offsetWidth ?? 0);
         }
         const baseOffset = buttonWidths.reduce((acc, width) => acc + width, 0);
 
@@ -45,7 +41,7 @@ const SliderToggle = <T extends string = string>({
             const sliderStyle: CSSProperties = {
                 width: `${selectedButton.offsetWidth}px`,
                 translate: `calc(${baseOffset}px + ${0.25 * buttonWidths.length}rem)`,
-                transition: isInitialRender ? 'none' : 'width 200ms ease, translate 200ms ease',
+                transition: isInitialRender ? 'none' : 'width 200ms ease, translate 200ms ease'
             };
 
             Object.assign(slider.style, sliderStyle);
@@ -56,14 +52,16 @@ const SliderToggle = <T extends string = string>({
         }
 
         onOptionSelected(selectedOption as T);
-    }, [selectedOption, isInitialRender]);
+    }, [selectedOption, isInitialRender, buttonRefs, onOptionSelected]);
 
     return (
         <div className={styles.selector}>
             <div ref={sliderRef} className={styles.slider} />
             {options.map((option) => (
                 <button
-                    ref={buttonRefs[option]}
+                    ref={(el) => {
+                        buttonRefs.current[option] = el;
+                    }}
                     className={styles.button}
                     onClick={() => setSelectedOption(option)}
                     data-is-selected={selectedOption === option}

@@ -56,7 +56,7 @@ const FeedEvent: FC<IFeedEventProps> = memo(({ type, time, location, rating, nam
                         <div className={styles.divider} />
                         <div className={styles.secondaryMetrics}>
                             {metrics.secondary.map(({ measurement, value }) => (
-                                <div className={formatClasses(styles, ['secondary', 'metric'])} data-metric={measurement}>
+                                <div key={measurement} className={formatClasses(styles, ['secondary', 'metric'])} data-metric={measurement}>
                                     <p className={styles.value}>
                                         {value.toFixed(1)}
                                         <span className={styles.unit}>{UNITS[measurement] ?? ''}</span>

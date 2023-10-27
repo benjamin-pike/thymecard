@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import styles from './item.module.scss';
 import { ICONS } from '@/assets/icons';
-import { IStockItem, StockTab } from '@/types/recipe.types';
+import { IStockItem, StockTab } from 'types/recipe.types';
 
 const MoveToFridgeIcon = ICONS.recipes.addToFridge;
 const AddToShoppingListIcon = ICONS.recipes.addToShoppingList;
@@ -61,7 +61,7 @@ const Item: FC<IItem> = ({
         switch (e.key) {
             case 'Enter':
                 e.preventDefault();
-                
+
                 if (index === totalItems - 1) {
                     addItem();
                 } else {
@@ -72,7 +72,7 @@ const Item: FC<IItem> = ({
             case 'Delete':
                 if (target.value === '') {
                     e.preventDefault();
-                    
+
                     if (inputType === 'name') {
                         focusAdjacentCell(index, 'up', inputType);
                         removeItem(item.id);

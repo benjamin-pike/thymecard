@@ -1,17 +1,38 @@
-import { BiFridge, BiLink } from 'react-icons/bi';
-import { BsChevronDown, BsQuestionLg } from 'react-icons/bs';
+import { BiFridge, BiLink, BiPieChartAlt2 } from 'react-icons/bi';
+import { BsArrowRightShort, BsCalendar3, BsChevronDown, BsChevronLeft, BsChevronRight, BsQuestionLg } from 'react-icons/bs';
 import { FaInfo } from 'react-icons/fa6';
 import { FiEdit2, FiPrinter } from 'react-icons/fi';
 import { GrFormSearch, GrUndo } from 'react-icons/gr';
 import { HiOutlineDocumentAdd, HiOutlineDocumentDuplicate } from 'react-icons/hi';
-import { IoIosClose, IoMdRefresh } from 'react-icons/io';
+import { IoIosClose, IoIosTimer, IoMdRefresh } from 'react-icons/io';
 import { IoCheckmark, IoCloseOutline } from 'react-icons/io5';
 import { LuFileDown, LuFileOutput, LuLogIn, LuMoreHorizontal } from 'react-icons/lu';
 import { MdFilterList, MdOutlineCalendarMonth } from 'react-icons/md';
-import { PiBarcode, PiBookmarkSimple, PiBookmarkSimpleFill, PiForkKnifeBold, PiListBold, PiMinus, PiPencilSimple, PiPlus, PiTrashSimpleBold } from 'react-icons/pi';
-import { RiHomeLine, RiKnifeLine, RiScales2Line, RiStarFill, RiStarHalfLine, RiStarLine, RiListUnordered, RiFullscreenLine, RiFullscreenExitLine } from 'react-icons/ri';
+import {
+    PiBarcode,
+    PiBookmarkSimple,
+    PiBookmarkSimpleFill,
+    PiCookingPotBold,
+    PiForkKnifeBold,
+    PiListBold,
+    PiMinus,
+    PiPencilSimple,
+    PiPlus,
+    PiTrashSimpleBold,
+    PiUploadSimple
+} from 'react-icons/pi';
+import {
+    RiHomeLine,
+    RiKnifeLine,
+    RiScales2Line,
+    RiStarFill,
+    RiStarHalfLine,
+    RiStarLine,
+    RiListUnordered,
+    RiFullscreenLine,
+    RiFullscreenExitLine
+} from 'react-icons/ri';
 import { TbChefHat, TbFileUpload, TbListCheck, TbPlaylistAdd } from 'react-icons/tb';
-
 
 export const ICONS = {
     common: {
@@ -36,7 +57,13 @@ export const ICONS = {
         delete: PiTrashSimpleBold,
         planner: MdOutlineCalendarMonth,
         question: BsQuestionLg,
-        info: FaInfo
+        info: FaInfo,
+        pieChart: BiPieChartAlt2,
+        arrowRight: BsArrowRightShort,
+        calendar: BsCalendar3,
+        chevronLeft: BsChevronLeft,
+        chevronRight: BsChevronRight,
+        upload: PiUploadSimple
     },
     dashboard: {},
     planner: {},
@@ -50,13 +77,15 @@ export const ICONS = {
         filter: MdFilterList,
         servings: PiForkKnifeBold,
         prepTime: RiKnifeLine,
+        cookTime: PiCookingPotBold,
+        totalTime: IoIosTimer,
         bookmark: PiBookmarkSimple,
         bookmarkFill: PiBookmarkSimpleFill,
         barcode: PiBarcode,
         download: LuFileDown,
         export: LuFileOutput,
         fridge: BiFridge,
-        shoppingList: TbListCheck,
+        tickList: TbListCheck,
         addToFridge: LuLogIn,
         addToShoppingList: TbPlaylistAdd,
         scales: RiScales2Line,

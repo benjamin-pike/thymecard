@@ -11,14 +11,7 @@ interface ISimpleNutrientsProps {
     sodium: number;
 }
 
-const SimpleNutrients: FC<ISimpleNutrientsProps> = ({
-    isVisible,
-    energy,
-    carbohydrates,
-    protein,
-    fat,
-    sodium
-}) => {
+const SimpleNutrients: FC<ISimpleNutrientsProps> = ({ isVisible, energy, carbohydrates, protein, fat, sodium }) => {
     return (
         <div className={styles.wrapper} data-active={isVisible}>
             <div className={styles.container}>

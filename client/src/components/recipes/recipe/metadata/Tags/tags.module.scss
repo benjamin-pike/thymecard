@@ -1,0 +1,201 @@
+$types: (
+    cuisine: $aqua,
+    diet: $green,
+    category: $orange
+);
+
+.tags {
+    display: flex;
+    gap: 0.45rem;
+
+    &[data-editing='false'] {
+        flex-wrap: wrap;
+    }
+
+    &[data-editing='true'] {
+        flex-direction: column;
+    }
+
+    .tagsDisplay {
+        flex-shrink: 1;
+        width: 100%;
+
+        text-wrap: balance;
+
+        span {
+            margin-right: 0.35rem;
+
+            width: fit-content;
+
+            white-space: nowrap !important;
+
+            line-height: calc($fs-11 + 1.4rem);
+        }
+    }
+
+    .tagDisplay {
+        padding: 0.35rem 0.75rem;
+
+        font-size: $fs-11;
+        font-weight: 500;
+        text-align: center;
+        color: $mono-light;
+        background-color: $mono-700;
+        box-shadow: 0 0 0 1px $mono-700;
+
+        border-radius: 0.35rem;
+
+        @include dark-mode {
+            color: $mono-light;
+            background-color: transparent;
+        }
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        max-width: 15rem;
+
+        .tagEdit {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+
+            width: fit-content;
+
+            padding-right: 0.3rem;
+
+            border: 1px dashed $mono-300;
+
+            border-radius: 0.5rem;
+
+            p {
+                padding: 0.35rem 0 0.35rem 0.75rem;
+
+                width: fit-content;
+
+                font-size: $fs-11;
+                font-weight: 400;
+
+                cursor: text;
+
+                &:focus {
+                    outline: none;
+                }
+
+                &[placeholder]:empty:before {
+                    content: attr(placeholder);
+
+                    color: currentColor;
+
+                    opacity: 0.6;
+                }
+            }
+
+            button {
+                display: grid;
+                place-content: center;
+
+                opacity: 0.5;
+
+                transition: opacity 150ms ease;
+
+                &:hover {
+                    opacity: 1;
+                }
+
+                svg {
+                    height: 100%;
+                    width: 100%;
+
+                    scale: 0.9;
+                }
+            }
+            @each $key, $value in $types {
+                &[data-type='#{$key}'] {
+                    $color: contrastize($value, 'light');
+
+                    text-shadow: 0 0 0.5rem $mono-light;
+                    color: $color;
+                    border: 1px dashed transparentize($color, 0.5);
+
+                    @include dark-mode {
+                        $color: contrastize($value, 'dark');
+
+                        text-shadow: none;
+                        color: $color;
+                        border: 1px dashed transparentize($color, 0.5);
+                    }
+                }
+            }
+        }
+    }
+
+    .addTagButtons {
+        display: flex;
+        gap: 0.5rem;
+
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.25rem;
+
+        width: 100%;
+
+        border-bottom: 1px dashed $mono-300;
+
+        @include dark-mode {
+            border-bottom: 1px dashed $mono-600;
+        }
+
+        &[data-empty='true'] {
+            padding-bottom: 0;
+            margin-bottom: 0;
+            border-bottom: none;
+
+            @include dark-mode {
+                border-bottom: none;
+            }
+        }
+
+        button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 0.4rem 0.6rem;
+
+            font-size: $fs-11;
+            font-weight: 500;
+
+            border-radius: 0.5rem;
+
+            transition:
+                color 150ms ease,
+                background-color 150ms ease,
+                border 150ms ease;
+
+            span {
+                font-weight: 300;
+                white-space: pre;
+            }
+
+            @each $key, $value in $types {
+                &.#{$key} {
+                    $color: contrastize($value, 'light');
+
+                    color: $color;
+                    background-color: transparentize($color, 0.95);
+                    border: 1px solid transparentize($color, 0.75);
+
+                    &:hover {
+                        text-shadow: none;
+                        color: $mono-light;
+                        background-color: $color;
+                        border-color: $color;
+                    }
+                }
+            }
+        }
+    }
+}

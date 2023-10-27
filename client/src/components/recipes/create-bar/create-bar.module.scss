@@ -53,7 +53,7 @@
         background-color: $mono-light;
         box-shadow: 0 0 0 1px $mono-200;
         
-        border-radius: 0.25rem;
+        border-radius: 0.5rem;
 
         transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease, font-size 150ms ease, gap 150ms ease, padding 150ms ease;
 
@@ -69,9 +69,8 @@
             box-shadow: 0 0 0 1px $mono-700;
 
             @include dark-mode {
-                color: $mono-700;
-                background-color: $mono-light;
-                box-shadow: 0 0 0 1px $mono-light;
+                background-color: $mono-800;
+                box-shadow: 0 0 0 1px $mono-500;
             }
         }
 

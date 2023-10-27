@@ -1,0 +1,99 @@
+.edit {
+    display: flex;
+    gap: 0.5rem;
+
+    .container {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        input {
+            flex-grow: 1;
+            
+            padding: 0.35rem 0.5rem;
+            
+            min-width: 0;
+
+            border: 1px dashed $mono-300;
+
+            border-radius: 0.5rem;
+
+            color: $mono-700;
+            font-weight: 400;
+            font-size: $fs-12;
+            text-align: center;
+
+            @include dark-mode {
+                color: $mono-light;
+                border: 1px dashed $mono-600;
+            }
+
+            &::placeholder {
+                font-weight: 300;
+                color: $mono-500;
+
+                @include dark-mode {
+                    color: $mono-600;
+                }
+            }
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            &[type='number'] {
+                appearance: textfield;
+            }
+        }
+
+        button {
+            display: grid;
+            place-content: center;
+
+            height: 100%;
+            aspect-ratio: 1;
+
+            color: $mono-600;
+            border: 1px solid $mono-200;
+            border-radius: 0.5rem;
+
+            transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease, border 150ms ease;
+
+            @include dark-mode {
+                color: $mono-500;
+                border: 1px solid $mono-600;
+            }
+
+            svg {
+                scale: 0.9;
+
+                path {
+                    stroke-width: 0;
+                }
+            }
+
+            &:hover {
+                box-shadow: 0 0 0 0.15rem $mono-100;
+
+                @include dark-mode {
+                    color: $mono-light;
+                    background-color: $mono-800;
+                    border: 1px solid $mono-500;
+                    box-shadow: none;
+                }
+            }
+        }
+    }
+}
+
+.value {
+    color: $mono-700;
+    font-weight: 400;
+    font-size: $fs-13;
+
+    @include dark-mode {
+        color: $mono-light;
+    }
+}

@@ -1,9 +1,9 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export type TypeGuard<T> = (v: unknown) => v is T;
 
 export type DeepPartial<T> = {
-    [P in keyof T]?: DeepPartial<T[P] | undefined >;
+    [P in keyof T]?: DeepPartial<T[P] | undefined>;
 };
 
 export const isDefined = <T>(val: T | undefined): val is T => {
@@ -61,32 +61,42 @@ export const isDate = (val: unknown): val is Date => {
 
 export const isOptional = <T>(val: any, typeGuard: TypeGuard<T>): val is T | undefined => {
     return typeof val === 'undefined' || typeGuard(val);
-}
+};
 
 export function hasKey<T extends object, K extends string>(obj: T, key: K): obj is T & Record<K, unknown> {
     return key in obj;
 }
 
-export const validateWithNull = <T>(val: unknown, typeGuard: TypeGuard<T>): T | null => {
-    if (!typeGuard(val)) {
-        return null;
-    }
-    return val;
-};
+export function validate<T, R = T>(val: unknown, typeGuard: TypeGuard<T>, err?: Error, callback?: (value: T) => R): R;
+export function validate<T, F, R = T | F>(val: unknown, typeGuard: TypeGuard<T>, fallback?: F, callback?: (value: T) => R): R;
 
-export const validateWithError = <T>(val: unknown, typeGuard: TypeGuard<T>, err: Error): T => {
-    if (!typeGuard(val)) {
-        throw err;
-    }
-    return val;
-};
+export function validate<T, F, R>(
+    val: unknown,
+    typeGuard: TypeGuard<T>,
+    fallbackOrError?: F | Error,
+    callback?: (value: T | F) => R
+): T | F | R | undefined {
+    const error = fallbackOrError instanceof Error ? fallbackOrError : undefined;
+    const fallback = fallbackOrError instanceof Error ? undefined : fallbackOrError;
 
-export const validateWithFallback = <T>(val: unknown, typeGuard: TypeGuard<T>, fallback: T): T => {
     if (!typeGuard(val)) {
-        return fallback;
+        if (fallback !== undefined) {
+            return fallback;
+        }
+
+        if (error) {
+            throw error;
+        }
+
+        return;
     }
+
+    if (callback) {
+        return callback(val);
+    }
+
     return val;
-};
+}
 
 export const isValidMongoId = (val: any): val is string => {
     try {
@@ -103,8 +113,8 @@ export const isDateString = (val: unknown): val is string => {
     }
 
     const date = new Date(val);
-    return !isNaN(date.getTime())
-}
+    return !isNaN(date.getTime());
+};
 
 export const isYearMonthDayDateString = (val: unknown): val is string => {
     if (!isString(val)) {
@@ -114,7 +124,7 @@ export const isYearMonthDayDateString = (val: unknown): val is string => {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     return !dateRegex.test(val);
-}
+};
 
 export const isFutureYearMonthDayDateString = (val: unknown): val is string => {
     if (!isYearMonthDayDateString(val)) {
@@ -124,24 +134,24 @@ export const isFutureYearMonthDayDateString = (val: unknown): val is string => {
     const date = new Date(val);
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
+
     return date.getTime() >= today.getTime();
-}
+};
 
 export const parseIntOrUndefined = (val: string | undefined): number | undefined => {
-    return validateWithFallback(parseInt(val ?? ''), isNumber, undefined)
+    return validate(parseInt(val ?? ''), isNumber, undefined);
 };
 
 export const parseIntOrNull = (val: string | undefined): number | null => {
-    return validateWithFallback(parseFloat(val ?? ''), isNumber, null)
+    return validate(parseFloat(val ?? ''), isNumber, null);
 };
 
 export const parseFloatOrUndefined = (val: string | undefined): number | undefined => {
-    return validateWithFallback(parseFloat(val ?? ''), isNumber, undefined)
+    return validate(parseFloat(val ?? ''), isNumber, undefined);
 };
 
 export const parseFloatOrNull = (val: string | undefined): number | null => {
-    return validateWithFallback(parseFloat(val ?? ''), isNumber, null)
+    return validate(parseFloat(val ?? ''), isNumber, null);
 };
 
 export const parseBooleanOrFalse = (val: any): boolean => {
@@ -150,4 +160,4 @@ export const parseBooleanOrFalse = (val: any): boolean => {
     }
 
     return false;
-}
+};

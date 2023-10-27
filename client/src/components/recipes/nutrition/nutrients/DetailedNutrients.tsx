@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo } from 'react';
 import { useToggle } from '@mantine/hooks';
 import { round } from '@/lib/number.utils';
-import { INutrients } from '@/types/recipe.types';
+import { INutrients } from 'types/recipe.types';
 import styles from './detailed-nutrients.module.scss';
 
 interface IDetailedNutrientsProps {
@@ -14,7 +14,7 @@ const DetailedNutrients: FC<IDetailedNutrientsProps> = ({ isVisible, values }) =
 
     const handleToggleChildren = useCallback(() => {
         toggleChildren();
-    }, []);
+    }, [toggleChildren]);
 
     const data = useMemo(() => format(values), [values]);
     const mandatoryFields = ['Carbohydrates', 'Protein', 'Fat'];
@@ -41,11 +41,10 @@ const DetailedNutrients: FC<IDetailedNutrientsProps> = ({ isVisible, values }) =
             <div className={styles.container}>
                 <ul>
                     {data.map(({ metric, elements }) => {
-                        console.log(metric, elements, visibleBlocks[metric]);
                         if (!visibleBlocks[metric]) return null;
 
                         return (
-                            <li data-metric={metric}>
+                            <li key={metric} data-metric={metric}>
                                 {elements.map(({ title, value, unit, percentage, isSub, children }) => {
                                     const scaledValue = round(value * orders[unit], 1);
 
@@ -81,7 +80,7 @@ const DetailedNutrients: FC<IDetailedNutrientsProps> = ({ isVisible, values }) =
                                                         if (!scaledChildValue) return null;
 
                                                         return (
-                                                            <p className={styles.sub}>
+                                                            <p key={title} className={styles.sub}>
                                                                 <span className={styles.nutrient}>{title}</span>
                                                                 <span className={styles.value}>{round(scaledChildValue, 1)}</span>
                                                                 <span className={styles.unit}>{unit}</span>

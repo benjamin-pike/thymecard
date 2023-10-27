@@ -20,9 +20,6 @@
 
     overflow: scroll;
 
-    transition: translate 400ms ease;
-    animation: slide-in 400ms ease;
-
     @include dark-mode {
         background-color: $mono-900;
         box-shadow: 0 -1px $mono-700;
@@ -73,6 +70,7 @@
         flex-direction: column;
         gap: 1.25rem;
 
+        width: 100%;
         max-width: 50rem;
 
         .divider {
@@ -92,46 +90,23 @@
 
         .about {
             display: flex;
-            align-items: center;
-            gap: 1rem;
+            align-items: flex-start;
+            gap: 1.25rem;
 
-            margin-top: 0.5rem;
+            margin: 0.5rem 0;
 
-            .images {
-                position: relative;
+            .right {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
 
                 flex-grow: 1;
+                flex-shrink: 1;
 
-                padding: 0.5rem;
+                height: 100%;
+                min-height: 0;
 
-                box-shadow: 0 0 0 1px $mono-200;
-
-                border-radius: 1.5rem;
-
-                @include dark-mode {
-                    box-shadow: 0 0 0 1px $mono-700;
-                }
-
-                &::after {
-                    content: '';
-
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-
-                    height: 100%;
-                    width: 100%;
-
-                    box-shadow: 0 0 0 0.5rem $mono-light inset;
-                    
-                    border-radius: 1.5rem;
-
-                    pointer-events: none;
-
-                    @include dark-mode {
-                        box-shadow: 0 0 0 0.5rem $mono-900 inset;
-                    }
-                }
+                overflow: hidden;
             }
         }
     }
@@ -140,7 +115,7 @@
         display: flex;
         gap: 1rem;
 
-        height: 100svh;
+        max-height: 100svh;
         width: 100%;
         max-width: 50rem;
 
@@ -166,6 +141,47 @@
             flex-direction: column;
 
             margin-top: 2.5rem;
+        }
+
+        .right {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1;
+
+            .scaleWarning {
+                padding: 1rem;
+
+                width: fit-content;
+
+                white-space: pre-wrap;
+
+                font-size: $fs-13;
+                font-weight: 300;
+                line-height: $fs-20;
+                color: $blue;
+                background-color: transparentize($blue, 0.9);
+
+                border-radius: 0.5rem;
+
+                @include dark-mode {
+                    color: $mono-light;
+                    box-shadow: 0 0 0 1px $blue inset;
+                }
+
+                strong {
+                    font-weight: 500;
+                }
+
+                span {
+                    font-weight: 500;
+                    text-decoration: underline;
+                }
+
+                &[data-ingredients-visible='false'] {
+                    margin-top: 1rem;
+                    width: 100%;
+                }                
+            }
         }
 
         &[data-editing='true'] {
@@ -202,15 +218,6 @@
                 padding: 0 2rem;
             }
         }
-    }
-}
-
-@keyframes slide-in {
-    0% {
-        translate: 0 100%;
-    }
-    100% {
-        translate: 0 0;
     }
 }
 

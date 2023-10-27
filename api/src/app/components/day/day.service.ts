@@ -1,11 +1,11 @@
-import { buildSetQueryFromUpdate } from '../../lib/database/mongo.utils';
+import { buildSetQueryFromUpdate } from '../../lib/data/mongo.utils';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { NotFoundError } from '../../lib/error/sironaError';
 import { DayCache } from '../../lib/types/cache.types';
 import { dayRepository } from './day.model';
 import { IDay, IDayCreate, IDayEnriched, IDayUpdate, IMealCreate, IMealUpdate } from './day.types';
 import { IPagedResult } from '../../lib/types/common.types';
-import { SortQuery } from '../../lib/database/mongo.repository';
+import { SortQuery } from '../../lib/data/mongo.repository';
 import mongoose, { PipelineStage } from 'mongoose';
 
 interface IDayServiceDependencies {
@@ -216,7 +216,6 @@ const enrichmentPipeline = [
         // Add the enriched fields to each meal document (null if not found)
         $addFields: {
             'meals.name': { $ifNull: ['$recipe.name', null] },
-            'meals.primaryImage': { $arrayElemAt: ['$recipe.images', 0] },
             'meals.duration': { $ifNull: ['$recipe.totalTime', null] },
             'meals.calories': { $ifNull: ['$recipe.nutrition.calories', null] },
             'meals.ingredientsCount': {

@@ -1,126 +1,27 @@
-import { isArrayOf, isOptional, isString, isValidMongoId } from '../../lib/types/typeguards.utils';
+import { isArrayOf, isOptional, isString } from '../../lib/types/typeguards.utils';
 import { z } from 'zod';
 
-export interface IRecipe {
-    _id: string;
-    userId: string;
-    source?: string;
-    name: string;
-    description?: string;
-    images?: string[];
-    authors?: string[];
-    category?: string[];
-    cuisine?: string[];
-    keywords?: string[];
-    prepTime?: number;
-    cookTime?: number;
-    totalTime?: number;
-    yield: IYield;
-    diet?: string[];
-    nutrition?: INutritionalInformation;
-    ingredients: Ingredients;
-    method: Method;
-    comments?: IComment[];
-    rating?: number;
-    isBookmarked?: boolean;
-    isPublic?: boolean;
-}
-
-export type IRecipeSummary = Pick<
-    IRecipe,
-    | '_id'
-    | 'name'
-    | 'category'
-    | 'cuisine'
-    | 'keywords'
-    | 'prepTime'
-    | 'cookTime'
-    | 'totalTime'
-    | 'yield'
-    | 'diet'
-    | 'rating'
-    | 'isBookmarked'
-    | 'isPublic'
-> & {
-    primaryImage: string | null;
-    calories?: number;
-    ingredientsCount: number;
-    commentsCount: number;
-    createdAt: Date;
-    updatedAt: Date;
-};
-
-export type IRecipeCreate = Omit<IRecipe, '_id'>;
-export type IRecipeUpdate = Partial<IRecipeCreate>;
-
-export type Ingredients = IIngredient[];
-export type Method = IMethodSection[];
-
-export interface IIngredient {
-    quantity: number[] | null;
-    unit: string | null;
-    item: string;
-    prepStyles?: string[];
-    notes?: string[];
-    source: string;
-}
-
-interface IMethodSection {
-    steps: IMethodStep[];
-    sectionTitle?: string;
-}
-
-interface IMethodStep {
-    instructions: string;
-    stepTitle?: string;
-    image?: string[];
-}
-
-export interface IYield {
-    quantity: Array<number>;
-    units: string | null;
-}
-
-export interface INutritionalInformation {
-    calories?: number;
-    sugar?: number; // g
-    carbohydrate?: number; // g
-    cholesterol?: number; // mg
-    fat?: number; // g
-    saturatedFat?: number; // g
-    transFat?: number; // g
-    unsaturatedFat?: number; // g
-    protein?: number; // g
-    fiber?: number; // g
-    sodium?: number; // mg
-    servingSize?: IYield;
-}
-
-export interface IComment {
-    userId: string;
-    comment: string;
-    createdAt: Date;
-    replyTo?: string;
-}
-
-type ICommentCreateResource = Pick<IComment, 'comment' | 'replyTo'>;
-
-export interface IParseRecipeRequestBody {
-    url: string;
-}
-
-export const isParseRecipeRequestBody = (obj: any): obj is IParseRecipeRequestBody => {
-    return obj && isString(obj.url);
-};
+const transformDateString = z
+    .string()
+    .refine(
+        (value) => {
+            return !isNaN(Date.parse(value));
+        },
+        {
+            message: 'Invalid ISO date string'
+        }
+    )
+    .transform((data) => new Date(data));
 
 export const createRecipeSchema = z.object({
-    name: z.string(),
     userId: z.string(),
+    title: z.string(),
     description: z.string().optional(),
-    images: z.array(z.string()).optional(),
     authors: z.array(z.string()).optional(),
+    source: z.string().optional(),
     category: z.array(z.string()).optional(),
     cuisine: z.array(z.string()).optional(),
+    diet: z.array(z.string()).optional(),
     keywords: z.array(z.string()).optional(),
     prepTime: z.number().optional(),
     cookTime: z.number().optional(),
@@ -129,7 +30,6 @@ export const createRecipeSchema = z.object({
         quantity: z.array(z.number()),
         units: z.string().nullable()
     }),
-    diet: z.array(z.string()).optional(),
     nutrition: z
         .object({
             calories: z.number().optional(),
@@ -153,36 +53,44 @@ export const createRecipeSchema = z.object({
         .optional(),
     ingredients: z.array(
         z.object({
-            quantity: z.array(z.number()).nullable(),
-            unit: z.string().nullable(),
             item: z.string(),
-            prepStyles: z.array(z.string()).optional(),
-            notes: z.array(z.string()).optional(),
-            source: z.string()
+            quantity: z.array(z.number()).optional(),
+            unit: z.string().optional(),
+            prepStyles: z.string().optional(),
+            notes: z.string().optional(),
+            origin: z.string().optional(),
+            match: z
+                .object({
+                    itemId: z.number(),
+                    name: z.string(),
+                })
+                .optional(),
         })
     ),
     method: z.array(
         z.object({
+            id: z.string(),
+            sectionTitle: z.string().optional(),
             steps: z.array(
                 z.object({
+                    id: z.string(),
                     instructions: z.string(),
-                    stepTitle: z.string().optional(),
-                    image: z.array(z.string()).optional()
+                    stepTitle: z.string().optional()
                 })
-            ),
-            sectionTitle: z.string().optional()
+            )
         })
     ),
+    rating: z.number().min(0).max(5).optional(),
+    lastCooked: transformDateString.optional(),
     comments: z
         .array(
             z.object({
                 userId: z.string(),
                 comment: z.string(),
-                createdAt: z.date()
+                createdAt: transformDateString
             })
         )
         .optional(),
-    rating: z.number().min(0).max(5).optional(),
     isBookmarked: z.boolean().optional(),
     isPublic: z.boolean().optional()
 });
@@ -208,8 +116,4 @@ export const isSchemaOrgHowToStep = (obj: any): obj is ISchemaOrgHowToStep => {
 
 export const isSchemaOrgHowToSection = (obj: any): obj is ISchemaOrgHowToSection => {
     return obj && obj['@type'] === 'HowToSection' && isArrayOf(obj.itemListElement, isSchemaOrgHowToStep) && isOptional(obj.name, isString);
-};
-
-export const isCommentCreateResource = (obj: any): obj is ICommentCreateResource => {
-    return obj && isString(obj.comment) && isOptional(obj.replyTo, isValidMongoId);
 };

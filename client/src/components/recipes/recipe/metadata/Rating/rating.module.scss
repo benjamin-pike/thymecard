@@ -1,0 +1,70 @@
+.edit {
+    input {
+        padding: 0.35rem 0.5rem;
+
+        margin-right: 0.5rem;
+
+        font-size: $fs-12;
+        border: 1px dashed $mono-300;
+
+        border-radius: 0.5rem;
+
+        text-align: center;
+
+        @include dark-mode {
+            border: 1px dashed $mono-600;
+        }
+
+        &::placeholder {
+            font-weight: 300;
+            color: $mono-500;
+
+            @include dark-mode {
+                color: $mono-600;
+            }
+        }
+
+        &:focus {
+            @include dark-mode {
+                background-color: $mono-800;
+                border: 1px dashed $mono-500;
+            }
+        }
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        &[type='number'] {
+            appearance: textfield;
+        }
+    }
+}
+
+.value,
+.edit {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    color: $mono-700;
+    font-weight: 400;
+
+    @include dark-mode {
+        color: $mono-light;
+    }
+
+    &[data-defined='false'] {
+        color: $mono-400;
+
+        @include dark-mode {
+            color: $mono-600;
+        }
+    }
+
+    .star {
+        scale: 1.1;
+    }
+}

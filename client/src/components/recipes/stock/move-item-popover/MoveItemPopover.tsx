@@ -1,11 +1,11 @@
 import { FC, useCallback, useState } from 'react';
-import { useClickOutside } from '@/hooks/dom/useClickOutside';
+import { useClickOutside } from '@/hooks/common/useClickOutside';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '@/store';
 import { moveItem } from '@/store/slices/stock';
 
-import { IStockItem, StockTab } from '@/types/recipe.types';
+import { IStockItem, StockTab } from 'types/recipe.types';
 
 import styles from './move-item-popover.module.scss';
 
@@ -28,13 +28,13 @@ const MoveItemPopover: FC<IMoveItemPopoverProps> = ({ item, isOpen, originTab, t
     const stockData = useSelector((state: RootState) => state.stock);
     const candidateCategories = useSelector((state: RootState) => state.stock[targetTab]);
     const itemCategory = originTab ? stockData[originTab].find((c) => c.items.some((i) => item && i.id === item.id)) : undefined;
-    
+
     const shouldDefaultToNewCategory = !candidateCategories.some(({ name }) => name === itemCategory?.name);
-    
+
     const [newCategoryName, setNewCategoryName] = useState(shouldDefaultToNewCategory ? itemCategory?.name : '');
-    
+
     const favoritePopoverRef = useClickOutside<HTMLDivElement>(handleClose, [toggleButtonElement]);
-    
+
     const [selectedTarget, setSelectedTarget] = useState(
         shouldDefaultToNewCategory ? 'new-item' : candidateCategories.find((c) => c.name === itemCategory?.name)?.id ?? 'new-item'
     );
@@ -62,7 +62,7 @@ const MoveItemPopover: FC<IMoveItemPopoverProps> = ({ item, isOpen, originTab, t
             })
         );
         handleClose();
-    }, [selectedTarget, newCategoryName]);
+    }, [selectedTarget, dispatch, item, targetTab, newCategoryName, originTab, handleClose]);
 
     return (
         <div

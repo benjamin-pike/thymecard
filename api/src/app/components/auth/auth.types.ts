@@ -14,6 +14,7 @@ export interface IRefreshTokenEntity {
 export interface IAccessTokenPayload {
     userId: string;
     permissions: Record<string, number>;
+    isPremium: boolean;
 }
 
 export interface IRefreshTokenPayload {

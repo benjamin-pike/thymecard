@@ -4,6 +4,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
+    flex-shrink: 1;
 
     width: 100%;
 }

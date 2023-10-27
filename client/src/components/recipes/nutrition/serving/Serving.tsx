@@ -5,7 +5,7 @@ import Dropdown from './Dropdown';
 
 import { ICONS } from '@/assets/icons';
 import { queue } from '@/lib/common.utils';
-import { IServing } from '@/types/recipe.types';
+import { IServing } from 'types/recipe.types';
 
 import styles from './serving.module.scss';
 
@@ -51,9 +51,9 @@ const Serving: FC<IServingProps> = ({
         }
 
         queue(toggleDropdown);
-    }, [displayDropdown]);
+    }, [displayDropdown, toggleDropdown]);
 
-    const handleClickOutsideDropdown = useCallback(() => toggleDropdown(false), []);
+    const handleClickOutsideDropdown = useCallback(() => toggleDropdown(false), [toggleDropdown]);
 
     return (
         <>
@@ -77,7 +77,12 @@ const Serving: FC<IServingProps> = ({
                             <PlusIcon />
                         </button>
                     </div>
-                    <input className={styles.weight} value={weight + 'g'} size={weight.toString().length + 1} onChange={handleWeightInput} />
+                    <input
+                        className={styles.weight}
+                        value={weight + 'g'}
+                        size={weight.toString().length + 1}
+                        onChange={handleWeightInput}
+                    />
                     <div className={styles.buttons}>
                         <button className={styles.resetScale} onClick={handleResetScale}>
                             <RefreshIcon />

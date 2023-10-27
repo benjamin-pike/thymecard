@@ -177,19 +177,9 @@
                     color: $mono-300;
                 }
             }
-
-            p {
-                color: $mono-600;
-                font-size: $fs-12;
-                font-weight: 500;
-
-                @include dark-mode {
-                    color: $mono-200;
-                }
-            }
         }
 
-        & .divider {
+        .divider {
             width: 1px;
             height: 1rem;
             background-color: $mono-300;
@@ -203,14 +193,14 @@
     @include responsive(('feedOnly', 'small')) {
         left: calc(50% + 3.25rem / 2);
 
-        gap: 1rem;
+        gap: 1.5rem;
 
         width: fit-content;
         height: 3.5rem;
     }
 
     @include responsive(('compressed')) {
-        gap: 1rem;
+        gap: 2.25rem;
 
         width: 100%;
         height: 4rem;
@@ -221,13 +211,13 @@
             bottom: -4rem;
         }
 
-        & svg {
+        svg {
             scale: 1.25;
         }
     }
 
     @include responsive(('mobile')) {
-        gap: 1.25rem;
+        gap: 2.25rem;
 
         width: 100%;
         
@@ -236,11 +226,7 @@
             gap: 0.15rem;
 
             svg {
-                scale: 1.1;
-            }
-
-            p {
-                font-weight: 500;
+                scale: 1.25;
             }
         }
     }

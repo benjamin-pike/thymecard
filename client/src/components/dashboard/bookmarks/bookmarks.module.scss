@@ -11,13 +11,13 @@
 }
 
 .bookmark {
-    border-radius: 0.25rem;
-
-    padding: 0.75rem;
-
+    padding: 1rem;
+    
     color: $mono-800;
-    box-shadow: 0 0 0 1.5px $mono-200;
-
+    box-shadow: 0 0 0 1px $mono-200;
+    
+    border-radius: 0.5rem;
+    
     text-overflow: ellipsis;
     overflow: hidden;
     transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;

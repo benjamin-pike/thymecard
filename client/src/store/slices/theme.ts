@@ -1,11 +1,11 @@
 import jwt_decode from 'jwt-decode';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { validateWithNull } from '@/lib/type.utils';
+import { validate } from '@sirona/types';
 
 export const getIsPremium = () => {
-  const accessToken = localStorage.getItem('accessToken');
-  const decodedToken = accessToken ? jwt_decode(accessToken) as any : null;
-  return decodedToken?.claims?.premium ?? false;
+    const accessToken = localStorage.getItem('accessToken');
+    const decodedToken = accessToken ? (jwt_decode(accessToken) as any) : null;
+    return decodedToken?.isPremium;
 };
 
 type Theme = 'light' | 'dark';
@@ -15,8 +15,8 @@ const isTheme = (val: unknown): val is Theme => {
 };
 
 const isPremium = getIsPremium();
-const storedTheme = isPremium ? localStorage.getItem('theme') : null
-const defaultTheme: Theme = validateWithNull(storedTheme, isTheme) ?? 'light';
+const storedTheme = isPremium ? localStorage.getItem('theme') : null;
+const defaultTheme: Theme = validate(storedTheme, isTheme) ?? 'light';
 
 const themeSlice = createSlice({
     name: 'theme',
@@ -27,8 +27,8 @@ const themeSlice = createSlice({
 
             localStorage.setItem('theme', action.payload);
             return action.payload;
-        },
-    },
+        }
+    }
 });
 
 export const { setTheme } = themeSlice.actions;

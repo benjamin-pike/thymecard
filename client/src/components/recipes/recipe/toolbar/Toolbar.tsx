@@ -1,10 +1,9 @@
-import { FC, useCallback, useMemo } from 'react';
+import { FC, Fragment, useMemo } from 'react';
+import { useRecipe } from '../RecipeProvider';
 import Tooltip from '@/components/common/tooltip/Tooltip';
 import { ICONS } from '@/assets/icons';
-import { useIngredients } from '../ingredients/IngredientsProvider';
-import { useMethod } from '../method/MethodProvider';
-import { createToast } from '@/lib/toast/toast.utils';
 import styles from './toolbar.module.scss';
+import { buildKey } from '@sirona/utils';
 
 const EditIcon = ICONS.common.pen;
 const SaveIcon = ICONS.common.tick;
@@ -33,43 +32,26 @@ interface IToolbarProps {
     isEditing: boolean;
     displayIngredients: boolean;
     isFullscreen: boolean;
-    handleEnterEditMode: () => void;
-    handleExitEditMode: () => void;
-    handleDiscardEdit: () => void;
     handleOpenScaleIngredientsModal: () => void;
     handleToggleDisplayIngredients: () => void;
     handleExport: () => void;
     handlePrint: () => void;
     handleToggleFullscreen: () => void;
+    handleDeleteRecipe: () => void;
 }
 
 const Toolbar: FC<IToolbarProps> = ({
     isEditing,
     displayIngredients,
     isFullscreen,
-    handleEnterEditMode,
-    handleExitEditMode,
-    handleDiscardEdit,
     handleOpenScaleIngredientsModal,
     handleToggleDisplayIngredients,
     handleExport,
     handlePrint,
-    handleToggleFullscreen
+    handleToggleFullscreen,
+    handleDeleteRecipe
 }) => {
-    const { saveIngredients, validateIngredients } = useIngredients();
-    const { saveMethod, validateMethod } = useMethod();
-
-    const handleSaveEdit = useCallback(() => {
-        if (!validateIngredients() || !validateMethod()) {
-            return;
-        }
-
-        saveIngredients();
-        saveMethod();
-        handleExitEditMode();
-
-        createToast('success', 'Recipe updated successfully');
-    }, [saveIngredients, saveMethod, handleExitEditMode]);
+    const { toggleEditing, handleSaveEdit, handleCancelEdit } = useRecipe();
 
     const buttons: IButton[] = useMemo(
         () => [
@@ -79,7 +61,7 @@ const Toolbar: FC<IToolbarProps> = ({
                 tooltip: 'Edit Recipe',
                 isActive: false,
                 mode: ['view'],
-                onClick: handleEnterEditMode
+                onClick: toggleEditing
             },
             {
                 icon: <SaveIcon />,
@@ -93,7 +75,7 @@ const Toolbar: FC<IToolbarProps> = ({
                 name: 'discard',
                 tooltip: 'Discard Changes',
                 mode: ['edit'],
-                onClick: handleDiscardEdit
+                onClick: handleCancelEdit
             },
             {
                 icon: <ScalesIcon />,
@@ -117,7 +99,7 @@ const Toolbar: FC<IToolbarProps> = ({
                 name: 'addToPlanner',
                 tooltip: 'Add to Planner',
                 mode: ['view'],
-                onClick: () => {}
+                onClick: () => console.log('add to planner')
             },
             {
                 icon: <ExportIcon />,
@@ -148,10 +130,21 @@ const Toolbar: FC<IToolbarProps> = ({
                 name: 'delete',
                 tooltip: 'Delete Recipe',
                 mode: ['view'],
-                onClick: () => {}
+                onClick: handleDeleteRecipe
             }
         ],
-        [displayIngredients, isFullscreen, handleSaveEdit]
+        [
+            toggleEditing,
+            handleSaveEdit,
+            handleOpenScaleIngredientsModal,
+            displayIngredients,
+            handleToggleDisplayIngredients,
+            handleExport,
+            handlePrint,
+            isFullscreen,
+            handleToggleFullscreen,
+            handleDeleteRecipe
+        ]
     );
 
     return (
@@ -159,7 +152,7 @@ const Toolbar: FC<IToolbarProps> = ({
             {buttons.map(
                 (button) =>
                     ((!isEditing && button.mode.includes('view')) || (isEditing && button.mode.includes('edit'))) && (
-                        <>
+                        <Fragment key={buildKey('toolbar', button.name)}>
                             <button
                                 className={styles[button.name]}
                                 data-tooltip-id={`recipe-${button.name}`}
@@ -169,7 +162,7 @@ const Toolbar: FC<IToolbarProps> = ({
                                 {button.isActive ? button.activeIcon ?? button.icon : button.icon}
                             </button>
                             <Tooltip id={`recipe-${button.name}`} place="bottom" size="small" />
-                        </>
+                        </Fragment>
                     )
             )}
         </section>

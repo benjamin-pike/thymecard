@@ -1,0 +1,97 @@
+.auth {
+    display: grid;
+    place-content: center;
+
+    background-color: $mono-light;
+
+    @include dark-mode {
+        background-color: $mono-900;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        input {
+            padding: 0.75rem 1rem;
+
+            width: 15rem;
+
+            font-size: $fs-14;
+            color: $mono-700;
+            background-color: $mono-light;
+            border: 1px dashed $mono-300;
+
+            border-radius: 0.5rem;
+
+            &::placeholder {
+                color: $mono-500;
+            }
+
+            @include dark-mode {
+                color: $mono-light;
+                background-color: $mono-900;
+                border: 1px dashed $mono-700;
+
+                &::placeholder {
+                    color: $mono-600;
+                }
+            }
+
+            &:-webkit-autofill {
+                -webkit-box-shadow: 0 0 0 50px $mono-light inset;
+                box-shadow: 0 0 0 50px $mono-light inset;
+                -webkit-text-fill-color: $mono-700;
+                border-color: $mono-300; // Added this to override the default border color
+            }
+
+            &:-webkit-autofill::first-line {
+                color: $mono-700;
+            }
+
+            @include dark-mode {
+                &:-webkit-autofill {
+                    -webkit-box-shadow: 0 0 0 50px $mono-900 inset;
+                    box-shadow: 0 0 0 50px $mono-900 inset;
+                    -webkit-text-fill-color: $mono-light;
+                    border-color: $mono-700; // Added this for the dark mode
+                }
+                &:-webkit-autofill::first-line {
+                    color: $mono-light;
+                }
+            }
+        }
+
+        button {
+            padding: 0.75rem 1rem;
+
+            margin-top: 0.5rem;
+
+            font-size: $fs-14;
+            text-align: center;
+            color: $mono-light;
+            background-color: $mono-700;
+
+            border-radius: 100vmax;
+
+            transition:
+                background-color 150ms ease,
+                border 150ms ease;
+
+            &:hover {
+                background-color: $mono-800;
+            }
+
+            @include dark-mode {
+                background-color: $mono-900;
+                border: 1px solid $mono-700;
+
+                &:hover {
+                    background-color: $mono-800;
+                    border: 1px solid $mono-500;
+                }
+            }
+        }
+    }
+}

@@ -11,7 +11,7 @@ const iconMap: Record<EventType, any> = {
     drink: <LuGlassWater />,
     dessert: <LuIceCream2 />,
     activity: <LuActivity />
-}
+};
 
 interface IEventIconProps {
     className?: string;

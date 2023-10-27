@@ -133,7 +133,7 @@ const Period: FC<IPeriodProps> = ({ events, period, gap, isFinalPeriod, addNamed
                         <div
                             key={JSON.stringify(event)}
                             className={styles.event}
-                            data-type = {event.type}
+                            data-type={event.type}
                             style={{
                                 top: `calc(${timeToPercent(event.time, period.start, length)}% + 1px)`,
                                 height: `calc(${durationToPercent(event.duration, length)}% - 1px)`
@@ -154,7 +154,7 @@ const Period: FC<IPeriodProps> = ({ events, period, gap, isFinalPeriod, addNamed
                     {!hasMultipleMiddleButtons ? (
                         addNamedEventButtons.middle[0]
                     ) : (
-                        <button className={formatClasses(styles, ['addEvent', 'generic'] )}>
+                        <button className={formatClasses(styles, ['addEvent', 'generic'])}>
                             <BiPlus />
                         </button>
                     )}
@@ -196,14 +196,14 @@ type IPeriodEvents = {
 };
 
 const getHours = (events: IEvent[], resolution: number, threshold: number): IPeriod[] => {
-    let periods: IPeriod[] = [];
+    const periods: IPeriod[] = [];
 
     events.forEach((event) => {
-        let [hour, minutes] = event.time.split(':').map(Number);
-        let startHour = hour + Math.floor(minutes / resolution) * (resolution / 60);
-        let duration = event.duration;
-        let endMinutes = hour * 60 + minutes + duration;
-        let endHour = Math.ceil(endMinutes / resolution) * (resolution / 60);
+        const [hour, minutes] = event.time.split(':').map(Number);
+        const startHour = hour + Math.floor(minutes / resolution) * (resolution / 60);
+        const duration = event.duration;
+        const endMinutes = hour * 60 + minutes + duration;
+        const endHour = Math.ceil(endMinutes / resolution) * (resolution / 60);
 
         if (periods.length === 0 || periods[periods.length - 1].end + threshold / 60 <= startHour) {
             periods.push({ start: startHour, end: endHour });
@@ -216,18 +216,18 @@ const getHours = (events: IEvent[], resolution: number, threshold: number): IPer
 };
 
 const splitEvents = (events: IEvent[], resolution: number, threshold: number): IPeriodEvents[] => {
-    let periods = getHours(events, resolution, threshold);
-    let periodsAndEvents: IPeriodEvents[] = [];
+    const periods = getHours(events, resolution, threshold);
+    const periodsAndEvents: IPeriodEvents[] = [];
 
     periods.forEach((period) => {
-        let startMinutes = period.start * 60;
-        let endMinutes = period.end * 60;
-        let periodEvents: IEvent[] = [];
+        const startMinutes = period.start * 60;
+        const endMinutes = period.end * 60;
+        const periodEvents: IEvent[] = [];
 
         events.forEach((event) => {
-            let [hour, minutes] = event.time.split(':').map(Number);
-            let eventStartMinutes = hour * 60 + minutes;
-            let eventEndMinutes = eventStartMinutes + event.duration;
+            const [hour, minutes] = event.time.split(':').map(Number);
+            const eventStartMinutes = hour * 60 + minutes;
+            const eventEndMinutes = eventStartMinutes + event.duration;
 
             if (eventStartMinutes < endMinutes && eventEndMinutes > startMinutes) {
                 periodEvents.push(event);

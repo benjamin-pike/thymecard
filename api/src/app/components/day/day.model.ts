@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { MongoRepository } from '../../lib/database/mongo.repository';
+import { MongoRepository } from '../../lib/data/mongo.repository';
 import { IDay, IDayCreate } from './day.types';
 
 const collectionName = 'days';

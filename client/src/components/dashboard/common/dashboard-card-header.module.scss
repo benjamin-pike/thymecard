@@ -1,4 +1,6 @@
 .cardTitle {
+    padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+
     color: $mono-800;
     font-size: $fs-16;
     font-weight: 600;
@@ -27,4 +29,6 @@
 .cardHeaderFeature {
     display: flex;
     gap: 0.5rem;
+
+    padding: 0.5rem 0.5rem 0.25rem 0.5rem;
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useWindowResize } from '@/hooks/events/useWindowResize';
+import { useWindowResize } from '@/hooks/common/useWindowResize';
 
 import Card from '@/components/common/card/Card';
 import Feed from '@/components/dashboard/feed/Feed';
@@ -11,7 +11,7 @@ import DayCardContent from 'components/dashboard/day/Day';
 import BookmarksCardContent from 'components/dashboard/bookmarks/Bookmarks';
 import Footer from '@/components/common/footer/Footer';
 
-import { useBreakpoints } from '@/hooks/dom/useBreakpoints';
+import { useBreakpoints } from '@/hooks/common/useBreakpoints';
 import { formatClasses } from '@/lib/common.utils';
 import { CgProfile } from 'react-icons/cg';
 import { CgCalendarToday } from 'react-icons/cg';
@@ -81,7 +81,6 @@ const Dashboard = () => {
             setColumns(0);
         }
     }, [viewport, columns]);
-
 
     const buildDrawerWrapperProps = useCallback(
         (cardName: string): Omit<IDrawerWrapperProps, 'children'> => ({
@@ -191,22 +190,18 @@ const Dashboard = () => {
             <section className={formatClasses(styles, ['navbar', visibleCard ? 'visibleCard' : ''])}>
                 <button onClick={() => toggleCard('overview')}>
                     <CgProfile />
-                    <p>Overview</p>
                 </button>
                 <div className={styles.divider} />
                 <button onClick={() => toggleCard('progress')}>
                     <MdDataUsage />
-                    <p>Progress</p>
                 </button>
                 <div className={styles.divider} />
                 <button onClick={() => toggleCard('day')}>
                     <CgCalendarToday />
-                    <p>Day</p>
                 </button>
                 <div className={styles.divider} />
                 <button onClick={() => toggleCard('bookmarks')}>
                     <BiBookmarkAlt />
-                    <p>Bookmarks</p>
                 </button>
             </section>
             <div className={styles.fader} />

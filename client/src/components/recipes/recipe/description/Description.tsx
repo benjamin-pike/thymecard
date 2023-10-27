@@ -1,101 +1,99 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useToggle } from '@mantine/hooks';
 import { ICONS } from '@/assets/icons';
+import { useRecipe } from '../RecipeProvider';
 import styles from './description.module.scss';
 
 const ExpandIcon = ICONS.common.toggle;
-const EditIcon = ICONS.common.pen;
-const TickIcon = ICONS.common.tick;
-const CancelIcon = ICONS.common.XLarge;
 
-interface IDescriptionProps {
-    value: string;
-}
-
-const Description: FC<IDescriptionProps> = ({ value }) => {
-    const [description, setDescription] = useState(value);
-    const [descriptionEdit, setDescriptionEdit] = useState(value);
-    const [isEditing, setIsEditting] = useState(false);
+const Description: FC = () => {
+    const { recipe, description, isEditing } = useRecipe();
 
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [isExpanded, toggleIsExpanded] = useToggle([false, true]);
 
-    const ref = useCallback((element: HTMLParagraphElement) => {
-        if (element) {
-            if (element.clientHeight < element.scrollHeight) {
-                setIsOverflowing(true);
-            }
-        }
-    }, []);
+    const ref = useRef<HTMLParagraphElement>(null);
 
-    const scaleTextArea = useCallback((textArea: HTMLTextAreaElement) => {
+    const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+    const scaleTextArea = useCallback((textArea?: HTMLTextAreaElement) => {
+        if (!textArea) return;
+
         textArea.style.height = 'auto';
-        textArea.style.height = `${textArea.scrollHeight}px`;
+
+        const style = window.getComputedStyle(textArea);
+        const paddingTop = parseFloat(style.paddingTop);
+        const paddingBottom = parseFloat(style.paddingBottom);
+
+        const verticalPadding = paddingTop + paddingBottom;
+
+        textArea.style.height = `${textArea.scrollHeight - verticalPadding}px`;
     }, []);
 
-    const handleDescriptionInputFocus = useCallback((e: React.FocusEvent<HTMLTextAreaElement>) => {
-        scaleTextArea(e.target);
-    }, []);
+    const handleDescriptionInputFocus = useCallback(
+        (e: React.FocusEvent<HTMLTextAreaElement>) => {
+            scaleTextArea(e.target);
+        },
+        [scaleTextArea]
+    );
 
-    const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        scaleTextArea(e.target);
-        setDescriptionEdit(e.target.value);
-    }, []);
-
-    const handleEditButtonClick = useCallback(() => {
-        setIsEditting(true);
-    }, []);
-
-    const handleSaveButtonClick = useCallback(() => {
-        setDescription(descriptionEdit);
-        setIsEditting(false);
-    }, [descriptionEdit]);
-
-    const handleCancelButtonClick = useCallback(() => {
-        setIsEditting(false);
-        setDescriptionEdit(description);
-    }, [description]);
+    const handleDescriptionChange = useCallback(
+        (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            scaleTextArea(e.target);
+            description.handleDescriptionChange(e);
+        },
+        [description, scaleTextArea]
+    );
 
     const handleExpandButtonClick = useCallback(() => {
         toggleIsExpanded();
-    }, []);
+    }, [toggleIsExpanded]);
+
+    useEffect(() => {
+        scaleTextArea(textAreaRef.current ?? undefined);
+    }, [scaleTextArea, isEditing]);
+
+    const checkOverflow = useCallback(() => {
+        if (ref.current) {
+            if (ref.current.clientHeight < ref.current.scrollHeight) {
+                setIsOverflowing(true);
+                return;
+            }
+            if (!isExpanded) {
+                setIsOverflowing(false);
+            }
+        }
+    }, [isExpanded]);
+
+    useEffect(() => toggleIsExpanded(false), [recipe, toggleIsExpanded]);
+
+    useEffect(checkOverflow, [checkOverflow, recipe]);
 
     return (
-        <section className={styles.description}>
+        <section className={styles.description} data-editing={isEditing} data-empty={!description.edit}>
             {isEditing ? (
                 <textarea
+                    ref={textAreaRef}
+                    rows={1}
                     className={styles.input}
-                    value={descriptionEdit}
-                    autoFocus
+                    value={description.edit}
+                    placeholder="Add recipe description . . ."
+                    data-empty={!description.edit}
                     onChange={handleDescriptionChange}
                     onFocus={handleDescriptionInputFocus}
                 />
             ) : (
-                <p ref={ref} data-expanded={isExpanded}>
-                    {description}
-                </p>
+                !!recipe?.description && (
+                    <p ref={ref} data-expanded={isExpanded}>
+                        {description.edit}
+                    </p>
+                )
             )}
             <div className={styles.buttons}>
-                {isEditing ? (
-                    <>
-                        <button className={styles.save} onClick={handleSaveButtonClick}>
-                            <TickIcon />
-                        </button>
-                        <button className={styles.cancel} onClick={handleCancelButtonClick}>
-                            <CancelIcon />
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <button className={styles.edit} onClick={handleEditButtonClick}>
-                            <EditIcon />
-                        </button>
-                        {isOverflowing && (
-                            <button className={styles.expand} data-active={isExpanded} onClick={handleExpandButtonClick}>
-                                <ExpandIcon />
-                            </button>
-                        )}
-                    </>
+                {isOverflowing && !isEditing && (
+                    <button className={styles.expand} data-active={isExpanded} onClick={handleExpandButtonClick}>
+                        <ExpandIcon />
+                    </button>
                 )}
             </div>
         </section>

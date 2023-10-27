@@ -1,0 +1,228 @@
+.images {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 1;
+    gap: 0.75rem;
+
+    min-width: 0;
+
+    .container {
+        position: relative;
+
+        flex-shrink: 1;
+
+        padding: 0.5rem;
+
+        border-radius: 1.5rem;
+
+        &::after {
+            content: '';
+
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            height: 100%;
+            width: 100%;
+
+            box-shadow: 0 0 0 0.5rem $mono-light inset;
+
+            border-radius: 1.5rem;
+
+            pointer-events: none;
+
+            @include dark-mode {
+                box-shadow: 0 0 0 0.5rem $mono-900 inset;
+            }
+        }
+    }
+
+    &[data-editing='true'] {
+        .container {
+            border: 1px dashed $mono-300;
+
+            @include dark-mode {
+                border: 1px dashed $mono-700;
+            }
+
+            .add {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                gap: 1rem;
+
+                .placeholder {
+                    margin-top: 1.75rem;
+                    margin-bottom: 1.25rem;
+
+                    height: 10rem;
+                    width: 10rem;
+
+                    color: transparentize($mono-300, 0.25);
+
+                    @include dark-mode {
+                        color: transparentize($mono-700, 0.5);
+                    }
+                }
+
+                .current {
+                    width: 100%;
+                    height: 15rem;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+
+                        object-fit: cover;
+
+                        border-radius: 1rem;
+                    }
+                }
+
+                .inputs {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    gap: 0.75rem;
+
+                    margin-bottom: 0.5rem;
+
+                    padding: 0 0.5rem;
+
+                    width: 100%;
+
+                    .upload {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 0.25rem;
+
+                        margin-left: auto;
+                        margin-right: auto;
+
+                        padding: 0.6rem 1rem;
+
+                        width: fit-content;
+
+                        font-weight: 400;
+                        font-size: $fs-12;
+                        color: $mono-700;
+                        background-color: $mono-light;
+                        border: 1px solid $mono-200;
+
+                        border-radius: 0.5rem;
+
+                        z-index: 1;
+
+                        transition:
+                            color 100ms ease,
+                            background-color 100ms ease,
+                            border 100ms ease;
+
+                        @include dark-mode {
+                            color: $mono-light;
+                            background-color: $mono-900;
+                            border: 1px solid $mono-700;
+                        }
+
+                        svg {
+                            scale: 1;
+
+                            path {
+                                stroke-width: 5;
+                            }
+                        }
+
+                        &[data-error='true'] {
+                            color: $red;
+                            background-color: transparentize($red, 0.925);
+                            border: 1px dashed $red;
+                        }
+
+                        &:hover {
+                            color: $mono-light;
+                            background-color: $mono-700;
+                            border: 1px solid $mono-700;
+
+                            @include dark-mode {
+                                background-color: $mono-800;
+                                border: 1px solid $mono-500;
+                            }
+                        }
+                    }
+
+                    .url {
+                        flex-grow: 1;
+
+                        padding: 0.55rem 0.8rem;
+
+                        min-width: 0;
+
+                        font-weight: 300;
+                        font-size: $fs-12;
+                        color: $mono-600;
+                        border: 1px dashed $mono-300;
+
+                        border-radius: 0.5rem;
+
+                        transition:
+                            background-color 150ms ease,
+                            border-color 150ms ease;
+
+                        &::placeholder {
+                            font-weight: 300;
+                            color: $mono-500;
+                        }
+
+                        @include dark-mode {
+                            color: $mono-light;
+                            border: 1px dashed $mono-600;
+
+                            &::placeholder {
+                                color: $mono-600;
+                            }
+
+                            &:focus {
+                                background-color: $mono-800;
+                                border: 1px dashed $mono-500;
+                            }
+                        }
+                    }
+
+                    .orText {
+                        position: relative;
+
+                        top: -0.1rem;
+
+                        color: $mono-500;
+                        font-weight: 300;
+                        font-size: $fs-13;
+                    }
+
+                    .fileInput {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+
+    &[data-editing='false'] {
+        flex-grow: 1;
+
+        .container {
+            height: 100%;
+
+            border: 1px solid $mono-200;
+
+            border-radius: 1.5rem;
+    
+            @include dark-mode {
+                border: 1px solid $mono-700;
+            }
+        }
+    }
+}

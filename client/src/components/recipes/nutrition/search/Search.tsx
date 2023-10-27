@@ -17,9 +17,12 @@ const Search: FC<ISearchProps> = ({ value, setValue, handleToggleVisibleInfo }) 
     const viewport = useSelector((state: RootState) => state.viewport);
     const displaySwitchViewButton = viewport.customViewportSize === 'listPlus';
 
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(e.target.value);
-    }, []);
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setValue(e.target.value);
+        },
+        [setValue]
+    );
 
     return (
         <div className={styles.search}>

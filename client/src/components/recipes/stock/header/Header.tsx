@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 
 const FridgeIcon = ICONS.recipes.fridge;
-const ShoppingListIcon = ICONS.recipes.shoppingList;
+const ShoppingListIcon = ICONS.recipes.tickList;
 const StarIcon = ICONS.common.star;
 const EllipsisIcon = ICONS.common.ellipsis;
 const SearchIcon = ICONS.common.search;
@@ -39,7 +39,7 @@ const Header: FC<IHeaderProps> = ({ selectedTab, setSelectedTab, handleToggleVis
     const [barMarginLeft, setBarMarginLeft] = useState(0);
     const [isInitialRender, setIsInitialRender] = useState(true);
 
-    const tabRefs = [...Array(TABS.length)].map(() => useRef<HTMLButtonElement>(null));
+    const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
     const barRef = useRef<HTMLDivElement>(null);
 
     const displaySwitchViewButton = customViewportSize === 'listPlus';
@@ -68,11 +68,15 @@ const Header: FC<IHeaderProps> = ({ selectedTab, setSelectedTab, handleToggleVis
         const bar = barRef.current;
         if (!bar) return;
         bar.style.transition = isInitialRender ? 'none' : 'margin-left 200ms ease, width 200ms ease';
-    }, [selectedTab]);
+    }, [isInitialRender, selectedTab]);
 
     useEffect(() => {
-        const target = tabRefs[selectedTab].current;
-        if (!target) return;
+        const target = tabsRef.current[selectedTab];
+
+        if (!target) {
+            return;
+        }
+
         const { width, left } = target.getBoundingClientRect();
         const { left: containerLeft } = target.parentElement?.getBoundingClientRect() as DOMRect;
 
@@ -80,13 +84,18 @@ const Header: FC<IHeaderProps> = ({ selectedTab, setSelectedTab, handleToggleVis
         setBarMarginLeft(left - containerLeft);
 
         setIsInitialRender(false);
-    }, []);
+    }, [selectedTab, tabsRef]);
 
     return (
         <header className={styles.header}>
             <div className={styles.tabs}>
                 {TABS.map((tab, i) => (
-                    <button key={tab.name} ref={tabRefs[i]} data-name={tab.name} onClick={(e) => handleTabClick(e, i)}>
+                    <button
+                        key={tab.name}
+                        ref={(el) => (tabsRef.current[i] = el)}
+                        data-name={tab.name}
+                        onClick={(e) => handleTabClick(e, i)}
+                    >
                         {tab.icon}
                         <span>{capitalize(tab.name)}</span>
                     </button>
