@@ -9,7 +9,7 @@ import {
     IRecipeYield,
     RecipeIngredients,
     RecipeMethod
-} from '@sirona/types';
+} from '@thymecard/types';
 import { useNavigate } from 'react-router-dom';
 
 import useAuthors from '@/hooks/recipes/useAuthors';

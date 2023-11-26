@@ -1,5 +1,5 @@
 import { createClient, RedisClientType } from 'redis';
-import { InternalError } from '../error/sironaError';
+import { InternalError } from '../error/thymecardError';
 import { ErrorCode } from '../error/errorCode';
 
 interface IEntityKey {

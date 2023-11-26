@@ -1,4 +1,4 @@
-import { EventType } from '@/lib/global.types';
+import { EventType } from '@thymecard/types';
 
 export interface IFeedEventProps {
     type: EventType;

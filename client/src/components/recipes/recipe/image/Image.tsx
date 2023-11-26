@@ -1,11 +1,10 @@
-import ImageGrid from '@/components/common/image-grid/ImageGrid';
 import { useRecipe } from '../RecipeProvider';
 import { ICONS } from '@/assets/icons';
 import { PiImageDuotone } from 'react-icons/pi';
 import styles from './image.module.scss';
 import { useCallback, useRef } from 'react';
 import { createToast } from '@/lib/toast/toast.utils';
-import { isValidUrl } from '@sirona/types';
+import { isValidUrl } from '@thymecard/types';
 import { validateImageUrl } from '@/lib/media.utils';
 import { getRecipeImageUrl } from '@/lib/s3/s3.utils';
 import { sendRequest } from '@/lib/api/sendRequest';
@@ -31,7 +30,7 @@ const DisplayView = () => {
 
     const imageUrl = recipe.image ? getRecipeImageUrl(recipe.image) : null;
 
-    return <ImageGrid key={recipe.image} urls={imageUrl ? [imageUrl] : []} imageSpacing={0.4} />;
+    return <div className={styles.display}>{imageUrl ? <img src={imageUrl} /> : <PiImageDuotone />}</div>;
 };
 
 const EditView = () => {

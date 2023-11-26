@@ -2,20 +2,20 @@ import { FC, useCallback, useDeferredValue, useEffect, useMemo, useReducer, useR
 import { useIntersection } from '@mantine/hooks';
 
 import LoadingDots from '@/components/common/loading-dots/LoadingDots';
+import { useQuery } from '@tanstack/react-query';
 import Filter from '@/components/recipes/summary-list/filter/Filter';
 import Search from '../search/Search';
 import Tags, { ITag } from './tags/Tags';
 import Summary from './summary/Summary';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
 
+import { IRecipeSummary } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';
 import { filterRecipes, filterReducer } from './filter/filter.functions';
+import { sendRequest } from '@/lib/api/sendRequest';
+import { collateRecipeTags } from '@/lib/recipe.utils';
 
 import styles from './summary-list.module.scss';
-import { useQuery } from '@tanstack/react-query';
-import { sendRequest } from '@/lib/api/sendRequest';
-import { IRecipeSummary } from '@sirona/types';
-import { collateRecipeTags } from '@/lib/recipe.utils';
 
 const SearchIcon = ICONS.common.search;
 

@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../common/logger';
 import { v1 as uuid } from 'uuid';
-import { validate } from '@sirona/types';
+import { validate } from '@thymecard/types';
 import { isDefined, isNumber, isRecord, isString } from '../lib/types/typeguards.utils';
 import { Logger } from 'winston';
-import { ForbiddenError, NotFoundError } from '../lib/error/sironaError';
+import { ForbiddenError, NotFoundError } from '../lib/error/thymecardError';
 import { ErrorCode } from '../lib/error/errorCode';
 import { IResourcePermissions } from '../lib/auth/permissions';
 
@@ -60,7 +60,7 @@ export class RequestContext {
     }
 
     private setRequestId(): string {
-        return validate(this.req.headers['x-sirona-request-id'], isString, uuid());
+        return validate(this.req.headers['x-thymecard-request-id'], isString, uuid());
     }
 
     private setDeviceId(): string {

@@ -1,8 +1,8 @@
 import { memo, FC, useEffect, useCallback, useRef, useState } from 'react';
-import { IRecipeMethodSection, IRecipeMethodStep } from '@sirona/types';
+import { IRecipeMethodSection, IRecipeMethodStep } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';
-import styles from './method-edit.module.scss';
 import { useRecipe } from '../RecipeProvider';
+import styles from './method-edit.module.scss';
 
 const DeleteIcon = ICONS.common.XLarge;
 const AddIcon = ICONS.common.plus;

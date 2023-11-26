@@ -1,6 +1,6 @@
 import { ZodError } from 'zod';
 import { ErrorCode } from '../../lib/error/errorCode';
-import { UnprocessableError } from '../../lib/error/sironaError';
+import { UnprocessableError } from '../../lib/error/thymecardError';
 import { hasKey, isDefined, isNonEmptyString, isNumber, isPlainObject, isYearMonthDayDateString, parseBooleanOrFalse } from '../../lib/types/typeguards.utils';
 import { IAuthenticatedContext } from '../../middleware/context.middleware';
 import { IDayService } from './day.service';

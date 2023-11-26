@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
-import { IRecipeMethodSection, IRecipeMethodStep, RecipeMethod } from '@sirona/types';
+import { IRecipeMethodSection, IRecipeMethodStep, RecipeMethod } from '@thymecard/types';
 import { createToast } from '@/lib/toast/toast.utils';
 
 const useMethod = () => {

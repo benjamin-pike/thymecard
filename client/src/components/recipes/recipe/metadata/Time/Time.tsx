@@ -1,7 +1,7 @@
 import { FC } from 'react';
-import styles from './time.module.scss';
 import { useRecipe } from '../../RecipeProvider';
-import { Duration } from 'luxon';
+import { formatDuration } from '@thymecard/utils';
+import styles from './time.module.scss';
 
 interface ITimeProps {
     type: 'prep' | 'cook' | 'total';
@@ -66,19 +66,7 @@ interface IDisplayViewProps {
 }
 
 const DisplayView: FC<IDisplayViewProps> = ({ time }) => {
-    const formattedTime = (() => {
-        if (!time) {
-            return null;
-        }
-        if (time < 60) {
-            return `${time} minutes`;
-        }
-        if (time < 120) {
-            return Duration.fromObject({ minutes: time }).toFormat("h 'hour,'  m 'minutes'").replace(',  0 minutes', '');
-        }
-
-        return Duration.fromObject({ minutes: time }).toFormat("h 'hours,'  m 'minutes'").replace(',  0 minutes', '');
-    })();
+    const formattedTime = time ? formatDuration(time, 'long', true) : undefined;
 
     return <p className={styles.value}>{formattedTime}</p>;
 };

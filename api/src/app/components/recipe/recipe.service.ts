@@ -3,13 +3,13 @@ import { v4 as uuid } from 'uuid';
 import fileType from 'file-type';
 import sharp from 'sharp';
 import { S3Repository } from '../../lib/data/s3.repository';
-import { NotFoundError, UnprocessableError } from '../../lib/error/sironaError';
+import { NotFoundError, UnprocessableError } from '../../lib/error/thymecardError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { isString } from '../../lib/types/typeguards.utils';
 import { RecipeParser, parseJsonLinkedData } from './recipe.utils';
 import { recipeRepository } from './recipe.model';
 import { RecipeCache, RecipeSummaryCache } from '../../lib/types/cache.types';
-import { IRecipe, IRecipeComment, IRecipeCreate, IRecipeParseResponse, IRecipeSummary, IRecipeUpdate } from '@sirona/types';
+import { IRecipe, IRecipeComment, IRecipeCreate, IRecipeParseResponse, IRecipeSummary, IRecipeUpdate } from '@thymecard/types';
 
 interface IRecipeServiceDependencies {
     recipeCache: RecipeCache;
@@ -58,7 +58,7 @@ export class RecipeService implements IRecipeService {
             imageBuffer = await sharp(image.buffer).jpeg().toBuffer();
         }
 
-        await this.s3Repository.uploadFile(image.buffer, imageFilename, 'jpg', 'images/recipes');
+        await this.s3Repository.uploadFile(imageBuffer, imageFilename, 'jpg', 'images/recipes');
 
         const newRecipe = await recipeRepository.create(query);
 

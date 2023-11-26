@@ -1,6 +1,6 @@
-import { IRecipeNutritionalInformation } from '@sirona/types';
-import { compare } from '@sirona/utils';
 import { useCallback, useState } from 'react';
+import { IRecipeNutritionalInformation } from '@thymecard/types';
+import { compare } from '@thymecard/utils';
 
 const useNutrition = () => {
     const [initial, setInitial] = useState<IRecipeNutritionalInformation>({});

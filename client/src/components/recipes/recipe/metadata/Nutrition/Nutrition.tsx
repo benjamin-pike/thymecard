@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRecipe } from '../../RecipeProvider';
-import { isDefined } from '@sirona/types';
+import { isDefined } from '@thymecard/types';
 import styles from './nutrition.module.scss';
 
 const Nutrition = () => {

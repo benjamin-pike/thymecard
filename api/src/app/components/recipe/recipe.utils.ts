@@ -12,7 +12,7 @@ import {
 } from '../../lib/types/typeguards.utils';
 import { isSchemaOrgHowToStep, isSchemaOrgHowToSection } from './recipe.types';
 import { UNIT_MAP, FRACTION_MAP, VALID_PREP_STYLES, VALID_PREP_STYLE_MODIFIERS } from './recipe.globals';
-import { removeHTML, toTitleCase } from '@sirona/utils';
+import { removeHTML, toTitleCase } from '@thymecard/utils';
 import {
     IRecipeCreate,
     IRecipeIngredient,
@@ -22,7 +22,7 @@ import {
     IRecipeYield,
     RecipeIngredients,
     RecipeMethod
-} from '@sirona/types';
+} from '@thymecard/types';
 export class RecipeParser {
     private readonly resource: Record<string, any>;
 

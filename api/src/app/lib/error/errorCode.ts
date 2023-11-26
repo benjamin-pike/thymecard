@@ -2,7 +2,6 @@ export enum ErrorCode {
     // General errors
     InternalError = 9999,
 
-    
     // Not found errors (01xx)
     RouteNotFound = 101,
     ExternalPageNotFound = 102,
@@ -12,7 +11,6 @@ export enum ErrorCode {
     DayNotFound = 106,
     PantryProductNotFound = 107,
 
-   
     // Typeguard errors (02xx)
     // Resource errors (0200 - 0249)
     InvalidUserCreateResource = 201,
@@ -26,13 +24,13 @@ export enum ErrorCode {
     InvalidMealCreateResource = 209,
     InvalidMealUpdateResource = 210,
     InvalidImageResource = 211,
-    
+    InvalidStockUpsertResource = 212,
+
     // General type errors (0250 - 0299)
     InvalidDateString = 250,
     InvalidPageStartKey = 251,
     InvalidPageLimit = 252,
 
-    
     // Invalid parameter errors (03xx)
     InvalidUserId = 301,
     InvalidRecipeId = 302,
@@ -42,8 +40,7 @@ export enum ErrorCode {
     InvalidRequestReturnType = 306,
     InvalidDayId = 307,
     InvliadEnrichedFlag = 308,
-    
-   
+
     // Permission/Authentication errors (04xx)
     InvalidLoginCredentials = 401,
     NotLocalUser = 402,
@@ -59,8 +56,10 @@ export enum ErrorCode {
     InvalidContext = 412,
     TooManyRequests = 413,
 
-    
     // Database errors (05xx)
     MongoDuplicateKey = 501,
-    RedisConnectionError = 502
+    RedisConnectionError = 502,
+
+    // Miscelaneous errors (06xx)
+    StockCategoryUpsertFailed = 601
 }

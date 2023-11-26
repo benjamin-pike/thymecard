@@ -3,7 +3,7 @@ import { IRequestContext } from '../../middleware/context.middleware';
 import { IUserService } from '../user/user.service';
 import { ITokenPair, IGoogleUser, IFacebookUser } from './auth.types';
 import { isString } from '../../lib/types/typeguards.utils';
-import { BadGatewayError, InternalError, SironaError, UnauthorizedError, UnprocessableError } from '../../lib/error/sironaError';
+import { BadGatewayError, InternalError, ThymecardError, UnauthorizedError, UnprocessableError } from '../../lib/error/thymecardError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { IUser } from '../user/user.types';
 
@@ -87,7 +87,7 @@ export class AuthController implements IAuthController {
 
             return await this.authService.getGoogleUserProfile(code);
         } catch (err) {
-            if (err instanceof SironaError) {
+            if (err instanceof ThymecardError) {
                 throw err;
             }
 

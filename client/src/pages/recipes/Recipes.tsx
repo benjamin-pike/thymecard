@@ -1,29 +1,31 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useBreakpoints } from '@/hooks/common/useBreakpoints';
 import { useToggle } from '@mantine/hooks';
+import { useRecipe } from '@/components/recipes/recipe/RecipeProvider';
 
 import Recipe from '@/components/recipes/recipe/Recipe';
 import SummaryList from '@/components/recipes/summary-list/SummaryList';
 import CreateBar from '@/components/recipes/create-bar/CreateBar';
+import Plan from '@/components/recipes/plan/Plan';
 import Stock from '@/components/recipes/stock/Stock';
-import Nutrition from '@/components/recipes/nutrition/Nutrition';
+import StockProvider from '@/components/recipes/stock/StockProvider';
 import DrawerWrapper from '@/components/wrappers/drawer/DrawerWrapper';
 
 import { ICONS } from '@/assets/icons';
 
 import styles from './recipes.module.scss';
-import { useRecipe } from '@/components/recipes/recipe/RecipeProvider';
-import { useParams } from 'react-router-dom';
 
 const ListIcon = ICONS.common.list;
-const SearchIcon = ICONS.common.search;
+const PlannerIcon = ICONS.common.planner;
 
 const Recipes = () => {
     const viewport = useBreakpoints([
-        { name: 'listOnly', min: 0, max: 768 },
-        { name: 'listPlus', min: 769, max: 1000 },
-        { name: 'listHidden', min: 1001, max: 1200 },
-        { name: 'all', min: 1201 }
+        { name: 'oneColumnNarrowMargins', min: 0, max: 650 },
+        { name: 'oneColumnWideMargins', min: 651, max: 860 },
+        { name: 'twoColumns', min: 861, max: 1000 },
+        { name: 'summariesHidden', min: 1001, max: 1300 },
+        { name: 'threeColumns', min: 1301 }
     ]);
 
     const { recipeId: initialRecipeId } = useParams();
@@ -34,17 +36,20 @@ const Recipes = () => {
 
     const [displayListDrawer, setDisplayListDrawer] = useState(false);
     const [displayStockDrawer, setDisplayStockDrawer] = useState(false);
-    const [displayNutritionDrawer, setDisplayNutritionDrawer] = useState(false);
-    const [visibleInfo, toggleVisibleInfo] = useToggle(['stock', 'nutrition'] as const);
+    const [displayPlanDrawer, setDisplayPlanDrawer] = useState(false);
 
-    const displayFullWidthCreateBar = viewport.current.isListPlus || viewport.current.isListOnly;
-    const displayRightCreateBar = !viewport.current.isListPlus;
-    const displayListDrawerButton = viewport.current.isListHidden;
-    const displayInfoDrawerButtons = viewport.current.isListOnly;
-    const displayStock = !viewport.current.isListPlus || (viewport.current.isListPlus && visibleInfo === 'stock');
-    const displayNutrition = !viewport.current.isListPlus || (viewport.current.isListPlus && visibleInfo === 'nutrition');
+    const [showPlanOrStock, toggleVisibleInfo] = useToggle(['stock', 'plan'] as const);
 
-    const isInfoDrawersActive = viewport.current.isListOnly;
+    const displayListDrawerButton = viewport.current.isSummariesHidden;
+    const displayInfoDrawerButtons = viewport.current.isOneColumnWideMargins || viewport.current.isOneColumnNarrowMargins;
+    const displayStock = !viewport.current.isTwoColumns || (viewport.current.isTwoColumns && showPlanOrStock === 'stock');
+    const displayPlan = !viewport.current.isTwoColumns || (viewport.current.isTwoColumns && showPlanOrStock === 'plan');
+
+    const isCreateBarTopRight = !viewport.current.isTwoColumns;
+    const isCreatBarBottom =
+        viewport.current.isTwoColumns || viewport.current.isOneColumnWideMargins || viewport.current.isOneColumnNarrowMargins;
+
+    const isInfoDrawersActive = viewport.current.isOneColumnWideMargins || viewport.current.isOneColumnNarrowMargins;
 
     const handleClearSelectedRecipe = useCallback(() => {
         clearRecipe();
@@ -66,14 +71,14 @@ const Recipes = () => {
 
     return (
         <main className={styles.recipes}>
-            {displayFullWidthCreateBar && <CreateBar />}
+            {isCreatBarBottom && <CreateBar />}
             <div className={styles.body} data-fullscreen={isRecipeFullscreen}>
                 <section className={styles.left}>
                     <DrawerWrapper
                         direction="left"
                         transitionDuration={200}
                         isVisible={displayListDrawer}
-                        isActive={viewport.current.isListHidden}
+                        isActive={viewport.current.isSummariesHidden}
                         closeDrawer={() => setDisplayListDrawer(false)}
                     >
                         <SummaryList handleSelectRecipe={getRecipe} />
@@ -84,51 +89,54 @@ const Recipes = () => {
                         </button>
                     )}
                     {displayInfoDrawerButtons && (
-                        <div className={styles.listHiddenButtons}>
-                            <button className={styles.stock} onClick={() => setDisplayStockDrawer(true)}>
-                                <ListIcon />
+                        <div className={styles.summariesHiddenButtons}>
+                            <button className={styles.plan} onClick={() => setDisplayPlanDrawer(true)}>
+                                <PlannerIcon /> <p>Planner</p>
                             </button>
-                            <button className={styles.nutrition} onClick={() => setDisplayNutritionDrawer(true)}>
-                                <SearchIcon />
+                            <div className={styles.divider} />
+                            <button className={styles.stock} onClick={() => setDisplayStockDrawer(true)}>
+                                <ListIcon /> <p>Inventory</p>
                             </button>
                         </div>
                     )}
                 </section>
-                <section className={styles.right} data-mask={renderStatus === 'open'}>
+                <section className={styles.right} data-mask={renderStatus === 'open'} data-visible-panel={showPlanOrStock}>
                     <div className={styles.recipeWrapper} style={{ translate: renderStatus === 'open' ? '0 0' : '0 100%' }}>
                         <Recipe
+                            viewport={viewport}
                             isRecipeFullscreen={isRecipeFullscreen}
                             handleRecipeFullscreen={handleRecipeFullscreen}
                             handleClearSelectedRecipe={handleClearSelectedRecipe}
                         />
                     </div>
-
                     <>
-                        {displayRightCreateBar && <CreateBar />}
-                        <div className={styles.bottom}>
-                            {displayStock && (
-                                <DrawerWrapper
-                                    direction="bottom"
-                                    transitionDuration={200}
-                                    isVisible={displayStockDrawer}
-                                    isActive={isInfoDrawersActive}
-                                    closeDrawer={() => setDisplayStockDrawer(false)}
-                                >
-                                    <Stock handleToggleVisibleInfo={handleToggleVisibleInfo} />
-                                </DrawerWrapper>
-                            )}
-                            {displayNutrition && (
-                                <DrawerWrapper
-                                    direction="bottom"
-                                    transitionDuration={200}
-                                    isVisible={displayNutritionDrawer}
-                                    isActive={isInfoDrawersActive}
-                                    closeDrawer={() => setDisplayNutritionDrawer(false)}
-                                >
-                                    <Nutrition handleToggleVisibleInfo={handleToggleVisibleInfo} />
-                                </DrawerWrapper>
-                            )}
-                        </div>
+                        {isCreateBarTopRight && <CreateBar />}
+                        <StockProvider>
+                            <div className={styles.bottom}>
+                                {displayPlan && (
+                                    <DrawerWrapper
+                                        direction="bottom"
+                                        transitionDuration={200}
+                                        isVisible={displayPlanDrawer}
+                                        isActive={isInfoDrawersActive}
+                                        closeDrawer={() => setDisplayPlanDrawer(false)}
+                                    >
+                                        <Plan handleSelectRecipe={getRecipe} handleToggleVisibleInfo={handleToggleVisibleInfo} />
+                                    </DrawerWrapper>
+                                )}
+                                {displayStock && (
+                                    <DrawerWrapper
+                                        direction="bottom"
+                                        transitionDuration={200}
+                                        isVisible={displayStockDrawer}
+                                        isActive={isInfoDrawersActive}
+                                        closeDrawer={() => setDisplayStockDrawer(false)}
+                                    >
+                                        <Stock handleToggleVisibleInfo={handleToggleVisibleInfo} />
+                                    </DrawerWrapper>
+                                )}
+                            </div>
+                        </StockProvider>
                     </>
                 </section>
             </div>

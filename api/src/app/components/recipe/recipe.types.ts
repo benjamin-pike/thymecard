@@ -64,6 +64,7 @@ export const createRecipeSchema = z.object({
                     itemId: z.number(),
                     name: z.string(),
                 })
+                .nullable()
                 .optional(),
         })
     ),

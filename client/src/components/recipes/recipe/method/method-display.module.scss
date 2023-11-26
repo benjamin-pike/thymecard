@@ -15,10 +15,19 @@
 
     &[data-ingredients-visible='true'] {
         padding: 0 0 0 1rem;
+
+        @include responsive(('mobile')) {
+            padding: 0.5rem;
+        }
     }
 
     &[data-ingredients-visible='false'] {
         margin-bottom: 1.5rem;
+    }
+
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
     }
 
     .section {
@@ -49,6 +58,10 @@
 
             padding-left: 0.5rem;
 
+            @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+                padding-left: 0;
+            }
+
             .step {
                 position: relative;
 
@@ -76,7 +89,7 @@
                     font-weight: 300;
                     font-size: $fs-15;
                     line-height: $fs-28;
-                    
+
                     @include dark-mode {
                         color: $mono-light;
                     }

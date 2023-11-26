@@ -34,7 +34,7 @@
     }
 
     &:hover {
-        color: white;
+        color: $mono-light;
         background-color: $mono-700;
 
         box-shadow: 0 0 0 1.5px $mono-700;
@@ -42,9 +42,8 @@
         cursor: pointer;
 
         @include dark-mode {
-            color: $mono-700;
-            background-color: white;
-            box-shadow: 0 0 0 1px white;
+            background-color: $mono-800;
+            box-shadow: 0 0 0 1px $mono-500;
         }
     }
 

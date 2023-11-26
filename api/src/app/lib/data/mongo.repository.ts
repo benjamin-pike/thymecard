@@ -1,6 +1,6 @@
 import mongoose, { Document, FilterQuery, UpdateQuery, ProjectionFields, Model, model, Schema, PipelineStage } from 'mongoose';
 import { ErrorCode } from '../error/errorCode';
-import { BadRequestError, ConflictError } from '../error/sironaError';
+import { BadRequestError, ConflictError } from '../error/thymecardError';
 import { DeepPartial, isArray, isDateString, isDefined, isPlainObject, isValidMongoId } from '../types/typeguards.utils';
 import { IPagedResult } from '../types/common.types';
 import { compressAndEncrypt, decryptAndDecompress } from '../encryption.utils'
@@ -56,10 +56,11 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
     public async findOneAndUpdate<T = Entity>(
         query: Query<Entity>,
         update: Update<Entity>,
-        projection?: Projection<Entity>
+        projection?: Projection<Entity>,
+        upsert: boolean = false
     ): Promise<T | null> {
         try {
-            const doc = await this.model.findOneAndUpdate(query, update, { new: true, projection }).exec();
+            const doc = await this.model.findOneAndUpdate(query, update, { new: true, projection, upsert }).exec();
 
             if (!doc) {
                 return null;

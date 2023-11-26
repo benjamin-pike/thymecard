@@ -1,59 +1,51 @@
-import { v4 as uuidv4 } from 'uuid';
-import { FC, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { upsertCategory } from '@/store/slices/stock';
+import { FC } from 'react';
+import { useSelector } from 'react-redux';
 import useLocalStorage from '@/hooks/common/useLocalStorage';
 import Header from './header/Header';
 import Category from './category/Category';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
-import { ICONS } from '@/assets/icons';
 import { RootState } from '@/store';
-import { stockTabs } from 'types/recipe.types';
+import { StockSection } from '@thymecard/types';
+import { useStock } from './StockProvider';
 import styles from './stock.module.scss';
-
-const PlusIcon = ICONS.common.plus;
 
 interface IStockProps {
     handleToggleVisibleInfo: () => void;
 }
 
 const Stock: FC<IStockProps> = ({ handleToggleVisibleInfo }) => {
-    const dispatch = useDispatch();
-
-    const data = useSelector((state: RootState) => state.stock);
+    const { stock, createCategory, upsertStock } = useStock();
     const { customViewportSize } = useSelector((state: RootState) => state.viewport);
 
-    const [selectedTab, setSelectedTab] = useLocalStorage('stock-tab', 0);
-    const selectedTabName = stockTabs[selectedTab];
-    const selectedData = data[selectedTabName];
+    const [selectedSection, setSelectedSection] = useLocalStorage<StockSection>('stock-tab', StockSection.PANTRY);
+    const categories = stock[selectedSection];
 
-    const createCategory = useCallback(() => {
-        const newCategory = { id: uuidv4(), name: '', items: [] };
-
-        dispatch(upsertCategory({ tab: selectedTabName, category: newCategory }));
-    }, [dispatch, selectedTabName]);
+    const handleBlur = (e: React.FocusEvent<HTMLUListElement>) => {
+        const currentTarget = e.currentTarget;
+        setTimeout(() => {
+            if (!currentTarget.contains(document.activeElement)) {
+                console.log('blur');
+                upsertStock(selectedSection, categories);
+            }
+        }, 0);
+    };
 
     return (
         <section className={styles.stock}>
             <Header
                 key={customViewportSize}
-                selectedTab={selectedTab}
-                setSelectedTab={setSelectedTab}
+                selectedSection={selectedSection}
+                setSelectedSection={setSelectedSection}
                 handleToggleVisibleInfo={handleToggleVisibleInfo}
             />
-            <div className={styles.divider} />
             <div className={styles.scrollContainer}>
-                <ScrollWrapper key={selectedTabName} height={'100%'} padding={1.25}>
-                    <ul className={styles.body}>
-                        {selectedData.map((category, index) => {
-                            return (
-                                <Category key={JSON.stringify(category) + index} tab={selectedTabName} category={category} data={data} />
-                            );
+                <ScrollWrapper key={selectedSection} height={'100%'} padding={1.25}>
+                    <ul className={styles.body} onBlur={handleBlur}>
+                        {categories.map((category) => {
+                            return <Category key={category.id} section={selectedSection} category={category} />;
                         })}
-                        <button className={styles.addCategory} onClick={createCategory}>
-                            <span>
-                                <PlusIcon /> Add category
-                            </span>
+                        <button className={styles.addCategory} onClick={createCategory(selectedSection)}>
+                            <span>Add Category</span>
                         </button>
                     </ul>
                 </ScrollWrapper>

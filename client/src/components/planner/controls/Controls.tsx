@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { EEventDisplayFormat } from '../planner.types';
 import { formatClasses } from '@/lib/common.utils';
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { MdOutlineFastfood, MdOutlineViewDay } from 'react-icons/md';
@@ -10,7 +11,7 @@ interface IControlBarProps {
     displayMeals: boolean;
     displayActivities: boolean;
     displayTime: boolean;
-    eventDisplayFormat: 'compact' | 'detailed' | 'expanded';
+    eventDisplayFormat: EEventDisplayFormat;
     handleMonthBackward: () => void;
     handleMonthForward: () => void;
     toggleMeals: () => void;

@@ -2,9 +2,9 @@ import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import bcrypt from 'bcrypt';
 import { OAuth2Client as GoogleAuthClient } from 'google-auth-library';
-import { validate } from '@sirona/types' 
+import { validate } from '@thymecard/types' 
 import { IUser } from '../user/user.types';
-import { BadGatewayError, BadRequestError, SironaError, UnauthorizedError } from '../../lib/error/sironaError';
+import { BadGatewayError, BadRequestError, ThymecardError, UnauthorizedError } from '../../lib/error/thymecardError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import {
     ITokenPair,
@@ -191,7 +191,7 @@ export class AuthService {
                 })
             );
         } catch (err) {
-            if (err instanceof SironaError) {
+            if (err instanceof ThymecardError) {
                 throw err;
             }
 
@@ -247,7 +247,7 @@ export class AuthService {
                 })
             );
         } catch (err) {
-            if (err instanceof SironaError) {
+            if (err instanceof ThymecardError) {
                 throw err;
             }
 

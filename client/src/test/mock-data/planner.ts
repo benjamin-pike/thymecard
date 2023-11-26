@@ -1,18 +1,19 @@
 import { DateTime, Duration } from 'luxon';
 import seedrandom from 'seedrandom';
-import { EventType, IEvent } from '@/lib/global.types';
+import { IEvent } from '@/lib/global.types';
+import { EventType } from '@thymecard/types';
 
 export const generateMockPlannerData = (startDate: string, endDate: string, seed: number, volume = 0.5): Record<string, IEvent[]> => {
     type PartOfDay = 'morning' | 'afternoon' | 'evening';
 
-    const EVENT_TYPES: Record<PartOfDay, EventType[]> = {
-        morning: ['breakfast', 'snack', 'activity'],
-        afternoon: ['lunch', 'snack', 'activity'],
-        evening: ['dinner', 'dessert', 'drink', 'activity']
-    };
+    const EVENT_TYPES = {
+        morning: [EventType.BREAKFAST, EventType.SNACK, EventType.ACTIVITY] as const,
+        afternoon: [EventType.LUNCH, EventType.SNACK, EventType.ACTIVITY] as const,
+        evening: [EventType.DINNER, EventType.DESSERT, EventType.DRINK, EventType.ACTIVITY] as const
+    } as const;
 
     const EVENT_NAMES = {
-        activity: [
+        [EventType.ACTIVITY]: [
             'Yoga',
             'Bike Ride',
             'Meditation',
@@ -34,7 +35,7 @@ export const generateMockPlannerData = (startDate: string, endDate: string, seed
             'Zumba',
             'Tai Chi'
         ],
-        breakfast: [
+        [EventType.BREAKFAST]: [
             'Granola with Yogurt',
             'French Toast',
             'Blueberry Pancakes',
@@ -51,7 +52,7 @@ export const generateMockPlannerData = (startDate: string, endDate: string, seed
             'Quiche',
             'Croissant'
         ],
-        snack: [
+        [EventType.SNACK]: [
             'Mixed Nuts',
             'Fresh Fruit',
             'Yogurt',
@@ -68,7 +69,7 @@ export const generateMockPlannerData = (startDate: string, endDate: string, seed
             'Dried Fruit',
             'Boiled Egg'
         ],
-        lunch: [
+        [EventType.LUNCH]: [
             'Prawn Salad',
             'Tuna Salad Wrap',
             'Chicken Caesar Salad',
@@ -85,7 +86,7 @@ export const generateMockPlannerData = (startDate: string, endDate: string, seed
             'Grilled Chicken with Vegetables',
             'Falafel Pita'
         ],
-        drink: [
+        [EventType.DRINK]: [
             'Iced Coffee',
             'Green Smoothie',
             'Lemonade',
@@ -102,7 +103,24 @@ export const generateMockPlannerData = (startDate: string, endDate: string, seed
             'Herbal Tea',
             'Chamomile Tea'
         ],
-        dinner: [
+        [EventType.APPETIZER]: [
+            'Bruschetta',
+            'Chicken Wings',
+            'Spring Rolls',
+            'Garlic Bread',
+            'Nachos',
+            'Hummus',
+            'Guacamole',
+            'Mozzarella Sticks',
+            'Baked Brie',
+            'Stuffed Mushrooms',
+            'Meatballs',
+            'Deviled Eggs',
+            'Bacon Wrapped Dates',
+            'Fried Calamari',
+            'Crab Cakes'
+        ],
+        [EventType.DINNER]: [
             'Chicken Stir-Fry',
             'Grilled Salmon and Quinoa',
             'Steak and Potatoes',
@@ -119,7 +137,7 @@ export const generateMockPlannerData = (startDate: string, endDate: string, seed
             'Lamb Stew',
             'Vegetarian Pizza'
         ],
-        dessert: [
+        [EventType.DESSERT]: [
             'Ice Cream Sundae',
             'Chocolate Cake',
             'Fruit Salad',
@@ -136,7 +154,7 @@ export const generateMockPlannerData = (startDate: string, endDate: string, seed
             'Carrot Cake',
             'Baklava'
         ]
-    };
+    } as const;
 
     const EVENT_TIME_RANGE = {
         morning: ['07:00', '10:00'],
@@ -145,13 +163,14 @@ export const generateMockPlannerData = (startDate: string, endDate: string, seed
     };
 
     const EVENT_DURATION: Record<EventType, number[]> = {
-        breakfast: [15, 30],
-        snack: [15, 20],
-        activity: [30, 45, 60, 75, 90],
-        lunch: [15, 30, 45],
-        drink: [15, 20, 25],
-        dinner: [30, 45, 60],
-        dessert: [15, 20, 30]
+        [EventType.BREAKFAST]: [15, 30],
+        [EventType.SNACK]: [15, 20],
+        [EventType.ACTIVITY]: [30, 45, 60, 75, 90],
+        [EventType.LUNCH]: [15, 30, 45],
+        [EventType.DRINK]: [15, 20, 25],
+        [EventType.APPETIZER]: [15, 20, 30],
+        [EventType.DINNER]: [30, 45, 60],
+        [EventType.DESSERT]: [15, 20, 30]
     };
 
     const getRandomIndex = (length: number, rng: seedrandom.PRNG): number => {

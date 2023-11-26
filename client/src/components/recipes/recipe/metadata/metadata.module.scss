@@ -9,6 +9,10 @@
 
     max-width: 20rem;
 
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+        max-width: unset;
+    }
+
     .origin {
         display: flex;
         flex-direction: column;
@@ -24,9 +28,15 @@
             display: flex;
             align-items: center;
 
+            .icon {
+                margin-right: 0.5rem;
+
+                color: $mono-600;
+            }
+
             .metric {
                 width: 4.5rem;
-                
+
                 color: $mono-600;
                 font-size: $fs-14;
                 font-weight: 600;
@@ -43,6 +53,14 @@
 
                 @include dark-mode {
                     color: $mono-light;
+                }
+            }
+
+            &.totalTime {
+                .icon {
+                    path {
+                        stroke-width: 12.5;
+                    }
                 }
             }
         }

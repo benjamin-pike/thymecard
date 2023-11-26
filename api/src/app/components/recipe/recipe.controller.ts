@@ -1,6 +1,6 @@
 import { ZodError } from 'zod';
 import { ErrorCode } from '../../lib/error/errorCode';
-import { UnprocessableError } from '../../lib/error/sironaError';
+import { UnprocessableError } from '../../lib/error/thymecardError';
 import { IAuthenticatedContext } from '../../middleware/context.middleware';
 import { IRecipeService } from './recipe.service';
 import { createRecipeSchema, updateRecipeSchema } from './recipe.types';
@@ -17,7 +17,7 @@ import {
     isParseRecipeRequestBody,
     isRecipeCommentCreateResource,
     isString
-} from '@sirona/types';
+} from '@thymecard/types';
 
 interface IRecipeControllerDependencies {
     recipeService: IRecipeService;

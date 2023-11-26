@@ -1,4 +1,4 @@
-const ROOT = 'https://sirona-media.s3.eu-west-1.amazonaws.com';
+const ROOT = 'https://thymecard.s3.eu-west-2.amazonaws.com';
 
 export enum S3_PATHS {
     USER_IMAGES = `${ROOT}/images/users`,

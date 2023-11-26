@@ -5,6 +5,7 @@ import { IPrimaryMetric, ISecondaryMetric, IFeedEventProps, IFeedData } from '@/
 import { srngFloat, srngInt } from '@/lib/random.utils';
 import FOOD_IMAGES from './data/food-images.json';
 import { RECIPES } from './data/recipes';
+import { EventType } from '@thymecard/types';
 
 export const generateMockProgressData = (startDate: DateTime, days: number): any[] => {
     const BREAKFAST_TIME = 9;
@@ -209,15 +210,6 @@ export const generateMockLatestEventData = () => {
     };
 };
 
-export enum EventType {
-    Breakfast = 'breakfast',
-    Lunch = 'lunch',
-    Dinner = 'dinner',
-    Snack = 'snack',
-    Dessert = 'dessert',
-    Drink = 'drink'
-}
-
 export enum PartOfDay {
     Morning = 'morning',
     Afternoon = 'afternoon',
@@ -225,13 +217,13 @@ export enum PartOfDay {
 }
 
 const EVENT_TYPES: Record<PartOfDay, EventType[]> = {
-    morning: [EventType.Breakfast, EventType.Snack],
-    afternoon: [EventType.Lunch, EventType.Snack],
-    evening: [EventType.Dinner, EventType.Dessert, EventType.Drink]
+    morning: [EventType.BREAKFAST, EventType.SNACK],
+    afternoon: [EventType.LUNCH, EventType.SNACK],
+    evening: [EventType.DINNER, EventType.DESSERT, EventType.DRINK]
 };
 
 const EVENT_NAMES = {
-    breakfast: [
+    [EventType.BREAKFAST]: [
         'Granola with Yogurt',
         'French Toast',
         'Blueberry Pancakes',
@@ -248,7 +240,7 @@ const EVENT_NAMES = {
         'Quiche',
         'Croissant'
     ],
-    snack: [
+    [EventType.SNACK]: [
         'Mixed Nuts',
         'Fresh Fruit',
         'Yogurt',
@@ -265,7 +257,7 @@ const EVENT_NAMES = {
         'Dried Fruit',
         'Boiled Egg'
     ],
-    lunch: [
+    [EventType.LUNCH]: [
         'Prawn Salad',
         'Tuna Salad Wrap',
         'Chicken Caesar Salad',
@@ -282,7 +274,7 @@ const EVENT_NAMES = {
         'Grilled Chicken with Vegetables',
         'Falafel Pita'
     ],
-    drink: [
+    [EventType.DRINK]: [
         'Iced Coffee',
         'Green Smoothie',
         'Lemonade',
@@ -295,7 +287,8 @@ const EVENT_NAMES = {
         'Matcha Latte',
         'Coconut Water'
     ],
-    dinner: [
+    [EventType.APPETIZER]: [],
+    [EventType.DINNER]: [
         'Chicken Stir-Fry',
         'Grilled Salmon and Quinoa',
         'Steak and Potatoes',
@@ -312,7 +305,7 @@ const EVENT_NAMES = {
         'Lamb Stew',
         'Vegetarian Pizza'
     ],
-    dessert: [
+    [EventType.DESSERT]: [
         'Ice Cream Sundae',
         'Chocolate Cake',
         'Fruit Salad',
@@ -328,8 +321,9 @@ const EVENT_NAMES = {
         'Lemon Meringue Pie',
         'Carrot Cake',
         'Baklava'
-    ]
-};
+    ],
+    [EventType.ACTIVITY]: []
+} as const;
 
 const EVENT_TIME_RANGE = {
     morning: ['07:00', '10:00'],

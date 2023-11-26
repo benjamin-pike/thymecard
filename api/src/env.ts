@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import { isNumber, validate } from './app/lib/types/typeguards.utils';
 import { isRateLimiterInterval } from './app/middleware/rate-limiter.middleware';
 import { ErrorCode } from './app/lib/error/errorCode';
-import { InternalError } from './app/lib/error/sironaError';
+import { InternalError } from './app/lib/error/thymecardError';
 
 dotenv.config();
 

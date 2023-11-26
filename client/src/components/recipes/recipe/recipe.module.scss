@@ -14,7 +14,6 @@
     min-width: 0;
 
     background-color: $mono-light;
-    box-shadow: 0 0 7.5rem transparentize($mono-dark, 0.9);
 
     z-index: 102;
 
@@ -23,6 +22,25 @@
     @include dark-mode {
         background-color: $mono-900;
         box-shadow: 0 -1px $mono-700;
+    }
+
+    @include responsive(('threeColumns')) {
+        margin: -1.5rem;
+        margin-left: -0.75rem;
+
+        height: calc(100% + 3rem);
+        width: calc(100% + 2.25rem);
+    }
+
+    @include responsive(('summariesHidden')) {
+        margin: -1.5rem;
+
+        height: calc(100% + 3rem);
+        width: calc(100% + 3rem);
+    }
+
+    @include responsive(('oneColumnNarrowMargins')) {
+        padding: 1.5rem 2.5rem 0 2.5rem;
     }
 
     .back {
@@ -73,6 +91,10 @@
         width: 100%;
         max-width: 50rem;
 
+        @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+            max-width: 35rem;
+        }
+
         .divider {
             height: 1px;
             width: 100%;
@@ -95,6 +117,16 @@
 
             margin: 0.5rem 0;
 
+            @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+                flex-direction: column;
+            }
+
+            .left {
+                @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+                    width: 100%;
+                }
+            }
+
             .right {
                 display: flex;
                 flex-direction: column;
@@ -107,6 +139,11 @@
                 min-height: 0;
 
                 overflow: hidden;
+
+                @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+                    height: unset;
+                    width: 100%;
+                }
             }
         }
     }
@@ -118,6 +155,12 @@
         max-height: 100svh;
         width: 100%;
         max-width: 50rem;
+
+        @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+            flex-direction: column;
+
+            max-width: 35rem;
+        }
 
         .ingredientsWrapper {
             padding-right: 1rem;
@@ -139,14 +182,33 @@
         .left {
             display: flex;
             flex-direction: column;
+            flex-shrink: 1;
 
             margin-top: 2.5rem;
+
+            @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+                margin-top: 1.5rem;
+            }
         }
 
         .right {
             display: flex;
             flex-direction: column;
             flex: 1 1;
+
+            min-width: 20rem;
+
+            @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+                border-top: 1px solid $mono-200;
+
+                @include dark-mode {
+                    border-top: 1px solid $mono-700;
+                }
+            }
+
+            @include responsive('mobile') {
+                min-width: unset;
+            }
 
             .scaleWarning {
                 padding: 1rem;
@@ -180,7 +242,7 @@
                 &[data-ingredients-visible='false'] {
                     margin-top: 1rem;
                     width: 100%;
-                }                
+                }
             }
         }
 

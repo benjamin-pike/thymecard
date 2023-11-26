@@ -1,4 +1,4 @@
-import { isArray, isObject } from "@sirona/types";
+import { isArray, isObject } from "@thymecard/types";
 
 export const compare = (objA: any, objB: any): boolean => {
 	if (objA === objB) {

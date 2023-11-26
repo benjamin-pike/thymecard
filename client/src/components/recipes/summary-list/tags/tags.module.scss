@@ -1,22 +1,49 @@
 .tags {
     position: relative;
 
+    padding: 0.25rem 0;
+
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    gap: 0.5rem;
+
+    border-bottom: 1px solid $mono-200;
+
+    @include dark-mode {
+        border-bottom: 1px solid $mono-700;
+    }
+
+    &[data-open='true'] {
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+
+        .wrapper {
+            grid-template-rows: 1fr;
+
+            padding-bottom: 0;
+        }
+
+        .showMore {
+            margin-left: auto;
+            margin-top: 0;
+            svg {
+                rotate: 180deg;
+            }
+        }
+    }
 
     .wrapper {
         position: relative;
 
+        flex-shrink: 1;
+        flex-grow: 1;
+
         display: grid;
         grid-template-rows: 0fr;
 
-        padding: 0.25rem;
-
         padding-top: 0.25rem;
-        padding-bottom: 0.75rem;
-
-        border-bottom: 1px solid $mono-200;
+        padding-bottom: 0.5rem;
 
         overflow: hidden;
 
@@ -40,8 +67,6 @@
         }
 
         @include dark-mode {
-            border-bottom: 1px solid $mono-700;
-
             &::after {
                 background-color: $mono-900;
             }
@@ -59,7 +84,7 @@
         height: 1rem;
         width: 1rem;
 
-        color: $mono-600;
+        color: $mono-500;
         background-color: $mono-light;
         border: 1px solid $mono-300;
 
@@ -134,28 +159,20 @@
             }
         }
     }
-
-    &[data-open='true'] {
-        .wrapper {
-            grid-template-rows: 1fr;
-
-            padding-bottom: 0.5rem;
-        }
-    }
 }
 
 .container {
     position: relative;
 
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 0.6rem;
 
-    width: 100%;
     min-width: 0rem;
-    min-height: 2.35rem;
+    width: 100%;
+    min-height: calc(2rem + 0.25rem + 2px);
 
-    padding: 1px 1px 0.75rem 1px;
+    padding-bottom: 0.75rem;
 }
 
 .measurements {
@@ -178,12 +195,14 @@
 
 .chip {
     flex-grow: 1;
+    flex-shrink: 0;
 
+    height: 2rem;
     width: fit-content;
 
-    border-radius: 0.35rem;
+    border-radius: 0.5rem;
 
-    box-shadow: 0 0 0 1px $mono-200;
+    border: 1px solid $mono-200;
 
     cursor: pointer;
 
@@ -192,17 +211,17 @@
     transition:
         color 100ms ease,
         background-color 100ms ease,
-        box-shadow 100ms ease;
+        border 100ms ease;
 
     @include dark-mode {
-        box-shadow: 0 0 0 1px $mono-700;
+        border: 1px solid $mono-700;
     }
 
-    [data-grow='false'] & {
+    &[data-grow='false'] {
         flex-grow: 0;
 
         .name {
-            padding: 0.5rem 0.5rem 0.5rem 1rem;
+            padding: 0 1rem 0 1.5rem;
         }
     }
 
@@ -210,6 +229,7 @@
         display: flex;
         gap: 0.5rem;
 
+        line-height: 2rem;
         width: 100%;
 
         font-size: $fs-11;
@@ -220,9 +240,9 @@
             flex-grow: 1;
 
             color: $mono-700;
-            font-weight: 600;
+            font-weight: 500;
 
-            padding: 0.5rem 0.25rem 0.5rem 1rem;
+            padding: 0 0.25rem 0 1rem;
 
             transition: color 100ms ease;
 
@@ -237,7 +257,7 @@
 
             font-weight: 400;
 
-            padding: 0.5rem;
+            padding: 0 0.5rem;
 
             border-left: 1px solid $mono-200;
 
@@ -255,13 +275,22 @@
     }
 
     &:hover {
-        box-shadow:
-            0 0 0 1px $mono-200,
-            0 0 0 0.25rem $mono-100;
+        background-color: alpha($blue, 0.1);
+        border: 1px solid alpha($blue, 0.5);
+
+        .name {
+            color: $blue;
+        }
+
+        .count {
+            color: $blue;
+            background-color: transparent;
+            border-left: 1px solid alpha($blue, 0.5);
+        }
 
         @include dark-mode {
             background-color: $mono-800;
-            box-shadow: 0 0 0 1px $mono-500;
+            border: 1px solid $mono-500;
 
             .count {
                 background-color: $mono-700;
@@ -273,6 +302,8 @@
     &[data-active='true'] {
         background-color: $mono-700;
         box-shadow: unset;
+
+        border: 1px solid $mono-700;
 
         p {
             .name {
@@ -288,10 +319,7 @@
 
         @include dark-mode {
             background-color: $mono-light;
-
-            &:hover {
-                box-shadow: 0 0 0 1px $mono-light;
-            }
+            border: 1px solid $mono-light;
 
             p {
                 .name {
@@ -306,4 +334,64 @@
             }
         }
     }
+}
+
+.showMore {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+
+    flex-shrink: 0;
+
+    margin-top: 0.25rem;
+
+    height: 2rem;
+    width: 2rem;
+
+    color: $mono-700;
+    border: 1px solid $mono-200;
+
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+
+    transition:
+        color 100ms ease,
+        background-color 100ms ease,
+        border 100ms ease;
+
+    @include dark-mode {
+        color: $mono-light;
+        border: 1px solid $mono-700;
+    }
+
+    &:hover {
+        color: $blue;
+        background-color: transparentize($blue, 0.9);
+        border: 1px solid alpha($blue, 0.5);
+
+        @include dark-mode {
+            color: $mono-light;
+            background-color: $mono-800;
+            border: 1px solid $mono-500;
+        }
+    }
+
+    svg {
+        height: 0.7rem;
+
+        path {
+            stroke-width: 0.25;
+        }
+    }
+}
+
+.divider {
+    margin-top: 0.75rem;
+
+    height: 1rem;
+    width: 1px;
+
+    background-color: $mono-200;
 }

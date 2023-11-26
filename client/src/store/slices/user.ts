@@ -1,6 +1,6 @@
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '@/lib/localStorage.utils';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { isOptional, isString } from '@sirona/types';
+import { isOptional, isString } from '@thymecard/types';
 
 export interface IUserDetails {
     id: string;

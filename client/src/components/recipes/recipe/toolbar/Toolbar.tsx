@@ -2,8 +2,8 @@ import { FC, Fragment, useMemo } from 'react';
 import { useRecipe } from '../RecipeProvider';
 import Tooltip from '@/components/common/tooltip/Tooltip';
 import { ICONS } from '@/assets/icons';
+import { buildKey } from '@thymecard/utils';
 import styles from './toolbar.module.scss';
-import { buildKey } from '@sirona/utils';
 
 const EditIcon = ICONS.common.pen;
 const SaveIcon = ICONS.common.tick;
@@ -136,6 +136,7 @@ const Toolbar: FC<IToolbarProps> = ({
         [
             toggleEditing,
             handleSaveEdit,
+            handleCancelEdit,
             handleOpenScaleIngredientsModal,
             displayIngredients,
             handleToggleDisplayIngredients,

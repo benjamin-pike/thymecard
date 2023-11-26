@@ -140,7 +140,7 @@ const MaxTime: FC<IFilterElementProps> = ({ state, dispatch }) => {
                 />
             </div>
             <div className={styles.times}>
-                {[':30', '1:00', ':30', '2:00', ':30', '3:00', ':30', '4:00'].map((time, index) => (
+                {['0:30', '1:00', '1:30', '2:00', '2:30', '3:00', '3:30', '4:00'].map((time, index) => (
                     <p key={`${time}${index}`}>{time}</p>
                 ))}
             </div>

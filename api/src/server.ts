@@ -48,8 +48,8 @@ export class Server {
     public initAnonymousRoutes() {
         this.application.get('/', (_req, res) => {
             res.json({
-                name: 'Sirona API',
-                description: 'The RESTful API that provides access to the Sirona data model',
+                name: 'Thymecard API',
+                description: 'The RESTful API that provides access to the Thymecard data model',
                 version: '1.0.0',
                 now: new Date().toISOString()
             });
@@ -79,6 +79,7 @@ export class Server {
         this.application.use('/recipes', this.routers.recipe);
         this.application.use('/days', this.routers.day);
         this.application.use('/pantry', this.routers.pantry);
+        this.application.use('/stock', this.routers.stock);
 
         return this;
     }

@@ -23,16 +23,18 @@ import { createToast } from '@/lib/toast/toast.utils';
 import styles from './recipe.module.scss';
 import { useRecipe } from './RecipeProvider';
 import CommentsEdit from './comments/CommentsEdit';
+import { IViewport } from '@/hooks/common/useBreakpoints';
 
 const CloseIcon = ICONS.common.toggle;
 
 interface IRecipeProps {
+    viewport: IViewport;
     isRecipeFullscreen: boolean;
     handleRecipeFullscreen: () => void;
     handleClearSelectedRecipe: () => void;
 }
 
-const Recipe: FC<IRecipeProps> = ({ isRecipeFullscreen, handleRecipeFullscreen, handleClearSelectedRecipe }) => {
+const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFullscreen, handleClearSelectedRecipe }) => {
     const { recipe, isEditing, deleteRecipe } = useRecipe();
 
     const sectionRef = useRef<HTMLElement>(null);
@@ -141,7 +143,15 @@ const Recipe: FC<IRecipeProps> = ({ isRecipeFullscreen, handleRecipeFullscreen, 
                     <div ref={aboutLeftColumn.ref} className={styles.left}>
                         <Metadata scale={scale} />
                     </div>
-                    <div className={styles.right} style={{ height: `${aboutLeftColumn.height}px` }}>
+                    <div
+                        className={styles.right}
+                        style={{
+                            height:
+                                viewport.current.isOneColumnWideMargins || viewport.current.isOneColumnNarrowMargins
+                                    ? undefined
+                                    : `${aboutLeftColumn.height}px`
+                        }}
+                    >
                         <Image />
                         {isEditing && <CommentsEdit />}
                     </div>
@@ -166,7 +176,12 @@ const Recipe: FC<IRecipeProps> = ({ isRecipeFullscreen, handleRecipeFullscreen, 
                             className={styles.ingredientsWrapper}
                             height={'100%'}
                             padding={1}
-                            active={!isEditing && !isPrintLayout}
+                            active={
+                                !isEditing &&
+                                !isPrintLayout &&
+                                !viewport.current.isOneColumnWideMargins &&
+                                !viewport.current.isOneColumnNarrowMargins
+                            }
                             isScrollable={isBodyOnly}
                         >
                             {isEditing ? (
@@ -186,7 +201,12 @@ const Recipe: FC<IRecipeProps> = ({ isRecipeFullscreen, handleRecipeFullscreen, 
                             className={styles.methodWrapper}
                             height={'100%'}
                             padding={displayIngredients ? 2 : 0.5}
-                            active={!isEditing && !isPrintLayout}
+                            active={
+                                !isEditing &&
+                                !isPrintLayout &&
+                                !viewport.current.isOneColumnWideMargins &&
+                                !viewport.current.isOneColumnNarrowMargins
+                            }
                             isScrollable={isBodyOnly}
                         >
                             <>
@@ -205,7 +225,7 @@ const Recipe: FC<IRecipeProps> = ({ isRecipeFullscreen, handleRecipeFullscreen, 
                         </ScrollWrapper>
                     </div>
 
-                    <ModalWrapper isOpen={isScaleIngredientsModalOpen} closeModal={handleCloseScaleIngredientsModal}>
+                    <ModalWrapper isOpen={isScaleIngredientsModalOpen} closeModal={handleCloseScaleIngredientsModal} blurBackground={true}>
                         <ScaleIngredientsModal
                             currentMultiplier={scale}
                             recipeYield={{

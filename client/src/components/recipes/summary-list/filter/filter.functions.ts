@@ -1,10 +1,10 @@
-import { IRecipeSummary } from '@sirona/types';
+import { IRecipeSummary } from '@thymecard/types';
 import { FilterAction, IFilterState } from './filter.types';
 import { isDefined } from '@/lib/type.utils';
 
 export const filterRecipes = (recipes: IRecipeSummary[], state: IFilterState): IRecipeSummary[] => {
     return recipes
-        .filter((recipe) => (recipe.rating ?? 5) >= state.minRating)
+        .filter((recipe) => (recipe.rating ?? 0) >= state.minRating)
         .filter((recipe) => {
             if (state.bookmarked === 'yes') return recipe.isBookmarked;
             if (state.bookmarked === 'no') return !recipe.isBookmarked;
@@ -12,7 +12,14 @@ export const filterRecipes = (recipes: IRecipeSummary[], state: IFilterState): I
         })
         .filter((recipe) => {
             if (state.maxTime === 240) return true;
-            return (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0) <= formatMaxTime(state.maxTime);
+
+            let totalTime = recipe.totalTime;
+
+            if (!totalTime) {
+                totalTime = (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0);
+            }
+
+            return totalTime <= formatMaxTime(state.maxTime);
         })
         .sort((a, b) => {
             switch (state.sortBy.variable) {
@@ -27,12 +34,20 @@ export const filterRecipes = (recipes: IRecipeSummary[], state: IFilterState): I
 
                     return (a.rating - b.rating) * state.sortBy.sort;
                 case 'time': {
-                    const timeA = a.prepTime && a.cookTime ? a.prepTime + a.cookTime : Infinity;
-                    const timeB = b.prepTime && b.cookTime ? b.prepTime + b.cookTime : Infinity;
+                    let timeA = a.totalTime;
+                    let timeB = b.totalTime;
 
-                    if (timeA === Infinity && timeB === Infinity) return 0;
-                    if (timeA === Infinity) return 1;
-                    if (timeB === Infinity) return -1;
+                    if (!timeA) {
+                        timeA = a.prepTime && a.cookTime ? a.prepTime + a.cookTime : undefined;
+                    }
+
+                    if (!timeB) {
+                        timeB = b.prepTime && b.cookTime ? b.prepTime + b.cookTime : undefined;
+                    }
+
+                    if (!isDefined(timeA) && !isDefined(timeB)) return 0;
+                    if (!isDefined(timeA)) return 1;
+                    if (!isDefined(timeB)) return -1;
 
                     return (timeA - timeB) * state.sortBy.sort;
                 }

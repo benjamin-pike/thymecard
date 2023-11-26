@@ -1,7 +1,7 @@
 import { ZodError } from 'zod';
 import { formatZodError } from '../../lib/error/error.utils';
 import { ErrorCode } from '../../lib/error/errorCode';
-import { UnprocessableError } from '../../lib/error/sironaError';
+import { UnprocessableError } from '../../lib/error/thymecardError';
 import { hasKey, isObject, isString, isValidMongoId } from '../../lib/types/typeguards.utils';
 import { UserService } from './user.service';
 import {

@@ -1,6 +1,6 @@
 import { userRepository } from './user.model';
 import { AuthProvider, ILocalUserCreate, IOAuthUserCreate, IUser, isLocalUser } from './user.types';
-import { NotFoundError } from '../../lib/error/sironaError';
+import { NotFoundError } from '../../lib/error/thymecardError';
 import { ErrorCode } from '../../lib/error/errorCode';
 import { UserCache } from '../../lib/types/cache.types';
 import { IAuthService } from '../auth/auth.service';

@@ -11,6 +11,7 @@ import Day from '@/components/planner/day/Day';
 import Month from '@/components/planner/month/Month';
 import DrawerWrapper, { IDrawerWrapperProps } from '@/components/wrappers/drawer/DrawerWrapper';
 
+import { EEventDisplayFormat } from '@/components/planner/planner.types';
 import { formatClasses } from '@/lib/common.utils';
 import { generateMockPlannerData } from '@/test/mock-data/planner';
 
@@ -32,7 +33,12 @@ const Planner = () => {
     const [displayActivities, setDisplayActivities] = useState<boolean>(true);
     const [displayTime, setDisplayTime] = useState<boolean>(true);
 
-    const [eventDisplayFormat, toggleEventDisplayFormat] = useToggle(['detailed', 'expanded', 'compact'] as const);
+    const [eventDisplayFormat, toggleEventDisplayFormat] = useToggle([
+        EEventDisplayFormat.COMPACT,
+        EEventDisplayFormat.SIMPLE,
+        EEventDisplayFormat.STRIP,
+        EEventDisplayFormat.EXPANDED
+    ] as const);
 
     const [displayDayView, setDisplayDayView] = useState(false);
 

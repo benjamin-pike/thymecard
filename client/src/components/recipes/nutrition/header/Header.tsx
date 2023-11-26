@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { ICONS } from '@/assets/icons';
-import styles from './header.module.scss';
 import { capitalize } from '@/lib/string.utils';
 import { formatClasses } from '@/lib/common.utils';
 import { IAlert, IAssignButtonRefs } from '../Nutrition';
-import { StockTab } from 'types/recipe.types';
-import { buildKey } from '@sirona/utils';
+import { buildKey } from '@thymecard/utils';
+import { StockSection } from '@thymecard/types';
+import styles from './header.module.scss';
 
 const ToggleIcon = ICONS.common.toggle;
 const AddToFridgeIcon = ICONS.recipes.addToFridge;
@@ -18,7 +18,7 @@ interface IHeaderProps {
     alerts: IAlert[];
     displayDetails: boolean;
     handleToggleDetails: () => void;
-    handleMoveItemButtonClick: (target: StockTab) => (e: React.MouseEvent<HTMLButtonElement>) => void;
+    handleMoveItemButtonClick: (target: StockSection) => (e: React.MouseEvent<HTMLButtonElement>) => void;
     assignButtonRefs: IAssignButtonRefs;
 }
 
@@ -60,7 +60,7 @@ const Header: FC<IHeaderProps> = ({
                     className={styles.pantry}
                     data-tooltip-id={'add-to-pantry-nutrition'}
                     data-tooltip-content={'Add to Pantry'}
-                    onClick={handleMoveItemButtonClick('pantry')}
+                    onClick={handleMoveItemButtonClick(StockSection.PANTRY)}
                 >
                     <AddToFridgeIcon />
                 </button>
@@ -69,7 +69,7 @@ const Header: FC<IHeaderProps> = ({
                     className={styles.shoppingList}
                     data-tooltip-id={'add-to-shopping-list-nutrition'}
                     data-tooltip-content={'Add to Shopping List'}
-                    onClick={handleMoveItemButtonClick('shopping-list')}
+                    onClick={handleMoveItemButtonClick(StockSection.PANTRY)}
                 >
                     <AddToShoppingListIcon />
                 </button>
@@ -78,7 +78,7 @@ const Header: FC<IHeaderProps> = ({
                     className={styles.favorites}
                     data-tooltip-id={'add-to-favorites-nutrition'}
                     data-tooltip-content={'Add to Favorites'}
-                    onClick={handleMoveItemButtonClick('favorites')}
+                    onClick={handleMoveItemButtonClick(StockSection.PANTRY)}
                 >
                     <AddToFavoritesIcon />
                 </button>

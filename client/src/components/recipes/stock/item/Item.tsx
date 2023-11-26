@@ -1,7 +1,8 @@
-import { FC } from 'react';
-import styles from './item.module.scss';
+import { FC, useCallback, useMemo } from 'react';
+import { useStock } from '../StockProvider';
 import { ICONS } from '@/assets/icons';
-import { IStockItem, StockTab } from 'types/recipe.types';
+import { IStockCategory, IStockItem, StockSection } from '@thymecard/types';
+import styles from './item.module.scss';
 
 const MoveToFridgeIcon = ICONS.recipes.addToFridge;
 const AddToShoppingListIcon = ICONS.recipes.addToShoppingList;
@@ -20,39 +21,48 @@ interface IAssignItemRefs {
 export interface IItem {
     index: number;
     totalItems: number;
-    tab: StockTab;
+    section: StockSection;
+    category: IStockCategory;
     item: IStockItem;
     nameInputSize: number;
     quantityInputSize: number;
     assignItemRefs: IAssignItemRefs;
     isActive: boolean;
-    itemIds: Record<StockTab, string[]>;
-    handleInputChange: (index: number, key: 'name' | 'quantity' | 'note', value: string) => void;
-    handleMoveItemButtonClick: (target: StockTab) => (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-    addItem: () => void;
-    removeItem: (itemId: string) => void;
+    sectionItemIds: Record<StockSection, string[]>;
+    handleMoveItemButtonClick: (target: StockSection) => (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     focusAdjacentCell: (currentIndex: number, direction: 'up' | 'down' | 'left' | 'right', inputType: 'name' | 'quantity' | 'note') => void;
 }
 
 const Item: FC<IItem> = ({
     index,
     totalItems,
-    tab,
+    section,
+    category,
     item,
-    itemIds,
+    sectionItemIds,
     nameInputSize,
     quantityInputSize,
     assignItemRefs,
     isActive,
-    handleInputChange,
     handleMoveItemButtonClick,
-    addItem,
-    removeItem,
     focusAdjacentCell
 }) => {
-    const isInPantry = itemIds.pantry.includes(item.id);
-    const isInShoppingList = itemIds['shopping-list'].includes(item.id);
-    const isInFavorites = itemIds.favorites.includes(item.id);
+    const { addItem: addItemClosure, updateItem: updateItemClosure, removeItem: removeItemClosure } = useStock();
+
+    const addItem = useMemo(() => addItemClosure(section, category), [addItemClosure, category, section]);
+    const updateItem = useMemo(() => updateItemClosure(section, category), [category, section, updateItemClosure]);
+    const removeItem = useMemo(() => removeItemClosure(section, category, item.id), [category, item.id, removeItemClosure, section]);
+
+    const isInPantry = sectionItemIds.pantry.includes(item.id);
+    const isInShoppingList = sectionItemIds.shoppingList.includes(item.id);
+    const isInFavorites = sectionItemIds.favorites.includes(item.id);
+
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>, index: number, key: 'name' | 'quantity' | 'note') => {
+            updateItem(index, key, e.target.value);
+        },
+        [updateItem]
+    );
 
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         const target = e.target as HTMLInputElement;
@@ -75,7 +85,7 @@ const Item: FC<IItem> = ({
 
                     if (inputType === 'name') {
                         focusAdjacentCell(index, 'up', inputType);
-                        removeItem(item.id);
+                        removeItem();
                     } else {
                         focusAdjacentCell(index, 'left', inputType);
                     }
@@ -117,9 +127,8 @@ const Item: FC<IItem> = ({
                 size={nameInputSize || 12}
                 value={item.name}
                 placeholder={nameInputSize ? '' : 'Item name'}
-                autoFocus={!item.name}
                 data-type="name"
-                onChange={(e) => handleInputChange(index, 'name', e.target.value)}
+                onChange={(e) => handleChange(e, index, 'name')}
                 onKeyDown={handleInputKeyDown}
             />
             <input
@@ -129,7 +138,7 @@ const Item: FC<IItem> = ({
                 placeholder={quantityInputSize ? '' : 'Quantity'}
                 value={item.quantity ?? ''}
                 data-type="quantity"
-                onChange={(e) => handleInputChange(index, 'quantity', e.target.value)}
+                onChange={(e) => handleChange(e, index, 'quantity')}
                 onKeyDown={handleInputKeyDown}
             />
             <input
@@ -138,42 +147,44 @@ const Item: FC<IItem> = ({
                 value={item.note}
                 placeholder="Add note"
                 data-type="note"
-                onChange={(e) => handleInputChange(index, 'note', e.target.value)}
+                onChange={(e) => handleChange(e, index, 'note')}
                 onKeyDown={handleInputKeyDown}
             />
             <span className={styles.buttons}>
-                {tab !== 'pantry' && (
+                {section !== StockSection.PANTRY && (
                     <button
                         ref={assignItemRefs.pantryButton}
                         className={styles.moveToPantry}
                         data-tooltip-id="move-to-pantry-stock"
-                        data-tooltip-content={isInPantry ? 'Already in Pantry' : `${tab === 'shopping-list' ? 'Move' : 'Add'} to Pantry`}
+                        data-tooltip-content={
+                            isInPantry ? 'Already in Pantry' : `${section === StockSection.SHOPPING_LIST ? 'Move' : 'Add'} to Pantry`
+                        }
                         data-active={isInPantry}
-                        onClick={handleMoveItemButtonClick('pantry')}
+                        onClick={handleMoveItemButtonClick(StockSection.PANTRY)}
                     >
                         <MoveToFridgeIcon />
                     </button>
                 )}
-                {tab !== 'shopping-list' && (
+                {section !== StockSection.SHOPPING_LIST && (
                     <button
                         ref={assignItemRefs.shoppingListButton}
                         className={styles.addToShoppingList}
                         data-tooltip-id="add-to-shopping-list-stock"
                         data-tooltip-content={isInShoppingList ? 'Already in Shopping List' : 'Add to Shopping List'}
                         data-active={isInShoppingList}
-                        onClick={handleMoveItemButtonClick('shopping-list')}
+                        onClick={handleMoveItemButtonClick(StockSection.SHOPPING_LIST)}
                     >
                         <AddToShoppingListIcon />
                     </button>
                 )}
-                {tab !== 'favorites' && (
+                {section !== StockSection.FAVORITES && (
                     <button
                         ref={assignItemRefs.favoriteButton}
                         className={styles.addToFavorites}
                         data-tooltip-id="add-to-favorites-stock"
                         data-tooltip-content={isInFavorites ? 'Already in Favorites' : 'Add to Favorites'}
                         data-active={isInFavorites}
-                        onClick={handleMoveItemButtonClick('favorites')}
+                        onClick={handleMoveItemButtonClick(StockSection.FAVORITES)}
                     >
                         <StarIcon />
                     </button>
@@ -182,7 +193,7 @@ const Item: FC<IItem> = ({
                     className={styles.deleteItem}
                     data-tooltip-id="delete-item-stock"
                     data-tooltip-content="Delete Item"
-                    onClick={() => removeItem(item.id)}
+                    onClick={removeItem}
                     onKeyDown={handleButtonKeyDown}
                 >
                     <DeleteIcon />

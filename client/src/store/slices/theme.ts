@@ -1,6 +1,6 @@
 import jwt_decode from 'jwt-decode';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { validate } from '@sirona/types';
+import { validate } from '@thymecard/types';
 
 export const getIsPremium = () => {
     const accessToken = localStorage.getItem('accessToken');

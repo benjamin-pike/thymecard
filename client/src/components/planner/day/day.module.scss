@@ -340,7 +340,7 @@
         &[data-type='#{$event}'] {
             color: $light-adjusted-color;
             background-color: transparentize($light-adjusted-color, 0.9);
-            box-shadow: 0 0 0 1px transparentize($light-adjusted-color, 0.5);
+            box-shadow: 0 0 0 1px transparentize($color, 0.5);
 
             @include dark-mode {
                 color: $dark-adjusted-color;

@@ -3,17 +3,15 @@
     align-items: center;
     gap: 0.75rem;
 
-    padding: 1.5rem;
-    
     background-color: $mono-light;
-    border-bottom: 1px solid $mono-200;
 
     @include dark-mode {
         background-color: $mono-900;
-        border-bottom: 1px solid $mono-700;
     }
 
-    @include responsive(('listPlus', 'listOnly')) {
+    @include responsive(('twoColumns', 'oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+        padding: 1.5rem;
+
         border-bottom: unset;
         border-top: 1px solid $mono-200;
 
@@ -51,26 +49,30 @@
 
         color: $mono-700;
         background-color: $mono-light;
-        box-shadow: 0 0 0 1px $mono-200;
-        
+        border: 1px solid $mono-200;
+
         border-radius: 0.5rem;
 
-        transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease, font-size 150ms ease, gap 150ms ease, padding 150ms ease;
+        transition:
+            color 100ms ease,
+            background-color 100ms ease,
+            border 100ms ease;
 
         @include dark-mode {
             color: $mono-light;
             background-color: $mono-900;
-            box-shadow: 0 0 0 1px $mono-700;
+            border: 1px solid $mono-700;
         }
 
         &:hover {
-            color: $mono-light;
-            background-color: $mono-700;
-            box-shadow: 0 0 0 1px $mono-700;
+            color: $blue;
+            background-color: transparentize($blue, 0.9);
+            border: 1px solid alpha($blue, 0.5);
 
             @include dark-mode {
+                color: $mono-light;
                 background-color: $mono-800;
-                box-shadow: 0 0 0 1px $mono-500;
+                border: 1px solid $mono-500;
             }
         }
 

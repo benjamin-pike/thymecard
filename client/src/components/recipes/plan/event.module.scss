@@ -1,0 +1,246 @@
+.event {
+    position: relative;
+
+    &[data-past='true'] {
+        opacity: 0.5;
+        filter: grayscale(1) contrast(0.85);
+
+        pointer-events: none;
+
+        @include dark-mode {
+            opacity: 0.4;
+            filter: sepia(1) hue-rotate(170deg);
+        }
+
+        header {
+            .eventTime {
+                opacity: 0.85;
+            }
+
+            button {
+                display: none;
+            }
+        }
+    }
+
+    header {
+        position: relative;
+
+        display: flex;
+        gap: 0.35rem;
+
+        margin-left: 1rem;
+
+        font-size: $fs-11;
+
+        h2 {
+            padding: 0.3rem 0.7rem;
+
+            border-radius: 100vmax;
+
+            &.eventType {
+                color: $mono-700;
+                border: 1px solid $mono-200;
+
+                @include dark-mode {
+                    color: $mono-light;
+                    border: 1px solid $mono-700;
+                }
+            }
+
+            &.eventTime {
+                color: $mono-light;
+                background-color: $mono-700;
+                border: 1px solid $mono-700;
+
+                @include dark-mode {
+                    background-color: $mono-800;
+                    border: 1px solid $mono-700;
+                }
+            }
+
+            &.eventMetadata {
+                margin-left: auto;
+
+                color: $mono-600;
+                font-weight: 100;
+                white-space: pre;
+
+                transition:
+                    font-size 100ms ease,
+                    scale 100ms ease,
+                    opacity 100ms ease;
+                transform-origin: right center;
+
+                span {
+                    font-weight: 400;
+                }
+
+                @include dark-mode {
+                    color: $mono-300;
+                }
+
+                @include responsive('mobile') {
+                    display: none;
+                }
+            }
+        }
+
+        button {
+            display: flex;
+            align-items: center;
+
+            padding: 0.3rem 0.4rem;
+
+            width: fit-content;
+
+            color: $mono-600;
+            border: 1px solid $mono-200;
+
+            border-radius: 100vmax;
+
+            transition:
+                color 100ms ease,
+                background-color 100ms ease,
+                border 100ms ease,
+                padding 100ms ease,
+                gap 100ms ease;
+
+            @include dark-mode {
+                color: $mono-light;
+                border: 1px solid $mono-700;
+            }
+
+            p {
+                font-size: 0;
+                font-weight: 400;
+                white-space: nowrap;
+
+                opacity: 0;
+
+                transition:
+                    font-size 100ms ease,
+                    opacity 100ms ease;
+            }
+
+            &.addItem {
+                svg {
+                    scale: 1.1;
+
+                    path {
+                        stroke-width: 5;
+                    }
+                }
+            }
+
+            &.bookmark {
+                svg {
+                    path {
+                        stroke-width: 7;
+                    }
+                }
+            }
+
+            &.remove {
+                svg {
+                    scale: 1.2;
+
+                    path {
+                        stroke-width: 45;
+                    }
+                }
+            }
+
+            &:hover {
+                gap: 0.25rem;
+
+                padding: 0.3rem 0.6rem;
+
+                color: $blue;
+                background-color: alpha($blue, 0.1);
+                border: 1px solid alpha($blue, 0.5);
+
+                @include dark-mode {
+                    color: $mono-light;
+                    background-color: $mono-800;
+                    border: 1px solid $mono-500;
+                }
+
+                p {
+                    font-size: $fs-10;
+
+                    opacity: 1;
+                }
+
+                ~ .eventMetadata {
+                    opacity: 0;
+
+                    font-size: 0;
+
+                    scale: 0;
+                }
+            }
+        }
+
+        &::before {
+            content: '';
+
+            position: absolute;
+            top: 50%;
+            right: calc(100% + 1rem);
+
+            height: 0.5rem;
+            aspect-ratio: 1;
+
+            border-radius: 100vmax;
+
+            translate: 0 -50%;
+        }
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: calc(1.25rem + 0.5rem + 1px);
+        left: calc(-0.25rem - 0.5px);
+
+        height: calc(100% - 0.5rem);
+        width: 1px;
+
+        background-color: $mono-200;
+
+        @include dark-mode {
+            background-color: $mono-700;
+        }
+    }
+
+    ul {
+        display: flex;
+        flex-direction: column;
+
+        padding: 1rem 0 0 1.5rem;
+    }
+
+    @each $event, $color in $event-colors {
+        &[data-event='#{$event}'] {
+            $light-adjusted-color: contrastize($color, 'light');
+            $dark-adjusted-color: contrastize($color, 'dark');
+
+            header {
+                &::before {
+                    background-color: transparentize($light-adjusted-color, 0.125);
+                    box-shadow:
+                        0 0 0 1.5px white inset,
+                        0 0 0 1px transparentize($light-adjusted-color, 0.5);
+
+                    @include dark-mode {
+                        background-color: $dark-adjusted-color;
+                        box-shadow:
+                            0 0 0 1.5px $mono-900 inset,
+                            0 0 0 1px $dark-adjusted-color;
+                    }
+                }
+            }
+        }
+    }
+}

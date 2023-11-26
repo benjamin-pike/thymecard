@@ -1,6 +1,6 @@
 import { Prisma, type PrismaClient } from '@prisma/client';
 import { IPantryProduct } from './pantry.types';
-import { NotFoundError } from '../../lib/error/sironaError';
+import { NotFoundError } from '../../lib/error/thymecardError';
 import { ErrorCode } from '../../lib/error/errorCode';
 
 interface IPantryServiceDependencies {

@@ -4,6 +4,7 @@ import { IUserController } from "../../components/user/user.controller";
 import { IRecipeController } from "../../components/recipe/recipe.controller";
 import { IDayController } from "../../components/day/day.controller";
 import { IPantryController } from "../../components/pantry/pantry.controller";
+import { IStockController } from "../../components/stock/stock.controller";
 import { AuthMiddleware } from "../../middleware/auth.middleware";
 import { ContextMiddleware } from "../../middleware/context.middleware";
 import { ErrorsMiddleware } from "../../middleware/error.middleware";
@@ -15,9 +16,10 @@ export interface IDependencies {
     recipeController: IRecipeController
     dayController: IDayController;
     pantryController: IPantryController;
+    stockController: IStockController;
 }
 
-type routers = 'auth' | 'user' | 'recipe' | 'day' | 'pantry';
+type routers = 'auth' | 'user' | 'recipe' | 'day' | 'pantry' | 'stock';
 
 export type IRouters = {
     [key in routers]: express.Router;

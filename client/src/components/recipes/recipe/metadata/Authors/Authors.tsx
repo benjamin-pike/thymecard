@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { useRecipe } from '../../RecipeProvider';
 import { ICONS } from '@/assets/icons';
+import { buildKey } from '@thymecard/utils';
 import styles from './authors.module.scss';
-import { buildKey } from '@sirona/utils';
 
 const DeleteIcon = ICONS.common.XLarge;
 const AddIcon = ICONS.common.plus;

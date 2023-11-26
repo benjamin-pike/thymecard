@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import HttpCode from 'http-status-enum';
 import { ErrorCode } from '../lib/error/errorCode';
-import { SironaError, standardizeErrorCode } from '../lib/error/sironaError';
+import { ThymecardError, standardizeErrorCode } from '../lib/error/thymecardError';
 import { logger } from '../common/logger';
 
 export const errorsMiddleware = (err: any, req: Request, res: Response, _next: NextFunction) => {
-    if (err instanceof SironaError) {
+    if (err instanceof ThymecardError) {
         logger.error(err.toLog());
         return res.status(err.httpCode).json(err.toResponseBody());
     }

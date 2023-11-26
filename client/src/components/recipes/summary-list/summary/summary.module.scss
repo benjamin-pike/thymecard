@@ -109,6 +109,13 @@
             display: flex;
             align-items: center;
             gap: 0.4rem;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+
+            height: 0.8rem;
+            width: 100%;
+
+            overflow: hidden;
 
             .detail {
                 display: flex;
@@ -139,21 +146,11 @@
                         scale: 1.1;
                     }
                 }
-
-                &.rating {
-                    gap: 0;
-
-                    svg {
-                        scale: 0.95;
-
-                        &:not(:first-of-type) {
-                            margin-left: -0.1rem;
-                        }
-                    }
-                }
             }
 
             .divider {
+                margin-right: 0.4rem;
+
                 width: 1px;
                 height: 0.75rem;
 
@@ -179,32 +176,44 @@
 
             padding: 1px;
 
-            & button {
+            button {
                 height: 1.125rem;
 
                 padding: 0 0.5rem;
 
-                border-radius: 0.25rem;
+                border-radius: 0.35rem;
 
-                box-shadow: 0 0 0 0.5px $mono-200;
+                border: 1px solid $mono-200;
 
                 white-space: nowrap;
 
-                transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;
+                transition: color 100ms ease, background-color 100ms ease, border 100ms ease;
+
+                &:hover {
+                    color: $blue;
+                    background-color: alpha($blue, 0.1);
+                    border: 1px solid alpha($blue, 0.5);
+
+                    @include dark-mode {
+                        color: $mono-light;
+                        background-color: $mono-800;
+                        border: 1px solid $mono-500;
+                    }
+                }
 
                 &[data-selected='true'] {
                     color: $mono-light;
                     background-color: $mono-700;
-                    box-shadow: 0 0 0 0.5px $mono-700;
+                    border: 1px solid $mono-700;
                 }
 
                 @include dark-mode {
-                    box-shadow: 0 0 0 0.5px $mono-700;
+                    border: 1px solid $mono-700;
 
                     &[data-selected='true'] {
                         color: $mono-700;
                         background-color: $mono-light;
-                        box-shadow: 0 0 0 0.5px $mono-light;
+                        border: 1px solid $mono-light;
                     }
                 }
             }

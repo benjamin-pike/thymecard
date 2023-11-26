@@ -11,8 +11,6 @@ import { useRecipe } from '../recipe/RecipeProvider';
 const LinkIcon = ICONS.recipes.link;
 const CreateIcon = ICONS.recipes.create;
 const ChefIcon = ICONS.recipes.chef;
-const DuplicateIcon = ICONS.recipes.duplicate;
-const UploadIcon = ICONS.recipes.upload;
 const AddRecipeIcon = ICONS.recipes.add;
 
 const CreateBar = () => {
@@ -22,9 +20,14 @@ const CreateBar = () => {
 
     const [value, setValue] = useState('');
 
-    const condenseButtons = customViewportSize === 'listOnly';
+    const condenseButtons = customViewportSize === 'oneColumnNarrowMargins' || customViewportSize === 'oneColumnWideMargins';
     const displayChefButton = isPremium && viewportSize !== 'mobile';
-    const tooltipPosition = customViewportSize === 'listPlus' || customViewportSize === 'listOnly' ? 'top' : 'bottom';
+    const tooltipPosition =
+        customViewportSize === 'twoColumns' ||
+        customViewportSize === 'oneColumnNarrowMargins' ||
+        customViewportSize === 'oneColumnWideMargins'
+            ? 'top'
+            : 'bottom';
 
     const create = useCallback(() => {
         createRecipePartial({});
@@ -63,14 +66,15 @@ const CreateBar = () => {
                     <button data-tooltip-id="add-manually" onClick={create}>
                         <CreateIcon />
                     </button>
-                    <div className={styles.divider} />
+                    {/* TODO: IMPLEMENT BELOW */}
+                    {/* <div className={styles.divider} />
                     <button data-tooltip-id="import-file">
                         <UploadIcon />
                     </button>
                     <div className={styles.divider} />
                     <button data-tooltip-id="duplicate-existing">
                         <DuplicateIcon />
-                    </button>
+                    </button> */}
                 </>
             )}
 
@@ -80,12 +84,12 @@ const CreateBar = () => {
             <Tooltip id="add-manually" place={tooltipPosition} offset={17.5}>
                 Add Manually
             </Tooltip>
-            <Tooltip id="import-file" place={tooltipPosition} offset={17.5}>
+            {/* <Tooltip id="import-file" place={tooltipPosition} offset={17.5}>
                 Import from File
-            </Tooltip>
-            <Tooltip id="duplicate-existing" place={tooltipPosition} offset={17.5}>
+            </Tooltip> */}
+            {/* <Tooltip id="duplicate-existing" place={tooltipPosition} offset={17.5}>
                 Duplicate Existing
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip id="add" place={tooltipPosition} offset={17.5}>
                 Add Recipe
             </Tooltip>

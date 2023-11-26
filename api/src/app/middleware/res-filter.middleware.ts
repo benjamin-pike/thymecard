@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { filterObjectKeys } from '../lib/types/object.utils';
-import { UnprocessableError } from '../lib/error/sironaError';
+import { UnprocessableError } from '../lib/error/thymecardError';
 import { isDefined, isString } from '../lib/types/typeguards.utils';
 import { ErrorCode } from '../lib/error/errorCode';
 

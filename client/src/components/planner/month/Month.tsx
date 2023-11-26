@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
-import { formatClasses } from '@/lib/common.utils';
-import { PlannerData } from '../planner.types';
+import { EEventDisplayFormat, PlannerData } from '../planner.types';
 import { IEvent } from '@/lib/global.types';
 import styles from './month.module.scss';
 
@@ -12,7 +11,7 @@ interface IMonthProps {
     displayMeals: boolean;
     displayActivities: boolean;
     displayTime: boolean;
-    eventDisplayFormat: 'compact' | 'detailed' | 'expanded';
+    eventDisplayFormat: EEventDisplayFormat;
     handleDayClick: (date: DateTime) => void;
 }
 
@@ -81,7 +80,7 @@ interface IDayCellProps {
     displayMeals: boolean;
     displayActivities: boolean;
     displayTime: boolean;
-    eventDisplayFormat: 'compact' | 'detailed' | 'expanded';
+    eventDisplayFormat: EEventDisplayFormat;
     isVisibleWhenTwoColumns: boolean;
     isVisibleWhenThreeColumns: boolean;
     handleDayClick: (date: DateTime) => void;
@@ -110,16 +109,15 @@ const DayCell: FC<IDayCellProps> = ({
     return (
         <div
             key={date.toFormat('yyyy-MM-dd')}
-            className={formatClasses(styles, [
-                'cell',
-                isToday ? 'today' : '',
-                isCurrentMonth ? '' : 'outsideCurrentMonth',
-                isCurrentDay ? 'selected' : '',
-                isVisibleWhenTwoColumns ? '' : 'hiddenWhenTwoColumns',
-                isVisibleWhenThreeColumns ? '' : 'hiddenWhenThreeColumns'
-            ])}
+            className={styles.cell}
+            data-today={isToday}
+            data-current-day={isCurrentDay}
+            data-current-month={isCurrentMonth}
+            data-hidden-two-columns={!isVisibleWhenTwoColumns}
+            data-hidden-three-columns={!isVisibleWhenThreeColumns}
             data-first={isFirstDayOfCurrentMonth}
             data-last={isLastDayOfCurrentMonth}
+            data-format={eventDisplayFormat}
             onClick={() => handleDayClick(date)}
         >
             <p className={styles.date}>
@@ -135,7 +133,7 @@ const DayCell: FC<IDayCellProps> = ({
                 }
 
                 return (
-                    <div key={k} className={formatClasses(styles, ['event', eventDisplayFormat])} data-event={event.type}>
+                    <div key={k} className={styles.event} data-event={event.type} data-format={eventDisplayFormat}>
                         <p className={styles.eventName}>{event.name}</p>
                         {displayTime && <p className={styles.eventTime}>{event.time}</p>}
                     </div>
