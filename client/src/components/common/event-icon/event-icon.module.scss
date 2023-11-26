@@ -13,12 +13,22 @@
         &[data-event='#{$event}'] {
             color: $light-adjusted-color;
             background-color: transparentize($light-adjusted-color, 0.9);
-            box-shadow: 0 0 0 1px transparentize($light-adjusted-color, 0.6) inset, 0 0 0 3px white inset;
+            box-shadow: 0 0 0 2px white inset;
+            border: 1px solid alpha($light-adjusted-color, 0.4);
+
+            &[data-dashed='true'] {
+                border: 1px dashed alpha($light-adjusted-color, 0.5);
+            }
 
             @include dark-mode {
                 color: $dark-adjusted-color;
                 background-color: transparentize($dark-adjusted-color, 0.9);
-                box-shadow: 0 0 0 1px transparentize($dark-adjusted-color, 0.5) inset, 0 0 0 3px $mono-900 inset;
+                box-shadow: 0 0 0 2px $mono-900 inset;
+                border: 1px solid alpha($dark-adjusted-color, 0.6);
+
+                &[data-dashed='true'] {
+                    border: 1px dashed alpha($dark-adjusted-color, 0.5);
+                }
             }
         }
     }
@@ -36,7 +46,7 @@
         background-color: transparent;
     }
 
-    & svg {
+    svg {
         width: 45%;
         height: 45%;
 

@@ -27,6 +27,9 @@ import { PrismaClient } from '@prisma/client';
 import { PantryService } from './app/components/pantry/pantry.service';
 import { PantryController } from './app/components/pantry/pantry.controller';
 import { pantryPermissions, pantryRouter } from './app/components/pantry/pantry.router';
+import { stockRouter, stockPermissions } from './app/components/stock/stock.router';
+import { StockService } from './app/components/stock/stock.service';
+import { StockController } from './app/components/stock/stock.controller';
 import { S3Repository } from './app/lib/data/s3.repository';
 
 // Initialize server
@@ -80,6 +83,7 @@ import { S3Repository } from './app/lib/data/s3.repository';
     const recipeService = new RecipeService({ recipeCache, recipeSummaryCache, s3Repository });
     const dayService = new DayService({ dayCache });
     const pantryService = new PantryService({ prismaClient });
+    const stockService = new StockService();
 
     // Controllers
     const authController = new AuthController({ authService, userService });
@@ -87,13 +91,15 @@ import { S3Repository } from './app/lib/data/s3.repository';
     const recipeController = new RecipeController({ recipeService });
     const dayController = new DayController({ dayService });
     const pantryController = new PantryController({ pantryService });
+    const stockController = new StockController({ stockService });
 
     const dependencies = {
         authController,
         userController,
         recipeController,
         dayController,
-        pantryController
+        pantryController,
+        stockController
     };
 
     // Permissions
@@ -108,7 +114,8 @@ import { S3Repository } from './app/lib/data/s3.repository';
         users: userPermissions,
         recipes: recipePermissions,
         days: dayPermissions,
-        pantry: pantryPermissions
+        pantry: pantryPermissions,
+        stock: stockPermissions
     };
 
     // Middleware
@@ -132,7 +139,8 @@ import { S3Repository } from './app/lib/data/s3.repository';
         user: userRouter(dependencies),
         recipe: recipeRouter(dependencies),
         day: dayRouter(dependencies),
-        pantry: pantryRouter(dependencies)
+        pantry: pantryRouter(dependencies),
+        stock: stockRouter(dependencies)
     };
 
     const server = new Server(routers, middleware);

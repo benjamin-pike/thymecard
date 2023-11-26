@@ -9,11 +9,9 @@ import { BiFoodMenu } from 'react-icons/bi';
 import { FiActivity } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MdOutlineCalendarMonth, MdOutlineSpaceDashboard } from 'react-icons/md';
-// import { ReactComponent as Logo } from 'assets/logo.svg';
-// import { ReactComponent as Logo } from 'assets/thymecard-logo.png';
-import LogoLight from 'assets/thymecard-light.png';
 import { TbDiamond } from 'react-icons/tb';
 import { capitalize } from '@/lib/string.utils';
+import LogoLight from 'assets/brand.png';
 import styles from './navbar.module.scss';
 
 const Navbar = () => {

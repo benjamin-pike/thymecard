@@ -1,11 +1,11 @@
 {
     "name": "utils",
     "version": "1.0.0",
-    "description": "Utility functions shared between the Sirona client and API",
+    "description": "Utility functions shared between the Thymecard client and API",
     "main": "index.ts",
     "author": "Benjamin Pike",
     "license": "ISC",
     "dependencies": {
-        "@sirona/types": "file:../types"
+        "@thymecard/types": "file:../types"
     }
 }

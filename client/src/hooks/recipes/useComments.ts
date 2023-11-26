@@ -1,7 +1,7 @@
-import { Client, IRecipeComment } from '@sirona/types';
-import { compare } from '@sirona/utils';
 import { useState } from 'react';
 import useUser from '../user/useUser';
+import { Client, IRecipeComment } from '@thymecard/types';
+import { compare } from '@thymecard/utils';
 
 const useComments = () => {
     const { user } = useUser();

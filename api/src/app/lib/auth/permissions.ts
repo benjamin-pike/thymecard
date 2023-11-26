@@ -15,7 +15,8 @@ export enum AccessScope {
     User = 'u',
     Recipe = 'r',
     Day = 'd',
-    Pantry = 'p'
+    Pantry = 'p',
+    Stock = 's'
 }
 
 export const permissions = {
@@ -23,13 +24,15 @@ export const permissions = {
         [AccessScope.User]: Permission.ALL,
         [AccessScope.Recipe]: Permission.ALL,
         [AccessScope.Day]: Permission.ALL,
-        [AccessScope.Pantry]: Permission.ALL
+        [AccessScope.Pantry]: Permission.ALL,
+        [AccessScope.Stock]: Permission.ALL
     },
     [Role.USER]: {
         [AccessScope.User]: Permission.READ | Permission.WRITE | Permission.DELETE,
         [AccessScope.Recipe]: Permission.READ | Permission.WRITE | Permission.DELETE,
         [AccessScope.Day]: Permission.READ | Permission.WRITE | Permission.DELETE,
-        [AccessScope.Pantry]: Permission.READ | Permission.WRITE | Permission.DELETE
+        [AccessScope.Pantry]: Permission.READ | Permission.WRITE | Permission.DELETE,
+        [AccessScope.Stock]: Permission.READ | Permission.WRITE | Permission.DELETE
     }
 }
 

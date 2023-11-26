@@ -1,4 +1,4 @@
-import { isValidUrl } from '@sirona/types';
+import { isValidUrl } from '@thymecard/types';
 
 export const validateImageUrl = (url: string) => {
     if (!isValidUrl(url)) {

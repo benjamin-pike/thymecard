@@ -1,12 +1,12 @@
 import { FC, useCallback, useMemo, useState } from 'react';
+import { useRecipe } from '../RecipeProvider';
 import PopoverWrapper, { PopoverPosition } from '@/components/wrappers/popover/PopoverWrapper';
 import Tooltip from '@/components/common/tooltip/Tooltip';
-import { isNull } from '@sirona/types';
+import { isNull } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';
-import styles from './ingredients-edit.module.scss';
-import { useRecipe } from '../RecipeProvider';
 import { INGREDIENTS_FIELDS } from '@/hooks/recipes/useIngredients';
-import { buildKey } from '@sirona/utils';
+import { buildKey } from '@thymecard/utils';
+import styles from './ingredients-edit.module.scss';
 
 const TickIcon = ICONS.common.tick;
 const QuestionIcon = ICONS.common.question;
@@ -157,17 +157,19 @@ const IngredientsEdit: FC = () => {
                                 >
                                     <DeleteIcon />
                                 </button>
-                                <td className={styles.match}>
-                                    <button
-                                        data-tooltip-id="nutritional-details-match"
-                                        data-tooltip-content={MATCH_TOOLTIP_CONTENTS[matches[i]?.strength ?? 'none']}
-                                        data-match={matches[i]?.strength ?? 'none'}
-                                        data-popover-id={matches[i]?.strength ? 'popover-match' : undefined}
-                                        onClick={handleSelectMatch(i)}
-                                    >
-                                        {MATCH_ICONS[matches[i]?.strength ?? 'none']}
-                                    </button>
-                                </td>
+                                {!!item && (
+                                    <td className={styles.match}>
+                                        <button
+                                            data-tooltip-id="nutritional-details-match"
+                                            data-tooltip-content={MATCH_TOOLTIP_CONTENTS[matches[i]?.strength ?? 'none']}
+                                            data-match={matches[i]?.strength ?? 'none'}
+                                            data-popover-id={matches[i]?.strength ? 'popover-match' : undefined}
+                                            onClick={handleSelectMatch(i)}
+                                        >
+                                            {MATCH_ICONS[matches[i]?.strength ?? 'none']}
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         );
                     })}

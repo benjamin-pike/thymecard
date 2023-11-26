@@ -1,8 +1,8 @@
 import { FC, useMemo } from 'react';
-import styles from './rating.module.scss';
 import { useRecipe } from '../../RecipeProvider';
 import { numberToStars } from '@/lib/elements.utils';
-import { isDefined } from '@sirona/types';
+import { isDefined } from '@thymecard/types';
+import styles from './rating.module.scss';
 
 const Rating: FC = () => {
     const { isEditing } = useRecipe();

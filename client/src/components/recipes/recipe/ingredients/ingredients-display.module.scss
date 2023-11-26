@@ -1,11 +1,18 @@
 .ingredients {
     display: flex;
     flex-direction: column;
+    flex-shrink: 1;
     gap: 0.25rem;
 
     margin-bottom: 1rem;
 
     width: fit-content;
+
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+        margin-top: 1.25rem;
+
+        width: 100%;
+    }
 
     &[data-print='true'] {
         margin-top: 1rem;
@@ -16,12 +23,16 @@
 
         padding: 0 1.5rem;
 
-        min-width: 17.5rem;
+        min-width: 16rem;
         max-width: 20rem;
 
         border-radius: 0.5rem;
 
         cursor: pointer;
+
+        @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+            max-width: unset;
+        }
 
         p {
             padding: 0.6rem 0;

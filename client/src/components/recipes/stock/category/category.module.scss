@@ -155,16 +155,16 @@
     border-radius: 0.5rem;
 
     transition:
-        box-shadow 150ms ease,
-        background-color 100ms ease,
-        color 100ms ease;
+        color 100ms ease,
+        box-shadow 100ms ease,
+        background-color 100ms ease;
 
     &:hover {
-        color: $mono-600;
-        box-shadow:
-            0 0 0 1px $mono-200,
-            0 0 0 0.25rem $mono-100;
+        color: $blue;
+        background-color: transparentize($blue, 0.9);
+        box-shadow: 0 0 0 1px alpha($blue, 0.5);
     }
+
     &.category {
         margin-top: 1rem;
 

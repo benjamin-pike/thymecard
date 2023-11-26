@@ -15,7 +15,7 @@ const MethodDisplay: FC<IRecipeMethodDisplayProps> = ({ isPrintLayout, isIngredi
     }
 
     return (
-        <ul className={styles.method} data-print={isPrintLayout} data-ingredients-visible={isIngredientsVisible}>
+        <ol className={styles.method} data-print={isPrintLayout} data-ingredients-visible={isIngredientsVisible}>
             {recipe.method?.map((section, i) => (
                 <li key={i} className={styles.section}>
                     {section.sectionTitle && <h3 className={styles.sectionTitle}>{section.sectionTitle}</h3>}
@@ -30,7 +30,7 @@ const MethodDisplay: FC<IRecipeMethodDisplayProps> = ({ isPrintLayout, isIngredi
                     </ol>
                 </li>
             ))}
-        </ul>
+        </ol>
     );
 };
 

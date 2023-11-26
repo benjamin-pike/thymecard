@@ -1,0 +1,402 @@
+.plan {
+    display: flex;
+    flex-direction: column;
+
+    padding-right: 0.75rem;
+
+    width: 50%;
+    min-width: 27.5em;
+
+    background-color: $mono-light;
+
+    @include dark-mode {
+        background-color: $mono-900;
+    }
+
+    @include responsive(('twoColumns')) {
+        padding: 0;
+
+        width: 100%;
+
+        border-right: none;
+    }
+
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+        width: 100%;
+        max-width: 30rem;
+
+        padding: 1.25rem 2rem 0 2rem;
+
+        border-radius: 1rem 1rem 0 0;
+
+        translate: 0 1px;
+
+        @include dark-mode {
+            box-shadow: 0 0 0 1px $mono-700;
+        }
+    }
+
+    @include responsive(('mobile')) {
+        width: 100%;
+        min-width: unset;
+
+        padding: 1.25rem 1.5rem 0 1.5rem;
+
+        @include dark-mode {
+            border-radius: 0;
+        }
+    }
+
+    .selectedDay {
+        display: flex;
+        flex-direction: column;
+
+        flex-grow: 1;
+        flex-shrink: 1;
+
+        min-height: 0;
+
+        .top {
+            display: flex;
+            align-items: center;
+
+            padding: 0.25rem 0.75rem 1rem 0.75rem;
+
+            height: calc(3.5rem - 1px);
+
+            border-bottom: 1px solid $mono-200;
+
+            @include dark-mode {
+                border-bottom: 1px solid $mono-700;
+            }
+
+            @include responsive(('twoColumns')) {
+                padding: 0.5rem 0.75rem 0.75rem 0.75rem;
+            }
+
+            .date {
+                display: flex;
+                justify-content: center;
+
+                color: $mono-700;
+                font-size: $fs-14;
+                font-weight: 400;
+
+                white-space: pre;
+
+                border-radius: 100vmax;
+
+                @include dark-mode {
+                    color: $mono-200;
+                }
+
+                .dateDay {
+                    margin-right: 0.25rem;
+
+                    font-weight: 500;
+                }
+
+                .dateMonth {
+                    margin-left: 0.25rem;
+
+                    font-weight: 400;
+                }
+            }
+
+            .buttons {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 0.5rem;
+
+                margin-left: auto;
+
+                button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    gap: 0;
+
+                    padding: 0 0.54rem;
+
+                    height: calc(2rem - 2px);
+                    width: fit-content;
+
+                    text-align: center;
+                    font-weight: 500;
+                    font-size: $fs-11;
+
+                    color: $mono-600;
+                    background-color: white;
+                    border: 1px solid $mono-200;
+
+                    border-radius: 100vmax;
+
+                    transition:
+                        gap 100ms ease,
+                        padding 100ms ease,
+                        color 100ms ease,
+                        background-color 100ms ease,
+                        border 100ms ease;
+
+                    @include dark-mode {
+                        color: $mono-200;
+                        background-color: $mono-900;
+                        border: 1px solid $mono-700;
+                    }
+
+                    svg {
+                        height: 0.8rem;
+                        width: 0.8rem;
+                    }
+
+                    p {
+                        font-size: 0;
+
+                        transition: font-size 100ms ease;
+                    }
+
+                    &:hover {
+                        gap: 0.25rem;
+
+                        padding: 0 0.75rem;
+
+                        color: $blue;
+                        background-color: alpha($blue, 0.1);
+                        border: 1px solid alpha($blue, 0.5);
+
+                        @include dark-mode {
+                            color: $mono-light;
+                            background-color: $mono-800;
+                            border: 1px solid $mono-500;
+                        }
+
+                        p {
+                            font-size: $fs-10;
+                        }
+                    }
+
+                    &.addEvent {
+                        svg {
+                            scale: 0.9;
+
+                            path {
+                                stroke-width: 12.5;
+                            }
+                        }
+                    }
+
+                    &.copyDay {
+                        svg {
+                            path {
+                                stroke-width: 0.25;
+                            }
+                        }
+                    }
+
+                    &.clearDay {
+                        svg {
+                            path {
+                                stroke-width: 1.5;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .switchView {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                margin-left: 0.5rem;
+                margin-right: -0.5rem;
+
+                height: calc(2rem - 2px);
+                width: calc(2rem - 2px);
+
+                border-radius: 100%;
+                color: $mono-700;
+                border: 1px solid $mono-200;
+
+                transition:
+                    background-color 100ms ease,
+                    color 100ms ease,
+                    border 100ms ease;
+
+                svg {
+                    height: 1rem;
+                    width: 1rem;
+                }
+
+                &:hover {
+                    color: $blue;
+                    background-color: alpha($blue, 0.1);
+                    border: 1px solid alpha($blue, 0.5);
+                }
+
+                @include dark-mode {
+                    color: $mono-light;
+                    border: 1px solid $mono-700;
+
+                    &:hover {
+                        background-color: $mono-800;
+                        border: 1px solid $mono-500;
+                    }
+                }
+            }
+        }
+
+        .scrollContainer {
+            flex-shrink: 1;
+            flex-grow: 1;
+            min-height: 0;
+
+            .body {
+                display: flex;
+                flex-direction: column;
+                flex-shrink: 1;
+                gap: 1.5rem;
+
+                padding: 0 0.25rem 0 1.25rem;
+            }
+        }
+    }
+
+    .days {
+        position: relative;
+
+        display: flex;
+        gap: 0.5rem;
+
+        width: 100%;
+
+        border-top: 1px solid $mono-200;
+
+        @include dark-mode {
+            border-top: 1px solid $mono-700;
+        }
+
+        @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+            margin-bottom: 1rem;
+        }
+
+        .day {
+            display: flex;
+            justify-content: center;
+            flex-grow: 1;
+
+            padding-top: 0.75rem;
+
+            button {
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                gap: 0.5rem;
+
+                p {
+                    padding: 0.35rem 0.7rem;
+
+                    white-space: pre;
+                    font-size: $fs-10;
+                    color: $mono-light;
+                    background-color: $mono-700;
+
+                    height: fit-content;
+
+                    border-radius: 100vmax;
+
+                    .dividerText {
+                        color: $mono-500;
+                        font-weight: 300;
+                    }
+
+                    @include dark-mode {
+                        color: $mono-light;
+                        background-color: $mono-800;
+                        border: 1px solid $mono-700;
+                    }
+                }
+
+                .events {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0.35rem;
+
+                    padding-top: 0.5rem;
+
+                    width: 100%;
+
+                    border-top: 1px solid $mono-200;
+
+                    @include dark-mode {
+                        border-top: 1px solid $mono-600;
+                    }
+
+                    .event {
+                        height: 0.35rem;
+                        width: 3rem;
+
+                        border-radius: 100vmax;
+
+                        @each $event, $color in $event-colors {
+                            $dark-adjusted-color: contrastize($color, 'dark');
+
+                            &[data-event='#{$event}'] {
+                                background-color: $color;
+
+                                @include dark-mode {
+                                    height: calc(0.35rem - 1px);
+
+                                    background-color: alpha($dark-adjusted-color, 0.35);
+                                    border: 1px solid $dark-adjusted-color;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .bar {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+
+            height: 2px;
+            width: calc((100% - 2rem) / 5);
+
+            background-color: $mono-700;
+
+            border-radius: 100vmax;
+
+            transition: left 150ms ease;
+
+            @include dark-mode {
+                background-color: $mono-light;
+            }
+
+            &[data-day='0'] {
+                left: 0;
+            }
+
+            &[data-day='1'] {
+                left: calc((((100% - 2rem) / 5) + 0.5rem) * 1);
+            }
+
+            &[data-day='2'] {
+                left: calc((((100% - 2rem) / 5) + 0.5rem) * 2);
+            }
+
+            &[data-day='3'] {
+                left: calc((((100% - 2rem) / 5) + 0.5rem) * 3);
+            }
+
+            &[data-day='4'] {
+                left: calc((((100% - 2rem) / 5) + 0.5rem) * 4);
+            }
+        }
+    }
+}

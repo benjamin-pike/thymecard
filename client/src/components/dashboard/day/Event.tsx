@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
-import EventIcon from '../common/EventIcon';
+import EventIcon from '../../common/event-icon/EventIcon';
+import { EventType } from '@thymecard/types';
 import { formatClasses } from '@/lib/common.utils';
-import { EventType } from '@/lib/global.types';
 import { capitalize } from '@/lib/string.utils';
 import styles from './event.module.scss';
 

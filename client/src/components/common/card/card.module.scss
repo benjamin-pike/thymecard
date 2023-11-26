@@ -17,9 +17,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    // padding-bottom: 1rem;
-    // box-shadow: 0 0.5px 0 $mono-200, 0 -0.5px 0 $mono-200 inset;
-    padding: 0.25rem 0.5rem 0 0.5rem;
+    
+    padding-bottom: 1rem;
+    
+    box-shadow: 0 0.5px 0 $mono-100, 0 -0.5px 0 $mono-100 inset;
 
     @include dark-mode {
         box-shadow: 0 0.5px 0 $mono-700, 0 -0.5px 0 $mono-700 inset;

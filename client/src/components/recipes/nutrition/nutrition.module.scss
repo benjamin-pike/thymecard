@@ -14,12 +14,12 @@
         background-color: $mono-900;
     }
 
-    @include responsive(('listPlus')) {
+    @include responsive(('twoColumns')) {
         width: 100%;
         max-width: unset;
     }
 
-    @include responsive(('listOnly')) {
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
         width: 100%;
         
         padding: 1.25rem 2rem 0 2rem;

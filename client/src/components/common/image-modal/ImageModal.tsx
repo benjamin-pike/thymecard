@@ -36,7 +36,7 @@ const ImageModal: FC<ImageModalProps> = ({ isOpen, urls, currentImage, changeSel
     useWindowKeyDown('ArrowLeft', handlePrev);
 
     return (
-        <ModalWrapper isOpen={isOpen} closeModal={closeModal}>
+        <ModalWrapper isOpen={isOpen} closeModal={closeModal} blurBackground={true}>
             <div className={styles.container}>
                 {displayButtons && (
                     <button

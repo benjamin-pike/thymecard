@@ -1,4 +1,4 @@
-export type EventType = 'breakfast' | 'snack' | 'activity' | 'lunch' | 'drink' | 'dinner' | 'dessert';
+import { EventType } from '@thymecard/types';
 
 export interface IEvent {
     time: string;

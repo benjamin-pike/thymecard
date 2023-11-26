@@ -9,6 +9,10 @@
     @return false;
 }
 
+@function alpha($color, $alpha) {
+    @return transparentize($color, calc(1 - $alpha));
+}
+
 @function contrastize($color, $theme) {
     @if $theme == 'dark' {
         @if $color == $red {
@@ -24,11 +28,11 @@
 
     @if $theme == 'light' {
         @if $color == $yellow {
-            @return saturate(darken($color, 2.5%), 50%);
+            @return saturate(darken($color, 6.5%), 100%);
         } @else if $color == $green {
-            @return saturate(darken($color, 12.5%), 50%);
+            @return saturate(darken($color, 15%), 50%);
         } @else if $color == $aqua {
-            @return darken($color, 15%);
+            @return darken($color, 10%);
         } @else {
             @return $color;
         }
@@ -59,26 +63,50 @@
     }
 }
 
-$mono-light: rgb(255, 255, 255);
-$mono-100: rgb(243, 245, 250);
-$mono-200: hsl(220, 27%, 93%);
-$mono-300: rgb(205, 214, 228);
-$mono-400: rgb(177, 188, 211);
-$mono-500: rgb(143, 160, 198);
-$mono-600: rgb(77, 93, 128);
-$mono-700: hsl(221, 27%, 25%);
-$mono-800: hsl(221, 32%, 13%);
-$mono-900: hsl(220, 30%, 8%);
-$mono-dark: rgb(9, 11, 17);
+// $mono-light: rgb(255, 255, 255);
+// $mono-100: rgb(243, 245, 250);
+// $mono-200: hsl(220, 27%, 93%);
+// $mono-300: rgb(205, 214, 228);
+// $mono-400: rgb(177, 188, 211);
+// $mono-500: rgb(143, 160, 198);
+// $mono-600: rgb(77, 93, 128);
+// $mono-700: hsl(221, 27%, 25%);
+// $mono-800: hsl(221, 32%, 13%);
+// $mono-900: hsl(220, 30%, 8%);
+// $mono-dark: rgb(9, 11, 17);
 
-$red: rgb(255, 51, 102);
-$orange: rgb(255, 102, 51);
+// $mono-light: hsl(0, 0%, 100%);
+// $mono-100: hsl(223, 31%, 97%);
+// $mono-200: hsl(220, 17%, 93%);
+// $mono-300: hsl(217, 20%, 85%);
+// $mono-400: hsl(221, 18%, 76%);
+// $mono-500: hsl(221, 23%, 67%);
+// $mono-600: hsl(221, 15%, 40%);
+// $mono-700: hsl(221, 17%, 25%);
+// $mono-800: hsl(221, 22%, 13%);
+// $mono-900: hsl(220, 20%, 5%);
+// $mono-dark: rgb(9, 11, 17);
+
+$mono-light: hsl(0, 0%, 100%);
+$mono-100: hsl(223, 36%, 97%);
+$mono-200: hsl(220, 22%, 93%);
+$mono-300: hsl(217, 25%, 85%);
+$mono-400: hsl(221, 23%, 76%);
+$mono-500: hsl(221, 28%, 67%);
+$mono-600: hsl(221, 18%, 40%);
+$mono-700: hsl(221, 22%, 25%);
+$mono-800: hsl(221, 27%, 13%);
+$mono-900: hsl(220, 25%, 5%);
+$mono-dark: hsl(225, 31%, 5%);
+
+$red: hsl(350, 100%, 60%);
+$orange: hsl(20, 100%, 60%);
 $yellow: rgb(255, 191, 0);
 $green: rgb(78, 210, 45);
-$aqua: rgb(51, 204, 255);
+$aqua: hsl(195, 100%, 50%);
 $blue: rgb(0, 123, 255);
-$purple: rgb(178, 77, 255);
-$pink: rgb(255, 0, 157);
+$purple: hsl(274, 100%, 65%);
+$pink: hsl(310, 100%, 50%);
 
 $fs-32: 2rem;
 $fs-28: 1.75rem;
@@ -104,7 +132,8 @@ $event-colors: (
     'activity': $purple,
     'snack': $orange,
     'drink': $yellow,
-    'dessert': $aqua
+    'appetizer': $pink,
+    'dessert': $aqua,
 );
 
 $metric-colors: (

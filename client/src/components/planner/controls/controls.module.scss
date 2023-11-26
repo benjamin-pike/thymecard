@@ -118,21 +118,27 @@
             font-size: $fs-8;
         }
 
-        &.detailed {
+        &.simple {
             &::after {
                 content: '1';
             }
         }
 
-        &.expanded {
+        &.strip {
             &::after {
                 content: '2';
             }
         }
 
-        &.compact {
+        &.expanded {
             &::after {
                 content: '3';
+            }
+        }
+
+        &.compact {
+            &::after {
+                content: '4';
             }
         }
     }

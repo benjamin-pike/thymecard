@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import { ForbiddenError, UnauthorizedError } from '../lib/error/sironaError';
+import { ForbiddenError, UnauthorizedError } from '../lib/error/thymecardError';
 import { ErrorCode } from '../lib/error/errorCode';
 import { isAccessTokenPayload } from '../components/auth/auth.types';
 import { IResourcePermissions, hasPermissions } from '../lib/auth/permissions';

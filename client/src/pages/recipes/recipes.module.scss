@@ -1,14 +1,15 @@
 .recipes {
+    position: relative;
     display: flex;
     flex-direction: column;
     flex-shrink: 1;
-    
+
     max-height: 100svh;
     max-width: calc(100vw - 3.25rem);
 
     overflow: hidden;
 
-    @include responsive(('listPlus', 'listOnly')) {
+    @include responsive(('twoColumns', 'oneColumnWideMargins', 'oneColumnNarrowMargins')) {
         flex-direction: column-reverse;
     }
 
@@ -20,10 +21,19 @@
 .body {
     display: flex;
     flex-shrink: 1;
-    
+    gap: 1.5rem;
+
+    padding: 1.5rem;
+
     width: 100%;
     height: 100%;
     min-height: 0;
+
+    background-color: $mono-light;
+
+    @include dark-mode {
+        background-color: $mono-900;
+    }
 
     &[data-fullscreen='true'] {
         .left {
@@ -34,13 +44,17 @@
             width: 100%;
         }
     }
+
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+        gap: 0;
+    }
 }
 
 .left {
     position: relative;
 
     flex-shrink: 1;
-   
+
     width: 35%;
     height: 100%;
     min-width: 10rem;
@@ -48,18 +62,16 @@
 
     z-index: 103;
 
-    @include responsive(('listHidden')) {
+    @include responsive(('summariesHidden')) {
         width: fit-content;
         min-width: unset;
     }
 
-    @include responsive(('listPlus')) {
-        flex-shrink: 0;
-     
+    @include responsive(('twoColumns')) {
         width: 50%;
     }
 
-    @include responsive(('listOnly')) {
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
         width: 100%;
     }
 
@@ -67,7 +79,9 @@
         display: grid;
         place-items: center;
 
-        height: 100%;
+        margin: -1.5rem 0 -1.5rem -1.5rem;
+
+        height: calc(100% + 3rem);
         width: 2.5rem;
 
         color: $mono-500;
@@ -87,110 +101,91 @@
 
             &:hover {
                 color: $mono-light;
-            }    
+            }
         }
     }
 
-    .listHiddenButtons {
+    .summariesHiddenButtons {
         position: absolute;
-        bottom: 0.9rem;
+        bottom: -0.25rem;
         right: 2rem;
 
         display: flex;
-        gap: 0.5rem;
+        align-items: center;
+        gap: 0.75rem;
 
         button {
-            display: grid;
-            place-content: center;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
 
             height: 1rem;
-            width: 1rem;
+            
+            color: $mono-700;
 
-            svg {
-                height: 100%;
-                width: 100%;
+            transition: color 100ms ease;
+
+            &:hover {
+                color: $mono-500;
             }
 
-            &.stock {
-                color: $mono-700;
-                
-                transition: color 100ms ease;
+            @include dark-mode {
+                color: $mono-light;
 
                 &:hover {
                     color: $mono-500;
                 }
             }
 
-            &.nutrition {
-                svg {
-                    scale: 1.2;
-
-                    path {
-                        stroke: $mono-700;
-                        
-                        transition: stroke 100ms ease;
-                    }
-                }
-
-                &:hover {
-                    svg {
-                        path {
-                            stroke: $mono-500;
-                        }
-                    }
-                }
+            svg {
+                height: 100%;
+                translate: 0 -0.5px;
             }
 
+            p {
+                font-size: $fs-11;
+                font-weight: 400;
+            }
+
+            &.plan {
+                svg {
+                    scale: 0.95;
+                }
+            }
+        }
+
+        .divider {
+            width: 1px;
+            height: 1rem;
+
+            background-color: $mono-200;
+
             @include dark-mode {
-                &.stock {
-                    color: $mono-light;
-
-                    &:hover {
-                        color: $mono-500;
-                    }
-                }
-    
-                &.nutrition {
-                    svg {
-                        path {
-                            stroke: $mono-light;
-                        }
-                    }
-
-                    &:hover {
-                        svg {
-                            path {
-                                stroke: $mono-500;
-                            }
-                        }
-                    }
-                }
+                background-color: $mono-700;
             }
         }
     }
 }
 
 .right {
-    position: relative;
-
     display: flex;
     flex-direction: column;
     flex-shrink: 1;
+    gap: 0.5rem;
 
     width: 65%;
     height: 100%;
-    min-width: 50rem;
+    min-width: 53rem;
     min-height: 0;
 
     &::after {
         content: '';
 
         position: absolute;
-        top: 0;
-        right: 0;
-
-        height: 100%;
-        width: 100%;
+        top: -1.5rem;
+        bottom: -1.5rem;
+        left: -1.5rem;
+        right: -1.5rem;
 
         background-color: transparentize($mono-dark, 0.9);
         backdrop-filter: blur(0);
@@ -201,6 +196,24 @@
         pointer-events: none;
 
         transition: opacity 400ms ease;
+
+        @include responsive(('threeColumns')) {
+            display: block;
+
+            top: -1.5rem;
+            bottom: -1.5rem;
+            left: -0.75rem;
+            right: -1.5rem;
+        }
+
+        @include responsive(('summariesHidden')) {
+            display: block;
+
+            top: -1.5rem;
+            bottom: -1.5rem;
+            left: -1.5rem;
+            right: -1.5rem;
+        }
     }
 
     &[data-mask='true'] {
@@ -209,40 +222,59 @@
         }
     }
 
-    @include responsive(('listHidden')) {
+    @include responsive(('threeColumns', 'summariesHidden')) {
+        position: relative;
+    }
+
+    @include responsive(('summariesHidden')) {
         width: 100%;
     }
 
-    @include responsive(('listPlus')) {
+    @include responsive(('twoColumns')) {
+        margin-top: calc(-0.25rem - 1px);
+
         width: 50%;
         min-width: unset;
+
+        &[data-visible-panel='plan'] {
+            min-width: 28rem;
+        }
+
+        &[data-visible-panel='stock'] {
+            min-width: 25rem;
+        }
     }
 
-    @include responsive(('listOnly')) {
-        display: none;
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+        width: 0;
+        min-width: 0;
+
+        overflow: hidden;
+    }
+
+    .bottom {
+        display: flex;
+        flex-shrink: 1;
+
+        height: 100%;
+        min-height: 0;
     }
 
     .recipeWrapper {
         position: absolute;
 
+        top: 0;
+        left: 0;
+
         height: 100%;
         width: 100%;
 
-        z-index: 102;
+        z-index: 103;
 
         transition: translate 400ms ease;
         animation: slide-in 400ms ease;
     }
 }
-
-.bottom {
-    display: flex;
-    flex-shrink: 1;
-    
-    height: 100%;
-    min-height: 0;
-}
-
 
 @keyframes slide-in {
     0% {

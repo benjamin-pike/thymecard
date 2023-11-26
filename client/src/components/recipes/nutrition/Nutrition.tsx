@@ -15,9 +15,10 @@ import { formatClasses, queue } from '@/lib/common.utils';
 import { round } from '@/lib/number.utils';
 import { capitalize } from '@/lib/string.utils';
 import { generateNutitionalInfo } from '@/test/mock-data/recipes';
-import { INutrients, IServing, StockTab } from 'types/recipe.types';
+import { INutrients, IServing } from 'types/recipe.types';
 
 import styles from './nutrition.module.scss';
+import { StockSection } from '@thymecard/types';
 
 interface INutritionProps {
     handleToggleVisibleInfo: () => void;
@@ -52,7 +53,7 @@ const Nutrition: FC<INutritionProps> = ({ handleToggleVisibleInfo }) => {
     const [isMoveItemPopoverOpen, setIsMoveItemPopoverOpen] = useState(false);
     const [moveItemPopoverItemIndex, setMoveItemPopoverIndex] = useState<number | null>(null);
     const [popoverLocation, setPopoverLocation] = useState({ right: 0, top: 0 });
-    const [moveItemTarget, setMoveItemTarget] = useState<StockTab>('pantry');
+    const [moveItemTarget, setMoveItemTarget] = useState<StockSection>(StockSection.PANTRY);
 
     const item = (() => {
         const itemIndex = moveItemPopoverItemIndex ?? 0;
@@ -70,11 +71,11 @@ const Nutrition: FC<INutritionProps> = ({ handleToggleVisibleInfo }) => {
         if (moveItemPopoverItemIndex === null) return null;
 
         switch (moveItemTarget) {
-            case 'pantry':
+            case StockSection.PANTRY:
                 return pantryButtonRefs.current[moveItemPopoverItemIndex];
-            case 'shopping-list':
+            case StockSection.SHOPPING_LIST:
                 return shoppingListButtonRefs.current[moveItemPopoverItemIndex];
-            case 'favorites':
+            case StockSection.FAVORITES:
                 return favoritesButtonRefs.current[moveItemPopoverItemIndex];
         }
     })();
@@ -88,7 +89,7 @@ const Nutrition: FC<INutritionProps> = ({ handleToggleVisibleInfo }) => {
         [quantities]
     );
 
-    const handleMoveItemButtonClick = (itemIndex: number) => (target: StockTab) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleMoveItemButtonClick = (itemIndex: number) => (target: StockSection) => (e: React.MouseEvent<HTMLButtonElement>) => {
         const element = e.currentTarget as HTMLButtonElement;
 
         const { right, top } = element.getBoundingClientRect();
@@ -151,7 +152,7 @@ const Nutrition: FC<INutritionProps> = ({ handleToggleVisibleInfo }) => {
 
                         <MoveItemPopover
                             item={item}
-                            targetTab={moveItemTarget}
+                            targetSection={moveItemTarget}
                             isOpen={isMoveItemPopoverOpen}
                             location={popoverLocation}
                             toggleButtonElement={activeToggleButton}
@@ -173,7 +174,7 @@ interface IEntryProps {
     metrics: INutrients;
     handleQuantityChange: (quantity: IServing) => void;
     assignButtonRefs: IAssignButtonRefs;
-    handleMoveItemButtonClick: (target: StockTab) => (e: React.MouseEvent<HTMLButtonElement>) => void;
+    handleMoveItemButtonClick: (target: StockSection) => (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const Entry: FC<IEntryProps> = ({

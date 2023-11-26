@@ -11,6 +11,15 @@ import Tags from './Tags/Tags';
 import Authors from './Authors/Authors';
 import Source from './Source/Source';
 import Nutrition from './Nutrition/Nutrition';
+import { ICONS } from '@/assets/icons';
+
+const ServingsIcon = ICONS.recipes.servings;
+const PrepTimeIcon = ICONS.recipes.prepTime;
+const CookTimeIcon = ICONS.recipes.cookTime;
+const TotalTimeIcon = ICONS.recipes.totalTime;
+const RatingIcon = ICONS.common.star;
+const AddedIcon = ICONS.common.planner;
+const LastCookedIcon = ICONS.common.planner;
 
 interface IMetadataProps {
     scale: number;
@@ -49,37 +58,44 @@ const Metadata: FC<IMetadataProps> = ({ scale }) => {
                 {(shouldRender.authors || shouldRender.source) && <div className={styles.divider} />}
                 <ul className={styles.metrics}>
                     <li>
+                        <ServingsIcon className={styles.icon} />
                         <p className={styles.metric}>SERVES</p>
                         <Serving scale={scale} />
                     </li>
                     <div className={styles.divider} />
                     {shouldRender.prepTime && (
                         <li>
+                            <PrepTimeIcon className={styles.icon} />
                             <p className={styles.metric}>PREP</p> <Time type="prep" />
                         </li>
                     )}
                     {shouldRender.cookTime && (
                         <li>
+                            <CookTimeIcon className={styles.icon} />
                             <p className={styles.metric}>COOK</p> <Time type="cook" />
                         </li>
                     )}
                     {shouldRender.totalTime && (
-                        <li>
+                        <li className={styles.totalTime}>
+                            <TotalTimeIcon className={styles.icon} />
                             <p className={styles.metric}>TOTAL</p> <Time type="total" />
                         </li>
                     )}
                     {(shouldRender.prepTime || shouldRender.cookTime || shouldRender.totalTime) && <div className={styles.divider} />}
                     <li className={styles.rating}>
+                        <RatingIcon className={styles.icon} />
                         <p className={styles.metric}>RATING</p> <Rating />
                     </li>
                     <div className={styles.divider} />
                     {shouldRender.added && (
                         <li>
+                            <AddedIcon className={styles.icon} />
                             <p className={styles.metric}>ADDED</p> <p className={styles.value}>{createdAt}</p>
                         </li>
                     )}
                     {shouldRender.lastCooked && (
                         <li className={styles.lastCooked}>
+                            <LastCookedIcon className={styles.icon} />
                             <p className={styles.metric}>COOKED</p>
                             <LastCooked />
                         </li>

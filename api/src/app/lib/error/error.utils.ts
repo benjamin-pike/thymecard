@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError, ZodIssue } from 'zod';
-import { SironaError } from './sironaError';
+import { ThymecardError } from './thymecardError';
 
 export const formatZodError = (err: ZodError) => {
     return `Error${err.errors.length > 1 ? 's' : ''} at ${err.errors
@@ -14,7 +14,7 @@ export const formatZodError = (err: ZodError) => {
 };
 
 export const enrichError = (err: unknown, context: any) => {
-    if (!(err instanceof SironaError)) {
+    if (!(err instanceof ThymecardError)) {
         return err;
     }
 

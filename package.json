@@ -1,5 +1,5 @@
 {
-  "name": "sirona",
+  "name": "thymecard",
   "version": "1.0.0",
   "description": "A health planning app for diet and exercise",
   "main": "index.js",
@@ -15,14 +15,14 @@
 },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/benjamin-pike/sirona.git"
+    "url": "git+https://github.com/benjamin-pike/thymecard.git"
   },
   "author": "Benjamin Pike",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/benjamin-pike/sirona/issues"
+    "url": "https://github.com/benjamin-pike/thymecard/issues"
   },
-  "homepage": "https://github.com/benjamin-pike/sirona#readme",
+  "homepage": "https://github.com/benjamin-pike/thymecard#readme",
   "devDependencies": {
     "concurrently": "8.0.1"
   }

@@ -1,10 +1,10 @@
 import { FC } from 'react';
 import { useRecipe } from '../RecipeProvider';
 import { round } from '@/lib/number.utils';
-import styles from './ingredients-display.module.scss';
-import { buildKey } from '@sirona/utils';
-import { isNumber } from '@sirona/types';
+import { buildKey } from '@thymecard/utils';
+import { isNumber } from '@thymecard/types';
 import { capitalize } from '@/lib/string.utils';
+import styles from './ingredients-display.module.scss';
 
 interface IRecipeIngredientsDisplayProps {
     addedIngredients: Set<number>;

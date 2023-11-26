@@ -1,14 +1,12 @@
 import { FC, Fragment } from 'react';
 import { Duration } from 'luxon';
-import { formatClasses } from '@/lib/common.utils';
-import { isDefined } from '@/lib/type.utils';
-import { ICONS } from '@/assets/icons';
-import { numberToStars } from '@/lib/elements.utils';
-import { collateRecipeTags } from '@/lib/recipe.utils';
-import { IRecipeSummary } from '@sirona/types';
-import styles from './summary.module.scss';
 import Tooltip from '@/components/common/tooltip/Tooltip';
+import { ICONS } from '@/assets/icons';
+import { IRecipeSummary } from '@thymecard/types';
+import { collateRecipeTags } from '@/lib/recipe.utils';
 import { getRecipeImageUrl } from '@/lib/s3/s3.utils';
+import { formatClasses } from '@/lib/common.utils';
+import styles from './summary.module.scss';
 
 const ServingsIcon = ICONS.recipes.servings;
 const PrepTimeIcon = ICONS.recipes.prepTime;
@@ -17,6 +15,7 @@ const TotalTimeIcon = ICONS.recipes.totalTime;
 const BookmarkIcon = ICONS.recipes.bookmarkFill;
 const IngredientsIcon = ICONS.recipes.tickList;
 const CaloriesIcon = ICONS.common.pieChart;
+const StarIcon = ICONS.common.star;
 
 interface ISummaryProps {
     recipe: IRecipeSummary;
@@ -73,6 +72,13 @@ const Summary: FC<ISummaryProps> = ({ recipe, selectedTags, handleSelectRecipe, 
             value: recipe.calories?.toString() + ' kcal',
             icon: <CaloriesIcon />,
             display: !!recipe.calories
+        },
+        {
+            name: 'rating',
+            label: 'Rating',
+            value: recipe.rating?.toString(),
+            icon: <StarIcon />,
+            display: !!recipe.rating
         }
     ];
 
@@ -88,7 +94,7 @@ const Summary: FC<ISummaryProps> = ({ recipe, selectedTags, handleSelectRecipe, 
                     </button>
                     {recipe.isBookmarked && <BookmarkIcon />}
                 </span>
-                <Details recipeId={recipe._id} details={details} rating={recipe.rating} />
+                <Details recipeId={recipe._id} details={details} />
                 <div className={styles.tags}>
                     {orderedTags.map((tag) => (
                         <button key={`${recipe._id}${tag}`} data-selected={selectedTags.includes(tag)} onClick={() => handleTagClick(tag)}>
@@ -114,39 +120,27 @@ interface IDetail {
 interface IDetailsProps {
     recipeId: string;
     details: IDetail[];
-    rating?: number;
 }
 
-const Details: FC<IDetailsProps> = ({ recipeId, details, rating }) => {
+const Details: FC<IDetailsProps> = ({ recipeId, details }) => {
     return (
         <ul className={styles.details}>
-            {details.map(
-                (detail, index) =>
-                    detail.display && (
-                        <Fragment key={`${recipeId}${detail.name}`}>
-                            <li
-                                className={formatClasses(styles, ['detail', detail.name])}
-                                data-tooltip-id={`summary-${detail.name}`}
-                                data-tooltip-content={`${detail.label}`}
-                            >
-                                {detail.icon}
-                                <p>{detail.value}</p>
-                            </li>
-                            {index !== details.length - 1 && <div className={styles.divider} />}
-                            <Tooltip id={`summary-${detail.name}`} size="small" place="bottom" offset={10} />
-                        </Fragment>
-                    )
-            )}
-            {isDefined(rating) && (
-                <>
-                    <div className={styles.divider} />
-                    <li className={formatClasses(styles, ['detail', 'rating'])}>
-                        {numberToStars(rating).map((Star, i) => (
-                            <Star key={i} />
-                        ))}
-                    </li>
-                </>
-            )}
+            {details
+                .filter((detail) => detail.display)
+                .map((detail, index) => (
+                    <Fragment key={`${recipeId}${detail.name}`}>
+                        <li
+                            className={formatClasses(styles, ['detail', detail.name])}
+                            data-tooltip-id={`summary-${detail.name}`}
+                            data-tooltip-content={`${detail.label}`}
+                        >
+                            {index !== 0 && <div className={styles.divider} />}
+                            {detail.icon}
+                            <p>{detail.value}</p>
+                        </li>
+                        <Tooltip id={`summary-${detail.name}`} size="small" place="bottom" offset={10} />
+                    </Fragment>
+                ))}
         </ul>
     );
 };

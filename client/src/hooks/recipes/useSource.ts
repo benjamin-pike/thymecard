@@ -1,6 +1,6 @@
-import { createToast } from '@/lib/toast/toast.utils';
-import { isValidUrl } from '@sirona/types';
 import { useCallback, useState } from 'react';
+import { createToast } from '@/lib/toast/toast.utils';
+import { isValidUrl } from '@thymecard/types';
 
 const useSource = () => {
     const [initial, setInitial] = useState<string | undefined>(undefined);

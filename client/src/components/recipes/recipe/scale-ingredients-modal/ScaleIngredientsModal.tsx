@@ -1,10 +1,10 @@
 import { FC, useCallback, useState } from 'react';
-import styles from './scale-ingredients-modal.module.scss';
 import { ICONS } from '@/assets/icons';
 import { round } from '@/lib/number.utils';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
 import { useRecipe } from '../RecipeProvider';
-import { buildKey } from '@sirona/utils';
+import { buildKey } from '@thymecard/utils';
+import styles from './scale-ingredients-modal.module.scss';
 
 const ScaleIcon = ICONS.recipes.scales;
 

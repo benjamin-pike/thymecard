@@ -1,3 +1,23 @@
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-and-blur-in {
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(0.25rem);
+    }
+}
+
 .backdrop {
     position: fixed;
     top: 0;
@@ -6,13 +26,23 @@
     right: 0;
 
     background-color: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(5px);
 
     display: flex;
     align-items: center;
     justify-content: center;
-}
 
+    animation: fade-in 100ms ease;
+
+    &[data-blur='true'] {
+        backdrop-filter: blur(0.25rem);
+
+        animation: fade-and-blur-in 100ms ease;
+    }
+
+    &[data-blur='false'] {
+        animation: fade-in 100ms ease;
+    }
+}
 
 .closeButton {
     position: absolute;

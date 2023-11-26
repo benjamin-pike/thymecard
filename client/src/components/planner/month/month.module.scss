@@ -125,17 +125,25 @@
     width: 100%;
     height: 100%;
 
-    padding: 0 0.5rem 0 0.5rem;
+    padding: 0 0.5rem;
 
-    box-shadow: 0.5px 1px 0 0 $mono-200, -0.5px 1px 0 0 $mono-200;
+    box-shadow:
+        0.5px 1px 0 0 $mono-200,
+        -0.5px 1px 0 0 $mono-200;
 
     overflow: scroll;
 
     -ms-overflow-style: none;
     scrollbar-width: none;
 
+    &[data-format='strip'] {
+        gap: 0.25rem;
+    }
+
     @include dark-mode {
-        box-shadow: 0.5px 1px 0 0 $mono-700, -0.5px 1px 0 0 $mono-700;
+        box-shadow:
+            0.5px 1px 0 0 $mono-700,
+            -0.5px 1px 0 0 $mono-700;
     }
 
     @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
@@ -151,11 +159,11 @@
 
         overflow: unset;
 
-        &[data-first = 'true'] {
+        &[data-first='true'] {
             padding-top: 1rem;
         }
 
-        &[data-last = 'true'] {
+        &[data-last='true'] {
             padding-bottom: 5rem;
         }
     }
@@ -164,7 +172,7 @@
         display: none;
     }
 
-    &.outsideCurrentMonth {
+    &[data-current-month='false'] {
         opacity: 0.6;
 
         .event.expanded {
@@ -178,13 +186,13 @@
         }
     }
 
-    &.hiddenWhenThreeColumns {
+    &[data-hidden-two-three='true'] {
         @include responsive(('threeColumns')) {
             display: none;
         }
     }
 
-    &.hiddenWhenTwoColumns {
+    &[data-hidden-two-columns='true'] {
         @include responsive(('twoColumns')) {
             display: none;
         }
@@ -196,7 +204,7 @@
     font-size: $fs-10;
     text-align: center;
 
-    padding: 0.125rem 0.4rem;
+    padding: 0.175rem 0.4rem;
     margin-top: 0.5rem;
 
     @include dark-mode {
@@ -212,7 +220,15 @@
         margin: 0.5rem 0;
     }
 
-    .selected & {
+    [data-format='strip'] & {
+        margin-bottom: 0.25rem;
+    }
+
+    [data-first='true'] & {
+        padding: 0.125rem 0.5rem;
+    }
+
+    [data-current-day='true'] & {
         @include responsive(('xlarge')) {
             color: white;
             background-color: $mono-700;
@@ -241,7 +257,7 @@
 
     display: flex;
     justify-content: space-between;
-    gap: 0.05rem;
+    gap: 0.15rem;
 
     width: calc(100% - 1.5px);
 
@@ -271,9 +287,9 @@
         }
     }
 
-    &.compact {
-        width: calc(100% - 2rem);
-        height: 0.35rem;
+    &[data-format='compact'] {
+        width: calc(100% - 3.5vw);
+        height: 0.5rem;
 
         max-width: 15rem;
 
@@ -286,7 +302,7 @@
         }
     }
 
-    &.detailed {
+    &[data-format='simple'] {
         background-color: transparent;
         box-shadow: none;
 
@@ -327,9 +343,57 @@
                 clip-path: unset;
             }
         }
+
+        background-color: transparent;
     }
 
-    &.expanded {
+    &[data-format='strip'] {
+        margin-left: -0.5rem;
+        padding: 0.35rem 0.5rem;
+
+        width: calc(100% + 0.5rem);
+
+        box-shadow: none;
+
+        border-radius: 0;
+        border-radius: 0 0.35rem 0.35rem 0;
+
+        @include responsive(('mobile')) {
+            padding-left: 2.25rem;
+        }
+
+        &::before {
+            content: '';
+
+            position: absolute;
+            left: 0.5px;
+            top: 50%;
+
+            height: 100%;
+            width: 0.125rem;
+
+            background-color: currentColor;
+
+            border-radius: 0 100vmax 100vmax 0;
+
+            transform: translate(0, -50%);
+
+            @include responsive(('threeColumns', 'twoColumns', 'oneColumn')) {
+                left: -1.925rem;
+            }
+
+            @include responsive(('mobile')) {
+                left: 0.5rem;
+
+                height: 0.5rem;
+                width: 0.5rem;
+
+                clip-path: unset;
+            }
+        }
+    }
+
+    &[data-format='expanded'] {
         & .eventTime {
             color: $mono-900;
             opacity: 0.6;
@@ -358,13 +422,66 @@
 }
 
 @each $event, $color in $event-colors {
-    .event.compact[data-event='#{$event}'],
-    .event.detailed[data-event='#{$event}']::before {
-        background-color: $color;
-    }
+    $light-adjusted-color: contrastize($color, 'light');
+    $dark-adjusted-color: contrastize($color, 'dark');
 
-    .event.expanded[data-event='#{$event}'] {
-        box-shadow: 0 0 0 1px transparentize($color, 0.25);
-        background-color: transparentize($color, 0.9);
+    .event {
+        &[data-format='compact'] {
+            &[data-event='#{$event}'] {
+                background-color: $color;
+
+                @include dark-mode {
+                    background-color: alpha($dark-adjusted-color, 0.25);
+                    border: 1px solid $dark-adjusted-color;
+                }
+            }
+        }
+
+        &[data-event='#{$event}'] {
+            &::before {
+                background-color: $color;
+
+                @include dark-mode {
+                    background-color: $dark-adjusted-color;
+                }
+            }
+        }
+
+        &[data-format='expanded'] {
+            &[data-event='#{$event}'] {
+                box-shadow: 0 0 0 1px alpha($light-adjusted-color, 0.5);
+                background-color: transparentize($light-adjusted-color, 0.9);
+
+                p {
+                    color: $light-adjusted-color;
+                }
+
+                @include dark-mode {
+                    box-shadow: 0 0 0 1px alpha($dark-adjusted-color, 0.5);
+                    background-color: transparentize($dark-adjusted-color, 0.9);
+
+                    p {
+                        color: $dark-adjusted-color;
+                    }
+                }
+            }
+        }
+        &[data-format='strip'] {
+            &[data-event='#{$event}'] {
+                background-color: transparentize($light-adjusted-color, 0.9);
+
+                @include dark-mode {
+                    background-color: transparentize($dark-adjusted-color, 0.9);
+                }
+
+                &::before {
+                    color: $color;
+                }
+
+                p {
+                    color: $light-adjusted-color;
+                }
+            }
+        }
     }
 }

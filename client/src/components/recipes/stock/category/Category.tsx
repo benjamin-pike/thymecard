@@ -1,41 +1,43 @@
-import { FC, useCallback, useMemo, useRef, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useToggle } from '@mantine/hooks';
-import { useDispatch } from 'react-redux';
-
-import { removeCategory, upsertCategory } from '@/store/slices/stock';
+import { useStock } from '../StockProvider';
 
 import Item from '../item/Item';
 import CustomTooltip from '@/components/common/tooltip/Tooltip';
 import MoveItemPopover from '../move-item-popover/MoveItemPopover';
 
-import { ICONS } from '@/assets/icons';
-import { IStockCategory, StockData, StockTab } from 'types/recipe.types';
 import { formatClasses } from '@/lib/common.utils';
+import { IStockCategory, StockSection } from '@thymecard/types';
+import { ICONS } from '@/assets/icons';
 
 import styles from './category.module.scss';
 
 const ToggleIcon = ICONS.common.toggle;
 const DeleteIcon = ICONS.common.XLarge;
-const PlusIcon = ICONS.common.plus;
 
 interface ICategory {
-    tab: StockTab;
+    section: StockSection;
     category: IStockCategory;
-    data: StockData;
 }
 
-const Category: FC<ICategory> = ({ tab, category, data }) => {
-    const dispatch = useDispatch();
+const Category: FC<ICategory> = ({ section, category }) => {
+    const {
+        stock,
+        addItem: addItemClosure,
+        removeCategory: removeCategoryClosure,
+        updateCategoryName: updateCategoryNameClosure
+    } = useStock();
 
-    const [categoryName, setCategoryName] = useState(category.name);
-    const [items, setItems] = useState(category.items);
+    const addItem = addItemClosure(section, category);
+    const removeCategory = removeCategoryClosure(section, category.id);
+    const updateCategoryName = updateCategoryNameClosure(section, category);
+
     const [expanded, toggleExpanded] = useToggle([true, false]);
 
     const [isMoveItemPopoverOpen, setIsMoveItemPopoverOpen] = useState(false);
     const [moveItemPopoverItemIndex, setMoveItemPopoverIndex] = useState<number | null>(null);
     const [popoverLocation, setPopoverLocation] = useState({ right: 0, top: 0 });
-    const [moveItemTarget, setMoveItemTarget] = useState<StockTab>('pantry');
+    const [moveItemTarget, setMoveItemTarget] = useState<StockSection>(StockSection.PANTRY);
 
     const sectionRef = useRef<HTMLLIElement>(null);
     const categoryNameRef = useRef<HTMLInputElement>(null);
@@ -50,61 +52,28 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
         if (moveItemPopoverItemIndex === null) return null;
 
         switch (moveItemTarget) {
-            case 'pantry':
+            case StockSection.PANTRY:
                 return pantryButtonRefs.current[moveItemPopoverItemIndex];
-            case 'shopping-list':
+            case StockSection.SHOPPING_LIST:
                 return shoppingListButtonRefs.current[moveItemPopoverItemIndex];
-            case 'favorites':
+            case StockSection.FAVORITES:
                 return favoriteButtonRefs.current[moveItemPopoverItemIndex];
         }
     })();
 
-    const itemIds = useMemo(() => {
-        const extractIds = (tab: StockTab) => {
-            return data[tab].reduce<string[]>((acc, category) => {
+    const sectionItemIds = useMemo(() => {
+        const extractIds = (section: StockSection) => {
+            return stock[section].reduce<string[]>((acc, category) => {
                 return acc.concat(category.items.map((item) => item.id));
             }, []);
         };
 
         return {
-            pantry: extractIds('pantry'),
-            'shopping-list': extractIds('shopping-list'),
-            favorites: extractIds('favorites')
+            [StockSection.PANTRY]: extractIds(StockSection.PANTRY),
+            [StockSection.SHOPPING_LIST]: extractIds(StockSection.SHOPPING_LIST),
+            [StockSection.FAVORITES]: extractIds(StockSection.FAVORITES)
         };
-    }, [data]);
-
-    const handleInputChange = useCallback((itemIndex: number, key: 'name' | 'quantity' | 'note', value: string) => {
-        setItems((prevState) => {
-            const updatedItems = JSON.parse(JSON.stringify([...prevState]));
-            updatedItems[itemIndex][key] = value;
-            return updatedItems;
-        });
-    }, []);
-
-    const addItem = () => {
-        dispatch(
-            upsertCategory({
-                tab,
-                category: { id: category.id, name: categoryName, items: [...items, { id: uuidv4(), name: '', quantity: '', note: '' }] }
-            })
-        );
-    };
-
-    const removeItem = (itemId: string) => {
-        dispatch(
-            upsertCategory({ tab, category: { id: category.id, name: categoryName, items: items.filter((item) => item.id !== itemId) } })
-        );
-    };
-
-    const handleBlur = (e: React.FocusEvent<HTMLLIElement>) => {
-        const { currentTarget, relatedTarget } = e;
-
-        if (relatedTarget && currentTarget.contains(relatedTarget)) {
-            return;
-        }
-
-        dispatch(upsertCategory({ tab, category: { id: category.id, name: categoryName, items: items.filter((item) => item.name) } }));
-    };
+    }, [stock]);
 
     const focusAdjacentCell = (
         currentIndex: number,
@@ -118,11 +87,11 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
                     const nextIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
 
                     if (nextIndex === -1) {
-                        categoryNameRef.current?.focus();
+                        sectionRef.current?.focus();
                         return;
                     }
 
-                    if (nextIndex === items.length) {
+                    if (nextIndex === category.items.length) {
                         addItem();
                         return;
                     }
@@ -159,14 +128,18 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
         }
     };
 
+    const handleCategoryNameChange = (e: React.FocusEvent<HTMLInputElement>) => {
+        updateCategoryName(e.target.value);
+    };
+
     const handleCategoryNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         switch (e.key) {
             case 'Enter':
-            case 'StockTab':
+            case 'Tab':
             case 'ArrowDown':
                 e.preventDefault();
 
-                if (items.length === 0) {
+                if (category.items.length === 0) {
                     addItem();
                 } else {
                     focusAdjacentCell(-1, 'down', 'name');
@@ -175,16 +148,16 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
                 break;
             case 'Backspace':
             case 'Delete':
-                if (categoryName === '') {
+                if (category.name === '') {
                     e.preventDefault();
-                    dispatch(removeCategory({ tab, categoryId: category.id }));
+                    removeCategory();
                 }
                 break;
         }
     };
 
-    const handleMoveItemButtonClick = (itemIndex: number) => (target: StockTab) => (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (itemIds[target].includes(items[itemIndex].id)) {
+    const handleMoveItemButtonClick = (itemIndex: number) => (targetSection: StockSection) => (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (sectionItemIds[targetSection].includes(category.items[itemIndex].id)) {
             return;
         }
 
@@ -193,7 +166,7 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
         const { right, top } = element.getBoundingClientRect();
         const { right: containerRight, top: containerTop } = sectionRef.current?.getBoundingClientRect() as DOMRect;
 
-        const isSameTarget = target === moveItemTarget && itemIndex === moveItemPopoverItemIndex;
+        const isSameTarget = targetSection === moveItemTarget && itemIndex === moveItemPopoverItemIndex;
 
         setTimeout(
             () => {
@@ -203,7 +176,7 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
                 });
 
                 setMoveItemPopoverIndex(itemIndex);
-                setMoveItemTarget(target);
+                setMoveItemTarget(targetSection);
                 setIsMoveItemPopoverOpen((currentState) => !currentState);
             },
             isSameTarget ? 0 : 100
@@ -226,68 +199,69 @@ const Category: FC<ICategory> = ({ tab, category, data }) => {
         };
     };
 
+    useEffect(() => {
+        if (!categoryNameRef.current) return;
+        categoryNameRef.current.value = category.name;
+    }, [category.name]);
+
     return (
         <>
-            <li ref={sectionRef} className={styles.section} onBlur={handleBlur}>
+            <li ref={sectionRef} className={styles.section}>
                 <span className={styles.category} data-active={expanded}>
                     <button className={styles.toggle} onClick={toggleExpanded}>
                         <ToggleIcon />
                     </button>
                     <input
                         ref={categoryNameRef}
-                        value={categoryName}
                         placeholder="Category Name"
-                        autoFocus={!categoryName}
-                        onChange={(e) => setCategoryName(e.target.value)}
+                        onChange={handleCategoryNameChange}
                         onKeyDown={handleCategoryNameKeyDown}
                     />
-                    <p className={styles.count}>{items.length} items</p>
+                    <p className={styles.count}>
+                        {category.items.length} Item{category.items.length !== 1 ? 's' : ''}
+                    </p>
                     <button
                         className={styles.deleteCategory}
                         data-tooltip-id="delete-category"
                         data-tooltip-content="Delete Category"
-                        onClick={() => dispatch(removeCategory({ tab, categoryId: category.id }))}
+                        onClick={removeCategory}
                     >
                         <DeleteIcon />
                     </button>
                 </span>
                 <div className={styles.itemsWrapper} data-active={expanded}>
                     <ul className={styles.items}>
-                        {items.map((item, index, arr) => {
-                            const nameInputSize = Math.max(...items.map((item) => item.name.length));
-                            const quantityInputSize = Math.max(...items.map((item) => item.quantity?.length ?? 0));
+                        {category.items.map((item, index, arr) => {
+                            const nameInputSize = Math.max(...category.items.map((item) => item.name.length));
+                            const quantityInputSize = Math.max(...category.items.map((item) => item.quantity?.length ?? 0));
 
                             return (
                                 <Item
                                     key={index}
                                     index={index}
                                     totalItems={arr.length}
-                                    tab={tab}
+                                    section={section}
+                                    category={category}
                                     item={item}
                                     isActive={index === moveItemPopoverItemIndex}
-                                    itemIds={itemIds}
+                                    sectionItemIds={sectionItemIds}
                                     assignItemRefs={assignItemRefs(index)}
                                     focusAdjacentCell={focusAdjacentCell}
                                     nameInputSize={nameInputSize}
                                     quantityInputSize={quantityInputSize}
-                                    handleInputChange={handleInputChange}
                                     handleMoveItemButtonClick={handleMoveItemButtonClick(index)}
-                                    addItem={addItem}
-                                    removeItem={removeItem}
                                 />
                             );
                         })}
                         <button className={styles.addItem} onClick={addItem}>
-                            <span>
-                                <PlusIcon /> Add item
-                            </span>
+                            <span>Add Item</span>
                         </button>
                     </ul>
                 </div>
                 <MoveItemPopover
-                    item={items[moveItemPopoverItemIndex ?? 0]}
-                    originTab={tab}
-                    targetTab={moveItemTarget}
+                    item={category.items[moveItemPopoverItemIndex ?? 0]}
+                    originSection={section}
+                    targetSection={moveItemTarget}
                     isOpen={isMoveItemPopoverOpen}
                     location={popoverLocation}
                     toggleButtonElement={activeToggleButton}

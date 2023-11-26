@@ -1,61 +1,68 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import styles from './header.module.scss';
-import { capitalize } from '@/lib/string.utils';
-import { ICONS } from '@/assets/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { StockSection } from '@thymecard/types';
+import { capitalize } from '@/lib/string.utils';
+import { ICONS } from '@/assets/icons';
+import styles from './header.module.scss';
 
 const FridgeIcon = ICONS.recipes.fridge;
 const ShoppingListIcon = ICONS.recipes.tickList;
 const StarIcon = ICONS.common.star;
-const EllipsisIcon = ICONS.common.ellipsis;
-const SearchIcon = ICONS.common.search;
+const PlanIcon = ICONS.common.planner;
 
-const TABS = [
+const SECTIONS = [
     {
-        name: 'pantry',
+        name: StockSection.PANTRY,
+        label: 'Pantry',
         icon: <FridgeIcon />
     },
     {
-        name: 'shopping list',
+        name: StockSection.SHOPPING_LIST,
+        label: 'Shopping List',
         icon: <ShoppingListIcon />
     },
     {
-        name: 'favorites',
+        name: StockSection.FAVORITES,
+        label: 'Favorites',
         icon: <StarIcon />
     }
-];
+] as const;
 
 interface IHeaderProps {
-    selectedTab: number;
-    setSelectedTab: (tab: number) => void;
+    selectedSection: StockSection;
+    setSelectedSection: (section: StockSection) => void;
     handleToggleVisibleInfo: () => void;
 }
 
-const Header: FC<IHeaderProps> = ({ selectedTab, setSelectedTab, handleToggleVisibleInfo }) => {
+const Header: FC<IHeaderProps> = ({ selectedSection, setSelectedSection, handleToggleVisibleInfo }) => {
     const { customViewportSize } = useSelector((state: RootState) => state.viewport);
 
     const [barWidth, setBarWidth] = useState(0);
     const [barMarginLeft, setBarMarginLeft] = useState(0);
     const [isInitialRender, setIsInitialRender] = useState(true);
 
-    const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
     const barRef = useRef<HTMLDivElement>(null);
+    const sectionsRef = useRef<Record<StockSection, HTMLButtonElement | null>>({
+        [StockSection.PANTRY]: null,
+        [StockSection.SHOPPING_LIST]: null,
+        [StockSection.FAVORITES]: null
+    });
 
-    const displaySwitchViewButton = customViewportSize === 'listPlus';
+    const displaySwitchViewButton = customViewportSize === 'twoColumns';
 
-    const handleTabClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, i: number) => {
+    const handleTabClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, section: StockSection) => {
         const target = e.currentTarget as HTMLButtonElement;
         const { width, left } = target.getBoundingClientRect();
         const { left: containerLeft } = target.parentElement?.getBoundingClientRect() as DOMRect;
 
-        if (selectedTab === i) return;
+        if (selectedSection === section) return;
 
-        setSelectedTab(i);
-
+        setSelectedSection(section);
         setBarWidth(barWidth + width);
 
-        if (i < selectedTab) {
+        const sections = Object.values(StockSection);
+        if (sections.indexOf(section) < sections.indexOf(selectedSection)) {
             setBarMarginLeft(left - containerLeft);
         }
         setTimeout(() => {
@@ -68,10 +75,10 @@ const Header: FC<IHeaderProps> = ({ selectedTab, setSelectedTab, handleToggleVis
         const bar = barRef.current;
         if (!bar) return;
         bar.style.transition = isInitialRender ? 'none' : 'margin-left 200ms ease, width 200ms ease';
-    }, [isInitialRender, selectedTab]);
+    }, [isInitialRender, selectedSection]);
 
     useEffect(() => {
-        const target = tabsRef.current[selectedTab];
+        const target = sectionsRef.current[selectedSection];
 
         if (!target) {
             return;
@@ -84,21 +91,24 @@ const Header: FC<IHeaderProps> = ({ selectedTab, setSelectedTab, handleToggleVis
         setBarMarginLeft(left - containerLeft);
 
         setIsInitialRender(false);
-    }, [selectedTab, tabsRef]);
+    }, [selectedSection, sectionsRef]);
 
     return (
         <header className={styles.header}>
             <div className={styles.tabs}>
-                {TABS.map((tab, i) => (
-                    <button
-                        key={tab.name}
-                        ref={(el) => (tabsRef.current[i] = el)}
-                        data-name={tab.name}
-                        onClick={(e) => handleTabClick(e, i)}
-                    >
-                        {tab.icon}
-                        <span>{capitalize(tab.name)}</span>
-                    </button>
+                {SECTIONS.map((section, i, arr) => (
+                    <>
+                        <button
+                            key={section.name}
+                            ref={(el) => (sectionsRef.current[section.name] = el)}
+                            data-name={section.name}
+                            onClick={(e) => handleTabClick(e, section.name)}
+                        >
+                            {section.icon}
+                            <span>{capitalize(section.label)}</span>
+                        </button>
+                        {i !== arr.length - 1 && <div className={styles.divider} />}
+                    </>
                 ))}
                 <div
                     ref={barRef}
@@ -110,12 +120,9 @@ const Header: FC<IHeaderProps> = ({ selectedTab, setSelectedTab, handleToggleVis
                 />
             </div>
             <div className={styles.buttons}>
-                <button>
-                    <EllipsisIcon />
-                </button>
                 {displaySwitchViewButton && (
                     <button className={styles.switchView} onClick={handleToggleVisibleInfo}>
-                        <SearchIcon />
+                        <PlanIcon />
                     </button>
                 )}
             </div>

@@ -8,13 +8,14 @@ import { IoMdClose } from 'react-icons/io';
 
 import styles from './modal-wrapper.module.scss';
 
-interface ImageModalProps {
+interface IModalWrapperProps {
     children: ReactElement;
     isOpen: boolean;
+    blurBackground: boolean;
     closeModal: () => void;
 }
 
-const ImageModal: FC<ImageModalProps> = ({ children, isOpen, closeModal }) => {
+const ModalWrapper: FC<IModalWrapperProps> = ({ children, isOpen, blurBackground, closeModal }) => {
     const ref = useClickOutside(closeModal);
     const root = document.getElementById('modal-root');
 
@@ -25,7 +26,7 @@ const ImageModal: FC<ImageModalProps> = ({ children, isOpen, closeModal }) => {
     }
 
     return createPortal(
-        <div className={styles.backdrop}>
+        <div className={styles.backdrop} data-blur={blurBackground}>
             <div ref={ref}>{children}</div>
             <button className={styles.closeButton} onClick={closeModal}>
                 <IoMdClose />
@@ -35,4 +36,4 @@ const ImageModal: FC<ImageModalProps> = ({ children, isOpen, closeModal }) => {
     );
 };
 
-export default ImageModal;
+export default ModalWrapper;

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { MongoRepository } from '../../lib/data/mongo.repository';
-import { IRecipe, IRecipeCreate } from '@sirona/types';
+import { IRecipe, IRecipeCreate } from '@thymecard/types';
 
 export const collectionName = 'recipes';
 

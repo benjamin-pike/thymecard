@@ -1,5 +1,5 @@
 import { ErrorCode } from '../../lib/error/errorCode';
-import { UnprocessableError } from '../../lib/error/sironaError';
+import { UnprocessableError } from '../../lib/error/thymecardError';
 import { IAuthenticatedContext } from '../../middleware/context.middleware';
 import { IPantryService } from './pantry.service';
 import { IPantryProduct } from './pantry.types';

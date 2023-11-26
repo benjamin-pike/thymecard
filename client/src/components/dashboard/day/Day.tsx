@@ -15,8 +15,11 @@ const Day: FC = () => {
         <>
             <DashboardCardHeader titlePrefix={'Your'} titleMain={'Day'}>
                 <>
-                    <p className={styles.timeChip}>{DateTime.local().toFormat('HH:mm')}</p>
-                    <p className={styles.timeChip}>{DateTime.local().toFormat('EEEE d LLLL')}</p>
+                    <p className={styles.datetime}>
+                        <span>{DateTime.local().toFormat('HH:mm')}</span>
+                        {'   •   '}
+                        <span>{DateTime.local().toFormat('EEEE d LLLL')}</span>
+                    </p>
                 </>
             </DashboardCardHeader>
             <CardBody>

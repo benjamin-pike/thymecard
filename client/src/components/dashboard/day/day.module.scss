@@ -1,7 +1,8 @@
-.timeChip {
+.datetime {
+    color: $mono-600;
     font-size: $fs-12;
     font-weight: 500;
-    color: $mono-600;
+    white-space: pre;
     
     border-radius: 100vmax;
     
@@ -9,8 +10,6 @@
 
     @include dark-mode {
         color: $mono-300;
-        background-color: $mono-800;
-        box-shadow: 0 0 0 1px $mono-700;
     }
 }
 

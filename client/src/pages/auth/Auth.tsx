@@ -1,12 +1,12 @@
-import { useMutation } from '@tanstack/react-query';
-import styles from './auth.module.scss';
-import { sendRequest } from '@/lib/api/sendRequest';
 import { useCallback, useState } from 'react';
-import { setLocalStorageItem } from '@/lib/localStorage.utils';
-import { isString } from '@sirona/types';
 import { useNavigate } from 'react-router-dom';
-import { createToast } from '@/lib/toast/toast.utils';
+import { useMutation } from '@tanstack/react-query';
 import useUser from '@/hooks/user/useUser';
+import { sendRequest } from '@/lib/api/sendRequest';
+import { setLocalStorageItem } from '@/lib/localStorage.utils';
+import { isString } from '@thymecard/types';
+import { createToast } from '@/lib/toast/toast.utils';
+import styles from './auth.module.scss';
 
 const Auth = () => {
     const navigate = useNavigate();

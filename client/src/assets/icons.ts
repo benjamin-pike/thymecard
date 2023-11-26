@@ -1,4 +1,4 @@
-import { BiFridge, BiLink, BiPieChartAlt2 } from 'react-icons/bi';
+import { BiCopy, BiFoodMenu, BiFridge, BiLink, BiPieChartAlt2, BiSolidFoodMenu } from 'react-icons/bi';
 import { BsArrowRightShort, BsCalendar3, BsChevronDown, BsChevronLeft, BsChevronRight, BsQuestionLg } from 'react-icons/bs';
 import { FaInfo } from 'react-icons/fa6';
 import { FiEdit2, FiPrinter } from 'react-icons/fi';
@@ -6,7 +6,19 @@ import { GrFormSearch, GrUndo } from 'react-icons/gr';
 import { HiOutlineDocumentAdd, HiOutlineDocumentDuplicate } from 'react-icons/hi';
 import { IoIosClose, IoIosTimer, IoMdRefresh } from 'react-icons/io';
 import { IoCheckmark, IoCloseOutline } from 'react-icons/io5';
-import { LuFileDown, LuFileOutput, LuLogIn, LuMoreHorizontal } from 'react-icons/lu';
+import {
+    LuActivity,
+    LuBanana,
+    LuCoffee,
+    LuFileDown,
+    LuFileOutput,
+    LuGlassWater,
+    LuIceCream2,
+    LuLogIn,
+    LuMoreHorizontal,
+    LuSalad,
+    LuSoup
+} from 'react-icons/lu';
 import { MdFilterList, MdOutlineCalendarMonth } from 'react-icons/md';
 import {
     PiBarcode,
@@ -63,7 +75,10 @@ export const ICONS = {
         calendar: BsCalendar3,
         chevronLeft: BsChevronLeft,
         chevronRight: BsChevronRight,
-        upload: PiUploadSimple
+        upload: PiUploadSimple,
+        recipe: BiFoodMenu,
+        recipeFill: BiSolidFoodMenu,
+        copy: BiCopy
     },
     dashboard: {},
     planner: {},
@@ -91,5 +106,14 @@ export const ICONS = {
         scales: RiScales2Line,
         ingredients: RiListUnordered,
         print: FiPrinter
+    },
+    events: {
+        breakfast: LuCoffee,
+        lunch: LuSoup,
+        dinner: LuSalad,
+        snack: LuBanana,
+        drink: LuGlassWater,
+        dessert: LuIceCream2,
+        activity: LuActivity
     }
 } as const;

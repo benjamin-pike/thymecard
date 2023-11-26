@@ -1,6 +1,6 @@
 import { buildSetQueryFromUpdate } from '../../lib/data/mongo.utils';
 import { ErrorCode } from '../../lib/error/errorCode';
-import { NotFoundError } from '../../lib/error/sironaError';
+import { NotFoundError } from '../../lib/error/thymecardError';
 import { DayCache } from '../../lib/types/cache.types';
 import { dayRepository } from './day.model';
 import { IDay, IDayCreate, IDayEnriched, IDayUpdate, IMealCreate, IMealUpdate } from './day.types';

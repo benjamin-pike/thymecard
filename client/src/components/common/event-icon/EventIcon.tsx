@@ -1,15 +1,16 @@
 import { FC, memo } from 'react';
-import { EventType } from '@/lib/global.types';
-import { LuSalad, LuBanana, LuIceCream2, LuCoffee, LuActivity, LuGlassWater, LuSoup } from 'react-icons/lu';
+import { LuSalad, LuBanana, LuIceCream2, LuCoffee, LuActivity, LuGlassWater, LuSoup, LuPizza } from 'react-icons/lu';
 import styles from './event-icon.module.scss';
+import { EventType } from '@thymecard/types';
 
 const iconMap: Record<EventType, any> = {
     breakfast: <LuCoffee />,
-    lunch: <LuSoup />,
+    lunch: <LuPizza />,
     dinner: <LuSalad />,
     snack: <LuBanana />,
     drink: <LuGlassWater />,
     dessert: <LuIceCream2 />,
+    appetizer: <LuSoup />,
     activity: <LuActivity />
 };
 
@@ -18,9 +19,10 @@ interface IEventIconProps {
     type: EventType;
     radius: number;
     background: boolean;
+    dashed?: boolean;
 }
 
-const EventIcon: FC<IEventIconProps> = memo(({ className, type, radius, background }) => {
+const EventIcon: FC<IEventIconProps> = memo(({ className, type, radius, background, dashed }) => {
     return (
         <div
             className={`${styles.icon}${className ? ' ' + className : ''}`}
@@ -31,6 +33,7 @@ const EventIcon: FC<IEventIconProps> = memo(({ className, type, radius, backgrou
                 padding: background ? radius * 0 + 'rem' : 0
             }}
             data-background={background}
+            data-dashed={dashed}
         >
             {iconMap[type]}
         </div>

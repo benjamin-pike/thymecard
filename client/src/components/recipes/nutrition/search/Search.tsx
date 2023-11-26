@@ -15,7 +15,7 @@ interface ISearchProps {
 
 const Search: FC<ISearchProps> = ({ value, setValue, handleToggleVisibleInfo }) => {
     const viewport = useSelector((state: RootState) => state.viewport);
-    const displaySwitchViewButton = viewport.customViewportSize === 'listPlus';
+    const displaySwitchViewButton = viewport.customViewportSize === 'twoColumns';
 
     const handleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {

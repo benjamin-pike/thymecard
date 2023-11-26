@@ -6,6 +6,8 @@
 
     min-width: 0;
 
+    height: 100%;
+
     .container {
         position: relative;
 
@@ -33,6 +35,23 @@
 
             @include dark-mode {
                 box-shadow: 0 0 0 0.5rem $mono-900 inset;
+            }
+        }
+    }
+
+    .display {
+        height: 100%;
+
+        img {
+            height: 100%;
+            width: 100%;
+
+            object-fit: cover;
+
+            border-radius: 1rem;
+
+            @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+                max-height: 25rem;
             }
         }
     }

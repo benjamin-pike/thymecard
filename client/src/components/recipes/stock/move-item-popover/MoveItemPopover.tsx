@@ -1,19 +1,14 @@
 import { FC, useCallback, useState } from 'react';
 import { useClickOutside } from '@/hooks/common/useClickOutside';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { RootState } from '@/store';
-import { moveItem } from '@/store/slices/stock';
-
-import { IStockItem, StockTab } from 'types/recipe.types';
-
+import { useStock } from '../StockProvider';
+import { IStockItem, StockSection } from '@thymecard/types';
 import styles from './move-item-popover.module.scss';
 
 interface IMoveItemPopoverProps {
     item: IStockItem;
     isOpen: boolean;
-    originTab?: StockTab;
-    targetTab: StockTab;
+    originSection?: StockSection;
+    targetSection: StockSection;
     location: {
         right: number;
         top: number;
@@ -22,16 +17,23 @@ interface IMoveItemPopoverProps {
     handleClose: () => void;
 }
 
-const MoveItemPopover: FC<IMoveItemPopoverProps> = ({ item, isOpen, originTab, targetTab, location, toggleButtonElement, handleClose }) => {
-    const dispatch = useDispatch();
+const MoveItemPopover: FC<IMoveItemPopoverProps> = ({
+    item,
+    isOpen,
+    originSection,
+    targetSection,
+    location,
+    toggleButtonElement,
+    handleClose
+}) => {
+    const { stock, moveItem } = useStock();
 
-    const stockData = useSelector((state: RootState) => state.stock);
-    const candidateCategories = useSelector((state: RootState) => state.stock[targetTab]);
-    const itemCategory = originTab ? stockData[originTab].find((c) => c.items.some((i) => item && i.id === item.id)) : undefined;
+    const candidateCategories = stock[targetSection] ?? [];
+    const itemCategory = originSection ? stock[originSection].find((c) => c.items.some((i) => item && i.id === item.id)) : undefined;
 
     const shouldDefaultToNewCategory = !candidateCategories.some(({ name }) => name === itemCategory?.name);
 
-    const [newCategoryName, setNewCategoryName] = useState(shouldDefaultToNewCategory ? itemCategory?.name : '');
+    const [newSection, setNewSection] = useState(shouldDefaultToNewCategory ? itemCategory?.name : '');
 
     const favoritePopoverRef = useClickOutside<HTMLDivElement>(handleClose, [toggleButtonElement]);
 
@@ -39,30 +41,28 @@ const MoveItemPopover: FC<IMoveItemPopoverProps> = ({ item, isOpen, originTab, t
         shouldDefaultToNewCategory ? 'new-item' : candidateCategories.find((c) => c.name === itemCategory?.name)?.id ?? 'new-item'
     );
 
-    const popoverTitle = getPopoverTitle(originTab, targetTab);
+    const popoverTitle = getPopoverTitle(originSection, targetSection);
 
     const updateSelectedTarget = useCallback((id: string) => {
         setSelectedTarget(id);
     }, []);
 
     const handleNewCategoryInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewCategoryName(e.target.value);
+        setNewSection(e.target.value);
         setSelectedTarget('new-item');
     }, []);
 
     const handleMove = useCallback(() => {
         const isNewCategory = selectedTarget === 'new-item';
-        dispatch(
-            moveItem({
-                item,
-                targetTab,
-                targetCategoryId: isNewCategory ? undefined : selectedTarget,
-                newCategoryName: isNewCategory ? newCategoryName : undefined,
-                removeFromOrigin: originTab === 'shopping-list' && targetTab === 'pantry'
-            })
-        );
+        moveItem({
+            item,
+            targetSection,
+            targetCategoryId: isNewCategory ? undefined : selectedTarget,
+            newSection: isNewCategory ? newSection : undefined,
+            removeFromOrigin: originSection === StockSection.SHOPPING_LIST && targetSection === StockSection.PANTRY
+        });
         handleClose();
-    }, [selectedTarget, dispatch, item, targetTab, newCategoryName, originTab, handleClose]);
+    }, [selectedTarget, moveItem, item, targetSection, newSection, originSection, handleClose]);
 
     return (
         <div
@@ -102,13 +102,13 @@ const MoveItemPopover: FC<IMoveItemPopoverProps> = ({ item, isOpen, originTab, t
                         onChange={() => updateSelectedTarget('new-item')}
                     />
                     <label htmlFor="new-item">
-                        <input value={newCategoryName} placeholder="New category" onChange={handleNewCategoryInputChange} />
+                        <input value={newSection} placeholder="New category" onChange={handleNewCategoryInputChange} />
                     </label>
                 </li>
             </ul>
             <div className={styles.divider} />
             <div className={styles.buttons}>
-                <button disabled={selectedTarget === 'new-item' && !newCategoryName} onClick={handleMove}>
+                <button disabled={selectedTarget === 'new-item' && !newSection} onClick={handleMove}>
                     Add
                 </button>
                 <button onClick={handleClose}>Cancel</button>
@@ -117,16 +117,16 @@ const MoveItemPopover: FC<IMoveItemPopoverProps> = ({ item, isOpen, originTab, t
     );
 };
 
-const getPopoverTitle = (origin: string | undefined, target: string) => {
+const getPopoverTitle = (origin: StockSection | undefined, target: StockSection) => {
     switch (target) {
-        case 'pantry':
-            if (origin === 'shopping-list') {
+        case StockSection.PANTRY:
+            if (origin === StockSection.SHOPPING_LIST) {
                 return 'Move to Pantry';
             }
             return 'Add to Pantry';
-        case 'shopping-list':
+        case StockSection.SHOPPING_LIST:
             return 'Add to Shopping List';
-        case 'favorites':
+        case StockSection.FAVORITES:
             return 'Add to Favorites';
     }
 };
