@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
 import { isNumber, validate } from './app/lib/types/typeguards.utils';
 import { isRateLimiterInterval } from './app/middleware/rate-limiter.middleware';
-import { ErrorCode } from './app/lib/error/errorCode';
 import { InternalError } from './app/lib/error/thymecardError';
+import { ErrorCode } from '@thymecard/types';
 
 dotenv.config();
 
@@ -28,6 +28,7 @@ const AUTH_LIMITER_COOLDOWN_SECS = getEnvironmentVariable('AUTH_LIMITER_COOLDOWN
 const stringVariables = {
     NODE_ENV: getEnvironmentVariable('NODE_ENV'),
     ROOT_URL: getEnvironmentVariable('ROOT_URL'),
+    CLIENT_URL: getEnvironmentVariable('CLIENT_URL'),
     MONGO_CONNECTION_STRING: getEnvironmentVariable('MONGO_URI'),
     REDIS_CONNECTION_STRING: getEnvironmentVariable('REDIS_URI'),
     JWT_ACCESS_SECRET: getEnvironmentVariable('JWT_ACCESS_SECRET'),
@@ -40,7 +41,9 @@ const stringVariables = {
     AWS_ACCESS_KEY_ID: getEnvironmentVariable('AWS_ACCESS_KEY_ID'),
     AWS_SECRET_ACCESS_KEY: getEnvironmentVariable('AWS_SECRET_ACCESS_KEY'),
     AWS_REGION: getEnvironmentVariable('AWS_REGION'),
-    S3_BUCKET_NAME: getEnvironmentVariable('S3_BUCKET_NAME')
+    S3_BUCKET_NAME: getEnvironmentVariable('S3_BUCKET_NAME'),
+    SENDGRID_API_KEY: getEnvironmentVariable('SENDGRID_API_KEY'),
+    SENDGRID_EMAIL: getEnvironmentVariable('SENDGRID_EMAIL')
 } as const;
 
 const nonStringVariables = {
@@ -72,6 +75,8 @@ const nonStringVariables = {
 } as const;
 
 const optionalVariables = {
+    OAUTH_NONCE_CACHE_MAX_ITEMS: process.env.OAUTH_NONCE_CACHE_MAX_ITEMS,
+    OAUTH_NONCE_CACHE_MAX_AGE: process.env.OAUTH_NONCE_CACHE_MAX_AGE,
     USER_CACHE_MAX_ITEMS: process.env.USER_CACHE_MAX_ITEMS,
     USER_CACHE_MAX_AGE: process.env.USER_CACHE_MAX_AGE,
     RECIPE_CACHE_MAX_ITEMS: process.env.RECIPE_CACHE_MAX_ITEMS,
@@ -79,7 +84,13 @@ const optionalVariables = {
     RECIPE_SUMMARY_CACHE_MAX_ITEMS: process.env.RECIPE_SUMMARY_CACHE_MAX_ITEMS,
     RECIPE_SUMMARY_CACHE_MAX_AGE: process.env.RECIPE_SUMMARY_CACHE_MAX_AGE,
     PLANNER_CACHE_MAX_ITEMS: process.env.PLANNER_CACHE_MAX_ITEMS,
-    PLANNER_CACHE_MAX_AGE: process.env.PLANNER_CACHE_MAX_AGE
+    PLANNER_CACHE_MAX_AGE: process.env.PLANNER_CACHE_MAX_AGE,
+    SESSION_CACHE_MAX_ITEMS: process.env.SESSION_CACHE_MAX_ITEMS,
+    SESSION_CACHE_MAX_AGE: process.env.SESSION_CACHE_MAX_AGE,
+    TOKEN_CACHE_MAX_ITEMS: process.env.TOKEN_CACHE_MAX_ITEMS,
+    TOKEN_CACHE_MAX_AGE: process.env.TOKEN_CACHE_MAX_AGE
 } as const;
 
 export const env = { ...stringVariables, ...nonStringVariables, ...optionalVariables };
+
+export type ThymecardEnvironment = typeof env;

@@ -1,5 +1,4 @@
 import { buildSetQueryFromUpdate } from '../../lib/data/mongo.utils';
-import { ErrorCode } from '../../lib/error/errorCode';
 import { NotFoundError } from '../../lib/error/thymecardError';
 import { DayCache } from '../../lib/types/cache.types';
 import { dayRepository } from './day.model';
@@ -7,6 +6,7 @@ import { IDay, IDayCreate, IDayEnriched, IDayUpdate, IMealCreate, IMealUpdate } 
 import { IPagedResult } from '../../lib/types/common.types';
 import { SortQuery } from '../../lib/data/mongo.repository';
 import mongoose, { PipelineStage } from 'mongoose';
+import { ErrorCode } from '@thymecard/types';
 
 interface IDayServiceDependencies {
     dayCache: DayCache;

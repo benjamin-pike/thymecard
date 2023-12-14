@@ -1,7 +1,4 @@
-export enum Role {
-    ADMIN = 'ADMIN',
-    USER = 'USER',
-}
+import { Role } from "@thymecard/types";
 
 export enum Permission {
     READ = 1,
@@ -12,27 +9,30 @@ export enum Permission {
 }
 
 export enum AccessScope {
-    User = 'u',
-    Recipe = 'r',
-    Day = 'd',
-    Pantry = 'p',
-    Stock = 's'
+    AUTH = 'a',
+    USER = 'u',
+    RECIPE = 'r',
+    DAY = 'd',
+    PANTRY = 'p',
+    STOCK = 's'
 }
 
 export const permissions = {
     [Role.ADMIN]: {
-        [AccessScope.User]: Permission.ALL,
-        [AccessScope.Recipe]: Permission.ALL,
-        [AccessScope.Day]: Permission.ALL,
-        [AccessScope.Pantry]: Permission.ALL,
-        [AccessScope.Stock]: Permission.ALL
+        [AccessScope.AUTH]: Permission.ALL,
+        [AccessScope.USER]: Permission.ALL,
+        [AccessScope.RECIPE]: Permission.ALL,
+        [AccessScope.DAY]: Permission.ALL,
+        [AccessScope.PANTRY]: Permission.ALL,
+        [AccessScope.STOCK]: Permission.ALL
     },
     [Role.USER]: {
-        [AccessScope.User]: Permission.READ | Permission.WRITE | Permission.DELETE,
-        [AccessScope.Recipe]: Permission.READ | Permission.WRITE | Permission.DELETE,
-        [AccessScope.Day]: Permission.READ | Permission.WRITE | Permission.DELETE,
-        [AccessScope.Pantry]: Permission.READ | Permission.WRITE | Permission.DELETE,
-        [AccessScope.Stock]: Permission.READ | Permission.WRITE | Permission.DELETE
+        [AccessScope.AUTH]: Permission.READ | Permission.WRITE | Permission.DELETE,
+        [AccessScope.USER]: Permission.READ | Permission.WRITE | Permission.DELETE,
+        [AccessScope.RECIPE]: Permission.READ | Permission.WRITE | Permission.DELETE,
+        [AccessScope.DAY]: Permission.READ | Permission.WRITE | Permission.DELETE,
+        [AccessScope.PANTRY]: Permission.READ | Permission.WRITE | Permission.DELETE,
+        [AccessScope.STOCK]: Permission.READ | Permission.WRITE | Permission.DELETE
     }
 }
 

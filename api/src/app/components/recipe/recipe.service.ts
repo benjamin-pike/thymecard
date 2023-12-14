@@ -4,12 +4,11 @@ import fileType from 'file-type';
 import sharp from 'sharp';
 import { S3Repository } from '../../lib/data/s3.repository';
 import { NotFoundError, UnprocessableError } from '../../lib/error/thymecardError';
-import { ErrorCode } from '../../lib/error/errorCode';
 import { isString } from '../../lib/types/typeguards.utils';
 import { RecipeParser, parseJsonLinkedData } from './recipe.utils';
 import { recipeRepository } from './recipe.model';
 import { RecipeCache, RecipeSummaryCache } from '../../lib/types/cache.types';
-import { IRecipe, IRecipeComment, IRecipeCreate, IRecipeParseResponse, IRecipeSummary, IRecipeUpdate } from '@thymecard/types';
+import { ErrorCode, IRecipe, IRecipeComment, IRecipeCreate, IRecipeParseResponse, IRecipeSummary, IRecipeUpdate } from '@thymecard/types';
 
 interface IRecipeServiceDependencies {
     recipeCache: RecipeCache;
@@ -97,7 +96,7 @@ export class RecipeService implements IRecipeService {
 
         let updateWithImage = update;
         if (image) {
-            let currentRecipe: IRecipe | null = this.recipeCache.get(recipeId);
+            let currentRecipe: IRecipe | null = this.recipeCache.get(recipeId) ?? null;
             if (!currentRecipe) {
                 currentRecipe = await recipeRepository.getOne(query);
             }
@@ -196,7 +195,7 @@ export class RecipeService implements IRecipeService {
             return cachedSummaries;
         }
 
-        const query = { userId: userId };
+        const query = { userId };
         const projection = summaryProjection;
 
         const summaries = await recipeRepository.getAll<IRecipeSummary>(query, projection);

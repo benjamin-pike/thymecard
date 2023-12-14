@@ -1,10 +1,10 @@
 import mongoose, { Document, FilterQuery, UpdateQuery, ProjectionFields, Model, model, Schema, PipelineStage } from 'mongoose';
-import { ErrorCode } from '../error/errorCode';
 import { BadRequestError, ConflictError } from '../error/thymecardError';
 import { DeepPartial, isArray, isDateString, isDefined, isPlainObject, isValidMongoId } from '../types/typeguards.utils';
 import { IPagedResult } from '../types/common.types';
 import { compressAndEncrypt, decryptAndDecompress } from '../encryption.utils'
 import { getPath } from '../types/object.utils';
+import { ErrorCode } from '@thymecard/types';
 
 interface IEntityKey {
     _id: string;
@@ -223,7 +223,7 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
 
     private convertObjectIdsToStrings(obj: any): any {
         if (obj instanceof mongoose.Types.ObjectId) {
-            return obj;
+            return obj.toString();
         }
         if (isArray(obj)) {
             return obj.map((item) => this.convertObjectIdsToStrings(item));

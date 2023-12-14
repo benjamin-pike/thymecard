@@ -1,7 +1,6 @@
-import { IStock, IStockCategory, StockSection } from '@thymecard/types';
+import { ErrorCode, IStock, IStockCategory, StockSection } from '@thymecard/types';
 import { stockRepository } from './stock.model';
 import { InternalError } from '../../lib/error/thymecardError';
-import { ErrorCode } from '../../lib/error/errorCode';
 
 export interface IStockService {
     upsertStockCategory(userId: string, section: StockSection, categories: IStockCategory[]): Promise<IStockCategory[]>;

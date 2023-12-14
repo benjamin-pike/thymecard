@@ -1,67 +1,69 @@
-import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
-import useUser from '@/hooks/user/useUser';
-import { sendRequest } from '@/lib/api/sendRequest';
-import { setLocalStorageItem } from '@/lib/localStorage.utils';
-import { isString } from '@thymecard/types';
-import { createToast } from '@/lib/toast/toast.utils';
+import { ReactComponent as Brand } from '@/assets/brand.svg';
+import { Navigate, Route, Routes } from 'react-router-dom';
+
+import Login from '@/components/auth/Login';
+import FullRegister from '@/components/auth/Register';
+import PartialRegister from '@/components/auth/PartialRegister';
+import Error from '@/components/auth/Error';
+import TokenExchange from '@/components/auth/TokenExchange';
+
+import mockup from '@/assets/mockup.png';
+
 import styles from './auth.module.scss';
 
 const Auth = () => {
-    const navigate = useNavigate();
-    const { loginUser } = useUser();
-
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const loginMutation = useMutation(() => sendRequest('/api/auth/login', 'POST', { body: { email, password } }));
-
-    const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
-    }, []);
-
-    const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
-    }, []);
-
-    const handleLogin = useCallback(
-        (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-
-            loginMutation.mutate(undefined, {
-                onSuccess: (data) => {
-                    const { user, tokens } = data.data;
-
-                    loginUser({
-                        user: {
-                            id: user._id,
-                            firstName: user.firstName,
-                            email: user.email
-                        },
-                        tokens
-                    });
-
-                    setLocalStorageItem('accessToken', tokens.accessToken, isString);
-                    setLocalStorageItem('refreshToken', tokens.refreshToken, isString);
-
-                    navigate('/dashboard');
-                },
-                onError: () => {
-                    createToast('error', 'Invalid email or password');
-                }
-            });
+    const routes = [
+        {
+            path: '/login',
+            element: <Login />
         },
-        [loginUser, loginMutation, navigate]
-    );
+        {
+            path: '/register',
+            element: <FullRegister />
+        },
+        {
+            path: '/register/partial',
+            element: <PartialRegister />
+        },
+        {
+            path: '/oauth/success',
+            element: <PartialRegister />
+        },
+        {
+            path: '/error',
+            element: <Error />
+        },
+        {
+            path: '/exchange',
+            element: <TokenExchange />
+        },
+        {
+            path: '*',
+            element: <Navigate to="/login" />
+        }
+    ];
 
     return (
         <main className={styles.auth}>
-            <form onSubmit={handleLogin}>
-                <input type="text" placeholder="Email" value={email} onChange={handleEmailChange} />
-                <input type="password" placeholder="Password" value={password} onChange={handlePasswordChange} />
-                <button type="submit">Login</button>
-            </form>
+            <section className={styles.left}>
+                <div className={styles.brand}>
+                    <Brand />
+                    <h1>thymecard</h1>
+                </div>
+                <Routes>
+                    {routes.map(({ path, element }) => (
+                        <Route key={path} path={path} element={element} />
+                    ))}
+                </Routes>
+                <div className={styles.terms}>
+                    <p>Terms of Use</p>|<p>Privacy Policy</p>
+                </div>
+            </section>
+            <section className={styles.right}>
+                <div className={styles.wrapper}>
+                    <img src={mockup} />
+                </div>
+            </section>
         </main>
     );
 };

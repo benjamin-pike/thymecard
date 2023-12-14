@@ -1,6 +1,6 @@
 import { createClient, RedisClientType } from 'redis';
 import { InternalError } from '../error/thymecardError';
-import { ErrorCode } from '../error/errorCode';
+import { ErrorCode } from '@thymecard/types';
 
 interface IEntityKey {
     key: string;

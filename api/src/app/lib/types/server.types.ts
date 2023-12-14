@@ -1,19 +1,26 @@
-import express from "express";
-import { IAuthController } from "../../components/auth/auth.controller";
-import { IUserController } from "../../components/user/user.controller";
-import { IRecipeController } from "../../components/recipe/recipe.controller";
-import { IDayController } from "../../components/day/day.controller";
-import { IPantryController } from "../../components/pantry/pantry.controller";
-import { IStockController } from "../../components/stock/stock.controller";
-import { AuthMiddleware } from "../../middleware/auth.middleware";
-import { ContextMiddleware } from "../../middleware/context.middleware";
-import { ErrorsMiddleware } from "../../middleware/error.middleware";
-import { RateLimiterMiddleware } from "../../middleware/rate-limiter.middleware";
+import express from 'express';
+import { IUserController } from '../../components/user/user.controller';
+import { IRecipeController } from '../../components/recipe/recipe.controller';
+import { IDayController } from '../../components/day/day.controller';
+import { IPantryController } from '../../components/pantry/pantry.controller';
+import { IStockController } from '../../components/stock/stock.controller';
+import { AuthMiddleware } from '../../middleware/auth.middleware';
+import { ContextMiddleware } from '../../middleware/context.middleware';
+import { ErrorsMiddleware } from '../../middleware/error.middleware';
+import { RateLimiterMiddleware } from '../../middleware/rate-limiter.middleware';
+import { ThymecardEnvironment } from '../../../env';
+import { ICredentialController } from '../../components/auth/credential/credential.controller';
+import { IOAuthController } from '../../components/auth/oauth/oauth.controller';
+import { ISessionController } from '../../components/auth/session/session.controller';
 
 export interface IDependencies {
-    authController: IAuthController;
+    env: ThymecardEnvironment;
+    // authController: IAuthController;
+    oauthController: IOAuthController;
+    credentialController: ICredentialController;
+    sessionController: ISessionController;
     userController: IUserController;
-    recipeController: IRecipeController
+    recipeController: IRecipeController;
     dayController: IDayController;
     pantryController: IPantryController;
     stockController: IStockController;

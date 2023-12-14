@@ -102,14 +102,14 @@ export const recipeRouter = (dependencies: IDependencies) => {
 };
 
 export const recipePermissions: IRoutePermissions = {
-    'POST /recipes': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
-    'GET /recipes/summary': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'POST /recipes/parse': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'GET /recipes/:recipeId': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'PUT /recipes/:recipeId': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
-    'DELETE /recipes/:recipeId': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }],
-    'GET /recipes/:recipeId/summary': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'POST /recipes/:recipeId/comments': [{ scope: AccessScope.Recipe, permission: Permission.WRITE }],
-    'GET /recipes/:recipeId/comments': [{ scope: AccessScope.Recipe, permission: Permission.READ }],
-    'DELETE /recipes/:recipeId/comments/:commentId': [{ scope: AccessScope.Recipe, permission: Permission.DELETE }]
+    'POST /recipes': [{ scope: AccessScope.RECIPE, permission: Permission.WRITE }],
+    'GET /recipes/summary': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
+    'POST /recipes/parse': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
+    'GET /recipes/:recipeId': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
+    'PUT /recipes/:recipeId': [{ scope: AccessScope.RECIPE, permission: Permission.WRITE }],
+    'DELETE /recipes/:recipeId': [{ scope: AccessScope.RECIPE, permission: Permission.DELETE }],
+    'GET /recipes/:recipeId/summary': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
+    'POST /recipes/:recipeId/comments': [{ scope: AccessScope.RECIPE, permission: Permission.WRITE }],
+    'GET /recipes/:recipeId/comments': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
+    'DELETE /recipes/:recipeId/comments/:commentId': [{ scope: AccessScope.RECIPE, permission: Permission.DELETE }]
 };

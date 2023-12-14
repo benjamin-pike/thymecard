@@ -1,4 +1,4 @@
-import { ErrorCode } from '../../lib/error/errorCode';
+import { ErrorCode } from '@thymecard/types';
 import { UnprocessableError } from '../../lib/error/thymecardError';
 import { IAuthenticatedContext } from '../../middleware/context.middleware';
 import { IPantryService } from './pantry.service';

@@ -1,0 +1,239 @@
+.image {
+    display: grid;
+    place-items: center;
+
+    height: 6rem;
+    width: 6rem;
+
+    margin-bottom: 0.5rem;
+    padding: 0.25rem;
+
+    color: $mono-700;
+    background-color: mix($mono-800, $mono-900, 25%);
+    border: 1px solid $mono-700;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    z-index: 1;
+
+    transition:
+        color 150ms ease,
+        background-color 150ms ease,
+        border 150ms ease;
+
+    &:hover {
+        color: $mono-light;
+        background-color: $mono-800;
+        border: 1px solid $mono-500;
+    }
+
+    svg {
+        height: 2rem;
+        width: 2rem;
+    }
+
+    img {
+        height: 6rem;
+        width: 6rem;
+
+        object-fit: cover;
+
+        border-radius: 50%;
+    }
+
+    input {
+        display: none;
+    }
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 0.75rem;
+
+    width: calc(100% + 5rem);
+}
+
+.genderToggle {
+    rotate: 270deg;
+
+    path {
+        stroke-width: 1;
+    }
+}
+
+.genderSelect {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+
+    width: 10rem;
+
+    li {
+        position: relative;
+
+        button {
+            box-sizing: border-box;
+
+            display: flex;
+
+            padding: 0.5rem 0.5rem 0.5rem 1rem;
+            // margin-top: -0.5rem;
+
+            color: $mono-light;
+            font-weight: 400;
+            font-size: $fs-13;
+
+            width: 100%;
+
+            border-radius: 0.25rem;
+
+            transition:
+                color 150ms ease,
+                background-color 150ms ease;
+
+            &:hover {
+                background-color: $mono-800;
+            }
+
+            svg {
+                margin-left: auto;
+
+                height: 1rem;
+                width: 1rem;
+
+                color: $mono-light;
+
+                scale: 1.15;
+
+                path {
+                    stroke-width: 1;
+                }
+            }
+        }
+
+        &::after {
+            content: '';
+
+            position: absolute;
+            top: 50%;
+            left: 0;
+
+            height: 1.25rem;
+            width: 0.125rem;
+
+            background-color: $mono-500;
+
+            border-radius: 0 100vmax 100vmax 0;
+
+            opacity: 0;
+
+            translate: 0 -50%;
+
+            transition: opacity 150ms ease;
+        }
+
+        &:first-of-type {
+            button {
+                margin-top: 0;
+            }
+        }
+
+        &:nth-of-type(2n-1) {
+            button {
+                background-color: alpha($mono-800, 0.4);
+
+                &:hover {
+                    color: $mono-light;
+                    background-color: $mono-800;
+                }
+            }
+        }
+
+        &[data-selected='true'] {
+            &::after {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.additional {
+    width: 100%;
+
+    color: $mono-600;
+    font-size: $fs-13;
+    font-weight: 300;
+    text-align: center;
+    white-space: pre;
+
+    a {
+        transition: color 150ms ease;
+
+        cursor: pointer;
+
+        &:hover {
+            color: $mono-light;
+        }
+    }
+}
+
+.terms {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    margin-top: 0.5rem;
+
+    label {
+        color: $mono-light;
+        font-size: $fs-13;
+        font-weight: 400;
+    }
+
+    .checkbox {
+        display: grid;
+        place-items: center;
+
+        height: 1.25rem;
+        width: 1.25rem;
+
+        background-color: mix($mono-800, $mono-900, 25%);
+        border: 1px solid $mono-700;
+
+        border-radius: 0.5rem;
+
+        transition:
+            background-color 150ms ease,
+            border 150ms ease;
+
+        svg {
+            height: 60%;
+            width: 60%;
+
+            fill: none;
+            stroke: $mono-light;
+            stroke-width: 2.5;
+
+            stroke-linecap: round;
+            stroke-dasharray: 60;
+            stroke-dashoffset: 60;
+
+            transition: stroke-dashoffset 200ms ease;
+        }
+    }
+
+    input[type='checkbox']:checked + .checkbox {
+        background-color: $mono-800;
+        border: 1px solid $mono-600;
+
+        svg {
+            stroke-dashoffset: 0;
+
+            transition: stroke-dashoffset 800ms ease;
+        }
+    }
+}

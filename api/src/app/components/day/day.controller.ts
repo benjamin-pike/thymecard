@@ -1,5 +1,4 @@
 import { ZodError } from 'zod';
-import { ErrorCode } from '../../lib/error/errorCode';
 import { UnprocessableError } from '../../lib/error/thymecardError';
 import { hasKey, isDefined, isNonEmptyString, isNumber, isPlainObject, isYearMonthDayDateString, parseBooleanOrFalse } from '../../lib/types/typeguards.utils';
 import { IAuthenticatedContext } from '../../middleware/context.middleware';
@@ -18,6 +17,7 @@ import {
 } from './day.types';
 import { formatZodError } from '../../lib/error/error.utils';
 import { IPagedResult } from '../../lib/types/common.types';
+import { ErrorCode } from '@thymecard/types';
 
 interface IDayControllerDependencies {
     dayService: IDayService;

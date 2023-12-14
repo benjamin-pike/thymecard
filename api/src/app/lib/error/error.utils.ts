@@ -31,7 +31,8 @@ export const errorHandler = (
         try {
             await routeHandler(req, res, next);
         } catch (err) {
-            next(enrichError(err, req.context));
+            const enrichedError = enrichError(err, req.context);
+            next(enrichedError);
         }
     };
 };

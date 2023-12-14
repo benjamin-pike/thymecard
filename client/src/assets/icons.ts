@@ -1,11 +1,11 @@
 import { BiCopy, BiFoodMenu, BiFridge, BiLink, BiPieChartAlt2, BiSolidFoodMenu } from 'react-icons/bi';
 import { BsArrowRightShort, BsCalendar3, BsChevronDown, BsChevronLeft, BsChevronRight, BsQuestionLg } from 'react-icons/bs';
-import { FaInfo } from 'react-icons/fa6';
+import { FaCaretDown, FaFacebook, FaGoogle, FaInfo } from 'react-icons/fa6';
 import { FiEdit2, FiPrinter } from 'react-icons/fi';
 import { GrFormSearch, GrUndo } from 'react-icons/gr';
 import { HiOutlineDocumentAdd, HiOutlineDocumentDuplicate } from 'react-icons/hi';
-import { IoIosClose, IoIosTimer, IoMdRefresh } from 'react-icons/io';
-import { IoCheckmark, IoCloseOutline } from 'react-icons/io5';
+import { IoIosClose, IoIosTimer, IoMdEye, IoMdRefresh } from 'react-icons/io';
+import { IoCheckmark, IoCloseOutline, IoPerson } from 'react-icons/io5';
 import {
     LuActivity,
     LuBanana,
@@ -44,7 +44,7 @@ import {
     RiFullscreenLine,
     RiFullscreenExitLine
 } from 'react-icons/ri';
-import { TbChefHat, TbFileUpload, TbListCheck, TbPlaylistAdd } from 'react-icons/tb';
+import { TbChefHat, TbFileUpload, TbGenderFemale, TbGenderMale, TbGenderThird, TbListCheck, TbPlaylistAdd } from 'react-icons/tb';
 
 export const ICONS = {
     common: {
@@ -78,7 +78,17 @@ export const ICONS = {
         upload: PiUploadSimple,
         recipe: BiFoodMenu,
         recipeFill: BiSolidFoodMenu,
-        copy: BiCopy
+        copy: BiCopy,
+        genderMale: TbGenderMale,
+        genderFemale: TbGenderFemale,
+        genderOther: TbGenderThird,
+        caret: FaCaretDown,
+        person: IoPerson
+    },
+    auth: {
+        google: FaGoogle,
+        facebook: FaFacebook,
+        eye: IoMdEye
     },
     dashboard: {},
     planner: {},

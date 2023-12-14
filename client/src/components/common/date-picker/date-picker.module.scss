@@ -1,26 +1,83 @@
 .picker {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
     gap: 0.5rem;
 
     padding: 1rem;
+
+    width: 14.5rem;
+
+    &[data-mode='day'] {
+        grid-template-columns: repeat(7, 1fr);
+
+        .monthYear {
+            grid-column: span 7;
+        }
+    }
+
+    &[data-mode='month'] {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+
+        .monthYear {
+            grid-column: span 3;
+            margin-bottom: 1rem;
+        }
+
+        .option {
+            height: 2rem;
+
+            font-size: $fs-14;
+
+            border: 0.5px solid $mono-800;
+
+            &::after {
+                display: none;
+            }
+
+            &[data-left='true'] {
+                border-left: none;
+            }
+            &[data-right='true'] {
+                border-right: none;
+            }
+            &[data-top='true'] {
+                border-top: none;
+            }
+            &[data-bottom='true'] {
+                border-bottom: none;
+            }
+        }
+    }
 
     .monthYear {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        grid-column: span 7;
-        
+
         margin-bottom: 0.5rem;
 
-        color: $mono-700;
-        font-size: $fs-14;
+        .current {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
 
-        @include dark-mode {
-            color: $mono-light;
-        }
+            color: $mono-700;
+            font-size: $fs-14;
 
-        p {
+            transition: color 100ms ease;
+
+            &:hover {
+                color: $mono-500;
+            }
+
+            @include dark-mode {
+                color: $mono-light;
+
+                &:hover {
+                    color: $mono-500;
+                }
+            }
+
             .month {
                 font-weight: 500;
             }
@@ -30,11 +87,24 @@
             }
         }
 
-        button {
+        .shift {
             display: grid;
             place-content: center;
 
+            color: $mono-700;
             background-color: transparent;
+
+            &:hover {
+                color: $mono-500;
+            }
+
+            @include dark-mode {
+                color: $mono-light;
+
+                &:hover {
+                    color: $mono-500;
+                }
+            }
         }
     }
 
@@ -42,14 +112,14 @@
         font-size: $fs-13;
         color: $mono-700;
         font-weight: 600;
-        text-align: center; 
+        text-align: center;
 
         @include dark-mode {
             color: $mono-light;
         }
     }
 
-    .date {
+    .option {
         position: relative;
 
         padding: 0.25rem;
@@ -61,8 +131,16 @@
 
         transition: color 150ms ease;
 
+        &:hover {
+            color: $mono-500;
+        }
+
         @include dark-mode {
             color: $mono-light;
+
+            &:hover {
+                color: $mono-500;
+            }
         }
 
         &::after {
@@ -90,7 +168,7 @@
             }
         }
 
-        &[data-current-month = 'false'] {
+        &[data-current-month='false'] {
             opacity: 0.5;
 
             @include dark-mode {
@@ -111,18 +189,18 @@
                 color: $mono-600;
             }
 
-            &[data-current-month = 'false'] {
+            &[data-current-month='false'] {
                 opacity: 0.35;
 
                 @include dark-mode {
                     opacity: 1;
-    
+
                     color: mix($mono-700, $mono-800, 50%);
-                }    
+                }
             }
         }
 
-        &[data-selected = 'true'] {
+        &[data-selected='true'] {
             color: $mono-800;
 
             @include dark-mode {

@@ -85,12 +85,12 @@ export const dayRouter = (dependencies: IDependencies) => {
 };
 
 export const dayPermissions: IRoutePermissions = {
-    'POST /days': [{ scope: AccessScope.Day, permission: Permission.WRITE }],
-    'GET /days': [{ scope: AccessScope.Day, permission: Permission.READ }],
-    'GET /days/:dayId': [{ scope: AccessScope.Day, permission: Permission.READ }],
-    'PUT /days/:dayId': [{ scope: AccessScope.Day, permission: Permission.WRITE }],
-    'DELETE /days/:dayId': [{ scope: AccessScope.Day, permission: Permission.DELETE }],
-    'POST /days/:dayId/meals': [{ scope: AccessScope.Day, permission: Permission.WRITE }],
-    'PUT /days/:dayId/meals/:mealId': [{ scope: AccessScope.Day, permission: Permission.WRITE }],
-    'DELETE /days/:dayId/meals/:mealId': [{ scope: AccessScope.Day, permission: Permission.DELETE }]
+    'POST /days': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'GET /days': [{ scope: AccessScope.DAY, permission: Permission.READ }],
+    'GET /days/:dayId': [{ scope: AccessScope.DAY, permission: Permission.READ }],
+    'PUT /days/:dayId': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'DELETE /days/:dayId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }],
+    'POST /days/:dayId/meals': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'PUT /days/:dayId/meals/:mealId': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'DELETE /days/:dayId/meals/:mealId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }]
 };

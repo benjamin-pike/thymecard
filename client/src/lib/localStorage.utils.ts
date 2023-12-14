@@ -10,7 +10,6 @@ export const getLocalStorageItem = <T>(key: string, typeguard: TypeGuard<T>) => 
 
         return item;
     } catch (err) {
-        console.error(err);
         return null;
     }
 };
@@ -23,7 +22,7 @@ export const setLocalStorageItem = <T>(key: string, item: T, typeguard: TypeGuar
 
         localStorage.setItem(key, JSON.stringify(item));
     } catch (err) {
-        console.error(err);
+        return;
     }
 };
 
@@ -31,6 +30,6 @@ export const removeLocalStorageItem = (key: string) => {
     try {
         localStorage.removeItem(key);
     } catch (err) {
-        console.error(err);
+        return;
     }
 };

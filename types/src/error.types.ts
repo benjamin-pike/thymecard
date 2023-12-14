@@ -10,6 +10,8 @@ export enum ErrorCode {
     RecipeNotFound = 105,
     DayNotFound = 106,
     PantryProductNotFound = 107,
+    CredentialNotFound = 108,
+    SessionNotFound = 109,
 
     // Typeguard errors (02xx)
     // Resource errors (0200 - 0249)
@@ -25,6 +27,7 @@ export enum ErrorCode {
     InvalidMealUpdateResource = 210,
     InvalidImageResource = 211,
     InvalidStockUpsertResource = 212,
+    InvalidCredentialCreateResource = 213,
 
     // General type errors (0250 - 0299)
     InvalidDateString = 250,
@@ -39,7 +42,14 @@ export enum ErrorCode {
     InvalidRecipeUrl = 305,
     InvalidRequestReturnType = 306,
     InvalidDayId = 307,
-    InvliadEnrichedFlag = 308,
+    InvalidEnrichedFlag = 308,
+    InvalidCredentialId = 309,
+    InvalidVerificationCode = 310,
+    InvalidOAuthId = 311,
+    InvalidSessionId = 312,
+    InvalidNonce = 313,
+    InvalidExchangeTokenBody = 314,
+    InvalidEmail = 315,
 
     // Permission/Authentication errors (04xx)
     InvalidLoginCredentials = 401,
@@ -55,11 +65,21 @@ export enum ErrorCode {
     InsufficientPermissions = 411,
     InvalidContext = 412,
     TooManyRequests = 413,
+    UserNotVerified = 414,
+    IncompleteRegistration = 415,
+    CredentialProviderMismatch = 416,
 
     // Database errors (05xx)
     MongoDuplicateKey = 501,
     RedisConnectionError = 502,
 
-    // Miscelaneous errors (06xx)
-    StockCategoryUpsertFailed = 601
+    // Conflict errors (06xx)
+    UserAlreadyExists = 601,
+
+    // Integration errors (07xx)
+    SendgridError = 701,
+
+    // Miscelaneous errors (50xx)
+    StockCategoryUpsertFailed = 5001,
+    ConflictError
 }

@@ -1,96 +1,129 @@
 .auth {
-    display: grid;
-    place-content: center;
+    display: flex;
 
-    background-color: $mono-light;
+    width: 100%;
 
-    @include dark-mode {
-        background-color: $mono-900;
-    }
+    background-color: $mono-900;
 
-    form {
+    .left {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        justify-content: center;
+        align-items: center;
 
-        input {
-            padding: 0.75rem 1rem;
+        height: 100%;
+        width: 50%;
 
-            width: 15rem;
+        background-color: $mono-900;
 
-            font-size: $fs-14;
-            color: $mono-700;
-            background-color: $mono-light;
-            border: 1px dashed $mono-300;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
 
-            border-radius: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: auto;
 
-            &::placeholder {
-                color: $mono-500;
+            height: 2rem;
+
+            color: $mono-light;
+
+            h1 {
+                font-size: $fs-20;
+                font-weight: 500;
             }
 
-            @include dark-mode {
-                color: $mono-light;
-                background-color: $mono-900;
-                border: 1px dashed $mono-700;
-
-                &::placeholder {
-                    color: $mono-600;
-                }
+            svg {
+                height: 2rem;
             }
+        }
 
-            &:-webkit-autofill {
-                -webkit-box-shadow: 0 0 0 50px $mono-light inset;
-                box-shadow: 0 0 0 50px $mono-light inset;
-                -webkit-text-fill-color: $mono-700;
-                border-color: $mono-300; // Added this to override the default border color
-            }
+        .body {
+            .forgottenPassword {
+                width: 100%;
 
-            &:-webkit-autofill::first-line {
-                color: $mono-700;
-            }
+                color: $mono-600;
+                font-size: $fs-14;
+                font-weight: 400;
+                text-align: center;
 
-            @include dark-mode {
-                &:-webkit-autofill {
-                    -webkit-box-shadow: 0 0 0 50px $mono-900 inset;
-                    box-shadow: 0 0 0 50px $mono-900 inset;
-                    -webkit-text-fill-color: $mono-light;
-                    border-color: $mono-700; // Added this for the dark mode
-                }
-                &:-webkit-autofill::first-line {
+                transition: color 150ms ease;
+
+                cursor: pointer;
+
+                &:hover {
                     color: $mono-light;
                 }
             }
         }
 
-        button {
-            padding: 0.75rem 1rem;
+        .terms {
+            display: flex;
+            gap: 1rem;
 
-            margin-top: 0.5rem;
+            margin-top: auto;
+            margin-bottom: 2rem;
 
-            font-size: $fs-14;
-            text-align: center;
-            color: $mono-light;
-            background-color: $mono-700;
+            color: $mono-600;
+            font-size: $fs-12;
+            font-weight: 300;
+        }
+    }
 
-            border-radius: 100vmax;
+    .right {
+        position: relative;
 
-            transition:
-                background-color 150ms ease,
-                border 150ms ease;
+        height: 100%;
+        width: 50%;
 
-            &:hover {
-                background-color: $mono-800;
+        background-size: 1.75rem 1.75rem;
+        background-image: linear-gradient(to right, alpha($mono-700, 0.35) 1px, transparent 1px),
+            linear-gradient(to bottom, alpha($mono-700, 0.35) 1px, transparent 1px);
+        border-left: 1px solid $mono-800;
+
+        overflow: hidden;
+
+        perspective: 1000px;
+
+        .wrapper {
+            position: relative;
+
+            display: flex;
+            align-items: center;
+
+            width: 100%;
+            height: 100%;
+
+            border-radius: 2rem;
+
+            transform: rotateX(10deg) rotateY(-15deg);
+
+            img {
+                margin-left: -9.5rem;
+
+                height: 75%;
+
+                object-fit: cover;
+
+                filter: drop-shadow(0.125rem 0.125rem 0.25rem alpha($mono-dark, 0.05)) drop-shadow(0 0 1rem alpha($mono-dark, 0.125))
+                    drop-shadow(0 0 7.5rem $mono-dark) drop-shadow(0 0 12.5rem $mono-dark);
             }
 
-            @include dark-mode {
-                background-color: $mono-900;
-                border: 1px solid $mono-700;
+            &::before {
+                content: '';
 
-                &:hover {
-                    background-color: $mono-800;
-                    border: 1px solid $mono-500;
-                }
+                position: absolute;
+                top: 50%;
+                left: 0;
+
+                width: 100%;
+                height: 75%;
+
+                background-color: $mono-900;
+
+                filter: blur(10rem);
+
+                translate: 0 -50%;
             }
         }
     }
