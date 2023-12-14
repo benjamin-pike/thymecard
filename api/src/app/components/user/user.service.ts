@@ -1,17 +1,19 @@
+import { v4 as uuid } from 'uuid';
+import fileType from 'file-type';
+import sharp from 'sharp';
+import { S3Repository } from '../../lib/data/s3.repository';
 import { userRepository } from './user.model';
-import { AuthProvider, ILocalUserCreate, IOAuthUserCreate, IUser, isLocalUser } from './user.types';
-import { NotFoundError } from '../../lib/error/thymecardError';
-import { ErrorCode } from '../../lib/error/errorCode';
+import { ErrorCode, IUser, IUserCreate, OAuthProvider } from '@thymecard/types';
+import { NotFoundError, UnprocessableError } from '../../lib/error/thymecardError';
 import { UserCache } from '../../lib/types/cache.types';
-import { IAuthService } from '../auth/auth.service';
 
 interface IUserServiceDependencies {
     userCache: UserCache;
-    authService: IAuthService;
+    s3Repository: S3Repository;
 }
 
 export interface IUserService {
-    createUser(user: ILocalUserCreate | IOAuthUserCreate): Promise<IUser>;
+    createUser(user: IUserCreate, image?: Express.Multer.File): Promise<IUser>;
     updateUser(userId: string, update: Partial<IUser>): Promise<IUser>;
     getUserById(userId: string): Promise<IUser>;
     getUserByEmail(email: string): Promise<IUser | null>;
@@ -20,22 +22,37 @@ export interface IUserService {
 
 export class UserService implements IUserService {
     private cache: UserCache;
-    private authService: IAuthService;
+    private s3Repository: S3Repository;
 
     constructor(deps: IUserServiceDependencies) {
         this.cache = deps.userCache;
-        this.authService = deps.authService;
+        this.s3Repository = deps.s3Repository;
     }
 
-    public async createUser(user: ILocalUserCreate | IOAuthUserCreate): Promise<IUser> {
-        let createdUser: IUser;
+    public async createUser(user: IUserCreate, image?: Express.Multer.File): Promise<IUser> {
+        let query = user;
 
-        if (isLocalUser(user)) {
-            const hashedPassword = await this.authService.hashPassword(user.password);
-            createdUser = await userRepository.create({ ...user, password: hashedPassword });
-        } else {
-            createdUser = await userRepository.create(user);
+        if (image) {
+            const imageFilename = uuid();
+
+            const extension = await fileType.fromBuffer(image.buffer);
+            if (!extension) {
+                throw new UnprocessableError(ErrorCode.InvalidImageResource, 'The provided profile image is invalid', {
+                    origin: 'UserService.createUser'
+                });
+            }
+    
+            let imageBuffer = image.buffer;
+            if (extension.ext !== 'jpg') {
+                imageBuffer = await sharp(image.buffer).jpeg().toBuffer();
+            }
+    
+            await this.s3Repository.uploadFile(imageBuffer, imageFilename, 'jpg', 'images/users');
+
+            query = { ...user, image: imageFilename };
         }
+
+        const createdUser = await userRepository.create(query);
 
         this.cache.set(createdUser._id, createdUser);
 
@@ -45,9 +62,7 @@ export class UserService implements IUserService {
     public async updateUser(userId: string, update: Partial<IUser>): Promise<IUser> {
         const query = { _id: userId, isDeleted: { $ne: true } };
 
-        const hashedPassword = update.password ? await this.authService.hashPassword(update.password) : undefined;
-
-        const updatedUser = await userRepository.findOneAndUpdate(query, { ...update, password: hashedPassword });
+        const updatedUser = await userRepository.findOneAndUpdate(query, update);
 
         if (!updatedUser) {
             throw new NotFoundError(ErrorCode.UserNotFound, 'User not found', {
@@ -95,18 +110,18 @@ export class UserService implements IUserService {
         const user = await userRepository.getOne(query);
 
         if (!user || user.isDeleted) {
-            return null
+            return null;
         }
 
         return user;
     }
 
-    public async getOAuthUserOrNull(OAuthId: string, authProvider: AuthProvider, email: string | undefined): Promise<IUser | null> {
+    public async getOAuthUserOrNull(OAuthId: string, authProvider: OAuthProvider, email: string | undefined): Promise<IUser | null> {
         const query = { $or: [{ OAuthId, authProvider }, { email }] };
         const user = await userRepository.getOne(query);
 
         if (!user) {
-            return null
+            return null;
         }
 
         if (user.isDeleted) {

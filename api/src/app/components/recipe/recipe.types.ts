@@ -1,17 +1,6 @@
 import { isArrayOf, isOptional, isString } from '../../lib/types/typeguards.utils';
 import { z } from 'zod';
-
-const transformDateString = z
-    .string()
-    .refine(
-        (value) => {
-            return !isNaN(Date.parse(value));
-        },
-        {
-            message: 'Invalid ISO date string'
-        }
-    )
-    .transform((data) => new Date(data));
+import { transformDateString } from '../../lib/types/zod.utils';
 
 export const createRecipeSchema = z.object({
     userId: z.string(),

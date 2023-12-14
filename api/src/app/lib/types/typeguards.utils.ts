@@ -34,7 +34,7 @@ export const isArrayOf = <T>(val: unknown, typeGuard: TypeGuard<T>): val is T[] 
     return Array.isArray(val) && val.every(typeGuard);
 };
 
-export const isObject = (val: unknown): val is object => {
+export const isObject = (val: unknown): val is Object => {
     return typeof val === 'object' && val !== null;
 };
 
@@ -99,6 +99,10 @@ export function validate<T, F, R>(
 }
 
 export const isValidMongoId = (val: any): val is string => {
+    if (!isString(val)) {
+        return false;
+    }
+
     try {
         new Types.ObjectId(val);
         return true;

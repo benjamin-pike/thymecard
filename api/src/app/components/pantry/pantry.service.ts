@@ -1,7 +1,7 @@
-import { Prisma, type PrismaClient } from '@prisma/client';
+import { type PrismaClient } from '@prisma/client';
 import { IPantryProduct } from './pantry.types';
 import { NotFoundError } from '../../lib/error/thymecardError';
-import { ErrorCode } from '../../lib/error/errorCode';
+import { ErrorCode } from '@thymecard/types';
 
 interface IPantryServiceDependencies {
     prismaClient: PrismaClient;

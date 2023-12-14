@@ -103,10 +103,20 @@
 }
 
 :global {
+    .Toastify__toast-container {
+        width: fit-content !important;
+    }
+
     .Toastify__toast {
+        width: fit-content !important;
+        max-width: 70vw !important;
+        min-width: 20rem !important;
+
+        padding-right: 2rem !important;
+
         backdrop-filter: blur(0.25rem) !important;
         
-        border-radius: 0.75rem !important;
+        border-radius: 0.5rem !important;
         
         @include dark-mode {
             background-color: transparentize($mono-800, 0.25) !important;
@@ -115,5 +125,15 @@
 
     .Toastify__toast-body {
         gap: 0.5rem;
+
+        overflow: hidden;
+
+        > div:not(.Toastify__toast-icon) {
+            flex-shrink: 0;
+
+            white-space: pre;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 }

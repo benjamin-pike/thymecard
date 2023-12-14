@@ -28,5 +28,5 @@ export const pantryRouter = (dependencies: IDependencies) => {
 };
 
 export const pantryPermissions: IRoutePermissions = {
-    'GET /pantry/lookup': [{ scope: AccessScope.Pantry, permission: Permission.READ }],
+    'GET /pantry/lookup': [{ scope: AccessScope.PANTRY, permission: Permission.READ }],
 };

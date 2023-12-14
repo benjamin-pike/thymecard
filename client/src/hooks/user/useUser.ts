@@ -5,7 +5,7 @@ import { login, logout } from '@/store/slices/user';
 import { getUserImageUrl } from '@/lib/s3/s3.utils';
 
 interface IBaseLoginPayload extends Omit<ILoginPayload, 'user'> {
-    user: Omit<ILoginPayload['user'], 'image'>;
+    user: ILoginPayload['user'];
 }
 
 const useUser = (isAuthenticated = false) => {
@@ -15,7 +15,7 @@ const useUser = (isAuthenticated = false) => {
     const loginUser = (payload: IBaseLoginPayload) => {
         const user: ILoginPayload['user'] = {
             ...payload.user,
-            image: getUserImageUrl(payload.user.id)
+            image: getUserImageUrl(payload.user.image)
         };
 
         dispatch(login({ ...payload, user }));

@@ -1,61 +1,16 @@
 import * as z from 'zod';
+import { transformDateString } from '../../lib/types/zod.utils';
+import { UserGender } from '@thymecard/types';
 
-export interface IUser {
-    _id: string;
-    firstName: string;
-    lastName?: string;
-    email?: string;
-    password?: string;
-    image?: string;
-    phoneNumber?: string;
-    dob?: Date;
-    gender?: 'MALE' | 'FEMALE' | 'OTHER';
-    authProvider: 'LOCAL' | 'GOOGLE' | 'FACEBOOK' | 'APPLE';
-    OAuthId?: string;
-    isDeleted?: boolean;
-    isPremium?: boolean;
-}
-
-interface ILocalUser extends IUser {
-    lastName: string;
-    password: string;
-    authProvider: 'LOCAL';
-}
-
-export type IOAuthUserCreate = Pick<IUser, 'firstName' | 'lastName' | 'OAuthId' | 'email' | 'authProvider'>;
-export type ILocalUserCreate = Omit<ILocalUser, '_id' | 'authProvider' | 'isDeleted' | 'isPremium'>;
-
-export type IUserUpdate = Partial<IUser>;
-
-export enum AuthProvider {
-    Local = 'LOCAL',
-    Google = 'GOOGLE',
-    Facebook = 'FACEBOOK',
-    Apple = 'APPLE'
-}
-
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
-
-export const createLocalUserSchema = z.object({
+export const createUserSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
-    email: z.string().email(),
-    password: z.string().min(8).regex(passwordRegex),
     image: z.string().optional(),
-    phoneNumber: z.string().optional(),
-    dob: z.date().optional(),
-    gender: z.enum(['MALE', 'FEMALE', 'OTHER'])
+    dob: transformDateString,
+    gender: z.enum([UserGender.MALE, UserGender.FEMALE, UserGender.OTHER]),
+    height: z.number(),
+    weight: z.number(),
+
 });
 
-export const createOAuthUserSchema = z.object({
-    firstName: z.string(),
-    lastName: z.string().optional(),
-    OAuthId: z.string(),
-    authProvider: z.enum(['GOOGLE', 'FACEBOOK', 'APPLE'])
-});
-
-export const updateUserSchema = createLocalUserSchema.partial();
-
-export const isLocalUser = (obj: any): obj is ILocalUser => {
-    return obj.authProvider === 'LOCAL';
-};
+export const updateUserSchema = createUserSchema.partial();

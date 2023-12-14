@@ -3,9 +3,8 @@ import { IAuthenticatedContext } from '../../middleware/context.middleware';
 import { IStockService } from './stock.service';
 import { upsertStockSchema } from './stock.types';
 import { UnprocessableError } from '../../lib/error/thymecardError';
-import { ErrorCode } from '../../lib/error/errorCode';
 import { formatZodError } from '../../lib/error/error.utils';
-import { IStock, IStockCategory, StockSection } from '@thymecard/types';
+import { ErrorCode, IStock, IStockCategory, StockSection } from '@thymecard/types';
 
 interface IStockControllerDependencies {
     stockService: IStockService;

@@ -1,19 +1,34 @@
 import express from 'express';
+import multer from 'multer';
 import HTTP_STATUS_CODES from 'http-status-enum';
 import { IDependencies } from '../../lib/types/server.types';
 import { errorHandler } from '../../lib/error/error.utils';
-import { excludeResFields, includeResFields } from '../../middleware/res-filter.middleware';
 import { AccessScope, IRoutePermissions, Permission } from '../../lib/auth/permissions';
 
 export const userRouter = (dependencies: IDependencies) => {
-    const { userController } = dependencies;
+    const { userController, credentialController, sessionController } = dependencies;
 
     const router = express.Router();
-
-    router.use(excludeResFields('user', ['password']));
-    router.use(includeResFields('user', ['createdAt', 'updatedAt']));
+    const upload = multer();
 
     return router
+        .post(
+            '/',
+            upload.single('image'),
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+
+                const credentialId = req.query.credentialId;
+                const resource = req.body;
+                const image = req.file;
+
+                const user = await userController.createUser(context, credentialId, resource, image);
+                const { password: _, ...credential } = await credentialController.linkToUser(context, credentialId, user._id);
+                const session = await sessionController.create(context, credential);
+
+                res.status(HTTP_STATUS_CODES.CREATED).json({ user, credential, session });
+            })
+        )
         .get(
             '/:userId',
             errorHandler(async (req, res) => {
@@ -41,7 +56,8 @@ export const userRouter = (dependencies: IDependencies) => {
 };
 
 export const userPermissions: IRoutePermissions = {
-    'GET /users/:userId': [{ scope: AccessScope.User, permission: Permission.READ }],
-    'PUT /users/:userId': [{ scope: AccessScope.User, permission: Permission.WRITE }],
-    'DELETE /users/:userId': [{ scope: AccessScope.User, permission: Permission.DELETE }]
+    'POST /users': [],
+    'GET /users/:userId': [{ scope: AccessScope.USER, permission: Permission.READ }],
+    'PUT /users/:userId': [{ scope: AccessScope.USER, permission: Permission.WRITE }],
+    'DELETE /users/:userId': [{ scope: AccessScope.USER, permission: Permission.DELETE }]
 };

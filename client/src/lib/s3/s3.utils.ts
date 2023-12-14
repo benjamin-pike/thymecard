@@ -1,11 +1,11 @@
 import { S3_PATHS } from './paths';
 
-export const getUserImageUrl = (userId?: string) => {
-    if (!userId) {
-        return;
+export const getUserImageUrl = (imageFilename?: string) => {
+    if (!imageFilename) {
+        return `${S3_PATHS.USER_IMAGES}/default.jpg`;
     }
 
-    return `${S3_PATHS.USER_IMAGES}/${userId}.jpg`;
+    return `${S3_PATHS.USER_IMAGES}/${imageFilename}`;
 };
 
 export const getRecipeImageUrl = (imageFilename: string) => {

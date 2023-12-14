@@ -25,10 +25,7 @@ const initialState: UserState = {
 
 export interface ILoginPayload {
     user: IUserDetails;
-    tokens: {
-        accessToken: string;
-        refreshToken: string;
-    };
+    sessionId: string;
 }
 
 const userSlice = createSlice({
@@ -37,15 +34,13 @@ const userSlice = createSlice({
     reducers: {
         login: (state, action: PayloadAction<ILoginPayload>) => {
             setLocalStorageItem('user', action.payload.user, isUserDetails);
-            setLocalStorageItem('accessToken', action.payload.tokens.accessToken, isString);
-            setLocalStorageItem('refreshToken', action.payload.tokens.refreshToken, isString);
+            setLocalStorageItem('session', action.payload.sessionId, isString);
 
             state.user = action.payload.user;
         },
         logout: (state) => {
             removeLocalStorageItem('user');
-            removeLocalStorageItem('accessToken');
-            removeLocalStorageItem('refreshToken');
+            removeLocalStorageItem('session');
 
             state.user = null;
         }

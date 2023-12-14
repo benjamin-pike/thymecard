@@ -4,6 +4,13 @@ export type DeepPartial<T> = {
 	[P in keyof T]?: DeepPartial<T[P] | undefined>;
 };
 
+export function or<T1, T2>(
+	t1: TypeGuard<T1>,
+	t2: TypeGuard<T2>
+): (obj: any) => obj is T1 | T2 {
+	return (val: unknown): val is T1 | T2 => t1(val) || t2(val);
+}
+
 export const isDefined = <T>(val: T | undefined): val is T => {
 	return val !== undefined;
 };
@@ -72,6 +79,18 @@ export const isOptional = <T>(
 	typeGuard: TypeGuard<T>
 ): val is T | undefined => {
 	return typeof val === "undefined" || typeGuard(val);
+};
+
+export const isOptionalString = (val: any): val is string | undefined => {
+	return !isDefined(val) || isString(val);
+};
+
+export const isOptionalNumber = (val: any): val is number | undefined => {
+	return !isDefined(val) || isNumber(val);
+};
+
+export const isOptionalBoolean = (val: any): val is boolean | undefined => {
+	return !isDefined(val) || isBoolean(val);
 };
 
 export function hasKey<T extends object, K extends string>(
@@ -161,6 +180,16 @@ export const isFutureYearMonthDayDateString = (val: unknown): val is string => {
 	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
 	return date.getTime() >= today.getTime();
+};
+
+export const isValidEmail = (val: unknown): val is string => {
+	if (!isString(val)) {
+		return false;
+	}
+
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+	return emailRegex.test(val);
 };
 
 export const isValidUrl = (val: unknown): val is string => {

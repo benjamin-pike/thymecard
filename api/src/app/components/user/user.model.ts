@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { MongoRepository } from '../../lib/data/mongo.repository';
-import { ILocalUserCreate, IOAuthUserCreate, IUser } from './user.types';
+import { IUser, IUserCreate } from '@thymecard/types';
 
 export const collectionName = 'users';
 
@@ -12,41 +12,28 @@ export const UserSchema = new Schema(
         },
         lastName: {
             type: String,
-            required: false
-        },
-        email: {
-            type: String,
-            required: false
-        },
-        password: {
-            type: String,
-            required: false
+            required: true
         },
         image: {
             type: String,
             required: false
         },
-        phoneNumber: {
-            type: String,
-            required: false
-        },
         dob: {
             type: Date,
-            required: false
+            required: true
         },
         gender: {
             type: String,
             enum: ['MALE', 'FEMALE', 'OTHER'],
-            required: false
-        },
-        authProvider: {
-            type: String,
-            enum: ['LOCAL', 'GOOGLE', 'FACEBOOK', 'APPLE'],
             required: true
         },
-        OAuthId: {
-            type: String,
-            required: false
+        height: {
+            type: Number,
+            required: true
+        },
+        weight: {
+            type: Number,
+            required: true
         },
         isDeleted: {
             type: Boolean,
@@ -64,20 +51,9 @@ export const UserSchema = new Schema(
     }
 );
 
-UserSchema.index({ email: 1 }, { unique: true });
-UserSchema.index(
-    { OAuthId: 1, authProvider: 1 },
-    {
-        unique: true,
-        partialFilterExpression: {
-            OAuthId: { $exists: true }
-        }
-    }
-);
-
 mongoose.model('User', UserSchema);
 
-class UserRepository extends MongoRepository<IUser, ILocalUserCreate | IOAuthUserCreate> {
+class UserRepository extends MongoRepository<IUser, IUserCreate> {
     constructor() {
         super(collectionName, UserSchema);
     }

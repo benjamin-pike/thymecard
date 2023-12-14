@@ -28,16 +28,8 @@ const queryClient = new QueryClient({
 
 const publicRoutes = [
     {
-        path: '/login',
+        path: '/*',
         element: <Auth />
-    },
-    {
-        path: '/register',
-        element: <Auth />
-    },
-    {
-        path: '/',
-        element: <Navigate to="/login" replace={true} />
     }
 ];
 
@@ -93,7 +85,7 @@ export function CoreApp() {
                         ))}
                     </Routes>
                 )}
-                <ToastContainer className="toast" position="bottom-right" autoClose={2000} theme={theme} />
+                <ToastContainer className="toast" position="bottom-right" theme={theme} limit={3} />
             </Router>
         </div>
     );

@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import HttpCode from 'http-status-enum';
-import { ErrorCode } from '../lib/error/errorCode';
-import { ThymecardError, standardizeErrorCode } from '../lib/error/thymecardError';
+import { ThymecardError } from '../lib/error/thymecardError';
+import { ErrorCode } from '@thymecard/types';
 import { logger } from '../common/logger';
+import { standardizeErrorCode } from '@thymecard/utils';
 
 export const errorsMiddleware = (err: any, req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof ThymecardError) {

@@ -7,7 +7,11 @@ export enum PopoverPosition {
     TOP_LEFT = 'TOP_LEFT',
     TOP_RIGHT = 'TOP_RIGHT',
     BOTTOM_LEFT = 'BOTTOM_LEFT',
-    BOTTOM_RIGHT = 'BOTTOM_RIGHT'
+    BOTTOM_RIGHT = 'BOTTOM_RIGHT',
+    MIDDLE_LEFT = 'MIDDLE_LEFT',
+    MIDDLE_RIGHT = 'MIDDLE_RIGHT',
+    MIDDLE_TOP = 'MIDDLE_TOP',
+    MIDDLE_BOTTOM = 'MIDDLE_BOTTOM'
 }
 
 interface IPopoverWrapperProps {
@@ -41,7 +45,7 @@ const PopoverWrapper: FC<IPopoverWrapperProps> = ({ id, position, children, offs
     const popoverRef = useClickOutside<HTMLDivElement>(handleClickOutside);
 
     const handleMove = useCallback(
-        (trigger: HTMLElement, popover: HTMLElement, positioningContext: HTMLElement) => {
+        (trigger: HTMLElement, positioningContext: HTMLElement) => {
             const triggerRect = trigger.getBoundingClientRect();
             const positioningContextRect = positioningContext.getBoundingClientRect();
 
@@ -57,7 +61,7 @@ const PopoverWrapper: FC<IPopoverWrapperProps> = ({ id, position, children, offs
             switch (position) {
                 case 'TOP_LEFT':
                     top = triggerTop - (offset || 0);
-                    left = triggerLeft + triggerRect.width - popover.clientWidth;
+                    left = triggerLeft + triggerRect.width;
                     break;
                 case 'TOP_RIGHT':
                     top = triggerTop - (offset || 0);
@@ -70,6 +74,22 @@ const PopoverWrapper: FC<IPopoverWrapperProps> = ({ id, position, children, offs
                 case 'BOTTOM_LEFT':
                     top = triggerTop + triggerRect.height + (offset || 0);
                     left = triggerLeft + triggerRect.width;
+                    break;
+                case 'MIDDLE_LEFT':
+                    top = triggerTop + triggerRect.height / 2;
+                    left = triggerLeft - (offset || 0);
+                    break;
+                case 'MIDDLE_RIGHT':
+                    top = triggerTop + triggerRect.height / 2;
+                    left = triggerLeft + triggerRect.width + (offset || 0);
+                    break;
+                case 'MIDDLE_TOP':
+                    top = triggerTop - (offset || 0);
+                    left = triggerLeft + triggerRect.width / 2;
+                    break;
+                case 'MIDDLE_BOTTOM':
+                    top = triggerTop + triggerRect.height + (offset || 0);
+                    left = triggerLeft + triggerRect.width / 2;
                     break;
             }
 
@@ -113,7 +133,7 @@ const PopoverWrapper: FC<IPopoverWrapperProps> = ({ id, position, children, offs
                         return;
                     }
 
-                    handleMove(triggerElement, popoverElement, positioningContext);
+                    handleMove(triggerElement, positioningContext);
                     setState('open');
                 }, 200);
 
@@ -121,7 +141,7 @@ const PopoverWrapper: FC<IPopoverWrapperProps> = ({ id, position, children, offs
             }
 
             setState('open');
-            handleMove(triggerElement, popoverElement, positioningContext);
+            handleMove(triggerElement, positioningContext);
             setPrevTriggerElement(triggerElement);
         },
         [id, state, popoverRef, prevTriggerElement, handleMove]

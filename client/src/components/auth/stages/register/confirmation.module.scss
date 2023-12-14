@@ -1,0 +1,17 @@
+.text {
+    width: calc(100% + 3rem);
+
+    color: $mono-300;
+    font-size: $fs-15;
+    font-weight: 300;
+    text-align: center;
+
+    span {
+        color: $mono-light;
+        font-weight: 500;
+    }
+
+    &:last-of-type {
+        margin-bottom: 1rem;
+    }
+}

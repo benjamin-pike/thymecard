@@ -1,33 +1,4 @@
-import { isBoolean, isOptional, isString, isValidMongoId, isRecord, isNumber } from '../../lib/types/typeguards.utils';
-
-export interface ITokenPair {
-    accessToken: string;
-    refreshToken: string;
-}
-
-export interface IRefreshTokenEntity {
-    key: string; // TEMPLATE: refreshToken::<deviceId>
-    token: string;
-    userId: string;
-}
-
-export interface IAccessTokenPayload {
-    userId: string;
-    permissions: Record<string, number>;
-    isPremium: boolean;
-}
-
-export interface IRefreshTokenPayload {
-    userId: string;
-}
-
-export const isAccessTokenPayload = (obj: any): obj is IAccessTokenPayload => {
-    return obj && isValidMongoId(obj.userId) && isRecord(obj.permissions, isNumber);
-};
-
-export const isRefreshTokenPayload = (obj: any): obj is IRefreshTokenPayload => {
-    return obj && isValidMongoId(obj.userId);
-};
+import { isBoolean, isOptional, isString } from '@thymecard/types';
 
 export interface IGoogleUser {
     id: string;

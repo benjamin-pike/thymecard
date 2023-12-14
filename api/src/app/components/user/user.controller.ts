@@ -1,54 +1,63 @@
-import { ZodError } from 'zod';
+import { ZodError, object } from 'zod';
 import { formatZodError } from '../../lib/error/error.utils';
-import { ErrorCode } from '../../lib/error/errorCode';
 import { UnprocessableError } from '../../lib/error/thymecardError';
 import { hasKey, isObject, isString, isValidMongoId } from '../../lib/types/typeguards.utils';
-import { UserService } from './user.service';
-import {
-    AuthProvider,
-    ILocalUserCreate,
-    IOAuthUserCreate,
-    IUser,
-    IUserUpdate,
-    createLocalUserSchema,
-    updateUserSchema
-} from './user.types';
-import { IFacebookUser, IGoogleUser } from '../auth/auth.types';
+import { IUserService } from './user.service';
+import { createUserSchema, updateUserSchema } from './user.types';
+import { ErrorCode, IUser, IUserCreate, IUserUpdate, isDefined, isOptionalString, or } from '@thymecard/types';
+import { ICredentialService } from '../auth/credential/credential.service';
 
 interface IUserControllerDependencies {
-    userService: UserService;
+    userService: IUserService;
+    credentialService: ICredentialService;
 }
 
 export interface IUserController {
-    createLocalUser(context: any, resource: unknown): Promise<IUser>;
+    createUser(context: any, credentialId: unknown, resource: unknown, image?: Express.Multer.File): Promise<IUser>;
     getUserById(context: any, userId: string): Promise<IUser>;
     updateUser(context: any, userId: string, resource: unknown): Promise<IUser>;
     deleteUser(context: any, userId: string): Promise<void>;
-    getOrCreateOAuthUser(
-        context: any,
-        OAuthId: string,
-        email: string | undefined,
-        resource: unknown,
-        authProvider: AuthProvider
-    ): Promise<IUser>;
 }
 
 export class UserController implements IUserController {
-    private userService: UserService;
+    private userService: IUserService;
+    private credentialService: ICredentialService;
 
     constructor(deps: IUserControllerDependencies) {
         this.userService = deps.userService;
+        this.credentialService = deps.credentialService;
     }
 
-    public async createLocalUser(_context: any, resource: unknown) {
+    public async createUser(_context: any, credentialId: unknown, resource: unknown, image?: Express.Multer.File) {
         try {
-            if (isObject(resource) && hasKey(resource, 'dob') && isString(resource.dob)) {
-                resource.dob = new Date(resource.dob);
+            if (!isValidMongoId(credentialId)) {
+                throw new UnprocessableError(ErrorCode.InvalidUserCreateResource, 'Invalid credential id', {
+                    origin: 'UserController.create',
+                    data: { credentialId }
+                });
             }
 
-            const userResource: ILocalUserCreate = createLocalUserSchema.parse(resource);
+            if (!isObject(resource) || !hasKey(resource, 'data') || !isString(resource.data)) {
+                throw new UnprocessableError(ErrorCode.InvalidUserCreateResource, 'Invalid user create resource', {
+                    origin: 'UserController.create',
+                    data: { user: isDefined(resource), image: isDefined(image) }
+                });
+            }
 
-            return await this.userService.createUser({ ...userResource, authProvider: AuthProvider.Local });
+            const parsedResource = JSON.parse(resource.data);
+
+            if (!isObject(parsedResource)) {
+                throw new UnprocessableError(ErrorCode.InvalidUserCreateResource, 'Invalid user create resource', {
+                    origin: 'UserController.create',
+                    data: { parsedResource }
+                });
+            }
+
+            const userResource: IUserCreate = createUserSchema.parse(parsedResource);
+
+            const user = await this.userService.createUser({ ...userResource }, image);
+
+            return user;
         } catch (err: any) {
             if (err instanceof ZodError) {
                 throw new UnprocessableError(ErrorCode.InvalidUserCreateResource, formatZodError(err), {
@@ -108,60 +117,62 @@ export class UserController implements IUserController {
         return await this.userService.deleteUser(userId);
     }
 
-    public async getOrCreateOAuthUser(
-        _context: any,
-        OAuthId: string,
-        email: string | undefined,
-        resource: unknown,
-        authProvider: AuthProvider
-    ): Promise<IUser> {
-        try {
-            const existingUser = await this.userService.getOAuthUserOrNull(OAuthId, authProvider, email);
+    // public async getOrCreateOAuthUser(
+    //     _context: any,
+    //     OAuthId: string,
+    //     email: string | undefined,
+    //     resource: unknown,
+    //     authProvider: AuthProvider
+    // ): Promise<{ user: IUser; isNew: boolean }> {
+    //     try {
+    //         const existingUser = await this.userService.getOAuthUserOrNull(OAuthId, authProvider, email);
 
-            if (existingUser) {
-                if (existingUser.authProvider !== authProvider) {
-                    throw new UnprocessableError(ErrorCode.InvalidAuthProvider, 'Please log in with the method you used to sign up', {
-                        origin: 'UserController.getOrCreateOAuthUser',
-                        data: { email, authProvider }
-                    });
-                }
+    //         if (existingUser) {
+    //             if (existingUser.authProvider !== authProvider) {
+    //                 throw new UnprocessableError(ErrorCode.InvalidAuthProvider, 'Please log in with the method you used to sign up', {
+    //                     origin: 'UserController.getOrCreateOAuthUser',
+    //                     data: { email, authProvider }
+    //                 });
+    //             }
 
-                return existingUser;
-            }
+    //             return { user: existingUser, isNew: false };
+    //         }
 
-            let userResource: IOAuthUserCreate;
+    //         let userResource: IOAuthUserCreate;
 
-            switch (authProvider) {
-                case AuthProvider.Google:
-                    const googleUser = resource as IGoogleUser;
-                    userResource = {
-                        firstName: googleUser.given_name,
-                        lastName: googleUser.family_name,
-                        OAuthId: googleUser.id,
-                        email: googleUser.email,
-                        authProvider
-                    };
-                    break;
-                case AuthProvider.Facebook:
-                    const facebookUser = resource as IFacebookUser;
-                    userResource = {
-                        firstName: facebookUser.first_name,
-                        lastName: facebookUser.last_name,
-                        OAuthId: facebookUser.id,
-                        email: facebookUser.email,
-                        authProvider
-                    };
-                    break;
-                default:
-                    throw new UnprocessableError(ErrorCode.InvalidAuthProvider, 'Invalid auth provider', {
-                        origin: 'UserController.getOrCreateOAuthUser',
-                        data: { email, authProvider }
-                    });
-            }
+    //         switch (authProvider) {
+    //             case AuthProvider.Google:
+    //                 const googleUser = resource as IGoogleUser;
+    //                 userResource = {
+    //                     firstName: googleUser.given_name,
+    //                     lastName: googleUser.family_name,
+    //                     OAuthId: googleUser.id,
+    //                     email: googleUser.email,
+    //                     authProvider
+    //                 };
+    //                 break;
+    //             case AuthProvider.Facebook:
+    //                 const facebookUser = resource as IFacebookUser;
+    //                 userResource = {
+    //                     firstName: facebookUser.first_name,
+    //                     lastName: facebookUser.last_name,
+    //                     OAuthId: facebookUser.id,
+    //                     email: facebookUser.email,
+    //                     authProvider
+    //                 };
+    //                 break;
+    //             default:
+    //                 throw new UnprocessableError(ErrorCode.InvalidAuthProvider, 'Invalid auth provider', {
+    //                     origin: 'UserController.getOrCreateOAuthUser',
+    //                     data: { email, authProvider }
+    //                 });
+    //         }
 
-            return await this.userService.createUser(userResource);
-        } catch (err: any) {
-            throw err;
-        }
-    }
+    //         const newUser = await this.userService.createUser(userResource);
+
+    //         return { user: newUser, isNew: true };
+    //     } catch (err: any) {
+    //         throw err;
+    //     }
+    // }
 }

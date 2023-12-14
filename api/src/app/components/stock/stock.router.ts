@@ -31,8 +31,8 @@ export const stockRouter = (dependencies: IDependencies) => {
 };
 
 export const stockPermissions: IRoutePermissions = {
-    'PUT /stock': [{ scope: AccessScope.Stock, permission: Permission.WRITE }],
-    'GET /stock': [{ scope: AccessScope.Stock, permission: Permission.READ }]
+    'PUT /stock': [{ scope: AccessScope.STOCK, permission: Permission.WRITE }],
+    'GET /stock': [{ scope: AccessScope.STOCK, permission: Permission.READ }]
 };
 
 export default stockRouter;

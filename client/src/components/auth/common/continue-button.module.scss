@@ -1,0 +1,30 @@
+.button {
+    box-sizing: border-box;
+
+    padding: 0 1rem;
+
+    margin-top: 0.5rem;
+
+    height: 3rem;
+    width: 100%;
+
+    font-size: $fs-15;
+    font-weight: 400;
+    text-align: center;
+    color: $mono-light;
+    background-color: $blue;
+
+    border-radius: 0.5rem;
+
+    transition: color 150ms ease, background-color 150ms ease, border 150ms ease;
+
+    &:hover {
+        background-color: mix($mono-700, $mono-800, 50%);
+    }
+
+    &:disabled {
+        color: $mono-600;
+        background-color: $mono-800;
+        border: 1px solid $mono-700;
+    }
+}

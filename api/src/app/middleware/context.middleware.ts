@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../common/logger';
 import { v1 as uuid } from 'uuid';
-import { validate } from '@thymecard/types';
+import { ErrorCode, validate } from '@thymecard/types';
 import { isDefined, isNumber, isRecord, isString } from '../lib/types/typeguards.utils';
 import { Logger } from 'winston';
 import { ForbiddenError, NotFoundError } from '../lib/error/thymecardError';
-import { ErrorCode } from '../lib/error/errorCode';
 import { IResourcePermissions } from '../lib/auth/permissions';
 
 export interface IRequestContext {
@@ -139,7 +138,7 @@ export class RequestContext {
             route: this.route,
             deviceId: this.deviceId,
             logger: this.logger
-        }
+        };
 
         return validate(
             context,
@@ -149,9 +148,9 @@ export class RequestContext {
                 data: { context: this }
             })
         );
-    };
-    
-    public getAuthContext (): IAuthenticatedContext {
+    }
+
+    public getAuthContext(): IAuthenticatedContext {
         const context = {
             requestId: this.requestId,
             resource: this.resource,
@@ -160,7 +159,7 @@ export class RequestContext {
             logger: this.logger,
             userId: this.userId,
             permissions: this.permissions
-        }
+        };
 
         return validate(
             context,
@@ -170,7 +169,7 @@ export class RequestContext {
                 data: { context }
             })
         );
-    };
+    }
 }
 
 const isRequestContext = (obj: any): obj is IRequestContext => {

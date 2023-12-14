@@ -1,8 +1,8 @@
 import express from 'express';
 import { RateLimiter, Interval } from 'limiter';
 import { TooManyRequestsError } from '../lib/error/thymecardError';
-import { ErrorCode } from '../lib/error/errorCode';
 import { isNumber } from '../lib/types/typeguards.utils';
+import { ErrorCode } from '@thymecard/types';
 
 interface IRateLimiterConfig {
     tokensPerInterval: number;

@@ -1,5 +1,4 @@
 import { ZodError } from 'zod';
-import { ErrorCode } from '../../lib/error/errorCode';
 import { UnprocessableError } from '../../lib/error/thymecardError';
 import { IAuthenticatedContext } from '../../middleware/context.middleware';
 import { IRecipeService } from './recipe.service';
@@ -7,6 +6,7 @@ import { createRecipeSchema, updateRecipeSchema } from './recipe.types';
 import { formatZodError } from '../../lib/error/error.utils';
 import { isPlainObject, isValidMongoId } from '../../lib/types/typeguards.utils';
 import {
+    ErrorCode,
     IRecipe,
     IRecipeComment,
     IRecipeCreate,

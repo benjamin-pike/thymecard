@@ -1,8 +1,10 @@
 import { LRUCache } from 'lru-cache';
-import { IUser } from '../../components/user/user.types';
-import { IRecipe, IRecipeSummary } from '../../components/recipe/recipe.types';
+import { IRecipe, IRecipeSummary, ISession, IUser } from '@thymecard/types';
 import { IDay } from '../../components/day/day.types';
 
+export type OAuthNonceCache = LRUCache<string, string>;
+export type SessionCache = LRUCache<string, ISession>;
+export type TokenCache = LRUCache<string, string>;
 export type UserCache = LRUCache<string, IUser>;
 export type RecipeCache = LRUCache<string, IRecipe>;
 export type RecipeSummaryCache = LRUCache<string, IRecipeSummary[]>;

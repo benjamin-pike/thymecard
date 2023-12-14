@@ -11,7 +11,8 @@
     "client": "npm run dev --prefix client",
     "api": "npm run dev --prefix api",
     "dev": "concurrently \"npm run client\" \"npm run api\"",
-    "count-lines": "git ls-files | egrep '\\.ts|\\.scss$' | xargs cat | grep -v '^[[:space:]]*$' | wc -l"
+    "count-lines": "git ls-files | egrep '\\.ts|\\.scss$' | xargs cat | grep -v '^[[:space:]]*$' | wc -l",
+    "free-local-ports": "node -e \"const exec = require('child_process').execSync; const ports = [9000, 3000]; ports.forEach(port => { try { const pid = exec('lsof -ti :' + port); if (pid) { exec('kill ' + pid); console.log('Process using port ' + port + ' killed.'); } } catch (error) { console.error('No process found on port ' + port); } });\""
 },
   "repository": {
     "type": "git",
