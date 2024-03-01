@@ -1,11 +1,9 @@
 import { FC, useCallback, useRef, useState } from 'react';
-import { useElementSize, useIntersection, useToggle } from '@mantine/hooks';
+import { useIntersection, useToggle } from '@mantine/hooks';
 import { useReactToPrint } from 'react-to-print';
 
-import { ICONS } from '@/assets/icons';
 import Title from './title/Title';
 import Description from './description/Description';
-// import ImageGrid from '@/components/common/image-grid/ImageGrid';
 import Metadata from './metadata/Metadata';
 import Image from './image/Image';
 import Toolbar from './toolbar/Toolbar';
@@ -14,18 +12,18 @@ import IngredientsDisplay from './ingredients/IngredientsDisplay';
 import ScaleIngredientsModal from './scale-ingredients-modal/ScaleIngredientsModal';
 import MethodDisplay from './method/MethodDisplay';
 import MethodEdit from './method/MethodEdit';
+import CommentsEdit from './comments/CommentsEdit';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
 import ModalWrapper from '@/components/wrappers/modal/ModalWrapper';
+
+import { useModal } from '@/hooks/common/useModal';
+import { useRecipe } from './RecipeProvider';
+import { IViewport } from '@/hooks/common/useBreakpoints';
 
 import { formatClasses, queue } from '@/lib/common.utils';
 import { createToast } from '@/lib/toast/toast.utils';
 
 import styles from './recipe.module.scss';
-import { useRecipe } from './RecipeProvider';
-import CommentsEdit from './comments/CommentsEdit';
-import { IViewport } from '@/hooks/common/useBreakpoints';
-
-const CloseIcon = ICONS.common.toggle;
 
 interface IRecipeProps {
     viewport: IViewport;
@@ -35,34 +33,38 @@ interface IRecipeProps {
 }
 
 const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFullscreen, handleClearSelectedRecipe }) => {
-    const { recipe, isEditing, deleteRecipe } = useRecipe();
+    const { recipe, isEditing, handleDeleteRecipe } = useRecipe();
 
     const sectionRef = useRef<HTMLElement>(null);
-    const aboutLeftColumn = useElementSize();
 
     const [isPrintLayout, setIsPrintLayout] = useState(false);
     const [displayIngredients, toggleDisplayIngredients] = useToggle([true, false]);
     const [addedIngredients, setAddedIngredients] = useState(new Set<number>());
-    const [isScaleIngredientsModalOpen, setIsScaleIngredientsModalOpen] = useState(false);
     const [scale, setScale] = useState(1);
+
+    const {
+        modalState: scaleIngredientsModalState,
+        openModal: openScaleIngredientsModal,
+        closeModal: closeScaleIngredientsModal
+    } = useModal();
 
     const handleToggleDisplayIngredients = useCallback(() => {
         toggleDisplayIngredients();
     }, [toggleDisplayIngredients]);
 
     const handleOpenScaleIngredientsModal = useCallback(() => {
-        setIsScaleIngredientsModalOpen(true);
-    }, []);
+        openScaleIngredientsModal();
+    }, [openScaleIngredientsModal]);
 
     const handleApplyIngredientsScale = useCallback(
         (multiplier: number) => () => {
             if (multiplier === scale) {
-                setIsScaleIngredientsModalOpen(false);
+                closeScaleIngredientsModal();
                 return;
             }
 
             setScale(multiplier);
-            setIsScaleIngredientsModalOpen(false);
+            closeScaleIngredientsModal();
 
             if (multiplier !== 1) {
                 createToast('info', `Scale of ${multiplier}x applied`);
@@ -70,12 +72,12 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
                 createToast('info', 'Scale reset to original values');
             }
         },
-        [scale]
+        [closeScaleIngredientsModal, scale]
     );
 
     const handleCloseScaleIngredientsModal = useCallback(() => {
-        setIsScaleIngredientsModalOpen(false);
-    }, []);
+        closeScaleIngredientsModal();
+    }, [closeScaleIngredientsModal]);
 
     const openPrintDialog = useReactToPrint({
         content: () => sectionRef.current,
@@ -94,12 +96,12 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
 
     const handleDeleteRecipeButtonClick = useCallback(async () => {
         try {
-            await deleteRecipe();
+            await handleDeleteRecipe();
             handleClearSelectedRecipe();
         } catch (err) {
             createToast('error', 'Failed to delete recipe');
         }
-    }, [deleteRecipe, handleClearSelectedRecipe]);
+    }, [handleDeleteRecipe, handleClearSelectedRecipe]);
 
     const handleIngredientsClick = useCallback(
         (index: number) => () => {
@@ -125,33 +127,23 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
 
     const isBodyOnly = !entry?.isIntersecting;
 
-    if (!recipe) {
-        return null;
-    }
+    const isLoading = !recipe;
 
     return (
         <section ref={sectionRef} className={styles.recipe}>
-            <button className={styles.back} onClick={handleClearSelectedRecipe}>
+            {/* <button className={styles.back} onClick={handleClearSelectedRecipe}>
                 <CloseIcon />
-            </button>
+            </button> */}
             <header className={styles.header}>
                 <Title />
                 <div className={styles.divider} />
                 <Description />
-                {(isEditing || recipe.description) && <div className={styles.divider} />}
+                {(isEditing || isLoading || recipe?.description) && <div className={styles.divider} />}
                 <section className={styles.about}>
-                    <div ref={aboutLeftColumn.ref} className={styles.left}>
+                    <div className={styles.left}>
                         <Metadata scale={scale} />
                     </div>
-                    <div
-                        className={styles.right}
-                        style={{
-                            height:
-                                viewport.current.isOneColumnWideMargins || viewport.current.isOneColumnNarrowMargins
-                                    ? undefined
-                                    : `${aboutLeftColumn.height}px`
-                        }}
-                    >
+                    <div className={styles.right}>
                         <Image />
                         {isEditing && <CommentsEdit />}
                     </div>
@@ -225,7 +217,11 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
                         </ScrollWrapper>
                     </div>
 
-                    <ModalWrapper isOpen={isScaleIngredientsModalOpen} closeModal={handleCloseScaleIngredientsModal} blurBackground={true}>
+                    <ModalWrapper
+                        state={scaleIngredientsModalState}
+                        handleCloseModal={handleCloseScaleIngredientsModal}
+                        blurBackground={true}
+                    >
                         <ScaleIngredientsModal
                             currentMultiplier={scale}
                             recipeYield={{

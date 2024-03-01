@@ -2,11 +2,18 @@ import { buildSetQueryFromUpdate } from '../../lib/data/mongo.utils';
 import { NotFoundError } from '../../lib/error/thymecardError';
 import { DayCache } from '../../lib/types/cache.types';
 import { dayRepository } from './day.model';
-import { IDay, IDayCreate, IDayEnriched, IDayUpdate, IMealCreate, IMealUpdate } from './day.types';
 import { IPagedResult } from '../../lib/types/common.types';
 import { SortQuery } from '../../lib/data/mongo.repository';
-import mongoose, { PipelineStage } from 'mongoose';
-import { ErrorCode } from '@thymecard/types';
+import {
+    ErrorCode,
+    IDay,
+    IDayCreate,
+    IDayEventBookmark,
+    IDayEventCreate,
+    IDayEventItemUpdate,
+    IDayEventUpdate,
+    IDayUpdate
+} from '@thymecard/types';
 
 interface IDayServiceDependencies {
     dayCache: DayCache;
@@ -14,15 +21,16 @@ interface IDayServiceDependencies {
 
 export interface IDayService {
     createDay(day: IDayCreate): Promise<IDay>;
-    updateDay(dayId: string, userId: string, update: IDayUpdate): Promise<IDay>;
-    getDays(userId: string, startKey?: string, limit?: number): Promise<IPagedResult<IDay>>;
-    getDay(dayId: string, userId: string): Promise<IDay>;
-    getEnrichedDays(userId: string, startKey?: string, limit?: number): Promise<IPagedResult<IDayEnriched>>
-    getEnrichedDay(dayId: string, userId: string): Promise<IDayEnriched>;
-    deleteDay(dayId: string, userId: string): Promise<void>;
-    createMeal(dayId: string, userId: string, meal: IMealCreate): Promise<IDay>;
-    updateMeal(dayId: string, userId: string, mealId: string, update: IMealUpdate): Promise<IDay>;
-    deleteMeal(dayId: string, userId: string, mealId: string): Promise<void>;
+    updateDay(date: string, userId: string, update: IDayUpdate): Promise<IDay>;
+    getDays(date: string, startDate: Date, limit: number): Promise<IPagedResult<IDay>>;
+    getDay(date: string, userId: string): Promise<IDay>;
+    deleteDay(date: string, userId: string): Promise<void>;
+    copyDay(originDate: string, targetDate: string, userId: string, excludedEvents: string[]): Promise<IDay>;
+    createEvent(date: string, userId: string, event: IDayEventCreate): Promise<IDay>;
+    updateEvent(date: string, userId: string, eventId: string, update: IDayEventUpdate): Promise<IDay>;
+    deleteEvent(date: string, userId: string, eventId: string): Promise<void>;
+    updateEventItem(userId: string, date: string, eventId: string, itemId: string, update: IDayEventItemUpdate): Promise<IDay>;
+    deleteEventItem(date: string, userId: string, eventId: string, itemId: string): Promise<void>;
 }
 
 export class DayService implements IDayService {
@@ -36,215 +44,192 @@ export class DayService implements IDayService {
         return dayRepository.create(day);
     }
 
-    public async updateDay(dayId: string, userId: string, update: IDayUpdate): Promise<IDay> {
-        const query = { _id: dayId, userId };
+    public async updateDay(date: string, userId: string, update: IDayUpdate): Promise<IDay> {
+        const query = { date: new Date(date), userId };
         const updatedDay = await dayRepository.findOneAndUpdate(query, update);
 
         if (!updatedDay) {
             throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
                 origin: 'DayService.updateDay',
-                data: { dayId, userId, update }
+                data: { date, userId, update }
             });
         }
 
         return updatedDay;
     }
 
-    public async getDays(userId: string, startKey?: string, limit?: number): Promise<IPagedResult<IDay>> {
-        const query = { userId };
+    public async getDays(userId: string, startDate: Date, limit: number): Promise<IPagedResult<IDay>> {
+        const query = { userId, date: { $gte: startDate } };
         const sortQuery: SortQuery = { date: 1 };
 
-        return await dayRepository.getPaged(query, startKey, limit, sortQuery);
+        return await dayRepository.getPaged(query, null, limit, sortQuery);
     }
 
-    public async getDay(dayId: string, userId: string): Promise<IDay> {
-        const query = { _id: dayId, userId };
+    public async getDay(date: string, userId: string): Promise<IDay> {
+        const query = { date: new Date(date), userId };
         const day = await dayRepository.getOne(query);
 
         if (!day) {
             throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
                 origin: 'DayService.getDay',
-                data: { dayId, userId }
+                data: { date: new Date(date), userId }
             });
         }
 
         return day;
     }
 
-    public async getEnrichedDays(userId: string, startKey?: string, limit?: number): Promise<IPagedResult<IDayEnriched>> {
-        const matchQuery = { userId: new mongoose.Types.ObjectId(userId) };
-        const sortQuery: SortQuery = { date: 1 };
-
-        const enrichedDays = await dayRepository.aggregatePaged<IDayEnriched>(matchQuery, enrichmentPipeline, startKey, limit, sortQuery);
-
-        return enrichedDays;
-    }
-
-    public async getEnrichedDay(dayId: string, userId: string): Promise<IDayEnriched> {
-        const pipeline: PipelineStage[] = [
-            {
-                $match: {
-                    _id: new mongoose.Types.ObjectId(dayId),
-                    userId: new mongoose.Types.ObjectId(userId)
-                }
-            },
-            ...enrichmentPipeline
-        ];
-
-        const enrichedDay = await dayRepository.aggregateOne<IDayEnriched>(pipeline);
-
-        if (!enrichedDay) {
-            throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
-                origin: 'DayService.getEnrichedDay',
-                data: { dayId, userId }
-            });
-        }
-
-        return enrichedDay;
-    }
-
-    public async deleteDay(dayId: string, userId: string): Promise<void> {
-        const query = { _id: dayId, userId };
+    public async deleteDay(date: string, userId: string): Promise<void> {
+        const query = { date: new Date(date), userId };
         const deletedDay = await dayRepository.delete(query);
 
         if (!deletedDay) {
             throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
                 origin: 'DayService.deleteDay',
-                data: { dayId, userId }
+                data: { date, userId }
             });
         }
 
         return;
     }
 
-    public async createMeal(dayId: string, userId: string, meal: IMealCreate): Promise<IDay> {
-        const query = { _id: dayId, userId };
+    public async copyDay(originDate: string, targetDate: string, userId: string, excludedEvents: string[]): Promise<IDay> {
+        const originDay = await this.getDay(originDate, userId);
+        const includedEvents = originDay.events.filter((event) => !excludedEvents.includes(event._id));
+
+        const targetDay = await dayRepository.getOne({ date: new Date(targetDate), userId });
+        const existingEvents = targetDay ? targetDay.events : [];
+
+        const overlappingEvents = new Set<string>();
+        for (const { _id: existingEventId, time, duration } of existingEvents) {
+            const start = time;
+            const end = time + duration;
+
+            for (const event of includedEvents) {
+                if (start < event.time + event.duration && end > event.time) {
+                    overlappingEvents.add(existingEventId);
+                }
+            }
+        }
+
+        const events = [...includedEvents, ...existingEvents.filter((event) => !overlappingEvents.has(event._id))].sort(
+            (a, b) => a.time - b.time
+        );
+
+        return await dayRepository.findOneAndUpdate({ date: new Date(targetDate), userId }, { events }, { upsert: true });
+    }
+
+    public async createEvent(date: string, userId: string, event: IDayEventCreate): Promise<IDay> {
+        const query = { userId, date: new Date(date) };
         const update = {
             $push: {
-                meals: {
-                    $each: [meal],
-                    $sort: { time: 1 } // Sort in ascending order based on meal time
+                events: {
+                    $each: [event],
+                    $sort: { time: 1 } // Sort in ascending order based on event time
                 }
             }
         };
 
-        const updatedDay = await dayRepository.findOneAndUpdate(query, update);
+        const updatedDay = await dayRepository.findOneAndUpdate(query, update, { upsert: true });
 
         if (!updatedDay) {
             throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
-                origin: 'DayService.createMeal',
-                data: { dayId, userId, meal }
+                origin: 'DayService.createEvent',
+                data: { date, userId, event }
             });
         }
 
         return updatedDay;
     }
 
-    public async updateMeal(dayId: string, userId: string, mealId: string, update: IMealUpdate): Promise<IDay> {
-        const findQuery = { _id: dayId, userId, 'meals._id': mealId };
-        const updateQuery = { $set: buildSetQueryFromUpdate(update, 'meals.$') };
+    public async updateEvent(date: string, userId: string, eventId: string, update: IDayEventUpdate): Promise<IDay> {
+        const findQuery = { date: new Date(date), userId, 'events._id': eventId };
+        const updateQuery = { $set: buildSetQueryFromUpdate(update, 'events.$') };
 
         let updatedDay = await dayRepository.findOneAndUpdate(findQuery, updateQuery);
 
         if (updatedDay) {
-            const mealsAreSorted = updatedDay.meals.every(
-                (meal, index, mealsArray) => index === 0 || meal.time > mealsArray[index - 1].time
+            const eventsAreSorted = updatedDay.events.every(
+                (event, index, eventsArray) => index === 0 || event.time > eventsArray[index - 1].time
             );
-            if (!mealsAreSorted) {
-                const sortedMeals = updatedDay.meals.sort((a, b) => a.time - b.time);
-                const sortUpdateQuery = { $set: { meals: sortedMeals } };
+            if (!eventsAreSorted) {
+                const sortedEvents = updatedDay.events.sort((a, b) => a.time - b.time);
+                const sortUpdateQuery = { $set: { events: sortedEvents } };
 
                 updatedDay = await dayRepository.findOneAndUpdate(findQuery, sortUpdateQuery);
             }
         }
 
         if (!updatedDay) {
-            throw new NotFoundError(ErrorCode.DayNotFound, 'Meal not found', {
-                origin: 'DayService.updateMeal',
-                data: { dayId, userId, mealId, update }
+            throw new NotFoundError(ErrorCode.DayNotFound, 'Event not found', {
+                origin: 'DayService.updateEvent',
+                data: { date, userId, eventId, update }
             });
         }
 
         return updatedDay;
     }
 
-    public async deleteMeal(dayId: string, userId: string, mealId: string): Promise<void> {
-        const query = { _id: dayId, userId };
+    public async deleteEvent(date: string, userId: string, eventId: string): Promise<void> {
+        const query = { date: new Date(date), userId };
         const update = {
-            $pull: { meals: { _id: mealId } }
+            $pull: { events: { _id: eventId } }
         };
 
         const updatedDay = await dayRepository.findOneAndUpdate(query, update);
 
         if (!updatedDay) {
             throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
-                origin: 'DayService.deleteMeal',
-                data: { dayId, userId, mealId }
+                origin: 'DayService.deleteEvent',
+                data: { date, userId, eventId }
             });
         }
 
-        if (updatedDay.meals.length === 0) {
+        if (updatedDay.events.length === 0) {
             await dayRepository.delete(query);
         }
 
         return;
     }
-}
 
-const enrichmentPipeline = [
-    {
-        // Deconstruct meals array, creating a duplicate documents for each meal
-        $unwind: '$meals'
-    },
-    {
-        // Join with the recipes collection, appending a recipe array to each created meal document
-        $lookup: {
-            from: 'recipes',
-            localField: 'meals.recipeId',
-            foreignField: '_id',
-            as: 'recipe'
+    public async updateEventItem(
+        userId: string,
+        date: string,
+        eventId: string,
+        itemId: string,
+        update: IDayEventItemUpdate
+    ): Promise<IDay> {
+        const query = { date: new Date(date), userId, 'events._id': eventId };
+        const updateQuery = {
+            $set: buildSetQueryFromUpdate(update, 'events.$.items.$[item]')
+        };
+        const arrayFilters = [{ 'item.id': itemId }];
+
+        const updatedDay = await dayRepository.findOneAndUpdate(query, updateQuery, { arrayFilters });
+
+        if (!updatedDay) {
+            throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
+                origin: 'DayService.updateEventItem',
+                data: { date, userId, eventId, itemId, update }
+            });
         }
-    },
-    {
-        // Flatten the recipe array into an object
-        $unwind: {
-            path: '$recipe',
-            preserveNullAndEmptyArrays: true
-        }
-    },
-    {
-        // Add the enriched fields to each meal document (null if not found)
-        $addFields: {
-            'meals.name': { $ifNull: ['$recipe.name', null] },
-            'meals.duration': { $ifNull: ['$recipe.totalTime', null] },
-            'meals.calories': { $ifNull: ['$recipe.nutrition.calories', null] },
-            'meals.ingredientsCount': {
-                $cond: {
-                    if: { $ifNull: ['$recipe.ingredients', false] },
-                    then: { $size: '$recipe.ingredients' },
-                    else: null
-                }
-            }
-        }
-    },
-    {
-        // Regroup the meals back into an array according to the dayId
-        $group: {
-            _id: '$_id',
-            root: { $first: '$$ROOT' },
-            meals: { $push: '$meals' }
-        }
-    },
-    {
-        // Merge the grouped fields with the original doc, replacing the root
-        $replaceRoot: {
-            newRoot: {
-                $mergeObjects: ['$root', { meals: '$meals' }]
-            }
-        }
-    },
-    {
-        // Remove the recipe field and version field
-        $project: { recipe: 0, __v: 0 }
+
+        return updatedDay;
     }
-];
+
+    public async deleteEventItem(date: string, userId: string, eventId: string, itemId: string): Promise<void> {
+        const query = { date: new Date(date), userId, 'events._id': eventId };
+        const update = {
+            $pull: { 'events.$.items': { id: itemId } }
+        };
+
+        const updatedDay = await dayRepository.findOneAndUpdate(query, update);
+
+        if (!updatedDay) {
+            throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
+                origin: 'DayService.deleteEventItem',
+                data: { date, userId, eventId, itemId }
+            });
+        }
+    }
+}

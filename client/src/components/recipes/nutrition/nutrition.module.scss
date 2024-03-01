@@ -506,7 +506,7 @@
                             }
                         }
 
-                        &:nth-of-type(even) {
+                        &:nth-of-type(odd) {
                             background-color: transparentize($mono-100, $amount: 0.25);
 
                             @include dark-mode {

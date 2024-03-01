@@ -22,11 +22,12 @@ export const userRouter = (dependencies: IDependencies) => {
                 const resource = req.body;
                 const image = req.file;
 
-                const user = await userController.createUser(context, credentialId, resource, image);
-                const { password: _, ...credential } = await credentialController.linkToUser(context, credentialId, user._id);
+                const credential = await credentialController.get(context, credentialId);
+                const user = await userController.createUser(context, credential, resource, image);
+                const { password: _, ...safeCredential } = await credentialController.linkToUser(context, credentialId, user._id);
                 const session = await sessionController.create(context, credential);
 
-                res.status(HTTP_STATUS_CODES.CREATED).json({ user, credential, session });
+                res.status(HTTP_STATUS_CODES.CREATED).json({ user, credential: safeCredential, session });
             })
         )
         .get(

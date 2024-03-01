@@ -12,6 +12,7 @@ interface ICredentialControllerDependencies {
 
 export interface ICredentialController {
     create(context: IRequestContext, resource: unknown, provider: CredentialProvider): Promise<ICredential>;
+    get(context: IRequestContext, credentialId: unknown): Promise<ICredential>;
     getByEmail(context: IRequestContext, email: unknown, isLoginRequest?: boolean): Promise<ICredential>;
     findByOAuthId(oauthId: string, provider?: CredentialProvider): Promise<ICredential | null>;
     findByOAuthIdOrEmail(oauthId: string, email: string, provider?: CredentialProvider): Promise<ICredential | null>;
@@ -30,7 +31,7 @@ export class CredentialController implements ICredentialController {
         try {
             let parsedResource;
             let verificationCode;
-            const isVerified = provider !== CredentialProvider.THYMECARD
+            const isVerified = provider !== CredentialProvider.THYMECARD;
 
             if (provider === CredentialProvider.THYMECARD) {
                 parsedResource = createLocalCredentialSchema.parse(resource);
@@ -59,7 +60,27 @@ export class CredentialController implements ICredentialController {
         }
     }
 
-    public async getByEmail(_context: IRequestContext, email: unknown, isLoginRequest = false): Promise<ICredential> {        
+    public async get(_context: IRequestContext, credentialId: unknown): Promise<ICredential> {
+        if (!isValidMongoId(credentialId)) {
+            throw new UnprocessableError(ErrorCode.InvalidCredentialId, 'Invalid credential ID', {
+                origin: 'CredentialController.findById',
+                data: { credentialId }
+            });
+        }
+
+        const credential = await this.credentialService.get(credentialId);
+
+        if (!credential) {
+            throw new UnprocessableError(ErrorCode.CredentialNotFound, 'Credential not found', {
+                origin: 'CredentialController.findById',
+                data: { credentialId }
+            });
+        }
+
+        return credential;
+    }
+
+    public async getByEmail(_context: IRequestContext, email: unknown, isLoginRequest = false): Promise<ICredential> {
         if (!isValidEmail(email)) {
             if (isLoginRequest) {
                 throw new UnprocessableError(ErrorCode.InvalidLoginCredentials, 'Invalid login credentials', {
@@ -99,12 +120,15 @@ export class CredentialController implements ICredentialController {
         const credential = await this.credentialService.findByOAuthIdOrEmail(oauthId, email);
 
         if (provider && credential && credential.provider !== provider) {
-            throw new ForbiddenError(ErrorCode.CredentialProviderMismatch, 'Please log in with the provider you signed up with', {
-                origin: 'OAuthController.findByOAuthIdOrEmail',
-                data: { email: credential.email, OAuthId: credential?.OAuthId, provider: credential.provider }
-            }, {
-                
-            });
+            throw new ForbiddenError(
+                ErrorCode.CredentialProviderMismatch,
+                'Please log in with the provider you signed up with',
+                {
+                    origin: 'OAuthController.findByOAuthIdOrEmail',
+                    data: { email: credential.email, OAuthId: credential?.OAuthId, provider: credential.provider }
+                },
+                {}
+            );
         }
 
         return credential;

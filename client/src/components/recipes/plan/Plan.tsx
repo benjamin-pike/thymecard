@@ -1,413 +1,32 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DateTime } from 'luxon';
-import { useToggle } from '@mantine/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 
+import AddEventModal from './modals/AddEventModal';
+import BookmarkEventModal from './modals/BookmarkEventModal';
+import CopyDayModal from './modals/CopyDayModal';
+import EditEventModal from './modals/EditEventModal';
+import EventBookmarkQuickSearch from '@/components/quick-search/meal-event-bookmark/MealEventBookmarkQuickSearch';
 import Event from './Event';
 import Tooltip from '@/components/common/tooltip/Tooltip';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
-import ModalWrapper from '@/components/wrappers/modal/ModalWrapper';
 
-import { EventType } from '@thymecard/types';
+import { usePlan } from './PlanProvider';
+import { useModal } from '@/hooks/common/useModal';
+import { useQuickSearch } from '@/hooks/common/useQuickSearch';
+
 import { ICONS } from '@/assets/icons';
+import { Client, IMealEventBookmark, extractMealEvents, isDefined } from '@thymecard/types';
 
 import styles from './plan.module.scss';
 
 const AddIcon = ICONS.common.plus;
 const CopyIcon = ICONS.common.copy;
-const ClearIcon = ICONS.common.delete;
-
+const BookmarkIcon = ICONS.recipes.bookmark;
 const StockIcon = ICONS.recipes.tickList;
 
 const TODAY = DateTime.now();
-const DAYS = [
-    [
-        {
-            type: EventType.BREAKFAST,
-            time: DateTime.fromObject({ hour: 9, minute: 30 }),
-            duration: 45,
-            calories: 536,
-            items: [
-                {
-                    title: 'Eggs Benedict with Salmon and Avocado',
-                    isFavorite: false
-                },
-                { title: 'Orange Juice', isFavorite: false },
-                { title: 'Banana', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.LUNCH,
-            time: DateTime.fromObject({ hour: 13, minute: 30 }),
-            duration: 35,
-            calories: 724,
-            items: [
-                {
-                    title: 'Bacon, Lettuce, and Tomato Bagel',
-                    isFavorite: true
-                },
-                {
-                    title: 'Lightly Salted Crisps',
-                    isFavorite: false
-                },
-                {
-                    title: 'Kale, Apple, and Kiwi Super Smoothie',
-                    isFavorite: true
-                }
-            ]
-        },
-        {
-            type: EventType.SNACK,
-            time: DateTime.fromObject({ hour: 16, minute: 15 }),
-            duration: 5,
-            calories: 156,
-            items: [{ title: 'Banana', isFavorite: false }]
-        },
-        {
-            type: EventType.DRINK,
-            time: DateTime.fromObject({ hour: 19, minute: 10 }),
-            duration: 10,
-            calories: 142,
-            items: [{ title: 'Glass of Red Wine', isFavorite: true }]
-        },
-        {
-            type: EventType.DINNER,
-            time: DateTime.fromObject({ hour: 19, minute: 30 }),
-            duration: 90,
-            calories: 951,
-            items: [
-                { title: 'Roast Pork Belly', isFavorite: true, recipeId: '652d8578653db11bb49ffadc' },
-                {
-                    title: 'Potatoes Au Gratin',
-                    isFavorite: false,
-                    recipeId: '652d8422653db11bb49ffacf'
-                },
-                {
-                    title: 'Sauted Sweetheart Cabbage',
-                    isFavorite: false
-                },
-                {
-                    title: 'Apple and Onion Gravy',
-                    isFavorite: true
-                }
-            ]
-        }
-    ],
-    [
-        {
-            type: EventType.BREAKFAST,
-            time: DateTime.fromObject({ hour: 8, minute: 45 }),
-            duration: 40,
-            calories: 480,
-            items: [
-                {
-                    title: 'Greek Yogurt with Honey and Berries',
-                    isFavorite: true
-                },
-                { title: 'Whole Grain Toast', isFavorite: false },
-                { title: 'Strawberry Smoothie', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.LUNCH,
-            time: DateTime.fromObject({ hour: 12, minute: 45 }),
-            duration: 30,
-            calories: 650,
-            items: [
-                {
-                    title: 'Quinoa Salad with Grilled Chicken',
-                    isFavorite: true
-                },
-                { title: 'Cherry Tomatoes', isFavorite: false },
-                { title: 'Almond Snack Bar', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.SNACK,
-            time: DateTime.fromObject({ hour: 15, minute: 30 }),
-            duration: 10,
-            calories: 120,
-            items: [{ title: 'Mixed Nuts', isFavorite: true }]
-        },
-        {
-            type: EventType.DRINK,
-            time: DateTime.fromObject({ hour: 18, minute: 0 }),
-            duration: 5,
-            calories: 50,
-            items: [{ title: 'Green Tea', isFavorite: true }]
-        },
-        {
-            type: EventType.DINNER,
-            time: DateTime.fromObject({ hour: 20, minute: 0 }),
-            duration: 175,
-            calories: 2800,
-            items: [
-                {
-                    title: 'Salmon with Lemon-Dill Sauce',
-                    isFavorite: true
-                },
-                {
-                    title: 'Roasted Sweet Potatoes',
-                    isFavorite: false
-                },
-                { title: 'Steamed Asparagus', isFavorite: true }
-            ]
-        }
-    ],
-    [
-        {
-            type: EventType.BREAKFAST,
-            time: DateTime.fromObject({ hour: 8, minute: 0 }),
-            duration: 45,
-            calories: 550,
-            items: [
-                {
-                    title: 'Oatmeal with Berries and Nuts',
-                    isFavorite: true
-                },
-                {
-                    title: 'Greek Yogurt Parfait',
-                    isFavorite: false
-                },
-                { title: 'Orange Juice', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.LUNCH,
-            time: DateTime.fromObject({ hour: 13, minute: 0 }),
-            duration: 40,
-            calories: 700,
-            items: [
-                {
-                    title: 'Grilled Chicken Caesar Salad',
-                    isFavorite: true
-                },
-                {
-                    title: 'Garlic Breadsticks',
-                    isFavorite: false
-                },
-                { title: 'Iced Tea', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.SNACK,
-            time: DateTime.fromObject({ hour: 16, minute: 0 }),
-            duration: 15,
-            calories: 180,
-            items: [
-                {
-                    title: 'Hummus with Carrot Sticks',
-                    isFavorite: true
-                }
-            ]
-        },
-        {
-            type: EventType.APPETIZER,
-            time: DateTime.fromObject({ hour: 18, minute: 30 }),
-            duration: 20,
-            calories: 250,
-            items: [
-                {
-                    title: 'Spinach and Artichoke Dip',
-                    isFavorite: true
-                },
-                { title: 'Crackers', isFavorite: false }
-            ]
-        },
-        {
-            type: EventType.DINNER,
-            time: DateTime.fromObject({ hour: 19, minute: 30 }),
-            duration: 90,
-            calories: 900,
-            items: [
-                {
-                    title: 'Vegetarian Stir-Fry with Tofu',
-                    isFavorite: true
-                },
-                { title: 'Brown Rice', isFavorite: false },
-                { title: 'Mango Sorbet', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.DESSERT,
-            time: DateTime.fromObject({ hour: 20, minute: 0 }),
-            duration: 30,
-            calories: 400,
-            items: [
-                { title: 'Chocolate Mousse', isFavorite: true },
-                { title: 'Fresh Strawberries', isFavorite: false }
-            ]
-        }
-    ],
-    [
-        {
-            type: EventType.BREAKFAST,
-            time: DateTime.fromObject({ hour: 7, minute: 30 }),
-            duration: 40,
-            calories: 480,
-            items: [
-                {
-                    title: 'Smoothie Bowl with Mixed Berries',
-                    isFavorite: true
-                },
-                {
-                    title: 'Whole Grain Toast with Avocado',
-                    isFavorite: false
-                },
-                { title: 'Black Coffee', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.LUNCH,
-            time: DateTime.fromObject({ hour: 12, minute: 0 }),
-            duration: 45,
-            calories: 750,
-            items: [
-                {
-                    title: 'Turkey and Swiss Sandwich',
-                    isFavorite: true
-                },
-                {
-                    title: 'Sweet Potato Fries',
-                    isFavorite: false
-                },
-                { title: 'Iced Lemonade', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.SNACK,
-            time: DateTime.fromObject({ hour: 15, minute: 0 }),
-            duration: 10,
-            calories: 120,
-            items: [
-                {
-                    title: 'Greek Yogurt with Honey',
-                    isFavorite: true
-                }
-            ]
-        },
-        {
-            type: EventType.APPETIZER,
-            time: DateTime.fromObject({ hour: 18, minute: 0 }),
-            duration: 25,
-            calories: 300,
-            items: [
-                {
-                    title: 'Caprese Salad Skewers',
-                    isFavorite: true
-                },
-                { title: 'Balsamic Glaze', isFavorite: false }
-            ]
-        },
-        {
-            type: EventType.DINNER,
-            time: DateTime.fromObject({ hour: 19, minute: 30 }),
-            duration: 80,
-            calories: 900,
-            items: [
-                {
-                    title: 'Grilled Salmon with Lemon Dill Sauce',
-                    isFavorite: true
-                },
-                { title: 'Quinoa Pilaf', isFavorite: false },
-                {
-                    title: 'Roasted Brussels Sprouts',
-                    isFavorite: true
-                }
-            ]
-        },
-        {
-            type: EventType.DESSERT,
-            time: DateTime.fromObject({ hour: 21, minute: 0 }),
-            duration: 30,
-            calories: 450,
-            items: [
-                { title: 'Mango Sorbet', isFavorite: true },
-                {
-                    title: 'Dark Chocolate Square',
-                    isFavorite: false
-                }
-            ]
-        }
-    ],
-    [
-        {
-            type: EventType.BREAKFAST,
-            time: DateTime.fromObject({ hour: 8, minute: 0 }),
-            duration: 40,
-            calories: 500,
-            items: [
-                {
-                    title: 'Avocado Toast with Poached Eggs',
-                    isFavorite: true
-                },
-                { title: 'Fresh Fruit Salad', isFavorite: false },
-                { title: 'Green Tea', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.LUNCH,
-            time: DateTime.fromObject({ hour: 13, minute: 0 }),
-            duration: 45,
-            calories: 700,
-            items: [
-                {
-                    title: 'Quinoa and Black Bean Bowl',
-                    isFavorite: true
-                },
-                {
-                    title: 'Cilantro-Lime Dressing',
-                    isFavorite: false
-                },
-                { title: 'Iced Hibiscus Tea', isFavorite: true }
-            ]
-        },
-        {
-            type: EventType.SNACK,
-            time: DateTime.fromObject({ hour: 15, minute: 30 }),
-            duration: 15,
-            calories: 180,
-            items: [
-                {
-                    title: 'Mixed Berries with Greek Yogurt',
-                    isFavorite: true
-                }
-            ]
-        },
-        {
-            type: EventType.DINNER,
-            time: DateTime.fromObject({ hour: 18, minute: 30 }),
-            duration: 90,
-            calories: 950,
-            items: [
-                {
-                    title: 'Pasta Primavera with Pesto Sauce',
-                    isFavorite: true
-                },
-                { title: 'Garlic Bread', isFavorite: false },
-                {
-                    title: 'Sparkling Water with Lemon',
-                    isFavorite: true
-                }
-            ]
-        },
-        {
-            type: EventType.DESSERT,
-            time: DateTime.fromObject({ hour: 20, minute: 0 }),
-            duration: 30,
-            calories: 400,
-            items: [
-                {
-                    title: 'Strawberry Cheesecake',
-                    isFavorite: true
-                },
-                { title: 'Whipped Cream', isFavorite: false }
-            ]
-        }
-    ]
-];
-
 interface IPlanProps {
     handleSelectRecipe: (recipeId: string) => void;
     handleToggleVisibleInfo: () => void;
@@ -415,24 +34,83 @@ interface IPlanProps {
 
 const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) => {
     const { customViewportSize } = useSelector((state: RootState) => state.viewport);
+    const { plan, selectedDay, selectedEvent, handleSelectDay, handleSelectEvent, handleDeleteEvent, handleSelectEventItem } = usePlan();
 
-    const bodyRef = useRef<HTMLDivElement>(null);
-    const [selectedDay, setSelectedDay] = useState(0);
-    const selectedDayDate = TODAY.plus({ days: selectedDay });
+    const bodyRef = useRef<HTMLUListElement>(null);
 
-    const [isAddEventModalOpen, toggleAddEventModal] = useToggle([false, true]);
+    const {
+        modalState: addEventModalState,
+        isModalOpen: isAddEventModalOpen,
+        isModalClosed: isAddEventModalClosed,
+        toggleModal: toggleAddEventModalState
+    } = useModal();
+    const { modalState: copyDayModalState, isModalClosed: isCopyDayModalClosed, toggleModal: toggleCopyDayModalState } = useModal();
+    const { modalState: eventModalState, isModalClosed: isEditEventModalClosed, toggleModal: toggleEventModalState } = useModal();
+    const { modalState: boomarkModalState, isModalClosed: isBookmarkModalClosed, toggleModal: toggleBookmarkModalState } = useModal();
+
+    const {
+        quickSearchState: bookmarkQuickSearchState,
+        isQuickSearchClosed: isBookmarkQuickSeachClosed,
+        toggleQuickSearchState: toggleBookmarkQuickSearchState
+    } = useQuickSearch();
 
     const displaySwitchViewButton = customViewportSize === 'twoColumns';
+    const events = useMemo(() => extractMealEvents(selectedDay.events), [selectedDay.events]);
+    const date = useMemo(() => DateTime.fromISO(selectedDay.date), [selectedDay.date]);
+
+    const isEmpty = useMemo(() => events.length === 0, [events]);
+
+    const [bookmarkedEvent, setBookmarkedEvent] = useState<Client<IMealEventBookmark> | null>(null);
 
     const handleToggleAddEventModalVisibility = useCallback(() => {
-        toggleAddEventModal();
-    }, [toggleAddEventModal]);
+        if (isAddEventModalOpen && bookmarkedEvent) {
+            setBookmarkedEvent(null);
+        }
 
-    const handleSelectDay = useCallback(
-        (day: number) => () => {
-            setSelectedDay(day);
+        toggleAddEventModalState();
+    }, [bookmarkedEvent, isAddEventModalOpen, toggleAddEventModalState]);
+
+    const handleEditEventClick = useCallback(
+        (eventId: string) => () => {
+            handleSelectEvent(eventId);
+
+            toggleEventModalState();
         },
-        []
+        [handleSelectEvent, toggleEventModalState]
+    );
+
+    const handleBookmarkEventClick = useCallback(
+        (eventId: string, isBookmarked: boolean) => () => {
+            if (isBookmarked) {
+                return;
+            }
+
+            handleSelectEvent(eventId);
+
+            toggleBookmarkModalState();
+        },
+        [handleSelectEvent, toggleBookmarkModalState]
+    );
+
+    const handleToggleBookmarkQuickSearchState = useCallback(() => {
+        toggleBookmarkQuickSearchState();
+    }, [toggleBookmarkQuickSearchState]);
+
+    const handleToggleCopyDayModalVisibility = useCallback(() => {
+        if (isEmpty) {
+            return;
+        }
+
+        toggleCopyDayModalState();
+    }, [isEmpty, toggleCopyDayModalState]);
+
+    const handleSelectBookmarkedEvent = useCallback(
+        (bookmark: Client<IMealEventBookmark>) => {
+            setBookmarkedEvent(bookmark);
+
+            handleToggleAddEventModalVisibility();
+        },
+        [handleToggleAddEventModalVisibility]
     );
 
     useEffect(() => {
@@ -461,7 +139,7 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
         }
 
         scrollWrapperElement.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [selectedDay, bodyRef]);
+    }, [bodyRef]);
 
     return (
         <>
@@ -469,22 +147,32 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
                 <div className={styles.selectedDay}>
                     <header className={styles.top}>
                         <p className={styles.date}>
-                            <span className={styles.dateDay}>{selectedDayDate.toFormat('cccc')}</span>
-                            <span>{selectedDayDate.toFormat('d')}</span>
-                            <span className={styles.dateMonth}>{selectedDayDate.toFormat('MMMM')}</span>
+                            <span className={styles.dateDay}>{date.toFormat('cccc')}</span>
+                            <span>{date.toFormat('d')}</span>
+                            <span className={styles.dateMonth}>{date.toFormat('MMMM')}</span>
                         </p>
                         <div className={styles.buttons}>
                             <button className={styles.addEvent} onClick={handleToggleAddEventModalVisibility}>
                                 <AddIcon />
-                                <p>Add Event</p>
+                                <p>Create Event</p>
                             </button>
-                            <button className={styles.copyDay}>
+                            <button
+                                className={styles.addBookmarked}
+                                data-tooltip-id={isEmpty ? undefined : 'add-bookmarked'}
+                                data-tooltip-content={'Add Bookmarked Event'}
+                                onClick={handleToggleBookmarkQuickSearchState}
+                            >
+                                <BookmarkIcon className={styles.bookmark} />
+                                <AddIcon className={styles.add} />
+                            </button>
+                            <button
+                                className={styles.copyDay}
+                                data-tooltip-id={isEmpty ? undefined : 'copy-day'}
+                                data-tooltip-content={isEmpty ? undefined : 'Copy Events'}
+                                disabled={isEmpty}
+                                onClick={handleToggleCopyDayModalVisibility}
+                            >
                                 <CopyIcon />
-                                <p>Copy Day</p>
-                            </button>
-                            <button className={styles.clearDay}>
-                                <ClearIcon />
-                                <p>Clear Day</p>
                             </button>
                         </div>
                         {displaySwitchViewButton && (
@@ -495,53 +183,78 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
                     </header>
                     <div className={styles.scrollContainer}>
                         <ScrollWrapper height={'100%'} padding={1.25}>
-                            <div ref={bodyRef} className={styles.body}>
-                                {DAYS[selectedDay].map((event, i) => (
-                                    <Event key={i} {...event} isToday={selectedDay === 0} handleSelectRecipe={handleSelectRecipe} />
+                            <ul ref={bodyRef} className={styles.body}>
+                                {events.map((event, i) => (
+                                    <Event
+                                        key={i}
+                                        {...event}
+                                        isToday={selectedDay.index === 0}
+                                        handleSelectRecipe={handleSelectRecipe}
+                                        handleEditEventClick={handleEditEventClick(event._id)}
+                                        handleBookmarkEventClick={handleBookmarkEventClick(event._id, isDefined(event.bookmarkId))}
+                                        handleDeleteEventClick={handleDeleteEvent(event._id)}
+                                        handleSelectEventItem={handleSelectEventItem(event._id)}
+                                    />
                                 ))}
-                                <Tooltip id="favorite-meal-item" place="bottom" offset={10} size="small" />
-                                <Tooltip id="link-to-recipe" place="bottom" offset={10} size="small" />
-                                <Tooltip id="edit-meal-item" place="bottom" offset={10} size="small" />
-                                <Tooltip id="remove-meal-item" place="bottom" offset={10} size="small" />
-                            </div>
+                            </ul>
                         </ScrollWrapper>
                     </div>
                 </div>
-                <ul className={styles.days}>
-                    {DAYS.map((events, i) => (
-                        <li key={i} className={styles.day} data-selected={selectedDay === i}>
-                            <button onClick={handleSelectDay(i)}>
-                                <p>
-                                    <span>{TODAY.plus({ days: i }).toFormat('ccc')[0]}</span>
-                                    <span className={styles.dividerText}>{'   |   '}</span>
-                                    <span>{TODAY.plus({ days: i }).toFormat('d')}</span>
-                                </p>
-                                <ul className={styles.events}>
-                                    {events.map(({ type, items }, i) => (
-                                        <li key={i} className={styles.event} data-event={type} data-items={items} />
-                                    ))}
-                                </ul>
-                            </button>
-                        </li>
-                    ))}
-                    <div className={styles.bar} data-day={selectedDay} />
+                <ul className={styles.daySelector}>
+                    {!!plan &&
+                        plan.map((day, i) => (
+                            <li key={i} className={styles.day} data-selected={selectedDay.index === i}>
+                                <button onClick={handleSelectDay(i)}>
+                                    <p>
+                                        <span>{TODAY.plus({ days: i }).toFormat('ccc')[0]}</span>
+                                        <span className={styles.dividerText}>{'   |   '}</span>
+                                        <span>{TODAY.plus({ days: i }).toFormat('d')}</span>
+                                    </p>
+                                    {!!day?.events.length && (
+                                        <ul className={styles.events}>
+                                            {day.events.map(({ type, items }, i) => (
+                                                <li key={i} className={styles.event} data-event={type} data-items={items} />
+                                            ))}
+                                        </ul>
+                                    )}
+                                </button>
+                            </li>
+                        ))}
+                    <div className={styles.bar} data-day={selectedDay.index} />
                 </ul>
             </section>
-            <AddEventModal isOpen={isAddEventModalOpen} closeModal={handleToggleAddEventModalVisibility} />
+            <AddEventModal
+                key={isAddEventModalClosed.toString()}
+                state={addEventModalState}
+                date={date}
+                bookmarkedEvent={bookmarkedEvent}
+                handleCloseModal={handleToggleAddEventModalVisibility}
+            />
+            <CopyDayModal
+                key={isCopyDayModalClosed.toString()}
+                state={copyDayModalState}
+                handleCloseModal={handleToggleCopyDayModalVisibility}
+            />
+            {selectedEvent && (
+                <EditEventModal key={isEditEventModalClosed.toString()} state={eventModalState} handleCloseModal={toggleEventModalState} />
+            )}
+            <BookmarkEventModal
+                key={isBookmarkModalClosed.toString()}
+                state={boomarkModalState}
+                handleCloseModal={toggleBookmarkModalState}
+            />
+            <EventBookmarkQuickSearch
+                key={isBookmarkQuickSeachClosed.toString()}
+                state={bookmarkQuickSearchState}
+                handleClose={handleToggleBookmarkQuickSearchState}
+                handleSelectResult={handleSelectBookmarkedEvent}
+            />
+            <Tooltip id="add-bookmarked" place="bottom" offset={10} size="small" />
+            <Tooltip id="copy-day" place="bottom" offset={10} size="small" />
+            <Tooltip id="favorite-meal-item" place="bottom" offset={10} size="small" />
+            <Tooltip id="link-to-recipe" place="bottom" size="small" offset={10} />
+            <Tooltip id="remove-meal-item" place="bottom" offset={10} size="small" />
         </>
-    );
-};
-
-interface IAddEventModalProps {
-    isOpen: boolean;
-    closeModal: () => void;
-}
-
-const AddEventModal: FC<IAddEventModalProps> = ({ isOpen, closeModal }) => {
-    return (
-        <ModalWrapper isOpen={isOpen} closeModal={closeModal} blurBackground={false}>
-            <h1>Add Event</h1>
-        </ModalWrapper>
     );
 };
 

@@ -1,0 +1,109 @@
+.backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    justify-content: center;
+
+    padding-top: 5rem;
+
+    .container {
+        height: fit-content;
+    }
+
+    &[data-state='open'] {
+        &[data-blur='true'] {
+            animation: fade-and-blur-in 300ms ease forwards;
+        }
+
+        &[data-blur='false'] {
+            animation: fade-in 300ms ease forwards;
+        }
+
+        .container {
+            animation: enter 350ms ease;
+        }
+    }
+
+    &[data-state='closing'] {
+        &[data-blur='true'] {
+            animation: fade-and-blur-out 200ms ease forwards;
+        }
+
+        &[data-blur='false'] {
+            animation: fade-out 200ms ease forwards;
+        }
+
+        .container {
+            animation: exit 350ms ease;
+        }
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-and-blur-in {
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(1px);
+    }
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-and-blur-out {
+    0% {
+        opacity: 1;
+        backdrop-filter: blur(1px);
+    }
+    100% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+}
+
+@keyframes enter {
+    0% {
+        opacity: 0;
+        scale: 0.75;
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+@keyframes exit {
+    0% {
+        opacity: 1;
+        scale: 1;
+    }
+    100% {
+        opacity: 0;
+        scale: 0.9;
+    }
+}

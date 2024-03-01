@@ -19,7 +19,7 @@ const OAuthButton: FC<IOAuthButtonProps> = ({ provider }) => {
 
     const handleOAuth = useCallback(async () => {
         try {
-            const { data } = await sendRequest(`/api/auth/oauth/${provider.toLocaleLowerCase()}`, 'GET');
+            const { data } = await sendRequest(`/auth/oauth/${provider.toLocaleLowerCase()}`, 'GET');
 
             window.location.href = data.url;
         } catch (err) {

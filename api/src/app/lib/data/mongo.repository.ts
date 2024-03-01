@@ -2,7 +2,7 @@ import mongoose, { Document, FilterQuery, UpdateQuery, ProjectionFields, Model, 
 import { BadRequestError, ConflictError } from '../error/thymecardError';
 import { DeepPartial, isArray, isDateString, isDefined, isPlainObject, isValidMongoId } from '../types/typeguards.utils';
 import { IPagedResult } from '../types/common.types';
-import { compressAndEncrypt, decryptAndDecompress } from '../encryption.utils'
+import { compressAndEncrypt, decryptAndDecompress } from '../encryption.utils';
 import { getPath } from '../types/object.utils';
 import { ErrorCode } from '@thymecard/types';
 
@@ -23,7 +23,11 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
     protected model: Model<Entity & Doc>;
 
     constructor(collectionName: string, schema: Schema) {
+        schema.set('timestamps', { createdAt: true, updatedAt: true });
+        schema.set('toObject', { versionKey: false, getters: false });
+
         this.model = model<Entity & Doc>(collectionName, schema, collectionName);
+
         this.ensureIndexes();
     }
 
@@ -53,14 +57,34 @@ export class MongoRepository<Entity extends IEntityKey, CreateEntity extends Cre
         }
     }
 
+    // Overloads to conditionally alter the RT according to the upsert param
+    public findOneAndUpdate<T = Entity>(
+        query: FilterQuery<Entity>,
+        update: UpdateQuery<Entity>,
+        options?: {
+            projection?: Projection<Entity>;
+            arrayFilters?: Record<string, string>[];
+            upsert?: false;
+        }
+    ): Promise<T | null>;
+
+    public findOneAndUpdate<T = Entity>(
+        query: FilterQuery<Entity>,
+        update: UpdateQuery<Entity>,
+        options?: {
+            projection?: Projection<Entity>;
+            arrayFilters?: Record<string, string>[];
+            upsert?: true;
+        }
+    ): Promise<T>;
+
     public async findOneAndUpdate<T = Entity>(
         query: Query<Entity>,
         update: Update<Entity>,
-        projection?: Projection<Entity>,
-        upsert: boolean = false
+        options?: { projection?: Projection<Entity>; arrayFilters?: Record<string, string>[]; upsert?: boolean }
     ): Promise<T | null> {
         try {
-            const doc = await this.model.findOneAndUpdate(query, update, { new: true, projection, upsert }).exec();
+            const doc = await this.model.findOneAndUpdate(query, update, { new: true, ...options }).exec();
 
             if (!doc) {
                 return null;

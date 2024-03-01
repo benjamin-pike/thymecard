@@ -1,10 +1,21 @@
+import { ITime } from "@thymecard/types";
+
+export const minsToHoursAndMins = (mins: number) => {
+	const hours = Math.floor(mins / 60);
+	const minutes = mins % 60;
+	return { hours, minutes };
+};
+
+export const hoursAndMinsToMins = (time: ITime) => {
+    return time.hours * 60 + time.minutes;
+}
+
 export const formatDuration = (
 	duration: number,
 	length: "long" | "medium" | "short",
-    useComma: boolean = false
+	useComma: boolean = false
 ) => {
-	const hours = Math.floor(duration / 60);
-	const minutes = duration % 60;
+	const { hours, minutes } = minsToHoursAndMins(duration);
 	let output = `${minutes} minutes`;
 
 	if (hours > 0) {
@@ -21,9 +32,9 @@ export const formatDuration = (
 		output.replace("minutes", "minute");
 	}
 
-    if (!useComma) {
-        output = output.replace(",", " ");
-    }
+	if (!useComma) {
+		output = output.replace(",", " ");
+	}
 
 	switch (length) {
 		case "short":

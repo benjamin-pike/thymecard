@@ -1,0 +1,66 @@
+.checkbox {
+    display: grid;
+    place-items: center;
+
+    width: fit-content;
+
+    button {
+        display: grid;
+        place-items: center;
+
+        height: 1rem;
+        width: 1rem;
+
+        border: 1px solid $mono-300;
+
+        border-radius: 0.35rem;
+
+        transition:
+            background-color 150ms ease,
+            border 150ms ease;
+
+        @include dark-mode {
+            border: 1px solid $mono-600;
+        }
+
+        svg {
+            height: 60%;
+            width: 60%;
+
+            fill: none;
+            stroke: $mono-600;
+            stroke-width: 3.75;
+
+            stroke-linecap: round;
+            stroke-dasharray: 60;
+            stroke-dashoffset: 60;
+
+            transition: stroke-dashoffset 200ms ease;
+
+            @include dark-mode {
+                stroke: $mono-light;
+            }
+        }
+    }
+
+    input[type='checkbox']:checked + button {
+        background-color: $mono-700;
+        border: 1px solid $mono-700;
+
+        @include dark-mode {
+            background-color: $mono-light;
+            border: 1px solid $mono-light;
+        }
+
+        svg {
+            stroke-dashoffset: 0;
+            stroke: $mono-light;
+
+            transition: stroke-dashoffset 800ms ease;
+
+            @include dark-mode {
+                stroke: $mono-dark;
+            }
+        }
+    }
+}

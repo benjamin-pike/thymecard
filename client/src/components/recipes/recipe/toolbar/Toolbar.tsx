@@ -1,6 +1,6 @@
 import { FC, Fragment, useMemo } from 'react';
-import { useRecipe } from '../RecipeProvider';
 import Tooltip from '@/components/common/tooltip/Tooltip';
+import { useRecipe } from '../RecipeProvider';
 import { ICONS } from '@/assets/icons';
 import { buildKey } from '@thymecard/utils';
 import styles from './toolbar.module.scss';
@@ -51,7 +51,7 @@ const Toolbar: FC<IToolbarProps> = ({
     handleToggleFullscreen,
     handleDeleteRecipe
 }) => {
-    const { toggleEditing, handleSaveEdit, handleCancelEdit } = useRecipe();
+    const { toggleEditing, handleSaveRecipe, handleCancelEdit } = useRecipe();
 
     const buttons: IButton[] = useMemo(
         () => [
@@ -68,7 +68,7 @@ const Toolbar: FC<IToolbarProps> = ({
                 name: 'save',
                 tooltip: 'Save Changes',
                 mode: ['edit'],
-                onClick: handleSaveEdit
+                onClick: handleSaveRecipe
             },
             {
                 icon: <DiscardIcon />,
@@ -135,7 +135,7 @@ const Toolbar: FC<IToolbarProps> = ({
         ],
         [
             toggleEditing,
-            handleSaveEdit,
+            handleSaveRecipe,
             handleCancelEdit,
             handleOpenScaleIngredientsModal,
             displayIngredients,

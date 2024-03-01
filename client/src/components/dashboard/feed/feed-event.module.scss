@@ -199,7 +199,7 @@
         align-items: center;
         padding: 0.4rem 0.6rem;
 
-        border-radius: 0.25rem;
+        border-radius: 0.5rem;
 
         @each $metric, $color in $metric-colors {
             $light-adjusted-color: contrastize($color, 'light');
@@ -207,7 +207,7 @@
 
             &[data-metric='#{$metric}'] {
                 color: $light-adjusted-color;
-                background-color: transparentize($light-adjusted-color, 0.9);
+                background-color: alpha($color, 0.125);
 
                 @include dark-mode {
                     color: $dark-adjusted-color;

@@ -1,10 +1,10 @@
 import { FC, useCallback, useMemo, useState } from 'react';
-import { useRecipe } from '../RecipeProvider';
 import PopoverWrapper, { PopoverPosition } from '@/components/wrappers/popover/PopoverWrapper';
 import Tooltip from '@/components/common/tooltip/Tooltip';
+import { useRecipe } from '../RecipeProvider';
 import { isNull } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';
-import { INGREDIENTS_FIELDS } from '@/hooks/recipes/useIngredients';
+import { INGREDIENTS_FIELDS } from '@/hooks/recipes/components/useIngredients';
 import { buildKey } from '@thymecard/utils';
 import styles from './ingredients-edit.module.scss';
 

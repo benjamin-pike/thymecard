@@ -1,7 +1,8 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useToggle } from '@mantine/hooks';
-import { ICONS } from '@/assets/icons';
+import TextSkeleton from '@/components/common/loading-skeleton/TextSkeleton';
 import { useRecipe } from '../RecipeProvider';
+import { ICONS } from '@/assets/icons';
 import styles from './description.module.scss';
 
 const ExpandIcon = ICONS.common.toggle;
@@ -69,6 +70,8 @@ const Description: FC = () => {
 
     useEffect(checkOverflow, [checkOverflow, recipe]);
 
+    const isLoading = !recipe?.description;
+
     return (
         <section className={styles.description} data-editing={isEditing} data-empty={!description.edit}>
             {isEditing ? (
@@ -82,20 +85,26 @@ const Description: FC = () => {
                     onChange={handleDescriptionChange}
                     onFocus={handleDescriptionInputFocus}
                 />
+            ) : isLoading ? (
+                <div className={styles.skeleton}>
+                    <TextSkeleton fontSize={1} width="100%" />
+                    <TextSkeleton fontSize={1} width="100%" />
+                    <TextSkeleton fontSize={1} width="80%" />
+                </div>
             ) : (
-                !!recipe?.description && (
-                    <p ref={ref} data-expanded={isExpanded}>
-                        {description.edit}
-                    </p>
-                )
+                <p ref={ref} data-expanded={isExpanded}>
+                    {description.edit}
+                </p>
             )}
-            <div className={styles.buttons}>
-                {isOverflowing && !isEditing && (
-                    <button className={styles.expand} data-active={isExpanded} onClick={handleExpandButtonClick}>
-                        <ExpandIcon />
-                    </button>
-                )}
-            </div>
+            {!isLoading && (
+                <div className={styles.buttons}>
+                    {isOverflowing && !isEditing && (
+                        <button className={styles.expand} data-active={isExpanded} onClick={handleExpandButtonClick}>
+                            <ExpandIcon />
+                        </button>
+                    )}
+                </div>
+            )}
         </section>
     );
 };

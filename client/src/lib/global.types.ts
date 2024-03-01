@@ -1,8 +1,8 @@
-import { EventType } from '@thymecard/types';
+import { EEventType } from '@thymecard/types';
 
 export interface IEvent {
     time: string;
-    type: EventType;
+    type: EEventType;
     name: string;
     duration: number;
 }

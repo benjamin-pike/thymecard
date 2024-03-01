@@ -28,7 +28,11 @@
 
             font-size: $fs-14;
 
-            border: 0.5px solid $mono-800;
+            border: 0.5px solid $mono-200;
+
+            @include dark-mode {
+                border: 0.5px solid $mono-800;
+            }
 
             &::after {
                 display: none;

@@ -42,6 +42,10 @@
             &::placeholder {
                 font-weight: 400;
                 color: $mono-500;
+
+                @include dark-mode {
+                    color: $mono-600;
+                }
             }
         }
 
@@ -98,7 +102,7 @@
             &::after {
                 @include dark-mode {
                     color: $mono-light;
-                    background-color: darken($blue, 5%);
+                    background-color: contrastize($blue, 'dark');
                     text-shadow: 0 0 0.5rem $mono-600;
                 }
             }

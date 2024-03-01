@@ -151,9 +151,9 @@ const Register = () => {
     }, [stage]);
 
     // API calls
-    const createCredentialMutation = useMutation(
+    const { mutateAsync: callCreateCredential } = useMutation(
         async () => {
-            const url = '/api/auth/credential';
+            const url = '/auth/credential';
             const method = 'POST';
 
             const { status, data } = await sendRequest(url, method, {
@@ -184,13 +184,13 @@ const Register = () => {
     );
 
     const handleCreateCredential = useCallback(async () => {
-        await createCredentialMutation.mutateAsync();
+        await callCreateCredential();
         handleContinue();
-    }, [createCredentialMutation, handleContinue]);
+    }, [callCreateCredential, handleContinue]);
 
-    const verifyCredentialMutation = useMutation(
+    const { mutateAsync: callVerifyCredential } = useMutation(
         async () => {
-            const url = `/api/auth/credential/${credentialId}/verify`;
+            const url = `/auth/credential/${credentialId}/verify`;
             const method = 'PUT';
 
             const { status, data } = await sendRequest(url, method, {
@@ -215,14 +215,14 @@ const Register = () => {
     );
 
     const handleVerifyCredential = useCallback(async () => {
-        await verifyCredentialMutation.mutateAsync();
+        await callVerifyCredential();
 
         handleContinue();
-    }, [handleContinue, verifyCredentialMutation]);
+    }, [callVerifyCredential, handleContinue]);
 
-    const createUserMutation = useMutation(
+    const { mutateAsync: callCreateUser } = useMutation(
         async (payload: FormData) => {
-            const url = '/api/users';
+            const url = '/users';
             const method = 'POST';
 
             const { status, data } = await sendRequest(url, method, {
@@ -251,12 +251,12 @@ const Register = () => {
 
                 loginUser({
                     user: {
-                        id: user._id,
+                        id: user.id,
                         firstName: user.firstName,
                         email: user.email,
                         image: user.image
                     },
-                    sessionId: session._id
+                    sessionId: session.id
                 });
 
                 navigate('/dashboard');
@@ -285,8 +285,8 @@ const Register = () => {
             formData.append('image', image);
         }
 
-        await createUserMutation.mutateAsync(formData);
-    }, [createUserMutation, dateOfBirth, firstName, gender, height, image, lastName, weight]);
+        await callCreateUser(formData);
+    }, [callCreateUser, dateOfBirth, firstName, gender, height, image, lastName, weight]);
 
     return (
         <>

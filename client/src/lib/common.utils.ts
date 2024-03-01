@@ -1,3 +1,5 @@
+import { Client } from '@thymecard/types';
+
 export const formatClasses = (styles: Record<string, string>, classNames: string[]) => {
     return classNames
         .filter(Boolean)
@@ -19,4 +21,8 @@ export const debounce = (func: (...args: any[]) => void, delay: number) => {
 
 export const queue = (fn: () => void) => {
     setTimeout(fn, 0);
+};
+
+export const convertToClientType = <T>(data: T): Client<T> => {
+    return JSON.parse(JSON.stringify(data));
 };

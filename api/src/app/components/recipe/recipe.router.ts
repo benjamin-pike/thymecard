@@ -34,8 +34,26 @@ export const recipeRouter = (dependencies: IDependencies) => {
             '/parse',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const { recipe, image } = await recipeController.parseRecipe(context, req.body);
-                res.status(HTTP_STATUS_CODES.CREATED).json({ recipe, image });
+                const result = await recipeController.parseRecipe(context, req.body);
+                res.status(HTTP_STATUS_CODES.OK).json({ result });
+            })
+        )
+        .get(
+            '/search',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const { query } = req.query;
+                const recipes = await recipeController.searchRecipes(context, query);
+                res.status(HTTP_STATUS_CODES.OK).json(recipes);
+            })
+        )
+        .get(
+            '/search/google',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const { query } = req.query;
+                const results = await recipeController.searchGoogleRecipes(context, query);
+                res.status(HTTP_STATUS_CODES.OK).json({ results });
             })
         )
         .get(
@@ -105,6 +123,8 @@ export const recipePermissions: IRoutePermissions = {
     'POST /recipes': [{ scope: AccessScope.RECIPE, permission: Permission.WRITE }],
     'GET /recipes/summary': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
     'POST /recipes/parse': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
+    'GET /recipes/search': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
+    'GET /recipes/search/google': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
     'GET /recipes/:recipeId': [{ scope: AccessScope.RECIPE, permission: Permission.READ }],
     'PUT /recipes/:recipeId': [{ scope: AccessScope.RECIPE, permission: Permission.WRITE }],
     'DELETE /recipes/:recipeId': [{ scope: AccessScope.RECIPE, permission: Permission.DELETE }],

@@ -1,5 +1,5 @@
 {
-    "snack": {
+    "SNACK": {
         "Mixed Nuts": [],
         "Rice Cakes": [
             "https://cdn.veganrecipeclub.org.uk/wp-content/uploads/2021/01/ricecakes2-1568x1122.jpg",
@@ -87,7 +87,7 @@
         ],
         "Fresh Fruit": []
     },
-    "dessert": {
+    "DESSERT": {
         "Panna Cotta": [
             "https://img.taste.com.au/wWv7e6x-/taste/2019/08/panna-cotta-with-roasted-strawberries-taste-153207-1.jpg",
             "https://liliebakery.fr/wp-content/uploads/2021/04/Panna-Cotta-Cafe-Vanille-Penchee-Lilie-Bakery.jpg",
@@ -224,7 +224,7 @@
             "https://www.allrecipes.com/thmb/LC_td-hRsYLeMiOF6Y4Z9Ocv19E=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/9454-greek-baklava-s-tuttle-71eff77a5e3e4ceb94c1d48bafec55f1.jpeg"
         ]
     },
-    "lunch": {
+    "LUNCH": {
         "Grilled Chicken with Vegetables": [
             "https://www.spendwithpennies.com/wp-content/uploads/2018/11/SpendWithPennies-Juicy-Roast-Chicken-25.jpg",
             "https://www.heart.org/-/media/AHA/Recipe/Recipe-Images/Grilled-Chicken-with-Vegetables-sized.jpg",
@@ -366,7 +366,7 @@
             "https://cdn.cleaneatingmag.com/wp-content/uploads/2015/11/falafelpitasandwich.jpg?crop=4:3&width=1600"
         ]
     },
-    "dinner": {
+    "DINNER": {
         "BBQ Ribs": [
             "https://realfood.tesco.com/media/images/49-BBQStickyRibs-LH-619f58a9-2602-4b1b-a106-8de8731d2a04-0-1400x919.jpg",
             "https://www.grillseeker.com/wp-content/uploads/2022/06/sauced-pork-ribs-on-a-baoking-sheet.jpg",
@@ -513,7 +513,7 @@
             "https://www.simplyrecipes.com/thmb/wyfKZ6r4an5GdL19fFiAFlgr19c=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Vegetarian-Pizza-LEAD-5-03d81aaf35f24e5b99de36d2c29c15eb.jpg"
         ]
     },
-    "drink": {
+    "DRINK": {
         "Iced Tea": [
             "https://www.errenskitchen.com/wp-content/uploads/2014/08/lemon-Iced-Tea.jpg",
             "https://www.thespruceeats.com/thmb/qZHEIJ6CQIgYPUW4w1MCoOS8DGo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/oolong-iced-tea-recipe-766389-hero-07-1cc310d9aa8f497b8f78bb7021fd0e5c.jpg",
@@ -594,7 +594,7 @@
             "https://www.asweetpeachef.com/wp-content/uploads/2021/07/BlueberryProteinShake-6.jpg"
         ]
     },
-    "breakfast": {
+    "BREAKFAST": {
         "Granola with Yogurt": [
             "https://lacuisinedegeraldine.fr/wp-content/uploads/2020/05/DSC06532-scaled.jpeg",
             "https://swirlsofflavor.com/wp-content/uploads/2022/01/Fruit-Yogurt-Parfait-Horizontal-1-scaled.jpg",
@@ -726,6 +726,6 @@
             "https://www.asweetpeachef.com/wp-content/uploads/2021/07/BlueberryProteinShake-6.jpg"
         ]
     },
-    "activity": {},
-    "appetizer": {}
+    "ACTIVITY": {},
+    "APPETIZER": {}
 }

@@ -17,7 +17,7 @@
     width: 27.5rem;
     height: 40rem;
 
-    padding: 2.5rem;
+    padding: 2rem;
 
     background-color: $mono-light;
     box-shadow: 4px 4px 50px 0 rgba(0, 0, 0, 0.35);
@@ -408,7 +408,7 @@
                 }
             }
 
-            &:nth-of-type(even) {
+            &:nth-of-type(odd) {
                 background-color: transparentize($mono-100, 0.15);
 
                 @include dark-mode {

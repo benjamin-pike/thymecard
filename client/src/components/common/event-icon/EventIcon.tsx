@@ -1,22 +1,22 @@
 import { FC, memo } from 'react';
 import { LuSalad, LuBanana, LuIceCream2, LuCoffee, LuActivity, LuGlassWater, LuSoup, LuPizza } from 'react-icons/lu';
+import { EEventType } from '@thymecard/types';
 import styles from './event-icon.module.scss';
-import { EventType } from '@thymecard/types';
 
-const iconMap: Record<EventType, any> = {
-    breakfast: <LuCoffee />,
-    lunch: <LuPizza />,
-    dinner: <LuSalad />,
-    snack: <LuBanana />,
-    drink: <LuGlassWater />,
-    dessert: <LuIceCream2 />,
-    appetizer: <LuSoup />,
-    activity: <LuActivity />
+const iconMap: Record<EEventType, any> = {
+    [EEventType.BREAKFAST]: <LuCoffee />,
+    [EEventType.LUNCH]: <LuPizza />,
+    [EEventType.DINNER]: <LuSalad />,
+    [EEventType.SNACK]: <LuBanana />,
+    [EEventType.DRINK]: <LuGlassWater />,
+    [EEventType.DESSERT]: <LuIceCream2 />,
+    [EEventType.APPETIZER]: <LuSoup />,
+    [EEventType.ACTIVITY]: <LuActivity />
 };
 
 interface IEventIconProps {
     className?: string;
-    type: EventType;
+    type: EEventType;
     radius: number;
     background: boolean;
     dashed?: boolean;

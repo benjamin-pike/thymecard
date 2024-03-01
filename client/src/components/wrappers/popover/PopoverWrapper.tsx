@@ -1,7 +1,7 @@
 import { FC, ReactElement, ReactNode, useCallback, useState } from 'react';
-import styles from './popover-wrapper.module.scss';
 import { useClickOutside } from '@/hooks/common/useClickOutside';
 import { useDocumentEventListener } from '@/hooks/common/useDocumentEventListener';
+import styles from './popover-wrapper.module.scss';
 
 export enum PopoverPosition {
     TOP_LEFT = 'TOP_LEFT',
@@ -20,29 +20,39 @@ interface IPopoverWrapperProps {
     position: PopoverPosition;
     offset?: number;
     tooltip?: ReactElement;
+    bindCloseFunction?: (closeFunction: () => void) => void;
 }
 
-const PopoverWrapper: FC<IPopoverWrapperProps> = ({ id, position, children, offset, tooltip }) => {
+const PopoverWrapper: FC<IPopoverWrapperProps> = ({ id, position, children, offset, tooltip, bindCloseFunction }) => {
     const [state, setState] = useState<'open' | 'closing' | 'closed'>('closed');
     const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
     const [prevTriggerElement, setPrevTriggerElement] = useState<HTMLElement | null>(null);
 
-    const handleClickOutside = (e: MouseEvent) => {
-        const clickedElement = e.target as HTMLElement;
-        const triggerElement = findAncestorWithAttribute(clickedElement, 'data-popover-id', id);
-
-        if (triggerElement) {
-            return;
-        }
-
+    const handleClose = useCallback(() => {
         setState('closing');
 
         setTimeout(() => {
             setState('closed');
         }, 200);
-    };
+    }, []);
+
+    const handleClickOutside = useCallback(
+        (e: MouseEvent) => {
+            const clickedElement = e.target as HTMLElement;
+            const triggerElement = findAncestorWithAttribute(clickedElement, 'data-popover-id', id);
+
+            if (triggerElement) {
+                return;
+            }
+
+            handleClose();
+        },
+        [id, handleClose]
+    );
 
     const popoverRef = useClickOutside<HTMLDivElement>(handleClickOutside);
+
+    bindCloseFunction?.(handleClose);
 
     const handleMove = useCallback(
         (trigger: HTMLElement, positioningContext: HTMLElement) => {

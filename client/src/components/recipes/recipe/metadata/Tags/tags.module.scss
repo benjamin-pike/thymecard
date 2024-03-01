@@ -1,12 +1,16 @@
 $types: (
-    cuisine: $aqua,
+    cuisine: $blue,
     diet: $green,
     category: $orange
 );
 
 .tags {
+    position: relative;
+
     display: flex;
     gap: 0.45rem;
+
+    width: 100%;
 
     &[data-editing='false'] {
         flex-wrap: wrap;
@@ -20,8 +24,6 @@ $types: (
         flex-shrink: 1;
         width: 100%;
 
-        text-wrap: balance;
-
         span {
             margin-right: 0.35rem;
 
@@ -34,21 +36,61 @@ $types: (
     }
 
     .tagDisplay {
-        padding: 0.35rem 0.75rem;
+        position: relative;
+
+        padding: 0.35rem 0.75rem 0.35rem 1.6rem;
 
         font-size: $fs-11;
-        font-weight: 500;
         text-align: center;
-        color: $mono-light;
-        background-color: $mono-700;
-        box-shadow: 0 0 0 1px $mono-700;
 
-        border-radius: 0.35rem;
+        border-radius: 100vmax;
 
-        @include dark-mode {
-            color: $mono-light;
-            background-color: transparent;
+        @each $type, $color in $types {
+            $light-adjusted-color: contrastize($color, 'light');
+            $dark-adjusted-color: contrastize($color, 'dark');
+
+            &[data-type='#{$type}'] {
+                color: $light-adjusted-color;
+                background-color: alpha($light-adjusted-color, 0.1);
+
+                &::before {
+                    background-color: $mono-light;
+                    box-shadow: 0 0 0 0.15rem $color;
+
+                    scale: 0.9;
+                }
+
+                @include dark-mode {
+                    color: $dark-adjusted-color;
+                    background-color: alpha($dark-adjusted-color, 0.075);
+                    border: 1px solid alpha($dark-adjusted-color, 0.25);
+
+                    &::before {
+                        background-color: $mono-900;
+                        box-shadow: 0 0 0 0.15rem $dark-adjusted-color;
+                    }
+                }
+            }
         }
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+
+            height: 0.35rem;
+            width: 0.35rem;
+
+            border-radius: 50%;
+
+            translate: 0 -50%;
+        }
+
+        // @include dark-mode {
+        //     color: $mono-light;
+        //     background-color: transparent;
+        // }
     }
 
     ul {
@@ -113,20 +155,19 @@ $types: (
                     scale: 0.9;
                 }
             }
-            @each $key, $value in $types {
+            @each $key, $color in $types {
                 &[data-type='#{$key}'] {
-                    $color: contrastize($value, 'light');
+                    $light-adjusted-color: contrastize($color, 'light');
+                    $dark-adjusted-color: contrastize($color, 'dark');
 
+                    color: $light-adjusted-color;
+                    border: 1px dashed transparentize($light-adjusted-color, 0.5);
                     text-shadow: 0 0 0.5rem $mono-light;
-                    color: $color;
-                    border: 1px dashed transparentize($color, 0.5);
 
                     @include dark-mode {
-                        $color: contrastize($value, 'dark');
-
+                        color: $dark-adjusted-color;
+                        border: 1px dashed transparentize($dark-adjusted-color, 0.5);
                         text-shadow: none;
-                        color: $color;
-                        border: 1px dashed transparentize($color, 0.5);
                     }
                 }
             }
@@ -180,19 +221,32 @@ $types: (
                 white-space: pre;
             }
 
-            @each $key, $value in $types {
+            @each $key, $color in $types {
                 &.#{$key} {
-                    $color: contrastize($value, 'light');
+                    $light-adjusted-color: contrastize($color, 'light');
+                    $dark-adjusted-color: contrastize($color, 'dark');
 
-                    color: $color;
-                    background-color: transparentize($color, 0.95);
-                    border: 1px solid transparentize($color, 0.75);
+                    color: $light-adjusted-color;
+                    background-color: transparentize($light-adjusted-color, 0.95);
+                    border: 1px solid transparentize($light-adjusted-color, 0.75);
 
                     &:hover {
                         text-shadow: none;
                         color: $mono-light;
-                        background-color: $color;
-                        border-color: $color;
+                        background-color: $light-adjusted-color;
+                        border-color: $light-adjusted-color;
+                    }
+
+                    @include dark-mode {
+                        color: $dark-adjusted-color;
+                        background-color: transparentize($dark-adjusted-color, 0.95);
+                        border: 1px solid transparentize($dark-adjusted-color, 0.75);
+
+                        &:hover {
+                            color: $mono-light;
+                            background-color: $dark-adjusted-color;
+                            border-color: $dark-adjusted-color;
+                        }
                     }
                 }
             }

@@ -9,27 +9,35 @@ interface IDropdownWrapperProps {
     position: 'left' | 'right';
     offset?: number;
     tooltip?: ReactElement;
+    bindCloseFunction?: (closeFunction: () => void) => void;
 }
 
-const DropdownWrapper: FC<IDropdownWrapperProps> = ({ id, children, position, offset, tooltip }) => {
+const DropdownWrapper: FC<IDropdownWrapperProps> = ({ id, children, position, offset, tooltip, bindCloseFunction }) => {
     const [state, setState] = useState<'open' | 'closing' | 'closed'>('closed');
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
     const [prevTriggerElement, setPrevTriggerElement] = useState<HTMLElement | null>(null);
 
-    const handleClickOutside = (e: MouseEvent) => {
-        const clickedElement = e.target as HTMLElement;
-        const triggerElement = findAncestorWithAttribute(clickedElement, 'data-dropdown-id', id);
-
-        if (triggerElement) {
-            return;
-        }
-
+    const handleClose = useCallback(() => {
         setState('closing');
 
         setTimeout(() => {
             setState('closed');
         }, 200);
-    };
+    }, []);
+
+    const handleClickOutside = useCallback(
+        (e: MouseEvent) => {
+            const clickedElement = e.target as HTMLElement;
+            const triggerElement = findAncestorWithAttribute(clickedElement, 'data-dropdown-id', id);
+
+            if (triggerElement) {
+                return;
+            }
+
+            handleClose();
+        },
+        [id, handleClose]
+    );
 
     const dropdownRef = useClickOutside<HTMLDivElement>(handleClickOutside);
 
@@ -113,6 +121,8 @@ const DropdownWrapper: FC<IDropdownWrapperProps> = ({ id, children, position, of
     );
 
     useDocumentEventListener('click', handleClick);
+
+    bindCloseFunction?.(handleClose);
 
     return (
         <>

@@ -1,13 +1,13 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
 import EventIcon from '../../common/event-icon/EventIcon';
-import { EventType } from '@thymecard/types';
+import { EEventType } from '@thymecard/types';
 import { formatClasses } from '@/lib/common.utils';
 import { capitalize } from '@/lib/string.utils';
 import styles from './event.module.scss';
 
 export interface IEventProps {
-    type: EventType;
+    type: EEventType;
     time: string;
     name: string;
 }

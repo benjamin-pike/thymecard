@@ -6,6 +6,12 @@ export type DeepPartial<T> = {
     [P in keyof T]?: DeepPartial<T[P] | undefined>;
 };
 
+export type DeepOmit<T, K extends keyof any> = T extends object
+    ? {
+          [P in keyof T]: P extends K ? never : P extends keyof T ? DeepOmit<T[P], K> : never;
+      }
+    : T;
+
 export const isDefined = <T>(val: T | undefined): val is T => {
     return val !== undefined;
 };
@@ -24,6 +30,10 @@ export const isNumber = (val: unknown): val is number => {
 
 export const isBoolean = (val: unknown): val is boolean => {
     return typeof val === 'boolean';
+};
+
+export const isNumberString = (val: unknown): val is string => {
+    return isString(val) && isNumber(parseInt(val, 10));
 };
 
 export const isArray = <T>(val: unknown): val is T[] => {
@@ -120,18 +130,18 @@ export const isDateString = (val: unknown): val is string => {
     return !isNaN(date.getTime());
 };
 
-export const isYearMonthDayDateString = (val: unknown): val is string => {
+export const isISODateString = (val: unknown): val is string => {
     if (!isString(val)) {
         return false;
     }
 
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-    return !dateRegex.test(val);
+    return dateRegex.test(val);
 };
 
 export const isFutureYearMonthDayDateString = (val: unknown): val is string => {
-    if (!isYearMonthDayDateString(val)) {
+    if (!isISODateString(val)) {
         return false;
     }
 

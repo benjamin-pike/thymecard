@@ -1,36 +1,39 @@
 import { FC, ReactElement } from 'react';
 import { createPortal } from 'react-dom';
-
 import { useClickOutside } from '@mantine/hooks';
-import { useWindowKeyDown } from '@/hooks/common/useWindowKeydown';
 
-import { IoMdClose } from 'react-icons/io';
+import { useWindowKeyDown } from '@/hooks/common/useWindowKeydown';
+import { ModalState } from '@/hooks/common/useModal';
 
 import styles from './modal-wrapper.module.scss';
 
-interface IModalWrapperProps {
+export interface IModalWrapperProps {
     children: ReactElement;
-    isOpen: boolean;
+    state: ModalState;
     blurBackground: boolean;
-    closeModal: () => void;
+    closeOnClickOutside?: boolean;
+    handleCloseModal: () => void;
 }
 
-const ModalWrapper: FC<IModalWrapperProps> = ({ children, isOpen, blurBackground, closeModal }) => {
-    const ref = useClickOutside(closeModal);
+const ModalWrapper: FC<IModalWrapperProps> = ({ children, state, blurBackground, closeOnClickOutside, handleCloseModal }) => {
+    const ref = useClickOutside(() => {
+        if (closeOnClickOutside) {
+            handleCloseModal();
+        }
+    });
     const root = document.getElementById('modal-root');
 
-    useWindowKeyDown('Escape', closeModal);
+    useWindowKeyDown('Escape', handleCloseModal);
 
-    if (!isOpen || !root) {
+    if (state === 'closed' || !root) {
         return null;
     }
 
     return createPortal(
-        <div className={styles.backdrop} data-blur={blurBackground}>
-            <div ref={ref}>{children}</div>
-            <button className={styles.closeButton} onClick={closeModal}>
-                <IoMdClose />
-            </button>
+        <div className={styles.backdrop} data-blur={blurBackground} data-state={state}>
+            <div ref={ref} className={styles.container}>
+                {children}
+            </div>
         </div>,
         root
     );

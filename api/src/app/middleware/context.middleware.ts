@@ -79,7 +79,10 @@ export class RequestContext {
     }
 
     private setResource(): string {
-        return this.req.originalUrl.split('?')[0].split('/')[1];
+        return this.req.originalUrl
+            .split('?')[0]
+            .split('/')[1]
+            .replace(/-([a-z])/g, (g) => g[1].toUpperCase());
     }
 
     private setRoute(): string {

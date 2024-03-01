@@ -35,6 +35,8 @@ const stringVariables = {
     JWT_REFRESH_SECRET: getEnvironmentVariable('JWT_REFRESH_SECRET'),
     GOOGLE_CLIENT_ID: getEnvironmentVariable('GOOGLE_CLIENT_ID'),
     GOOGLE_CLIENT_SECRET: getEnvironmentVariable('GOOGLE_CLIENT_SECRET'),
+    GOOGLE_API_KEY: getEnvironmentVariable('GOOGLE_API_KEY'),
+    GOOGLE_SEARCH_ENGINE_ID: getEnvironmentVariable('GOOGLE_SEARCH_ENGINE_ID'),
     FACEBOOK_APP_ID: getEnvironmentVariable('FACEBOOK_APP_ID'),
     FACEBOOK_APP_SECRET: getEnvironmentVariable('FACEBOOK_APP_SECRET'),
     AES_ENCRYPTION_KEY: getEnvironmentVariable('AES_ENCRYPTION_KEY'),

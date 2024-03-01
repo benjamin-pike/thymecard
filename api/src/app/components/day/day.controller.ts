@@ -1,23 +1,21 @@
 import { ZodError } from 'zod';
 import { UnprocessableError } from '../../lib/error/thymecardError';
-import { hasKey, isDefined, isNonEmptyString, isNumber, isPlainObject, isYearMonthDayDateString, parseBooleanOrFalse } from '../../lib/types/typeguards.utils';
+import { hasKey, isDefined, isNonEmptyString, isNumberString, isPlainObject, isISODateString } from '../../lib/types/typeguards.utils';
 import { IAuthenticatedContext } from '../../middleware/context.middleware';
 import { IDayService } from './day.service';
-import {
-    IDay,
-    IDayCreate,
-    IDayEnriched,
-    IDayUpdate,
-    IMealCreate,
-    IMealUpdate,
-    createDaySchema,
-    createMealSchema,
-    updateDaySchema,
-    updateMealSchema
-} from './day.types';
+import { createDaySchema, createEventSchema, updateDaySchema, updateEventItemSchema, updateEventSchema } from './day.types';
 import { formatZodError } from '../../lib/error/error.utils';
 import { IPagedResult } from '../../lib/types/common.types';
-import { ErrorCode } from '@thymecard/types';
+import {
+    ErrorCode,
+    IDay,
+    IDayCreate, IDayEventCreate,
+    IDayEventItemUpdate,
+    IDayEventUpdate,
+    IDayUpdate,
+    isArrayOf, isUuid,
+    isValidMongoId
+} from '@thymecard/types';
 
 interface IDayControllerDependencies {
     dayService: IDayService;
@@ -25,13 +23,16 @@ interface IDayControllerDependencies {
 
 export interface IDayController {
     createDay(context: IAuthenticatedContext, resource: unknown): Promise<IDay>;
-    updateDay(context: IAuthenticatedContext, dayId: string, resource: unknown): Promise<IDay>;
-    getDays(context: IAuthenticatedContext, enrichedString: unknown, startKey?: unknown, limitString?: unknown): Promise<IPagedResult<IDay>>;
-    getDay(context: IAuthenticatedContext, dayId: unknown, enrichedString: unknown): Promise<IDay>
-    deleteDay(context: IAuthenticatedContext, dayId: string): Promise<void>;
-    createMeal(context: IAuthenticatedContext, dayId: string, resource: unknown): Promise<IDay>;
-    updateMeal(context: IAuthenticatedContext, dayId: string, mealId: string, resource: unknown): Promise<IDay>;
-    deleteMeal(context: IAuthenticatedContext, dayId: string, mealId: string): Promise<void>;
+    updateDay(context: IAuthenticatedContext, date: unknown, resource: unknown): Promise<IDay>;
+    getDays(context: IAuthenticatedContext, startDate?: unknown, limitString?: unknown): Promise<IPagedResult<IDay>>;
+    getDay(context: IAuthenticatedContext, date: unknown): Promise<IDay>;
+    deleteDay(context: IAuthenticatedContext, date: unknown): Promise<void>;
+    copyDay(context: IAuthenticatedContext, originDate: unknown, targetDate: unknown, excludedEvents: unknown): Promise<IDay>;
+    createEvent(context: IAuthenticatedContext, date: unknown, resource: unknown): Promise<IDay>;
+    updateEvent(context: IAuthenticatedContext, date: unknown, eventId: string, resource: unknown): Promise<IDay>;
+    deleteEvent(context: IAuthenticatedContext, date: unknown, eventId: string): Promise<void>;
+    updateEventItem(context: IAuthenticatedContext, date: unknown, eventId: string, itemId: string, resource: unknown): Promise<IDay>;
+    deleteEventItem(context: IAuthenticatedContext, date: unknown, eventId: string, itemId: string): Promise<void>;
 }
 
 export class DayController implements IDayController {
@@ -50,7 +51,7 @@ export class DayController implements IDayController {
                 });
             }
 
-            if (!hasKey(resource, 'date') || !isYearMonthDayDateString(resource.date)) {
+            if (!hasKey(resource, 'date') || !isISODateString(resource.date)) {
                 throw new UnprocessableError(ErrorCode.InvalidDateString, 'An invalid date string was provided', {
                     origin: 'DayController.createDay',
                     data: { resource }
@@ -60,7 +61,7 @@ export class DayController implements IDayController {
             const date = new Date(resource.date);
             const dayResource: IDayCreate = createDaySchema.parse({ ...resource, date, userId: context.userId });
 
-            if (dayResource.meals.length === 0) {
+            if (dayResource.events.length === 0) {
                 throw new UnprocessableError(ErrorCode.InvalidDayCreateResource, 'Please specify at least one meal', {
                     origin: 'DayController.createDay',
                     data: { resource }
@@ -80,8 +81,15 @@ export class DayController implements IDayController {
         }
     }
 
-    public async updateDay(context: IAuthenticatedContext, dayId: string, resource: unknown): Promise<IDay> {
+    public async updateDay(context: IAuthenticatedContext, date: unknown, resource: unknown): Promise<IDay> {
         try {
+            if (!isISODateString(date)) {
+                throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                    origin: 'DayController.deleteDay',
+                    data: { date }
+                });
+            }
+
             if (!isPlainObject(resource)) {
                 throw new UnprocessableError(ErrorCode.InvalidDayUpdateResource, 'Invalid day update resource', {
                     origin: 'DayController.updateDay',
@@ -89,17 +97,9 @@ export class DayController implements IDayController {
                 });
             }
 
-            const dateString = hasKey(resource, 'date') ? resource.date : undefined;
-            if (isDefined(dateString) && !isYearMonthDayDateString(dateString)) {
-                throw new UnprocessableError(ErrorCode.InvalidDateString, 'An invalid date string was provided', {
-                    origin: 'DayController.updateDay',
-                    data: { resource }
-                });
-            }
-            const date = dateString ? new Date(dateString) : undefined;
-            const dayResource: IDayUpdate = updateDaySchema.parse({ ...resource, date });
+            const dayResource: IDayUpdate = updateDaySchema.parse(resource);
 
-            return this.dayService.updateDay(dayId, context.userId, dayResource);
+            return this.dayService.updateDay(date, context.userId, dayResource);
         } catch (err) {
             if (err instanceof ZodError) {
                 throw new UnprocessableError(ErrorCode.InvalidDayUpdateResource, formatZodError(err), {
@@ -112,65 +112,86 @@ export class DayController implements IDayController {
         }
     }
 
-    public async getDays(context: IAuthenticatedContext, enrichedString: unknown, startKey?: unknown, limitString?: unknown): Promise<IPagedResult<IDay>> {
-        if (isDefined(startKey) && !isNonEmptyString(startKey)) {
-            throw new UnprocessableError(ErrorCode.InvalidPageStartKey, 'Invalid page start key', {
+    public async getDays(context: IAuthenticatedContext, startDate?: unknown, limit?: unknown): Promise<IPagedResult<IDay>> {
+        if (isDefined(startDate) && !isISODateString(startDate)) {
+            throw new UnprocessableError(ErrorCode.InvalidPageStartKey, 'Invalid start date', {
                 origin: 'DayController.getDays',
-                data: { startKey }
+                data: { startDate }
             });
         }
 
-        const limit = isNonEmptyString(limitString) ? parseInt(limitString) : undefined;
-        if (isDefined(limit) && !isNumber(limit)) {
-            throw new UnprocessableError(ErrorCode.InvalidPageLimit, 'Invalid page limit', {
-                origin: 'DayController.getDays',
-                data: { limit }
-            });
-        }
+        const parsedStartDate = startDate ? new Date(startDate) : new Date(new Date().setHours(0, 0, 0, 0));
+        const parsedLimit = isNumberString(limit) ? parseInt(limit) : 10;
 
-        if (isDefined(limit) && limit > 100) {
-            throw new UnprocessableError(ErrorCode.InvalidPageLimit, 'Page limit must be less than or equal to 100', {
+        if (parsedLimit > 100) {
+            throw new UnprocessableError(ErrorCode.InvalidPageLimit, 'Page limit may not exceed 100', {
                 origin: 'DayController.getDays',
                 data: { limit }
             });
         }
 
-        const enriched = parseBooleanOrFalse(enrichedString)
-
-
-        if (enriched) {
-            return this.dayService.getEnrichedDays(context.userId, startKey, limit);
-        }
-
-        return this.dayService.getDays(context.userId, startKey, limit);
+        return this.dayService.getDays(context.userId, parsedStartDate, parsedLimit);
     }
 
-    public async getDay(context: IAuthenticatedContext, dayId: unknown, enrichedString: unknown): Promise<IDay | IDayEnriched> {
-        if (!isNonEmptyString(dayId)) {
-            throw new UnprocessableError(ErrorCode.InvalidDayId, 'Invalid day id', {
-                origin: 'DayController.getDay',
-                data: { dayId }
+    public async getDay(context: IAuthenticatedContext, date: unknown): Promise<IDay> {
+        if (!isISODateString(date)) {
+            throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                origin: 'DayController.deleteDay',
+                data: { date }
             });
         }
 
-        const enriched = parseBooleanOrFalse(enrichedString)
+        return this.dayService.getDay(date, context.userId);
+    }
 
-        if (enriched) {
-            return this.dayService.getEnrichedDay(dayId, context.userId);
+    public async deleteDay(context: IAuthenticatedContext, date: unknown): Promise<void> {
+        if (!isISODateString(date)) {
+            throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                origin: 'DayController.deleteDay',
+                data: { date }
+            });
         }
 
-        return this.dayService.getDay(dayId, context.userId);
+        return this.dayService.deleteDay(date, context.userId);
     }
 
-    public async deleteDay(context: IAuthenticatedContext, dayId: string): Promise<void> {
-        return this.dayService.deleteDay(dayId, context.userId);
+    public async copyDay(context: IAuthenticatedContext, originDate: unknown, targetDate: unknown, excludedEvents: unknown): Promise<IDay> {
+        if (!isISODateString(originDate)) {
+            throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid origin date', {
+                origin: 'DayController.deleteDay',
+                data: { originDate }
+            });
+        }
+
+        if (!isISODateString(targetDate)) {
+            throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid target date', {
+                origin: 'DayController.deleteDay',
+                data: { targetDate }
+            });
+        }
+
+        if (!isArrayOf(excludedEvents, isValidMongoId)) {
+            throw new UnprocessableError(ErrorCode.InvalidParameter, 'Invalid excluded events', {
+                origin: 'DayController.deleteDay',
+                data: { excludedEvents }
+            });
+        }
+
+        return this.dayService.copyDay(originDate, targetDate, context.userId, excludedEvents);
     }
 
-    public async createMeal(context: IAuthenticatedContext, dayId: string, resource: unknown): Promise<IDay> {
+    public async createEvent(context: IAuthenticatedContext, date: unknown, resource: unknown): Promise<IDay> {
         try {
-            const mealResource: IMealCreate = createMealSchema.parse(resource);
+            if (!isISODateString(date)) {
+                throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                    origin: 'DayController.deleteDay',
+                    data: { date }
+                });
+            }
 
-            return this.dayService.createMeal(dayId, context.userId, mealResource);
+            const eventResource: IDayEventCreate = createEventSchema.parse(resource);
+
+            return this.dayService.createEvent(date, context.userId, eventResource);
         } catch (err) {
             if (err instanceof ZodError) {
                 throw new UnprocessableError(ErrorCode.InvalidMealCreateResource, formatZodError(err), {
@@ -183,11 +204,18 @@ export class DayController implements IDayController {
         }
     }
 
-    public async updateMeal(context: IAuthenticatedContext, dayId: string, mealId: string, resource: unknown): Promise<IDay> {
+    public async updateEvent(context: IAuthenticatedContext, date: unknown, eventId: string, resource: unknown): Promise<IDay> {
         try {
-            const mealResource: IMealUpdate = updateMealSchema.parse(resource);
+            if (!isISODateString(date)) {
+                throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                    origin: 'DayController.deleteDay',
+                    data: { date }
+                });
+            }
 
-            return this.dayService.updateMeal(dayId, context.userId, mealId, mealResource);
+            const eventResource: IDayEventUpdate = updateEventSchema.parse(resource);
+
+            return this.dayService.updateEvent(date, context.userId, eventId, eventResource);
         } catch (err) {
             if (err instanceof ZodError) {
                 throw new UnprocessableError(ErrorCode.InvalidMealUpdateResource, formatZodError(err), {
@@ -200,7 +228,79 @@ export class DayController implements IDayController {
         }
     }
 
-    public async deleteMeal(context: IAuthenticatedContext, dayId: string, mealId: string): Promise<void> {
-        return this.dayService.deleteMeal(dayId, context.userId, mealId);
+    public async deleteEvent(context: IAuthenticatedContext, date: unknown, eventId: unknown): Promise<void> {
+        if (!isISODateString(date)) {
+            throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                origin: 'DayController.deleteDay',
+                data: { date }
+            });
+        }
+
+        if (!isNonEmptyString(eventId)) {
+            throw new UnprocessableError(ErrorCode.InvalidEventId, 'Invalid event ID', {
+                origin: 'DayController.deleteEvent',
+                data: { eventId }
+            });
+        }
+
+        return this.dayService.deleteEvent(date, context.userId, eventId);
+    }
+
+    public async updateEventItem(
+        context: IAuthenticatedContext,
+        date: unknown,
+        eventId: unknown,
+        itemId: unknown,
+        resource: unknown
+    ): Promise<IDay> {
+        if (!isISODateString(date)) {
+            throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                origin: 'DayController.deleteDay',
+                data: { date }
+            });
+        }
+
+        if (!isValidMongoId(eventId)) {
+            throw new UnprocessableError(ErrorCode.InvalidEventId, 'Invalid event ID', {
+                origin: 'DayController.deleteEventItem',
+                data: { eventId }
+            });
+        }
+
+        if (!isUuid(itemId)) {
+            throw new UnprocessableError(ErrorCode.InvalidEventItemId, 'Invalid item ID', {
+                origin: 'DayController.deleteEventItem',
+                data: { userId: context.userId, date, eventId, itemId }
+            });
+        }
+
+        const eventResource: IDayEventItemUpdate = updateEventItemSchema.parse(resource);
+
+        return this.dayService.updateEventItem(context.userId, date, eventId, itemId, eventResource);
+    }
+
+    public async deleteEventItem(context: IAuthenticatedContext, date: unknown, eventId: unknown, itemId: unknown): Promise<void> {
+        if (!isISODateString(date)) {
+            throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                origin: 'DayController.deleteDay',
+                data: { date }
+            });
+        }
+
+        if (!isValidMongoId(eventId)) {
+            throw new UnprocessableError(ErrorCode.InvalidEventId, 'Invalid event ID', {
+                origin: 'DayController.deleteEventItem',
+                data: { eventId }
+            });
+        }
+
+        if (!isUuid(itemId)) {
+            throw new UnprocessableError(ErrorCode.InvalidEventItemId, 'Invalid item ID', {
+                origin: 'DayController.deleteEventItem',
+                data: { userId: context.userId, date, eventId, itemId }
+            });
+        }
+
+        return this.dayService.deleteEventItem(date, context.userId, eventId, itemId);
     }
 }

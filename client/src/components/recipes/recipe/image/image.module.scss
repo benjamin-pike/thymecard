@@ -6,8 +6,6 @@
 
     min-width: 0;
 
-    height: 100%;
-
     .container {
         position: relative;
 
@@ -15,7 +13,7 @@
 
         padding: 0.5rem;
 
-        border-radius: 1.5rem;
+        border-radius: 1rem;
 
         &::after {
             content: '';
@@ -29,7 +27,7 @@
 
             box-shadow: 0 0 0 0.5rem $mono-light inset;
 
-            border-radius: 1.5rem;
+            border-radius: 1rem;
 
             pointer-events: none;
 
@@ -40,6 +38,9 @@
     }
 
     .display {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         height: 100%;
 
         img {
@@ -48,12 +49,39 @@
 
             object-fit: cover;
 
-            border-radius: 1rem;
+            border-radius: 0.5rem;
 
             @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
                 max-height: 25rem;
             }
+
+            &[data-visible='false'] {
+                position: absolute;
+
+                width: 0;
+                height: 0;
+
+                visibility: hidden;
+            }
         }
+
+        svg {
+            margin: 0 3.5rem;
+            width: 50%;
+            height: 50%;
+
+            color: $mono-300;
+
+            scale: 0.8;
+        }
+    }
+
+    &[data-editing='false'] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
     }
 
     &[data-editing='true'] {
@@ -96,7 +124,7 @@
 
                         object-fit: cover;
 
-                        border-radius: 1rem;
+                        border-radius: 0.5rem;
                     }
                 }
 
@@ -132,7 +160,7 @@
                         background-color: $mono-light;
                         border: 1px solid $mono-200;
 
-                        border-radius: 0.5rem;
+                        border-radius: 100vmax;
 
                         z-index: 1;
 
@@ -162,11 +190,12 @@
                         }
 
                         &:hover {
-                            color: $mono-light;
-                            background-color: $mono-700;
-                            border: 1px solid $mono-700;
+                            color: $blue;
+                            background-color: alpha($blue, 0.1);
+                            border: 1px solid alpha($blue, 0.5);
 
                             @include dark-mode {
+                                color: $mono-light;
                                 background-color: $mono-800;
                                 border: 1px solid $mono-500;
                             }
@@ -237,8 +266,8 @@
 
             border: 1px solid $mono-200;
 
-            border-radius: 1.5rem;
-    
+            border-radius: 1rem;
+
             @include dark-mode {
                 border: 1px solid $mono-700;
             }

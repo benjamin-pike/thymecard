@@ -13,7 +13,7 @@ $bar-colors: (
 
 .segment {
     @each $type, $color in $bar-colors {
-        &:nth-of-type(even)[data-type='#{$type}'] {
+        &:nth-of-type(odd)[data-type='#{$type}'] {
             fill: lighten($color, 10%);
         }
 

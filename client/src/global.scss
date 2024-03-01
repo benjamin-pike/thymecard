@@ -17,10 +17,12 @@
     @if $theme == 'dark' {
         @if $color == $red {
             @return lighten($color, 5%);
+        } @else if $color == $aqua {
+            @return lighten($color, 5%);
         } @else if $color == $blue {
-            @return lighten($color, 5%);
+            @return lighten($color, 10%);
         } @else if $color == $purple {
-            @return lighten($color, 5%);
+            @return lighten($color, 10%);
         } @else {
             @return $color;
         }
@@ -28,9 +30,9 @@
 
     @if $theme == 'light' {
         @if $color == $yellow {
-            @return saturate(darken($color, 6.5%), 100%);
+            @return saturate(darken($color, 12.5%), 100%);
         } @else if $color == $green {
-            @return saturate(darken($color, 15%), 50%);
+            @return saturate(darken($color, 5%), 50%);
         } @else if $color == $aqua {
             @return darken($color, 10%);
         } @else {
@@ -99,14 +101,41 @@ $mono-800: hsl(221, 27%, 13%);
 $mono-900: hsl(220, 25%, 5%);
 $mono-dark: hsl(225, 31%, 5%);
 
-$red: hsl(350, 100%, 60%);
-$orange: hsl(20, 100%, 60%);
-$yellow: rgb(255, 191, 0);
-$green: rgb(78, 210, 45);
-$aqua: hsl(195, 100%, 50%);
-$blue: rgb(0, 123, 255);
-$purple: hsl(274, 100%, 65%);
-$pink: hsl(310, 100%, 50%);
+// $red: hsl(350, 100%, 60%);
+// $orange: hsl(20, 100%, 60%);
+// $yellow: rgb(255, 191, 0);
+// $green: rgb(78, 210, 45);
+// $aqua: hsl(195, 100%, 50%);
+// $blue: rgb(0, 123, 255);
+// $purple: hsl(274, 100%, 65%);
+// $pink: hsl(310, 100%, 50%);
+
+// $red: #ff6961;
+// $orange: #ffb480;
+// $yellow: #f8f38d;
+// $green: #42d6a4;
+// $aqua: #08cad1;
+// $blue: #59adf6;
+// $purple: #9d94ff;
+// $pink: #c780e8;
+
+// $red: #FF0000;
+// $orange: #FF7300;
+// $yellow: #FF9500;
+// $green: #55AF3F;
+// $aqua: #179897;
+$blue: #0066aa;
+// $purple: #3F3173;
+// $pink: #DA2E90;
+
+$red: #ed1849;
+$orange: #f2612f;
+$yellow: #fcb022;
+$green: #00b064;
+$aqua: #0098a9;
+// $blue: #00375b;
+$purple: #561ca3;
+$pink: #c2008b;
 
 $fs-32: 2rem;
 $fs-28: 1.75rem;
@@ -117,32 +146,37 @@ $fs-16: 1rem;
 $fs-15: 0.9375rem;
 $fs-14: 0.875rem;
 $fs-13: 0.8125rem;
-$fs-12: 0.75rem;
-$fs-11: 0.6875rem;
-$fs-10: 0.625rem;
-$fs-9: 0.5625rem;
-$fs-8: 0.5rem;
+// $fs-12: 0.75rem;
+$fs-12: 0.775rem;
+// $fs-11: 0.6875rem;
+$fs-11: 0.7rem;
+// $fs-10: 0.625rem;
+$fs-10: 0.65rem;
+// $fs-9: 0.5625rem;
+$fs-9: 0.575rem;
+// $fs-8: 0.5rem;
+$fs-8: 0.525rem;
 
 $font-family: 'Outfit', sans-serif;
 
 $event-colors: (
-    'breakfast': $green,
-    'lunch': $red,
-    'dinner': $blue,
-    'activity': $purple,
-    'snack': $orange,
-    'drink': $yellow,
-    'appetizer': $pink,
-    'dessert': $aqua,
+    'BREAKFAST': $green,
+    'LUNCH': $red,
+    'DINNER': $blue,
+    'ACTIVITY': $purple,
+    'SNACK': $orange,
+    'DRINK': $yellow,
+    'APPETIZER': $pink,
+    'DESSERT': $aqua
 );
 
 $metric-colors: (
     carbs: $aqua,
-    protein: $green,
-    fat: $orange,
-    minerals: $pink,
+    protein: $yellow,
+    fat: $red,
+    minerals: $green,
     vitamins: $purple,
-    pregnancy: $blue,
+    pregnancy: $blue
 );
 
 :root {
@@ -224,6 +258,8 @@ li {
     display: flex;
     height: 100svh;
 
+    isolation: isolate;
+
     main {
         flex: 1 1;
     }
@@ -231,13 +267,13 @@ li {
 
 #modal-root {
     position: fixed;
-    z-index: 1000000;
+    // z-index: 1000000;
 }
 
 #drawer-root {
     position: fixed;
     isolation: isolate;
-    z-index: 10000000;
+    // z-index: 10000000;
 }
 
 .no-transition * {

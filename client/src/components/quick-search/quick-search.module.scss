@@ -1,0 +1,127 @@
+$dark-bg: mix($mono-800, $mono-900, 25%);
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    padding: 1rem;
+
+    width: 35rem;
+
+    background-color: $mono-light;
+
+    border-radius: 0.75rem;
+
+    box-shadow:
+        0 0 0.075rem alpha($mono-900, 0.125),
+        0.25rem 0.25rem 1rem alpha($mono-900, 0.2),
+        1.5rem 1.5rem 3rem alpha($mono-900, 0.1);
+
+    animation: enter 250ms ease;
+
+    @include dark-mode {
+        background-color: $dark-bg;
+        border: 1px solid $mono-600;
+
+        box-shadow:
+            0 0 0.075rem alpha($mono-900, 0.25),
+            0.25rem 0.25rem 1rem alpha($mono-900, 0.5),
+            0.75rem 0.75rem 2rem alpha($mono-900, 0.5),
+            1.5rem 1.5rem 3rem alpha($mono-900, 0.5),
+            0 0 5rem alpha($mono-900, 0.75);
+    }
+
+    .search {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        font-weight: 400;
+
+        .icon {
+            scale: -1.25 1.25;
+
+            height: 1.25rem;
+            width: 1.25rem;
+
+            path {
+                stroke: $mono-500;
+            }
+        }
+
+        input {
+            flex-grow: 1;
+
+            font-size: $fs-16;
+            color: $mono-600;
+
+            &::placeholder {
+                color: $mono-500;
+                font-size: $fs-15;
+            }
+
+            @include dark-mode {
+                color: $mono-light;
+
+                &::placeholder {
+                    color: $mono-600;
+                }
+            }
+        }
+
+        .button {
+            height: 1rem;
+            width: 1rem;
+
+            color: $mono-400;
+
+            transition: color 100ms ease;
+
+            @include dark-mode {
+                color: $mono-600;
+            }
+
+            &:hover {
+                color: $mono-600;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+            }
+
+            svg {
+                height: 100%;
+                width: 100%;
+
+                scale: 0.9;
+            }
+        }
+    }
+
+    ul {
+        li {
+            &:nth-of-type(odd) {
+                button:not(:hover) {
+                    background-color: alpha($mono-100, 0.75);
+
+                    @include dark-mode {
+                        background-color: transparentize($mono-800, 0.15);
+                    }
+                }
+            }
+        }
+    }
+}
+
+@keyframes enter {
+    0% {
+        opacity: 0;
+        scale: 0.85;
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+    }
+}

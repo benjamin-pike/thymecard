@@ -95,7 +95,7 @@ export const isDateString = (val: unknown): val is string => {
     return !isNaN(date.getTime());
 };
 
-export const isYearMonthDayDateString = (val: unknown): val is string => {
+export const isISODateString = (val: unknown): val is string => {
     if (!isString(val)) {
         return false;
     }
@@ -106,7 +106,7 @@ export const isYearMonthDayDateString = (val: unknown): val is string => {
 };
 
 export const isFutureYearMonthDayDateString = (val: unknown): val is string => {
-    if (!isYearMonthDayDateString(val)) {
+    if (!isISODateString(val)) {
         return false;
     }
 

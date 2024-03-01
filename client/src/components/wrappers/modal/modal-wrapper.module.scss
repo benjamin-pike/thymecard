@@ -1,3 +1,45 @@
+.backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: rgba(0, 0, 0, 0.1);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &[data-state='open'] {
+        &[data-blur='true'] {
+            animation: fade-and-blur-in 300ms ease forwards;
+        }
+
+        &[data-blur='false'] {
+            animation: fade-in 300ms ease forwards;
+        }
+
+        .container {
+            animation: enter 350ms ease;
+        }
+    }
+
+    &[data-state='closing'] {
+        &[data-blur='true'] {
+            animation: fade-and-blur-out 200ms ease forwards;
+        }
+
+        &[data-blur='false'] {
+            animation: fade-out 200ms ease forwards;
+        }
+
+        .container {
+            animation: exit 350ms ease;
+        }
+    }
+}
+
 @keyframes fade-in {
     0% {
         opacity: 0;
@@ -14,51 +56,49 @@
     }
     100% {
         opacity: 1;
-        backdrop-filter: blur(0.25rem);
+        backdrop-filter: blur(1px);
     }
 }
 
-.backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    background-color: rgba(0, 0, 0, 0.75);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    animation: fade-in 100ms ease;
-
-    &[data-blur='true'] {
-        backdrop-filter: blur(0.25rem);
-
-        animation: fade-and-blur-in 100ms ease;
+@keyframes fade-out {
+    0% {
+        opacity: 1;
     }
-
-    &[data-blur='false'] {
-        animation: fade-in 100ms ease;
+    100% {
+        opacity: 0;
     }
 }
 
-.closeButton {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+@keyframes fade-and-blur-out {
+    0% {
+        opacity: 1;
+        backdrop-filter: blur(1px);
+    }
+    100% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+}
 
-    color: rgb(255, 255, 255, 0.25);
-
-    transition: color 100ms ease;
-
-    &:hover {
-        color: rgb(255, 255, 255, 0.75);
+@keyframes enter {
+    0% {
+        opacity: 0;
+        scale: 0.75;
     }
 
-    & svg {
-        width: 2rem;
-        height: 2rem;
+    100% {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+@keyframes exit {
+    0% {
+        opacity: 1;
+        scale: 1;
+    }
+    100% {
+        opacity: 0;
+        scale: 0.9;
     }
 }

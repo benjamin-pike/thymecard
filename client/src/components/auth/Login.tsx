@@ -22,7 +22,7 @@ const Login = () => {
     const [stage, setStage] = useState<number>(1);
     const [currentTransition, setCurrentTransition] = useState<[number, number] | undefined>();
 
-    const loginMutation = useMutation(() => sendRequest('/api/auth/session', 'POST', { body: { email, password } }));
+    const { mutateAsync: callLogin } = useMutation(() => sendRequest('/auth/session', 'POST', { body: { email, password } }));
 
     const handleEmailChange = useCallback((value: string) => {
         setEmail(value);
@@ -63,7 +63,7 @@ const Login = () => {
     }, [stage]);
 
     const handleLogin = useCallback(() => {
-        loginMutation.mutate(undefined, {
+        callLogin(undefined, {
             onSuccess: (data) => {
                 const { user, session } = data.data;
 
@@ -92,7 +92,7 @@ const Login = () => {
                 createToast('error', formattedError.message);
             }
         });
-    }, [loginUser, loginMutation, navigate]);
+    }, [callLogin, loginUser, navigate]);
 
     return (
         <>

@@ -1,4 +1,11 @@
-import { isOptional, isString, isValidMongoId } from "./types.utils";
+import { Client } from "..";
+import {
+	hasKey,
+	isDefined,
+	isOptional,
+	isString,
+	isValidMongoId
+} from "./types.utils";
 
 export interface IRecipe {
 	_id: string;
@@ -52,8 +59,16 @@ export type IRecipeSummary = Pick<
 	commentsCount: number;
 };
 
-export type IRecipeCreate = Omit<IRecipe, "_id" | "image" | "createdAt" | "updatedAt">;
+export type IRecipeCreate = Omit<
+	IRecipe,
+	"_id" | "image" | "createdAt" | "updatedAt"
+>;
 export type IRecipeUpdate = Partial<IRecipe>;
+
+export interface IRecipeSearchResult {
+	recipe: IRecipeCreate;
+	image: string;
+}
 
 export interface IRecipeParseResponse {
 	recipe: Partial<IRecipeCreate>;
@@ -135,4 +150,10 @@ export const isParseRecipeRequestBody = (
 	obj: any
 ): obj is IParseRecipeRequestBody => {
 	return obj && isString(obj.url);
+};
+
+export const isSavedRecipe = (
+	recipe: Client<IRecipe> | Client<IRecipeCreate>
+): recipe is Client<IRecipe> => {
+	return hasKey(recipe, "_id") && isValidMongoId(recipe._id);
 };

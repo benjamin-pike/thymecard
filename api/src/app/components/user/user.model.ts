@@ -1,8 +1,8 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 import { MongoRepository } from '../../lib/data/mongo.repository';
 import { IUser, IUserCreate } from '@thymecard/types';
 
-export const collectionName = 'users';
+export const collectionName = 'User';
 
 export const UserSchema = new Schema(
     {
@@ -43,15 +43,8 @@ export const UserSchema = new Schema(
             type: Boolean,
             required: false
         }
-    },
-    {
-        collection: collectionName,
-        timestamps: { createdAt: true, updatedAt: true },
-        toObject: { versionKey: false, getters: false }
     }
 );
-
-mongoose.model('User', UserSchema);
 
 class UserRepository extends MongoRepository<IUser, IUserCreate> {
     constructor() {

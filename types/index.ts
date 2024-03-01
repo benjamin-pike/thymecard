@@ -1,4 +1,6 @@
 export * from "./src/auth.types";
+export * from "./src/eventBookmark.types";
+export * from "./src/day.types";
 export * from "./src/error.types";
 export * from "./src/event.types";
 export * from "./src/recipes.types";

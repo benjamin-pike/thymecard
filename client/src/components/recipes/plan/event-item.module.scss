@@ -5,45 +5,11 @@
     align-items: center;
     gap: 1rem;
 
-    padding: 0.25rem 0.75rem 0.25rem 0;
+    padding: 0.35rem;
+
+    border-radius: 0.25rem;
 
     height: 1rem;
-
-    &::before {
-        content: '';
-
-        position: absolute;
-        top: 50%;
-        right: calc(100% + 0.75rem);
-
-        height: 0.25rem;
-        width: 0.25rem;
-
-        border-radius: 50%;
-
-        translate: 50% -50%;
-
-        z-index: 1;
-    }
-
-    &::after {
-        content: '';
-
-        position: absolute;
-        top: 50%;
-        right: calc(100% + 1rem);
-
-        height: 1px;
-        width: 0.75rem;
-
-        background-color: $mono-200;
-
-        translate: 0 -50%;
-
-        @include dark-mode {
-            background-color: $mono-700;
-        }
-    }
 
     p {
         flex-grow: 1;
@@ -51,7 +17,6 @@
 
         padding-left: 0.25rem;
 
-        color: $mono-700;
         font-size: $fs-12;
         font-weight: 400;
         white-space: nowrap;
@@ -59,34 +24,54 @@
         overflow: hidden;
 
         cursor: default;
-
-        @include dark-mode {
-            color: $mono-light;
-        }
     }
 
-    .mealItemButtons {
+    .buttons {
         display: flex;
-        gap: 0.2rem;
 
         button {
-            margin-left: -0.15rem;
+            position: relative;
 
-            width: 0;
+            display: grid;
+            place-content: center;
+
             height: 1rem;
+            width: 1rem;
 
-            color: $mono-700;
-
-            opacity: 0;
+            opacity: 0.5;
 
             overflow: hidden;
 
-            @include dark-mode {
-                color: $mono-light;
+            transition:
+                color 100ms ease,
+                opacity 100ms ease;
+
+            svg {
+                position: absolute;
+
+                transition: opacity 100ms ease;
+
+                &:nth-of-type(1) {
+                    opacity: 1;
+                }
+
+                &:nth-of-type(2) {
+                    opacity: 0;
+                }
             }
 
-            &:hover {
-                opacity: 0.75;
+            &[data-active='true'] {
+                opacity: 0.85;
+
+                svg {
+                    &:nth-of-type(1) {
+                        opacity: 0;
+                    }
+
+                    &:nth-of-type(2) {
+                        opacity: 1;
+                    }
+                }
             }
 
             &.favoriteMealItem {
@@ -96,110 +81,26 @@
             }
 
             &.linkToRecipe {
+                margin-left: 0.15rem;
+
                 svg {
                     scale: 0.9;
-                }
-            }
-
-            &.editMealItem {
-                margin-right: -0.125rem;
-                path {
-                    stroke-width: 5;
-                }
-            }
-
-            &.removeMealItem {
-                svg {
-                    scale: 1.1;
-                }
-
-                path {
-                    stroke-width: 40;
-                }
-            }
-
-            &.favoriteMealItem,
-            &.linkToRecipe {
-                position: relative;
-
-                display: grid;
-                place-content: center;
-
-                svg {
-                    position: absolute;
-
-                    transition: opacity 100ms ease;
-
-                    &:nth-of-type(1) {
-                        opacity: 1;
-                    }
-
-                    &:nth-of-type(2) {
-                        opacity: 0;
-                    }
-                }
-
-                &[data-active='true'] {
-                    margin-left: 0;
-
-                    width: 1rem;
-
-                    &:not(:hover) {
-                        opacity: 1;
-                    }
-
-                    svg {
-                        &:nth-of-type(1) {
-                            opacity: 1;
-                        }
-
-                        &:nth-of-type(2) {
-                            opacity: 0;
-                        }
-                    }
                 }
             }
         }
     }
 
     &:hover {
-        button {
-            margin-left: 0rem;
+        .mealItemButtons {
+            button {
+                opacity: 1;
 
-            width: 1rem;
-
-            opacity: 1;
-
-            &.favoriteMealItem,
-            &.linkToRecipe {
                 &[data-active='true'] {
-                    svg {
-                        path {
-                            stroke: 0;
-                        }
-                        &:nth-of-type(1) {
-                            opacity: 0;
-                        }
-
-                        &:nth-of-type(2) {
-                            opacity: 1;
-                        }
-                    }
+                    opacity: 1;
                 }
-            }
-        }
-    }
 
-    @each $event, $color in $event-colors {
-        [data-event='#{$event}'] & {
-            $light-adjusted-color: contrastize($color, 'light');
-            $dark-adjusted-color: contrastize($color, 'dark');
-
-            &::before {
-                background-color: $light-adjusted-color;
-
-                @include dark-mode {
-                    background-color: $dark-adjusted-color;
+                &:hover {
+                    opacity: 0.75;
                 }
             }
         }
