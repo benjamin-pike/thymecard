@@ -1,4 +1,5 @@
 import { StrictMode } from 'react';
+import { Settings } from 'luxon';
 import { Provider as ContextProvider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,12 +11,14 @@ import Navbar from './components/navbar/Navbar';
 import Dashboard from './pages/dashboard/Dashboard';
 import Planner from './pages/planner/Planner';
 import Recipes from './pages/recipes/Recipes';
+import RecipeProvider from './components/recipes/recipe/RecipeProvider';
 
 import ThemeWrapper from './components/wrappers/theme/ThemeWrapper';
 import ResponsiveWrapper from './components/wrappers/responsive/ResponsiveWrapper';
 
 import 'react-toastify/dist/ReactToastify.css';
-import RecipeProvider from './components/recipes/recipe/RecipeProvider';
+
+Settings.throwOnInvalid = true;
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -65,29 +68,34 @@ export function CoreApp() {
     const user = useSelector((state: RootState) => state.user);
 
     return (
-        <div className="app">
-            <Router>
-                {user.user ? (
-                    <RecipeProvider>
-                        <>
-                            <Navbar />
-                            <Routes>
-                                {privateRoutes.map(({ path, element }) => (
-                                    <Route path={path} element={element} key={path} />
-                                ))}
-                            </Routes>
-                        </>
-                    </RecipeProvider>
-                ) : (
-                    <Routes>
-                        {publicRoutes.map(({ path, element }) => (
-                            <Route path={path} element={element} key={path} />
-                        ))}
-                    </Routes>
-                )}
-                <ToastContainer className="toast" position="bottom-right" theme={theme} limit={3} />
-            </Router>
-        </div>
+        <>
+            <div className="app">
+                <Router>
+                    {user.user ? (
+                        <RecipeProvider>
+                            <>
+                                <Navbar />
+                                <Routes>
+                                    {privateRoutes.map(({ path, element }) => (
+                                        <Route path={path} element={element} key={path} />
+                                    ))}
+                                </Routes>
+                            </>
+                        </RecipeProvider>
+                    ) : (
+                        <Routes>
+                            {publicRoutes.map(({ path, element }) => (
+                                <Route path={path} element={element} key={path} />
+                            ))}
+                        </Routes>
+                    )}
+                </Router>
+            </div>
+            <div id="drawer-root" />
+            <div id="modal-root" />
+            <div id="search-root" />
+            <ToastContainer className="toast" position="bottom-right" theme={theme} limit={3} />
+        </>
     );
 }
 
@@ -99,8 +107,6 @@ export function App() {
                     <ResponsiveWrapper>
                         <QueryClientProvider client={queryClient}>
                             <CoreApp />
-                            <div id="drawer-root" />
-                            <div id="modal-root" />
                         </QueryClientProvider>
                     </ResponsiveWrapper>
                 </ThemeWrapper>

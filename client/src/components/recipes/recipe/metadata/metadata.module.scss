@@ -8,6 +8,7 @@
     border-radius: 1.25rem;
 
     max-width: 20rem;
+    min-width: 20rem;
 
     @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
         max-width: unset;
@@ -66,13 +67,19 @@
         }
     }
 
+    .tagsLoading {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
     .divider {
         margin: 0.1rem 0;
 
         height: 1px;
         width: 100%;
 
-        background-color: mix($mono-100, $mono-200, 50%);
+        background-color: $mono-100;
 
         @include dark-mode {
             background-color: $mono-800;

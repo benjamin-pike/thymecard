@@ -4,7 +4,7 @@ import { UnprocessableError } from '../../lib/error/thymecardError';
 import { hasKey, isObject, isString, isValidMongoId } from '../../lib/types/typeguards.utils';
 import { IUserService } from './user.service';
 import { createUserSchema, updateUserSchema } from './user.types';
-import { ErrorCode, IUser, IUserCreate, IUserUpdate, isDefined, isOptionalString, or } from '@thymecard/types';
+import { ErrorCode, ICredential, IUser, IUserCreate, IUserUpdate, isDefined, isOptionalString, or } from '@thymecard/types';
 import { ICredentialService } from '../auth/credential/credential.service';
 
 interface IUserControllerDependencies {
@@ -13,7 +13,7 @@ interface IUserControllerDependencies {
 }
 
 export interface IUserController {
-    createUser(context: any, credentialId: unknown, resource: unknown, image?: Express.Multer.File): Promise<IUser>;
+    createUser(context: any, credential: ICredential, resource: unknown, image?: Express.Multer.File): Promise<IUser>;
     getUserById(context: any, userId: string): Promise<IUser>;
     updateUser(context: any, userId: string, resource: unknown): Promise<IUser>;
     deleteUser(context: any, userId: string): Promise<void>;
@@ -21,19 +21,24 @@ export interface IUserController {
 
 export class UserController implements IUserController {
     private userService: IUserService;
-    private credentialService: ICredentialService;
 
     constructor(deps: IUserControllerDependencies) {
         this.userService = deps.userService;
-        this.credentialService = deps.credentialService;
     }
 
-    public async createUser(_context: any, credentialId: unknown, resource: unknown, image?: Express.Multer.File) {
+    public async createUser(_context: any, credential: ICredential, resource: unknown, image?: Express.Multer.File) {
         try {
-            if (!isValidMongoId(credentialId)) {
+            if (!isValidMongoId(credential._id)) {
                 throw new UnprocessableError(ErrorCode.InvalidUserCreateResource, 'Invalid credential id', {
                     origin: 'UserController.create',
-                    data: { credentialId }
+                    data: { credentialId: credential._id }
+                });
+            }
+
+            if (!credential.isVerified) {
+                throw new UnprocessableError(ErrorCode.InvalidUserCreateResource, 'Credential must be verified', {
+                    origin: 'UserController.create',
+                    data: { credentialId: credential._id }
                 });
             }
 

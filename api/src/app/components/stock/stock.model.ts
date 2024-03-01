@@ -1,8 +1,8 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 import { MongoRepository } from '../../lib/data/mongo.repository';
 import { IStock } from '@thymecard/types';
 
-export const collectionName = 'stocks';
+export const collectionName = 'Stock';
 
 const StockItem = {
     id: {
@@ -43,38 +43,29 @@ const StockCategory = {
     }
 };
 
-export const StockSchema = new Schema(
-    {
-        userId: {
-            type: Schema.Types.ObjectId,
-            required: true
-        },
-        pantry: {
-            type: [StockCategory],
-            required: true,
-            _id: false
-        },
-        shoppingList: {
-            type: [StockCategory],
-            required: true,
-            _id: false
-        },
-        favorites: {
-            type: [StockCategory],
-            required: true,
-            _id: false
-        }
+export const StockSchema = new Schema({
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true
     },
-    {
-        collection: collectionName,
-        timestamps: { createdAt: true, updatedAt: true },
-        toObject: { versionKey: false, getters: false }
+    pantry: {
+        type: [StockCategory],
+        required: true,
+        _id: false
+    },
+    shoppingList: {
+        type: [StockCategory],
+        required: true,
+        _id: false
+    },
+    favorites: {
+        type: [StockCategory],
+        required: true,
+        _id: false
     }
-);
+});
 
 StockSchema.index({ _id: 1, userId: 1 });
-
-mongoose.model('Stock', StockSchema);
 
 class StockRepository extends MongoRepository<IStock, IStock> {
     constructor() {

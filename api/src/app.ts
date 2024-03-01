@@ -7,7 +7,15 @@ import { Server } from './server';
 import { LRUCache } from 'lru-cache';
 import { UserService } from './app/components/user/user.service';
 import { UserController } from './app/components/user/user.controller';
-import { DayCache, OAuthNonceCache, RecipeCache, RecipeSummaryCache, SessionCache, TokenCache, UserCache } from './app/lib/types/cache.types';
+import {
+    DayCache,
+    OAuthNonceCache,
+    RecipeCache,
+    RecipeSummaryCache,
+    SessionCache,
+    TokenCache,
+    UserCache
+} from './app/lib/types/cache.types';
 import { userPermissions, userRouter } from './app/components/user/user.router';
 import { RedisRepository } from './app/lib/data/redis.repository';
 import { createAuthMiddleware } from './app/middleware/auth.middleware';
@@ -36,6 +44,9 @@ import { OAuthService } from './app/components/auth/oauth/ouath.service';
 import { SessionService } from './app/components/auth/session/session.service';
 import { SessionController } from './app/components/auth/session/session.controller';
 import { authPermissions, authRouter } from './app/components/auth/auth.router';
+import { EventBookmarkService } from './app/components/eventBookmark/eventBookmark.service';
+import { EventBookmarkController } from './app/components/eventBookmark/eventBookmark.controller';
+import { eventBookmarkPermissions, eventBookmarkRouter } from './app/components/eventBookmark/eventBookmark.router';
 // Initialize server
 (async () => {
     // Caches
@@ -100,8 +111,15 @@ import { authPermissions, authRouter } from './app/components/auth/auth.router';
     const oauthService = new OAuthService({ oauthNonceCache, googleConfig: googleOAuthConfig, facebookAuthConfig: facebookOAuthConfig });
     const sessionService = new SessionService({ sessionCache, tokenCache });
     const userService = new UserService({ userCache, s3Repository });
-    const recipeService = new RecipeService({ recipeCache, recipeSummaryCache, s3Repository });
+    const recipeService = new RecipeService({
+        recipeCache,
+        recipeSummaryCache,
+        s3Repository,
+        googleApiKey: env.GOOGLE_API_KEY,
+        googleSearchEngineId: env.GOOGLE_SEARCH_ENGINE_ID
+    });
     const dayService = new DayService({ dayCache });
+    const eventBookmarkService = new EventBookmarkService();
     const pantryService = new PantryService({ prismaClient });
     const stockService = new StockService();
 
@@ -114,6 +132,7 @@ import { authPermissions, authRouter } from './app/components/auth/auth.router';
     const dayController = new DayController({ dayService });
     const pantryController = new PantryController({ pantryService });
     const stockController = new StockController({ stockService });
+    const eventBookmarkController = new EventBookmarkController({ eventBookmarkService, dayService });
 
     const dependencies = {
         env,
@@ -124,7 +143,8 @@ import { authPermissions, authRouter } from './app/components/auth/auth.router';
         recipeController,
         dayController,
         pantryController,
-        stockController
+        stockController,
+        eventBookmarkController
     };
 
     // Permissions
@@ -140,7 +160,8 @@ import { authPermissions, authRouter } from './app/components/auth/auth.router';
         recipes: recipePermissions,
         days: dayPermissions,
         pantry: pantryPermissions,
-        stock: stockPermissions
+        stock: stockPermissions,
+        eventBookmarks: eventBookmarkPermissions
     };
 
     // Middleware
@@ -165,7 +186,8 @@ import { authPermissions, authRouter } from './app/components/auth/auth.router';
         recipe: recipeRouter(dependencies),
         day: dayRouter(dependencies),
         pantry: pantryRouter(dependencies),
-        stock: stockRouter(dependencies)
+        stock: stockRouter(dependencies),
+        eventBookmark: eventBookmarkRouter(dependencies)
     };
 
     const server = new Server(routers, middleware);

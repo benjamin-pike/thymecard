@@ -17,7 +17,7 @@ const TokenExchange = () => {
     useQuery(
         ['tokenExchange'],
         async () => {
-            const url = '/api/auth/session/exchange';
+            const url = '/auth/session/exchange';
             const method = 'POST';
 
             const { status, data } = await sendRequest(url, method, {
@@ -36,12 +36,12 @@ const TokenExchange = () => {
 
                 loginUser({
                     user: {
-                        id: user._id,
+                        id: user.id,
                         firstName: user.firstName,
                         email: user.email,
                         image: user.image
                     },
-                    sessionId: session._id
+                    sessionId: session.id
                 });
 
                 navigate('/dashboard');

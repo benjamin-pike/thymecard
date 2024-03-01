@@ -1,11 +1,12 @@
 import { LoremIpsumGenerator } from '@/lib/lorem';
 import { DateTime } from 'luxon';
 import seedrandom from 'seedrandom';
-import { IPrimaryMetric, ISecondaryMetric, IFeedEventProps, IFeedData } from '@/components/dashboard/feed/feed.types';
-import { srngFloat, srngInt } from '@/lib/random.utils';
+
 import FOOD_IMAGES from './data/food-images.json';
 import { RECIPES } from './data/recipes';
-import { EventType } from '@thymecard/types';
+import { IPrimaryMetric, ISecondaryMetric, IFeedEventProps, IFeedData } from '@/components/dashboard/feed/feed.types';
+import { srngFloat, srngInt } from '@/lib/random.utils';
+import { EEventType } from '@thymecard/types';
 
 export const generateMockProgressData = (startDate: DateTime, days: number): any[] => {
     const BREAKFAST_TIME = 9;
@@ -216,14 +217,14 @@ export enum PartOfDay {
     Evening = 'evening'
 }
 
-const EVENT_TYPES: Record<PartOfDay, EventType[]> = {
-    morning: [EventType.BREAKFAST, EventType.SNACK],
-    afternoon: [EventType.LUNCH, EventType.SNACK],
-    evening: [EventType.DINNER, EventType.DESSERT, EventType.DRINK]
+const EVENT_TYPES: Record<PartOfDay, EEventType[]> = {
+    morning: [EEventType.BREAKFAST, EEventType.SNACK],
+    afternoon: [EEventType.LUNCH, EEventType.SNACK],
+    evening: [EEventType.DINNER, EEventType.DESSERT, EEventType.DRINK]
 };
 
 const EVENT_NAMES = {
-    [EventType.BREAKFAST]: [
+    [EEventType.BREAKFAST]: [
         'Granola with Yogurt',
         'French Toast',
         'Blueberry Pancakes',
@@ -240,7 +241,7 @@ const EVENT_NAMES = {
         'Quiche',
         'Croissant'
     ],
-    [EventType.SNACK]: [
+    [EEventType.SNACK]: [
         'Mixed Nuts',
         'Fresh Fruit',
         'Yogurt',
@@ -257,7 +258,7 @@ const EVENT_NAMES = {
         'Dried Fruit',
         'Boiled Egg'
     ],
-    [EventType.LUNCH]: [
+    [EEventType.LUNCH]: [
         'Prawn Salad',
         'Tuna Salad Wrap',
         'Chicken Caesar Salad',
@@ -274,7 +275,7 @@ const EVENT_NAMES = {
         'Grilled Chicken with Vegetables',
         'Falafel Pita'
     ],
-    [EventType.DRINK]: [
+    [EEventType.DRINK]: [
         'Iced Coffee',
         'Green Smoothie',
         'Lemonade',
@@ -287,8 +288,8 @@ const EVENT_NAMES = {
         'Matcha Latte',
         'Coconut Water'
     ],
-    [EventType.APPETIZER]: [],
-    [EventType.DINNER]: [
+    [EEventType.APPETIZER]: [],
+    [EEventType.DINNER]: [
         'Chicken Stir-Fry',
         'Grilled Salmon and Quinoa',
         'Steak and Potatoes',
@@ -305,7 +306,7 @@ const EVENT_NAMES = {
         'Lamb Stew',
         'Vegetarian Pizza'
     ],
-    [EventType.DESSERT]: [
+    [EEventType.DESSERT]: [
         'Ice Cream Sundae',
         'Chocolate Cake',
         'Fruit Salad',
@@ -322,7 +323,7 @@ const EVENT_NAMES = {
         'Carrot Cake',
         'Baklava'
     ],
-    [EventType.ACTIVITY]: []
+    [EEventType.ACTIVITY]: []
 } as const;
 
 const EVENT_TIME_RANGE = {
@@ -331,7 +332,7 @@ const EVENT_TIME_RANGE = {
     evening: ['18:00', '21:00']
 };
 
-const EVENT_IMAGES: Record<EventType, Record<string, string[]>> = FOOD_IMAGES;
+const EVENT_IMAGES: Record<EEventType, Record<string, string[]>> = FOOD_IMAGES;
 
 function generateMetric(uid: string): IPrimaryMetric {
     return {
@@ -357,7 +358,7 @@ function generateSecondaryMetric(uid: string): ISecondaryMetric[] {
     ];
 }
 
-const generateImages = (eventType: EventType, eventName: string, uid: string) => {
+const generateImages = (eventType: EEventType, eventName: string, uid: string) => {
     const maxImages = srngInt(1, 10, [uid, 'numberOfImages']);
     const images = EVENT_IMAGES[eventType][eventName];
 
@@ -368,7 +369,7 @@ const generateImages = (eventType: EventType, eventName: string, uid: string) =>
     return images.slice(0, maxImages);
 };
 
-function generateEvent(eventType: EventType, partOfDay: PartOfDay, uid: string): IFeedEventProps {
+function generateEvent(eventType: EEventType, partOfDay: PartOfDay, uid: string): IFeedEventProps {
     const name = EVENT_NAMES[eventType][srngInt(0, EVENT_NAMES[eventType].length - 1, [uid, 'name'])];
 
     const primaryMetric = generateMetric(uid);

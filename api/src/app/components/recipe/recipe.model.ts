@@ -1,8 +1,8 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 import { MongoRepository } from '../../lib/data/mongo.repository';
 import { IRecipe, IRecipeCreate } from '@thymecard/types';
 
-export const collectionName = 'recipes';
+export const collectionName = 'Recipe';
 
 const Yield = {
     quantity: {
@@ -265,17 +265,10 @@ const RecipeSchema = new Schema(
             type: Date,
             required: false
         }
-    },
-    {
-        collection: collectionName,
-        timestamps: { createdAt: true, updatedAt: true },
-        toObject: { versionKey: false, getters: false }
     }
 );
 
 RecipeSchema.index({ _id: 1, userId: 1 });
-
-mongoose.model('Recipe', RecipeSchema);
 
 class RecipeRepository extends MongoRepository<IRecipe, IRecipeCreate & { userId: string }> {
     constructor() {

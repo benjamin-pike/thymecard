@@ -1,16 +1,28 @@
-export enum EventType {
-	BREAKFAST = "breakfast",
-	LUNCH = "lunch",
-	DINNER = "dinner",
-	ACTIVITY = "activity",
-	SNACK = "snack",
-	DRINK = "drink",
-	APPETIZER = "appetizer",
-	DESSERT = "dessert"
+export enum EEventType {
+	BREAKFAST = "BREAKFAST",
+	LUNCH = "LUNCH",
+	DINNER = "DINNER",
+	ACTIVITY = "ACTIVITY",
+	SNACK = "SNACK",
+	DRINK = "DRINK",
+	APPETIZER = "APPETIZER",
+	DESSERT = "DESSERT"
 }
 
-export interface IEventItem {
-	title: string;
-	isFavorite: boolean;
-	recipeId?: string;
+export enum EMealType {
+    BREAKFAST = "BREAKFAST",
+	LUNCH = "LUNCH",
+	DINNER = "DINNER",
+	ACTIVITY = "ACTIVITY",
+	SNACK = "SNACK",
+	DRINK = "DRINK",
+	APPETIZER = "APPETIZER",
+	DESSERT = "DESSERT"
+}
+
+export type MealType = Exclude<EEventType, EEventType.ACTIVITY>;
+
+export interface ITime {
+	hours: number;
+	minutes: number;
 }

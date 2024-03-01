@@ -5,7 +5,7 @@
     padding-right: 0.75rem;
 
     width: 50%;
-    min-width: 27.5em;
+    min-width: 25em;
 
     background-color: $mono-light;
 
@@ -79,7 +79,7 @@
                 justify-content: center;
 
                 color: $mono-700;
-                font-size: $fs-14;
+                font-size: $fs-16;
                 font-weight: 400;
 
                 white-space: pre;
@@ -116,70 +116,48 @@
                     align-items: center;
                     justify-content: center;
 
-                    gap: 0;
-
-                    padding: 0 0.54rem;
-
-                    height: calc(2rem - 2px);
-                    width: fit-content;
-
-                    text-align: center;
-                    font-weight: 500;
-                    font-size: $fs-11;
-
-                    color: $mono-600;
-                    background-color: white;
-                    border: 1px solid $mono-200;
-
                     border-radius: 100vmax;
 
-                    transition:
-                        gap 100ms ease,
-                        padding 100ms ease,
-                        color 100ms ease,
-                        background-color 100ms ease,
-                        border 100ms ease;
-
-                    @include dark-mode {
-                        color: $mono-200;
-                        background-color: $mono-900;
-                        border: 1px solid $mono-700;
-                    }
-
-                    svg {
-                        height: 0.8rem;
-                        width: 0.8rem;
-                    }
-
-                    p {
-                        font-size: 0;
-
-                        transition: font-size 100ms ease;
-                    }
-
-                    &:hover {
+                    &.addEvent {
                         gap: 0.25rem;
 
+                        margin-right: 0.1rem;
                         padding: 0 0.75rem;
 
-                        color: $blue;
-                        background-color: alpha($blue, 0.1);
-                        border: 1px solid alpha($blue, 0.5);
+                        height: 2rem;
+
+                        font-weight: 500;
+                        font-size: $fs-11;
+
+                        color: $mono-light;
+                        background-color: $mono-700;
+                        border: 1px solid $mono-700;
+
+                        transition:
+                            background-color 200ms ease,
+                            border 200ms ease;
 
                         @include dark-mode {
                             color: $mono-light;
-                            background-color: $mono-800;
-                            border: 1px solid $mono-500;
+                            background-color: $mono-900;
+                            border: 1px solid $mono-700;
                         }
 
-                        p {
-                            font-size: $fs-10;
-                        }
-                    }
+                        &:hover {
+                            background-color: $mono-900;
+                            border: 1px solid $mono-900;
 
-                    &.addEvent {
+                            @include dark-mode {
+                                background-color: $mono-800;
+                                border: 1px solid $mono-500;
+                            }
+                        }
+
                         svg {
-                            scale: 0.9;
+                            margin-left: -1px;
+
+                            height: 0.7rem;
+                            width: 0.7rem;
 
                             path {
                                 stroke-width: 12.5;
@@ -187,18 +165,123 @@
                         }
                     }
 
-                    &.copyDay {
-                        svg {
-                            path {
-                                stroke-width: 0.25;
+                    &.addBookmarked {
+                        position: relative;
+
+                        height: calc(2rem - 2px);
+                        width: calc(2rem - 2px);
+
+                        color: $mono-700;
+                        border: 1px solid $mono-200;
+
+                        transition:
+                            color 100ms ease,
+                            background-color 100ms ease,
+                            border 100ms ease;
+
+                        @include dark-mode {
+                            color: $mono-light;
+                            border: 1px solid $mono-700;
+                        }
+
+                        .bookmark {
+                            height: 1rem;
+                            width: 1rem;
+
+                            stroke-width: 5;
+
+                            z-index: 1;
+                        }
+
+                        .add {
+                            position: absolute;
+                            top: 65%;
+                            left: 65%;
+
+                            padding: 0.1rem;
+
+                            height: 0.75rem;
+                            width: 0.75rem;
+
+                            color: $mono-700;
+                            background-color: $mono-light;
+
+                            border-radius: 100vmax;
+
+                            stroke-width: 17.5;
+
+                            opacity: 1;
+
+                            transition: opacity 250ms ease;
+
+                            @include dark-mode {
+                                color: $mono-light;
+                                background-color: $mono-900;
+                            }
+                        }
+
+                        &:hover {
+                            color: $blue;
+                            background-color: mix($blue, $mono-light, 10%);
+                            border: 1px solid mix($blue, $mono-light, 50%);
+
+                            .add {
+                                opacity: 0;
+                            }
+
+                            @include dark-mode {
+                                color: $mono-light;
+                                background-color: $mono-800;
+                                border: 1px solid $mono-500;
                             }
                         }
                     }
 
-                    &.clearDay {
+                    &.copyDay {
+                        height: calc(2rem - 2px);
+                        width: calc(2rem - 2px);
+
+                        color: $mono-700;
+                        border: 1px solid $mono-200;
+
+                        opacity: 1;
+
+                        transition:
+                            color 100ms ease,
+                            background-color 100ms ease,
+                            border 100ms ease,
+                            opacity 100ms ease;
+
+                        &:disabled {
+                            pointer-events: none;
+                            
+                            color: $mono-500;
+
+                            @include dark-mode {
+                                color: $mono-600;
+                            }
+                        }
+
+                        @include dark-mode {
+                            color: $mono-light;
+                            border: 1px solid $mono-700;
+                        }
+
                         svg {
-                            path {
-                                stroke-width: 1.5;
+                            scale: 0.9;
+
+                            stroke-width: 0.25;
+                        }
+
+                        &:hover {
+                            color: $blue;
+                            background-color: alpha($blue, 0.1);
+                            border: 1px solid alpha($blue, 0.5);
+
+                            @include dark-mode {
+                                color: $mono-light;
+                                background-color: $mono-800;
+                                border: 1px solid $mono-500;
                             }
                         }
                     }
@@ -256,15 +339,17 @@
             .body {
                 display: flex;
                 flex-direction: column;
-                flex-shrink: 1;
-                gap: 1.5rem;
+                gap: 1rem;
 
-                padding: 0 0.25rem 0 1.25rem;
+                height: 100%;
+                width: 100%;
+
+                padding: 0 0.5rem 0 0.5rem;
             }
         }
     }
 
-    .days {
+    .daySelector {
         position: relative;
 
         display: flex;
@@ -321,9 +406,10 @@
 
                 .events {
                     display: flex;
-                    flex-direction: column;
                     align-items: center;
-                    gap: 0.35rem;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                    gap: 0.25rem;
 
                     padding-top: 0.5rem;
 
@@ -337,7 +423,7 @@
 
                     .event {
                         height: 0.35rem;
-                        width: 3rem;
+                        width: 0.35rem;
 
                         border-radius: 100vmax;
 
@@ -349,6 +435,7 @@
 
                                 @include dark-mode {
                                     height: calc(0.35rem - 1px);
+                                    width: calc(0.35rem - 1px);
 
                                     background-color: alpha($dark-adjusted-color, 0.35);
                                     border: 1px solid $dark-adjusted-color;
@@ -377,25 +464,14 @@
             @include dark-mode {
                 background-color: $mono-light;
             }
-
-            &[data-day='0'] {
-                left: 0;
-            }
-
-            &[data-day='1'] {
-                left: calc((((100% - 2rem) / 5) + 0.5rem) * 1);
-            }
-
-            &[data-day='2'] {
-                left: calc((((100% - 2rem) / 5) + 0.5rem) * 2);
-            }
-
-            &[data-day='3'] {
-                left: calc((((100% - 2rem) / 5) + 0.5rem) * 3);
-            }
-
-            &[data-day='4'] {
-                left: calc((((100% - 2rem) / 5) + 0.5rem) * 4);
+            @for $i from 0 through 4 {
+                &[data-day='#{$i}'] {
+                    @if $i == 0 {
+                        left: 0;
+                    } @else {
+                        left: calc((((100% - 2rem) / 5) + 0.5rem) * #{$i});
+                    }
+                }
             }
         }
     }

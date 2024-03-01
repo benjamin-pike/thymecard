@@ -14,8 +14,7 @@ export class StockService implements IStockService {
             {
                 [section]: categories
             },
-            undefined,
-            true
+            { upsert: true }
         );
 
         if (!stock) {

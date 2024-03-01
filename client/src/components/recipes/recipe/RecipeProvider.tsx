@@ -1,67 +1,35 @@
-import { createContext, useContext, FC, ReactElement, useState, useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-    Client,
-    IRecipe,
-    IRecipeComment,
-    IRecipeNutritionalInformation,
-    IRecipeUpdate,
-    IRecipeYield,
-    RecipeIngredients,
-    RecipeMethod
-} from '@thymecard/types';
+import { createContext, useContext, FC, ReactElement, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import useAuthors from '@/hooks/recipes/useAuthors';
-import useDescription from '@/hooks/recipes/useDescription';
-import useIngredients from '@/hooks/recipes/useIngredients';
-import useLastCooked from '@/hooks/recipes/useLastCooked';
-import useMethod from '@/hooks/recipes/useMethod';
-import useRating from '@/hooks/recipes/useRating';
-import useSource from '@/hooks/recipes/useSource';
-import useTags from '@/hooks/recipes/useTags';
-import useTime from '@/hooks/recipes/useTime';
-import useTitle from '@/hooks/recipes/useTitle';
-import useYield from '@/hooks/recipes/useYield';
-import useComments from '@/hooks/recipes/useComments';
-import useNutrition from '@/hooks/recipes/useNutrition';
+import useRecipeDraft from '@/hooks/recipes/useRecipeDraft';
+import { useMount } from '@/hooks/common/useMount';
+import { ModalState, useModal } from '@/hooks/common/useModal';
+import { useRecipeAPI } from '@/api/useRecipeAPI';
+import useRecipeComponents from '@/hooks/recipes/useRecipeDraft';
 
-import { sendRequest } from '@/lib/api/sendRequest';
+import { Client, IRecipe, IRecipeCreate, IRecipeSummary, IRecipeUpdate, isDefined, isString } from '@thymecard/types';
 import { createToast } from '@/lib/toast/toast.utils';
-import useImage from '@/hooks/recipes/useImage';
-import { getRecipeImageUrl } from '@/lib/s3/s3.utils';
+import { buildRecipeImageUrl } from '@/lib/s3/s3.utils';
+import { imageUrlToBlob } from '@/lib/media.utils';
 
-interface IRecipeContext {
+type RecipeComponents = ReturnType<typeof useRecipeComponents>['components'];
+
+interface IRecipeContext extends RecipeComponents {
     recipe: Partial<Client<IRecipe>> | undefined;
-    renderStatus: 'open' | 'closing' | 'closed';
-    isLoading: boolean;
-    isError: boolean;
-    error: any;
+    summaries: Client<IRecipeSummary>[] | undefined;
+    recipeModalState: ModalState;
     isEditing: boolean;
     isIncomplete: boolean;
-    title: ReturnType<typeof useTitle>;
-    description: ReturnType<typeof useDescription>;
-    image: ReturnType<typeof useImage>;
-    authors: ReturnType<typeof useAuthors>;
-    source: ReturnType<typeof useSource>;
-    recipeYield: ReturnType<typeof useYield>;
-    time: ReturnType<typeof useTime>;
-    rating: ReturnType<typeof useRating>;
-    tags: ReturnType<typeof useTags>;
-    nutrition: ReturnType<typeof useNutrition>;
-    lastCooked: ReturnType<typeof useLastCooked>;
-    ingredients: ReturnType<typeof useIngredients>;
-    method: ReturnType<typeof useMethod>;
-    comments: ReturnType<typeof useComments>;
-    getRecipe: (recipeId: string) => void;
+    selectRecipe: (recipeId: string) => void;
     clearRecipe: () => void;
-    parseRecipe: (url: string) => void;
-    createRecipePartial: (recipe: Partial<Client<IRecipe>>) => void;
-    upsertRecipe: (payload: Client<IRecipeUpdate>) => Promise<void>;
-    deleteRecipe: () => Promise<void>;
-    toggleEditing: () => void;
-    handleSaveEdit: () => void;
+    handleCreateRecipe: (recipe: Client<IRecipeCreate>, image: Blob | string) => Promise<Client<IRecipe>>;
+    handleUpdateRecipe: (update: Client<IRecipeUpdate>) => void;
+    handleDeleteRecipe: () => Promise<void>;
+    handleParseRecipe: (url: string) => void;
+    handleManualCreate: () => void;
+    handleSaveRecipe: () => void;
     handleCancelEdit: () => void;
+    toggleEditing: () => void;
 }
 
 const RecipeContext = createContext<IRecipeContext | null>(null);
@@ -80,361 +48,175 @@ interface IRecipeProviderProps {
 }
 
 const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
-    const queryClient = useQueryClient();
     const navigate = useNavigate();
 
-    const [recipeId, setRecipeId] = useState<string | undefined>();
-    const [recipe, setRecipe] = useState<Partial<Client<IRecipe>> | undefined>();
-    const [renderStatus, setRenderStatus] = useState<'open' | 'closing' | 'closed'>('closed');
+    const { createRecipe, getRecipe, updateRecipe, deleteRecipe, parseRecipe, getSummaries } = useRecipeAPI();
+    const { components, init, validateUpdateResource, validateCreateResource } = useRecipeDraft();
 
-    const title = useTitle();
-    const description = useDescription();
-    const image = useImage();
-    const authors = useAuthors();
-    const source = useSource();
-    const recipeYield = useYield(); // yield is a reserved word
-    const time = useTime();
-    const rating = useRating();
-    const lastCooked = useLastCooked();
-    const tags = useTags();
-    const nutrition = useNutrition();
-    const ingredients = useIngredients();
-    const method = useMethod();
-    const comments = useComments();
+    const { modalState: recipeModalState, openModal: openRecipeModal, closeModal: closeRecipeModal } = useModal();
+
+    const [recipeId, setRecipeId] = useState<string>();
+    const [recipe, setRecipe] = useState<Partial<Client<IRecipe>>>();
+    const [summaries, setSummaries] = useState<Client<IRecipeSummary>[]>();
+    const [isLoading, setIsLoading] = useState(false);
 
     const [isEditing, setIsEditing] = useState(false);
     const [isIncomplete, setIsIncomplete] = useState(false);
-
-    const init = useCallback(
-        (recipe: Partial<Client<IRecipe>>) => {
-            title.init(recipe.title);
-            description.init(recipe.description);
-            authors.init(recipe.authors);
-            source.init(recipe.source);
-            recipeYield.init(recipe.yield);
-            time.init(recipe.prepTime, recipe.cookTime, recipe.totalTime);
-            rating.init(recipe.rating);
-            lastCooked.init(recipe.lastCooked);
-            tags.init(recipe.cuisine, recipe.diet, recipe.category);
-            nutrition.init(recipe.nutrition);
-            ingredients.init(recipe.ingredients);
-            method.init(recipe.method);
-            comments.init(recipe.comments);
-        },
-        [authors, comments, description, ingredients, lastCooked, method, nutrition, rating, recipeYield, source, tags, time, title]
-    );
-
-    const initImage = useCallback(
-        (url: string) => {
-            image.init(url);
-        },
-        [image]
-    );
-
-    const getQuery = useQuery<Client<IRecipe>>(
-        ['/recipes/:recipeId', recipeId],
-        async ({ queryKey }) => {
-            const [, recipeId] = queryKey;
-            const { status, data } = await sendRequest(`/api/recipes/${recipeId}`, 'GET');
-            if (status !== 200) {
-                throw new Error('Failed to fetch the recipe');
-            }
-            return data.recipe;
-        },
-        {
-            enabled: !!recipeId,
-            onSuccess: (recipe) => {
-                init(recipe);
-                initImage(getRecipeImageUrl(recipe.image));
-                setRecipe(recipe);
-                setRenderStatus('open');
-                navigate(`/recipes/${recipeId}`);
-            }
-        }
-    );
-
-    const getRecipe = useCallback(
-        (recipeId: string) => {
-            setIsEditing(false);
-            setRecipeId(recipeId);
-        },
-        [setRecipeId]
-    );
-
-    const clearRecipe = useCallback(() => {
-        setRenderStatus('closing');
-        navigate('/recipes');
-
-        setTimeout(() => {
-            setRenderStatus('closed');
-            setRecipeId(undefined);
-            setRecipe(undefined);
-            setIsEditing(false);
-            setIsIncomplete(false);
-        }, 400);
-    }, [navigate]);
-
-    const createRecipePartial = useCallback(
-        (recipe: Partial<Client<IRecipe>>) => {
-            init(recipe);
-            setRecipe(recipe);
-            setRenderStatus('open');
-            setIsEditing(true);
-            navigate(`/recipes/create`);
-        },
-        [init, navigate]
-    );
-
-    const parseRecipeMutation = useMutation((url: string) => sendRequest('/api/recipes/parse', 'POST', { body: { url } }));
-
-    const parseRecipe = useCallback(
-        (url: string) => {
-            parseRecipeMutation.mutate(url, {
-                onSuccess: async (data) => {
-                    createRecipePartial(data.data.recipe);
-                    initImage(data.data.image);
-                    createToast('success', 'Recipe parsed successfully');
-                },
-                onError: () => {
-                    createToast('error', 'No recipe found at that URL');
-                }
-            });
-        },
-        [createRecipePartial, initImage, parseRecipeMutation]
-    );
-
-    const upsertRecipeMutation = useMutation(
-        async (payload: FormData) => {
-            const url = recipeId ? `/api/recipes/${recipeId}` : '/api/recipes';
-            const method = recipeId ? 'PUT' : 'POST';
-
-            const { status, data } = await sendRequest(url, method, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                body: payload
-            });
-
-            if (status !== 200 && status !== 201) {
-                throw new Error('Failed to upsert recipe');
-            }
-
-            init(data.recipe);
-
-            setRecipe(data.recipe);
-            setRecipeId(data.recipe._id);
-
-            navigate(`/recipes/${data.recipe._id}`);
-
-            return data.recipe;
-        },
-        {
-            onSuccess: (recipe) => {
-                queryClient.setQueryData(['/recipes/:recipeId', recipe._id], recipe);
-                queryClient.invalidateQueries(['/recipes/summary']);
-            }
-        }
-    );
-
-    const upsertRecipe = useCallback(
-        async (payload: Client<Partial<IRecipe>>, image?: Blob) => {
-            const body = recipeId ? payload : { ...recipe, ...JSON.parse(JSON.stringify(payload)) };
-
-            const formData = new FormData();
-            formData.append('data', JSON.stringify(body));
-            if (image) {
-                formData.append('image', image);
-            }
-
-            await upsertRecipeMutation.mutateAsync(formData);
-        },
-        [recipe, recipeId, upsertRecipeMutation]
-    );
-
-    const deleteRecipeMutation = useMutation(
-        async () => {
-            const { status } = await sendRequest(`/api/recipes/${recipeId}`, 'DELETE');
-            if (status !== 204) {
-                throw new Error('Failed to delete the recipe');
-            }
-        },
-        {
-            onSuccess: () => {
-                queryClient.invalidateQueries(['/recipes/:recipeId', recipeId]);
-                queryClient.invalidateQueries(['/recipes/summary']);
-            }
-        }
-    );
-
-    const deleteRecipe = async () => {
-        await deleteRecipeMutation.mutateAsync();
-    };
 
     const toggleEditing = useCallback(() => {
         setIsEditing(!isEditing);
     }, [isEditing]);
 
-    const handleSaveEdit = useCallback(async () => {
-        let titleUpdate: string | undefined;
-        let descriptionUpdate: string | undefined;
-        let authorsUpdate: string[] | undefined;
-        let sourceUpdate: string | undefined;
-        let yieldUpdate: IRecipeYield | undefined;
-        let cuisineUpdate: string[] | undefined;
-        let dietUpdate: string[] | undefined;
-        let categoryUpdate: string[] | undefined;
-        let prepTimeUpdate: number | undefined;
-        let cookTimeUpdate: number | undefined;
-        let totalTimeUpdate: number | undefined;
-        let ratingUpdate: number | undefined;
-        let lastCookedUpdate: string | undefined;
-        let nutritionUpdate: Client<IRecipeNutritionalInformation> | undefined;
-        let ingredientsUpdate: Client<RecipeIngredients> | undefined;
-        let methodUpdate: Client<RecipeMethod> | undefined;
-        let commentsUpdate: Client<IRecipeComment[]> | undefined;
+    const selectRecipe = useCallback(
+        (recipeId: string) => {
+            setRecipeId(recipeId);
+        },
+        [setRecipeId]
+    );
 
-        let imageUpdate: Blob | undefined;
+    const enterCreateMode = useCallback(() => {
+        openRecipeModal();
+        setIsEditing(true);
+        navigate('/recipes/create');
+    }, [navigate, openRecipeModal]);
 
-        try {
-            titleUpdate = (() => {
-                const { update, isModified } = title.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            descriptionUpdate = (() => {
-                const { update, isModified } = description.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            authorsUpdate = (() => {
-                const { update, isModified } = authors.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            sourceUpdate = (() => {
-                const { update, isModified } = source.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            yieldUpdate = (() => {
-                const { update, isModified } = recipeYield.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            [cuisineUpdate, dietUpdate, categoryUpdate] = (() => {
-                const { cuisine, diet, category } = tags.validate();
+    const reset = useCallback(() => {
+        setRecipe(undefined);
+        setRecipeId(undefined);
+        setIsEditing(false);
+        setIsIncomplete(false);
+    }, []);
 
-                return [cuisine, diet, category].map(({ update, isModified }) => {
-                    if (!isModified) return;
-                    return update;
-                });
-            })();
-            [prepTimeUpdate, cookTimeUpdate, totalTimeUpdate] = (() => {
-                const { prep, cook, total } = time.validate();
+    const clearRecipe = useCallback(async () => {
+        await closeRecipeModal();
 
-                return [prep, cook, total].map(({ update, isModified }) => {
-                    if (!isModified) return;
-                    return update;
-                });
-            })();
-            ratingUpdate = (() => {
-                const { update, isModified } = rating.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            lastCookedUpdate = (() => {
-                const { update, isModified } = lastCooked.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            nutritionUpdate = (() => {
-                const { update, isModified } = nutrition.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            ingredientsUpdate = (() => {
-                const { update, isModified } = ingredients.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            methodUpdate = (() => {
-                const { update, isModified } = method.validate();
-                if (!isModified) return;
-                return update;
-            })();
-            commentsUpdate = (() => {
-                const { update, isModified } = comments.validate();
-                if (!isModified) return;
-                return update;
-            })();
+        reset();
 
-            imageUpdate = (() => {
-                const { update, isModified } = image.validate();
-                if (!isModified && recipeId) return;
-                return update;
-            })();
-        } catch (e) {
+        navigate('/recipes');
+    }, [closeRecipeModal, navigate, reset]);
+
+    const create = useCallback(async () => {
+        const payload = validateCreateResource();
+
+        const { value: image } = components.image.validate();
+
+        if (!image) {
             setIsIncomplete(true);
-            return;
+            throw new Error('An image is required');
         }
 
-        try {
-            const update = {
-                title: titleUpdate,
-                description: descriptionUpdate,
-                authors: authorsUpdate,
-                source: sourceUpdate,
-                yield: yieldUpdate,
-                cuisine: cuisineUpdate,
-                diet: dietUpdate,
-                category: categoryUpdate,
-                prepTime: prepTimeUpdate,
-                cookTime: cookTimeUpdate,
-                totalTime: totalTimeUpdate,
-                rating: ratingUpdate,
-                lastCooked: lastCookedUpdate,
-                nutrition: nutritionUpdate,
-                ingredients: ingredientsUpdate,
-                method: methodUpdate,
-                comments: commentsUpdate
-            };
+        const recipe = await createRecipe(payload, image);
 
-            if (recipeId && !Object.values(update).some((value) => value) && !imageUpdate) {
-                toggleEditing();
+        return recipe;
+    }, [components.image, createRecipe, validateCreateResource]);
+
+    const update = useCallback(
+        async (recipeId: string) => {
+            const payload = validateUpdateResource();
+
+            const { value: image, isModified: isImageModified } = components.image.validate();
+            const imageUpdate = image && isImageModified ? image : undefined;
+
+            const recipe = await updateRecipe(recipeId, payload, imageUpdate);
+
+            return recipe;
+        },
+        [components.image, updateRecipe, validateUpdateResource]
+    );
+
+    const refreshSummaries = useCallback(async () => {
+        const summaries = await getSummaries();
+
+        setSummaries(summaries);
+    }, [getSummaries]);
+
+    const handleCreateRecipe = useCallback(
+        async (recipe: Client<IRecipeCreate>, image: Blob | string) => {
+            let imageBlob = image;
+
+            if (isString(imageBlob)) {
+                imageBlob = await imageUrlToBlob(imageBlob);
+            }
+
+            const newRecipe = await createRecipe(recipe, imageBlob);
+
+            refreshSummaries();
+
+            return newRecipe;
+        },
+        [createRecipe, refreshSummaries]
+    );
+
+    const handleUpdateRecipe = useCallback(
+        (update: Client<IRecipeUpdate>) => {
+            if (!recipeId) {
                 return;
             }
 
-            await upsertRecipe(update, imageUpdate);
+            updateRecipe(recipeId, update);
+        },
+        [recipeId, updateRecipe]
+    );
+
+    const handleDeleteRecipe = useCallback(async () => {
+        if (!recipeId) {
+            return;
+        }
+
+        await deleteRecipe(recipeId);
+
+        try {
+            await refreshSummaries();
+        } catch (e) {
+            createToast('error', 'Failed to to fetch your recipes');
+        }
+    }, [deleteRecipe, recipeId, refreshSummaries]);
+
+    const handleParseRecipe = useCallback(
+        async (url: string) => {
+            const { recipe, image } = await parseRecipe(url);
+
+            init(recipe, image ?? null);
+            setRecipe(recipe);
+
+            enterCreateMode();
+        },
+        [enterCreateMode, init, parseRecipe]
+    );
+
+    const handleManualCreate = useCallback(() => {
+        init({}, null);
+        setRecipe({});
+
+        enterCreateMode();
+    }, [enterCreateMode, init]);
+
+    const handleSaveRecipe = useCallback(async () => {
+        const isNew = !isDefined(recipeId);
+
+        try {
+            const recipe = isNew ? await create() : await update(recipeId);
+
+            setRecipe(recipe);
 
             toggleEditing();
-            createToast('success', 'Recipe saved successfully');
+
+            createToast('success', `Recipe ${isNew ? 'created' : 'saved'} successfully`);
         } catch (e) {
-            createToast('error', 'Failed to save recipe');
+            createToast('error', `Failed to ${isNew ? 'create' : 'save'} recipe`);
         }
-    }, [
-        title,
-        description,
-        image,
-        authors,
-        source,
-        recipeYield,
-        tags,
-        time,
-        rating,
-        lastCooked,
-        nutrition,
-        ingredients,
-        method,
-        comments,
-        recipeId,
-        upsertRecipe,
-        toggleEditing
-    ]);
+
+        try {
+            await refreshSummaries();
+        } catch (e) {
+            createToast('error', 'Failed to to fetch your recipes');
+        }
+    }, [recipeId, create, update, toggleEditing, refreshSummaries]);
 
     const handleCancelEdit = useCallback(() => {
         if (recipeId) {
             toggleEditing();
-            init(recipe ?? {});
+            init(recipe ?? {}, recipe?.image ?? null);
         }
 
         if (!recipeId) {
@@ -442,41 +224,65 @@ const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
         }
     }, [clearRecipe, init, recipe, recipeId, toggleEditing]);
 
-    const isLoading = getQuery.isLoading || upsertRecipeMutation.isLoading || deleteRecipeMutation.isLoading;
-    const isError = getQuery.isError || upsertRecipeMutation.isError || deleteRecipeMutation.isError;
-    const error = getQuery.error || upsertRecipeMutation.error || deleteRecipeMutation.error;
+    const handleGetSummaries = useCallback(async () => {
+        const summaries = await getSummaries();
+
+        setSummaries(summaries);
+    }, [getSummaries]);
+
+    useEffect(() => {
+        const fetchRecipe = async () => {
+            if (!recipeId || isLoading || recipeId === recipe?._id) {
+                return;
+            }
+
+            setIsLoading(true);
+
+            openRecipeModal();
+
+            const r = await getRecipe(recipeId);
+
+            navigate(`/recipes/${recipeId}`);
+
+            init(r, buildRecipeImageUrl(r.image));
+            setRecipe(r);
+
+            setIsLoading(false);
+        };
+
+        if (recipeId) {
+            fetchRecipe();
+        }
+    }, [getRecipe, init, isLoading, navigate, recipe, recipeId]);
+
+    useMount(() => {
+        const fetchSummaries = async () => {
+            const summaries = await getSummaries();
+
+            setSummaries(summaries);
+        };
+
+        fetchSummaries();
+    });
 
     const value = {
+        ...components,
         recipe,
-        renderStatus,
-        isLoading,
-        isError,
-        error,
+        summaries,
+        recipeModalState,
         isEditing,
         isIncomplete,
-        title,
-        description,
-        image,
-        authors,
-        source,
-        recipeYield,
-        time,
-        rating,
-        lastCooked,
-        tags,
-        nutrition,
-        ingredients,
-        method,
-        comments,
-        getRecipe,
+        selectRecipe,
         clearRecipe,
-        createRecipePartial,
-        parseRecipe,
-        upsertRecipe,
-        deleteRecipe,
-        toggleEditing,
-        handleSaveEdit,
-        handleCancelEdit
+        handleCreateRecipe,
+        handleUpdateRecipe,
+        handleDeleteRecipe,
+        handleParseRecipe,
+        handleManualCreate,
+        handleSaveRecipe,
+        handleCancelEdit,
+        handleGetSummaries,
+        toggleEditing
     };
 
     return <Provider value={value}>{children}</Provider>;

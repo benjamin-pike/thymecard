@@ -318,17 +318,17 @@
         }
 
         @include dark-mode {
-            background-color: $mono-light;
-            border: 1px solid $mono-light;
+            background-color: $mono-800;
+            border: 1px solid $mono-200;
 
             p {
                 .name {
-                    color: $mono-700;
+                    color: $mono-light;
                 }
 
                 .count {
-                    color: $mono-600;
-                    background-color: $mono-200;
+                    color: $mono-light;
+                    background-color: $mono-700;
                     border-left: 1px solid $mono-200;
                 }
             }

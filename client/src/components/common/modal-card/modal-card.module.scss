@@ -1,0 +1,176 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    padding: 2rem;
+
+    min-width: 27.5rem;
+
+    background-color: $mono-light;
+    box-shadow: 0.5rem 0.5rem 1.25rem 0 rgba(0, 0, 0, 0.1);
+
+    border-radius: 0.75rem;
+
+    @include dark-mode {
+        background-color: $mono-900;
+        border: 1px solid $mono-700;
+    }
+
+    header {
+        h2 {
+            font-size: $fs-16;
+            color: $mono-700;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+    }
+
+    footer {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        margin-top: auto;
+
+        button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-basis: 50%;
+
+            height: 2.5rem;
+
+            font-size: $fs-14;
+            font-weight: 400;
+            padding: 0 1rem;
+
+            border-radius: 0.5rem;
+
+            transition:
+                color 150ms ease,
+                background-color 150ms ease,
+                border 150ms ease;
+
+            @include dark-mode {
+                color: $mono-400;
+                border: 1px solid $mono-700;
+
+                &:hover {
+                    color: $mono-light;
+                    background-color: $mono-800;
+                    border: 1px solid $mono-500;
+                }
+            }
+
+            &[data-type='primary'] {
+                color: $mono-light;
+                background-color: $mono-700;
+                border: 1px solid $mono-700;
+
+                &:hover {
+                    background-color: $mono-900;
+                    border: 1px solid $mono-900;
+                }
+
+                &:disabled {
+                    color: $mono-500;
+                    background-color: $mono-200;
+                    border: 1px solid $mono-200;
+                    cursor: not-allowed;
+                }
+
+                @include dark-mode {
+                    color: $mono-light;
+                    background-color: $mono-dark;
+                    border: 1px solid $mono-700;
+
+                    &:hover {
+                        color: $mono-light;
+                        background-color: $mono-800;
+                        border: 1px solid $mono-500;
+                    }
+
+                    &:disabled {
+                        color: $mono-600;
+                        background-color: $mono-800;
+                        border: 1px solid $mono-800;
+                    }
+                }
+            }
+
+            &[data-type='secondary'] {
+                color: $mono-600;
+                border: 1px solid $mono-200;
+
+                &:hover {
+                    background-color: $mono-100;
+                    border: 1px solid $mono-400;
+                }
+
+                @include dark-mode {
+                    color: $mono-600;
+                    border: 1px solid $mono-800;
+
+                    &:hover {
+                        color: $mono-500;
+                        background-color: $mono-800;
+                        border: 1px solid $mono-700;
+                    }
+                }
+            }
+
+            span {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
+
+                padding-right: 0.25rem;
+
+                svg {
+                    color: $mono-500;
+                }
+
+                p {
+                    font-weight: 400;
+                }
+            }
+        }
+    }
+
+    .divider {
+        width: 100%;
+        height: 1px;
+
+        background-color: $mono-200;
+
+        @include dark-mode {
+            background-color: $mono-700;
+        }
+    }
+}
+
+@keyframes enter {
+    0% {
+        opacity: 0;
+        scale: 0.75;
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+@keyframes exit {
+    0% {
+        opacity: 1;
+        scale: 1;
+    }
+    100% {
+        opacity: 0;
+        scale: 0.90;
+    }
+}

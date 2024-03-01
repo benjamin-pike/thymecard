@@ -106,9 +106,9 @@ const PartialRegister = () => {
         [handleNumberFieldBlur]
     );
 
-    const createUserMutation = useMutation(
+    const { mutateAsync: callCreateUser } = useMutation(
         async (payload: FormData) => {
-            const url = '/api/users';
+            const url = '/users';
             const method = 'POST';
 
             const { status, data } = await sendRequest(url, method, {
@@ -137,12 +137,12 @@ const PartialRegister = () => {
 
                 loginUser({
                     user: {
-                        id: user._id,
+                        id: user.id,
                         firstName: user.firstName,
                         email: user.email,
                         image: user.image
                     },
-                    sessionId: session._id
+                    sessionId: session.id
                 });
 
                 navigate('/dashboard');
@@ -171,8 +171,8 @@ const PartialRegister = () => {
             formData.append('image', image);
         }
 
-        await createUserMutation.mutateAsync(formData);
-    }, [createUserMutation, dateOfBirth, firstName, gender, height, image, lastName, weight]);
+        await callCreateUser(formData);
+    }, [callCreateUser, dateOfBirth, firstName, gender, height, image, lastName, weight]);
 
     return (
         <>

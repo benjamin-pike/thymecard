@@ -2,9 +2,8 @@ import { FC, useRef } from 'react';
 import { useRecipe } from '../../RecipeProvider';
 import { ICONS } from '@/assets/icons';
 import { collateRecipeTags } from '@/lib/recipe.utils';
-import styles from './tags.module.scss';
-import { queue } from '@/lib/common.utils';
 import { capitalize } from '@/lib/string.utils';
+import styles from './tags.module.scss';
 
 const DeleteIcon = ICONS.common.XLarge;
 
@@ -68,33 +67,12 @@ const DisplayView: FC = () => {
 
     const tags = collateRecipeTags(recipe);
 
-    queue(() => {
-        if (!ref.current) {
-            return;
-        }
-
-        ref.current.style.visibility = 'hidden';
-        ref.current.style.width = 'unset';
-
-        const spans = [...ref.current.children] as HTMLSpanElement[];
-
-        const leftPoint = ref.current.getBoundingClientRect().left;
-        const rightPoint = spans.reduce((acc, span) => {
-            const rect = span.getBoundingClientRect();
-            return rect.right > acc ? rect.right : acc;
-        }, 0);
-
-        ref.current.style.width = `${rightPoint - leftPoint + 16}px`;
-
-        ref.current.style.visibility = 'visible';
-    });
-
     return (
         <p ref={ref} className={styles.tagsDisplay}>
-            {tags.map((tag) => (
+            {tags.map(({ name, type }) => (
                 <>
-                    <span className={styles.tagDisplay} key={tag}>
-                        {tag}
+                    <span key={name} className={styles.tagDisplay} data-type={type}>
+                        {name}
                     </span>{' '}
                 </>
             ))}

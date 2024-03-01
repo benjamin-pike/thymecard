@@ -1,23 +1,22 @@
 import { FC, useCallback } from 'react';
-import styles from './title.module.scss';
-import { ICONS } from '@/assets/icons';
+import TextSkeleton from '@/components/common/loading-skeleton/TextSkeleton';
 import { useRecipe } from '../RecipeProvider';
+import { ICONS } from '@/assets/icons';
+import styles from './title.module.scss';
 
 const BookmarkOutlineIcon = ICONS.recipes.bookmark;
 const BookmarkFillIcon = ICONS.recipes.bookmarkFill;
 
 const Title: FC = () => {
-    const { recipe, isEditing, title, upsertRecipe, isIncomplete } = useRecipe();
+    const { recipe, isEditing, title, handleUpdateRecipe, isIncomplete } = useRecipe();
 
     const isError = !title.edit.length && isIncomplete;
 
     const handleBookmarkButtonClick = useCallback(() => {
-        upsertRecipe({ isBookmarked: !recipe?.isBookmarked });
-    }, [recipe?.isBookmarked, upsertRecipe]);
+        handleUpdateRecipe({ isBookmarked: !recipe?.isBookmarked });
+    }, [recipe, handleUpdateRecipe]);
 
-    if (!recipe) {
-        return null;
-    }
+    const isLoading = !recipe;
 
     return (
         <span className={styles.title} data-editing={isEditing} data-error={isError}>
@@ -29,16 +28,20 @@ const Title: FC = () => {
                     placeholder="Add recipe title . . ."
                     onChange={title.handleTitleChange}
                 />
+            ) : isLoading ? (
+                <TextSkeleton fontSize={1.5} width="90%" />
             ) : (
-                <h1>{recipe.title}</h1>
+                <h1>{recipe?.title}</h1>
             )}
-            <span className={styles.buttons}>
-                {!isEditing && (
-                    <button className={styles.bookmark} data-active={!!recipe?.isBookmarked} onClick={handleBookmarkButtonClick}>
-                        {recipe?.isBookmarked ? <BookmarkFillIcon /> : <BookmarkOutlineIcon />}
-                    </button>
-                )}
-            </span>
+            {!isLoading && (
+                <span className={styles.buttons}>
+                    {!isEditing && (
+                        <button className={styles.bookmark} data-active={!!recipe?.isBookmarked} onClick={handleBookmarkButtonClick}>
+                            {recipe?.isBookmarked ? <BookmarkFillIcon /> : <BookmarkOutlineIcon />}
+                        </button>
+                    )}
+                </span>
+            )}
         </span>
     );
 };

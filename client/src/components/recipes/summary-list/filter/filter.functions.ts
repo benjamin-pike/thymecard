@@ -1,8 +1,8 @@
-import { IRecipeSummary } from '@thymecard/types';
+import { Client, IRecipeSummary } from '@thymecard/types';
 import { FilterAction, IFilterState } from './filter.types';
 import { isDefined } from '@/lib/type.utils';
 
-export const filterRecipes = (recipes: IRecipeSummary[], state: IFilterState): IRecipeSummary[] => {
+export const filterRecipes = (recipes: Client<IRecipeSummary>[], state: IFilterState): Client<IRecipeSummary>[] => {
     return recipes
         .filter((recipe) => (recipe.rating ?? 0) >= state.minRating)
         .filter((recipe) => {

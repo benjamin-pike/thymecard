@@ -159,7 +159,7 @@ const DECIMAL_FRACTION_MAP = new Map([
         </>
     ],
     [
-        0.333,
+        0.33,
         <>
             <sup className={styles.numerator}>1</sup>
             <span className={styles.slash}>&frasl;</span>

@@ -1,0 +1,57 @@
+.input {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+
+    cursor: text;
+
+    span,
+    input {
+        font-size: $fs-13;
+        color: $mono-600;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+    }
+
+    span {
+        translate: 0 -0.1rem;
+
+        &[data-placeholder-visible='true'] {
+            color: $mono-400;
+
+            @include dark-mode {
+                color: $mono-600;
+            }
+        }
+    }
+
+    input {
+        width: 2ch;
+
+        font-weight: 400;
+
+        appearance: textfield;
+
+        &::placeholder {
+            color: $mono-400;
+
+            @include dark-mode {
+                color: $mono-600;
+            }
+        }
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+
+    [name='hours'] {
+        input {
+            text-align: right;
+        }
+    }
+}

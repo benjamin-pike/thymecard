@@ -112,7 +112,7 @@
             width: 1.75rem;
 
             font-size: $fs-12;
-            font-weight: 300;
+            font-weight: 400;
             white-space: nowrap;
             color: $mono-500;
             border: 1px dashed $mono-300;
@@ -122,9 +122,9 @@
             transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
 
             &:hover {
-                color: $mono-light;
-                background-color: $mono-700;
-                border: 1px solid $mono-700;
+                color: $blue;
+                background-color: alpha($blue, 0.1);
+                border: 1px dashed alpha($blue, 0.5);
             }
 
             @include dark-mode {

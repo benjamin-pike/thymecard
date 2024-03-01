@@ -1,0 +1,137 @@
+.field {
+    display: flex;
+    align-items: center;
+
+    .label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        font-weight: 400;
+        font-size: $fs-14;
+        color: $mono-600;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+
+        svg {
+            height: 1rem;
+            width: 1rem;
+        }
+    }
+
+    .input {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+
+        padding: 0.75rem 1rem;
+
+        border-radius: 0.5rem;
+
+        &:hover {
+            background-color: $mono-100;
+
+            @include dark-mode {
+                background-color: $mono-800;
+            }
+        }
+
+
+        &:disabled {
+            cursor: default;
+
+            &:hover {
+                background-color: transparent
+            }
+        }
+
+        p {
+            color: $mono-600;
+            font-size: $fs-13;
+            font-weight: 400;
+
+            &[data-empty='true'] {
+                color: $mono-500;
+                font-weight: 400;
+            }
+
+            @include dark-mode {
+                color: $mono-light;
+
+                &[data-empty='true'] {
+                    color: $mono-500;
+                }
+            }
+        }
+
+        button {
+            margin-left: auto;
+
+            height: 1rem;
+            width: 1rem;
+
+            color: $mono-600;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+    }
+
+    &[data-type='dropdown'] {
+        .input {
+            p {
+                position: relative;
+
+                padding-left: 1rem;
+
+                &[data-empty='true'] {
+                    padding-left: 0;
+                }
+
+                &::before {
+                    content: '';
+
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+
+                    width: 0.35rem;
+                    height: 0.35rem;
+
+                    border-radius: 50%;
+
+                    translate: 0 -50%;
+
+                    transition: background-color 100ms ease;
+                }
+            }
+
+            button {
+                svg {
+                    rotate: 270deg;
+                }
+            }
+
+            @each $event, $color in $event-colors {
+                $dark-adjusted-color: contrastize($color, 'dark');
+
+                &[data-option='#{$event}'] {
+                    p {
+                        &::before {
+                            border: 1px solid $dark-adjusted-color;
+                            background-color: mix($color, $mono-light, 10%);
+
+                            @include dark-mode {
+                                background-color: mix($dark-adjusted-color, $mono-900, 35%);
+                                border: 1px solid $dark-adjusted-color;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

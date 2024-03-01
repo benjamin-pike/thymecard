@@ -36,7 +36,7 @@
                 font-size: $fs-18;
 
                 &::placeholder {
-                    color: $mono-400;
+                    color: $mono-500;
                     font-weight: 400;
                     font-size: $fs-16;
                 }
@@ -107,7 +107,7 @@
                         font-size: $fs-16;
 
                         &::placeholder {
-                            color: $mono-400;
+                            color: $mono-500;
                             font-weight: 400;
                             font-size: $fs-15;
                         }
@@ -155,7 +155,7 @@
                     line-height: $fs-28;
 
                     &::placeholder {
-                        color: $mono-400;
+                        color: $mono-500;
                         font-weight: 400;
                         font-size: $fs-14;
                     }
@@ -164,7 +164,7 @@
                         color: $mono-light;
 
                         &::placeholder {
-                            color: $mono-500;
+                            color: $mono-600;
                         }
                     }
 
@@ -269,11 +269,12 @@
         }
 
         &:hover {
-            color: $mono-light;
-            background-color: $mono-700;
-            border: 1px solid $mono-700;
+            color: $blue;
+            background-color: alpha($blue, 0.1);
+            border: 1px solid alpha($blue, 0.5);
 
             @include dark-mode {
+                color: $mono-light;
                 background-color: $mono-800;
                 border: 1px solid $mono-500;
             }

@@ -16,8 +16,8 @@
         $light-adjusted-color: contrastize($color, 'light');
 
         &[data-metric='#{$metric}'] {
-            background-color: $light-adjusted-color;
-            border: 1px dashed $light-adjusted-color;
+            background-color: $color;
+            border: 1px dashed $color;
 
             .value,
             .edit {

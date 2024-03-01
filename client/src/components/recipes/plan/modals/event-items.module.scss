@@ -1,0 +1,231 @@
+.items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    h3 {
+        font-size: $fs-15;
+        color: $mono-600;
+
+        @include dark-mode {
+            font-weight: 400;
+            color: $mono-light;
+        }
+    }
+
+    ul {
+        margin-top: 0.25rem;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            padding: 0 0.75rem;
+
+            border-radius: 0.35rem;
+
+            &:nth-of-type(odd) {
+                background-color: transparentize($mono-100, 0.35);
+
+                @include dark-mode {
+                    background-color: transparentize($mono-800, 0.15);
+                }
+            }
+
+            input {
+                font-size: $fs-13;
+
+                line-height: 2.25rem;
+
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+
+                color: $mono-700;
+                font-weight: 400;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+
+                &::placeholder {
+                    color: $mono-400;
+                    font-size: $fs-12;
+
+                    @include dark-mode {
+                        color: $mono-600;
+                    }
+                }
+            }
+
+            svg {
+                scale: 0.9;
+            }
+
+            .name {
+                flex-grow: 1;
+            }
+
+            .calories {
+                input {
+                    width: 4ch;
+
+                    text-align: center;
+                }
+            }
+
+            .servings {
+                input {
+                    width: 2ch;
+
+                    text-align: center;
+                }
+            }
+
+            .calories,
+            .servings {
+                position: relative;
+
+                svg {
+                    position: absolute;
+
+                    top: 50%;
+                    left: 50%;
+
+                    color: $mono-400;
+
+                    translate: -50% -50%;
+
+                    pointer-events: none;
+
+                    @include dark-mode {
+                        color: $mono-600;
+                    }
+                }
+
+                input:focus + svg,
+                input:not(:placeholder-shown) + svg {
+                    display: none;
+                }
+            }
+
+            button {
+                display: grid;
+                place-content: center;
+
+                height: 2.25rem;
+
+                color: $mono-400;
+
+                transition: color 100ms ease;
+
+                @include dark-mode {
+                    color: $mono-600;
+                }
+
+                &:hover {
+                    color: $mono-600;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
+                }
+
+                svg {
+                    height: 1rem;
+                    width: 1rem;
+                }
+
+                &.recipe {
+                    &[data-populated='true'] {
+                        color: $mono-700;
+
+                        @include dark-mode {
+                            color: $mono-light;
+                        }
+                    }
+
+                    svg {
+                        scale: 0.9;
+                    }
+                }
+
+                &.remove {
+                    svg {
+                        scale: 1.1;
+
+                        path {
+                            stroke-width: 40;
+                        }
+                    }
+                }
+            }
+
+            .divider {
+                height: 1rem;
+                width: 1px;
+
+                background-color: $mono-200;
+
+                @include dark-mode {
+                    background-color: $mono-700;
+                }
+            }
+        }
+    }
+
+    .addItem {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+
+        margin-left: 0.7rem;
+
+        padding: 0.5rem 0;
+
+        color: $mono-500;
+
+        transition: color 100ms ease;
+
+        svg {
+            height: 0.65rem;
+            width: 0.65rem;
+
+            path {
+                stroke-width: 15;
+            }
+        }
+
+        p {
+            font-size: $fs-12;
+            font-weight: 400;
+        }
+
+        &:hover {
+            color: $mono-700;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+    }
+}
+
+
+.divider {
+    width: 100%;
+    height: 1px;
+
+    background-color: $mono-200;
+
+    @include dark-mode {
+        background-color: $mono-700;
+    }
+}

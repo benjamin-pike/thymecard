@@ -18,65 +18,95 @@ export const dayRouter = (dependencies: IDependencies) => {
                 res.status(HTTP_STATUS_CODES.CREATED).json({ day });
             })
         )
-        .put(
-            '/:dayId',
-            errorHandler(async (req, res) => {
-                const context = req.context.getAuthContext();
-                const { dayId } = req.params;
-                const day = await dayController.updateDay(context, dayId, req.body);
-                res.status(HTTP_STATUS_CODES.OK).json({ day });
-            })
-        )
         .get(
             '/',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const { enriched, startKey, limit } = req.query;
-                const days = await dayController.getDays(context, enriched, startKey, limit);
-                res.status(HTTP_STATUS_CODES.OK).json({ days });
+                const { startDate, limit } = req.query;
+                const days = await dayController.getDays(context, startDate, limit);
+                res.status(HTTP_STATUS_CODES.OK).json(days);
             })
         )
         .get(
-            '/:dayId',
+            '/:date',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const { dayId } = req.params;
-                const { enriched } = req.query;
-                const day = await dayController.getDay(context, dayId, enriched);
+                const day = await dayController.getDay(context, req.params.date);
+                res.status(HTTP_STATUS_CODES.OK).json({ day });
+            })
+        )
+        .put(
+            '/:date',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const day = await dayController.updateDay(context, req.params.date, req.body);
                 res.status(HTTP_STATUS_CODES.OK).json({ day });
             })
         )
         .delete(
-            '/:dayId',
+            '/:date',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const { dayId } = req.params;
-                await dayController.deleteDay(context, dayId);
+                await dayController.deleteDay(context, req.params.date);
                 res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
             })
         )
         .post(
-            '/:dayId/meals',
+            '/:date/copy',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const { dayId } = req.params;
-                const day = await dayController.createMeal(context, dayId, req.body);
+                const { targetDate, excludedEvents } = req.body;
+
+                const day = await dayController.copyDay(context, req.params.date, targetDate, excludedEvents);
+
+                res.status(HTTP_STATUS_CODES.CREATED).send({ day });
+            })
+        )
+        .post(
+            '/:date/events',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+
+                const day = await dayController.createEvent(context, req.params.date, req.body);
+
                 res.status(HTTP_STATUS_CODES.CREATED).json({ day });
             })
         )
         .put(
-            '/:dayId/meals/:mealId',
+            '/:date/events/:eventId',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                const day = await dayController.updateMeal(context, req.params.dayId, req.params.mealId, req.body);
+                const day = await dayController.updateEvent(context, req.params.date, req.params.eventId, req.body);
+
                 res.status(HTTP_STATUS_CODES.OK).json({ day });
             })
         )
         .delete(
-            '/:dayId/meals/:mealId',
+            '/:date/events/:eventId',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
-                await dayController.deleteMeal(context, req.params.dayId, req.params.mealId);
+
+                await dayController.deleteEvent(context, req.params.date, req.params.eventId);
+
+                res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
+            })
+        )
+        .put(
+            '/:date/events/:eventId/items/:itemId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const { date, eventId, itemId } = req.params;
+                const day = await dayController.updateEventItem(context, date, eventId, itemId, req.body);
+                res.status(HTTP_STATUS_CODES.OK).json({ day });
+            })
+        )
+        .delete(
+            '/:date/events/:eventId/items/:itemId',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const { date, eventId, itemId } = req.params;
+                await dayController.deleteEventItem(context, date, eventId, itemId);
+                
                 res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
             })
         )
@@ -87,10 +117,13 @@ export const dayRouter = (dependencies: IDependencies) => {
 export const dayPermissions: IRoutePermissions = {
     'POST /days': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
     'GET /days': [{ scope: AccessScope.DAY, permission: Permission.READ }],
-    'GET /days/:dayId': [{ scope: AccessScope.DAY, permission: Permission.READ }],
-    'PUT /days/:dayId': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
-    'DELETE /days/:dayId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }],
-    'POST /days/:dayId/meals': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
-    'PUT /days/:dayId/meals/:mealId': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
-    'DELETE /days/:dayId/meals/:mealId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }]
+    'GET /days/:date': [{ scope: AccessScope.DAY, permission: Permission.READ }],
+    'PUT /days/:date': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'DELETE /days/:date': [{ scope: AccessScope.DAY, permission: Permission.DELETE }],
+    'POST /days/:date/copy': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'POST /days/:date/events': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'PUT /days/:date/events/:eventId': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'DELETE /days/:date/events/:eventId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }],
+    'PUT /days/:date/events/:eventId/items/:itemId': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'DELETE /days/:date/events/:eventId/items/:itemId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }],
 };

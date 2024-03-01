@@ -11,6 +11,7 @@ import {
     IRecipeComment,
     IRecipeCreate,
     IRecipeParseResponse,
+    IRecipeSearchResult,
     IRecipeSummary,
     IRecipeUpdate,
     isDefined,
@@ -18,6 +19,7 @@ import {
     isRecipeCommentCreateResource,
     isString
 } from '@thymecard/types';
+import { IPagedResult } from '../../lib/types/common.types';
 
 interface IRecipeControllerDependencies {
     recipeService: IRecipeService;
@@ -31,6 +33,8 @@ export interface IRecipeController {
     getSummary(context: IAuthenticatedContext, recipeId: string): Promise<IRecipeSummary>;
     getSummaries(context: IAuthenticatedContext): Promise<IRecipeSummary[]>;
     parseRecipe(context: IAuthenticatedContext, reqBody: unknown): Promise<IRecipeParseResponse>;
+    searchRecipes(context: IAuthenticatedContext, query: unknown): Promise<IPagedResult<IRecipe>>;
+    searchGoogleRecipes(context: IAuthenticatedContext, query: unknown): Promise<IRecipeSearchResult[]>;
     createComment(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IRecipeComment[]>;
     getComments(context: IAuthenticatedContext, recipeId: string): Promise<IRecipeComment[]>;
     deleteComment(context: IAuthenticatedContext, recipeId: string, commentId: string): Promise<void>;
@@ -150,6 +154,28 @@ export class RecipeController implements IRecipeController {
         }
 
         return await this.recipeService.getRecipeFromUrl(reqBody.url);
+    }
+
+    public async searchRecipes(context: IAuthenticatedContext, query: unknown): Promise<IPagedResult<IRecipe>> {
+        if (!isString(query)) {
+            throw new UnprocessableError(ErrorCode.InvalidSearchQuery, 'Invalid recipe search query', {
+                origin: 'RecipeController.searchRecipes',
+                data: { query }
+            });
+        }
+
+        return await this.recipeService.searchRecipes(context.userId, query);
+    }
+
+    public async searchGoogleRecipes(context: IAuthenticatedContext, query: unknown): Promise<IRecipeSearchResult[]> {
+        if (!isString(query)) {
+            throw new UnprocessableError(ErrorCode.InvalidSearchQuery, 'Invalid recipe search query', {
+                origin: 'RecipeController.searchGoogleRecipes',
+                data: { query }
+            });
+        }
+
+        return await this.recipeService.searchGoogleRecipes(context.userId, query);
     }
 
     public async createComment(context: IAuthenticatedContext, recipeId: string, resource: unknown): Promise<IRecipeComment[]> {

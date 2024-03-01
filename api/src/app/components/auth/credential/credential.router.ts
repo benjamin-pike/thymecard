@@ -6,7 +6,7 @@ import { IRoutePermissions } from '../../../lib/auth/permissions';
 import { CredentialProvider } from '@thymecard/types';
 
 export const credentialRouter = (dependencies: IDependencies) => {
-    const { env, credentialController, sessionController } = dependencies;
+    const { credentialController } = dependencies;
 
     const router = express.Router();
 

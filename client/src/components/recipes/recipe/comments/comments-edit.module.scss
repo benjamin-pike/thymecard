@@ -37,9 +37,9 @@
         textarea {
             width: calc(100% - 2rem);
 
-            padding: 1rem;
+            padding: 1.1rem 1rem 1rem 1rem;
 
-            font-size: $fs-12;
+            font-size: $fs-13;
             font-weight: 400;
             color: $mono-600;
             border: 1px dashed $mono-300;
@@ -71,7 +71,7 @@
             padding: 0 0.25rem;
 
             white-space: pre;
-            font-size: $fs-10;
+            font-size: $fs-11;
             font-weight: 400;
             color: $mono-600;
             background-color: $mono-light;
@@ -176,11 +176,12 @@
     }
 
     &:hover {
-        color: $mono-light;
-        background-color: $mono-700;
-        border: 1px solid $mono-700;
+        color: $blue;
+        background-color: alpha($blue, 0.1);
+        border: 1px solid alpha($blue, 0.5);
 
         @include dark-mode {
+            color: $mono-light;
             background-color: $mono-800;
             border: 1px solid $mono-500;
         }

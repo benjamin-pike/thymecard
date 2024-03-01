@@ -79,6 +79,7 @@ export class Server {
         this.application.use('/days', this.routers.day);
         this.application.use('/pantry', this.routers.pantry);
         this.application.use('/stock', this.routers.stock);
+        this.application.use('/event-bookmarks', this.routers.eventBookmark);
 
         return this;
     }

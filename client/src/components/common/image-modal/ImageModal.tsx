@@ -1,23 +1,20 @@
 import { useCallback, FC } from 'react';
 import { useWindowKeyDown } from '@/hooks/common/useWindowKeydown';
-
-import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
-
 import ModalWrapper from '@/components/wrappers/modal/ModalWrapper';
-
+import { ModalState } from '@/hooks/common/useModal';
+import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { formatClasses } from '@/lib/common.utils';
-
 import styles from './image-modal.module.scss';
 
 interface ImageModalProps {
-    isOpen: boolean;
+    state: ModalState;
     urls: string[];
     currentImage: number;
     changeSelectedImage: (index: number) => void;
-    closeModal: () => void;
+    handleCloseModal: () => void;
 }
 
-const ImageModal: FC<ImageModalProps> = ({ isOpen, urls, currentImage, changeSelectedImage, closeModal }) => {
+const ImageModal: FC<ImageModalProps> = ({ state, urls, currentImage, changeSelectedImage, handleCloseModal }) => {
     const displayButtons = urls.length > 1;
 
     const handleNext = useCallback(() => {
@@ -36,7 +33,7 @@ const ImageModal: FC<ImageModalProps> = ({ isOpen, urls, currentImage, changeSel
     useWindowKeyDown('ArrowLeft', handlePrev);
 
     return (
-        <ModalWrapper isOpen={isOpen} closeModal={closeModal} blurBackground={true}>
+        <ModalWrapper state={state} handleCloseModal={handleCloseModal} blurBackground={true}>
             <div className={styles.container}>
                 {displayButtons && (
                     <button

@@ -1,8 +1,8 @@
 import { createContext, useContext, FC, ReactElement, useReducer, useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { IStock, IStockCategory, IStockItem, StockSection } from '@thymecard/types';
 import { sendRequest } from '@/lib/api/sendRequest';
-import { useMutation, useQuery } from '@tanstack/react-query';
 
 interface IStockContext {
     stock: IStock;
@@ -47,7 +47,7 @@ const StockProvider: FC<IStockProviderProps> = ({ children }) => {
     useQuery<IStock>(
         ['stock'],
         async () => {
-            const { status, data } = await sendRequest(`/api/stock`, 'GET');
+            const { status, data } = await sendRequest(`/stock`, 'GET');
             if (status !== 200) {
                 throw new Error('Failed to fetch the recipe');
             }
@@ -56,33 +56,34 @@ const StockProvider: FC<IStockProviderProps> = ({ children }) => {
         {
             onSuccess: (data) => {
                 if (data) {
-                    console.log('data', data);
                     init(data);
                 }
             }
         }
     );
 
-    const upsertStockMutation = useMutation(async ({ section, categories }: { section: StockSection; categories: IStockCategory[] }) => {
-        const { status, data } = await sendRequest('/api/stock', 'PUT', {
-            body: {
-                section,
-                categories
+    const { mutateAsync: callUpsertStock } = useMutation(
+        async ({ section, categories }: { section: StockSection; categories: IStockCategory[] }) => {
+            const { status, data } = await sendRequest('/stock', 'PUT', {
+                body: {
+                    section,
+                    categories
+                }
+            });
+
+            if (status !== 200 && status !== 201) {
+                throw new Error('Failed to upsert recipe');
             }
-        });
 
-        if (status !== 200 && status !== 201) {
-            throw new Error('Failed to upsert recipe');
+            init({ ...stock, [data.section]: data.categories });
         }
-
-        init({ ...stock, [data.section]: data.categories });
-    });
+    );
 
     const upsertStock = useCallback(
         async (section: StockSection, categories: IStockCategory[]) => {
-            await upsertStockMutation.mutateAsync({ section, categories });
+            await callUpsertStock({ section, categories });
         },
-        [upsertStockMutation]
+        [callUpsertStock]
     );
 
     const init = useCallback((stock: IStock) => {

@@ -1,11 +1,14 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useMemo } from 'react';
 import { Duration } from 'luxon';
+
 import Tooltip from '@/components/common/tooltip/Tooltip';
+
 import { ICONS } from '@/assets/icons';
-import { IRecipeSummary } from '@thymecard/types';
+import { Client, IRecipeSummary } from '@thymecard/types';
 import { collateRecipeTags } from '@/lib/recipe.utils';
-import { getRecipeImageUrl } from '@/lib/s3/s3.utils';
+import { buildRecipeImageUrl } from '@/lib/s3/s3.utils';
 import { formatClasses } from '@/lib/common.utils';
+
 import styles from './summary.module.scss';
 
 const ServingsIcon = ICONS.recipes.servings;
@@ -18,17 +21,20 @@ const CaloriesIcon = ICONS.common.pieChart;
 const StarIcon = ICONS.common.star;
 
 interface ISummaryProps {
-    recipe: IRecipeSummary;
+    recipe: Client<IRecipeSummary>;
     selectedTags: string[];
     handleSelectRecipe: (recipeId: string) => void;
     handleTagClick: (tag: string) => void;
 }
 
 const Summary: FC<ISummaryProps> = ({ recipe, selectedTags, handleSelectRecipe, handleTagClick }) => {
-    const tags = collateRecipeTags(recipe);
-    const orderedTags = [...selectedTags, ...tags.filter((tag) => !selectedTags.includes(tag))];
+    const tags = useMemo(() => collateRecipeTags(recipe), [recipe]);
+    const orderedTags = useMemo(
+        () => [...selectedTags, ...tags.filter((tag) => !selectedTags.includes(tag.name)).map((tag) => tag.name)],
+        [selectedTags, tags]
+    );
 
-    const imageUrl = getRecipeImageUrl(recipe.image);
+    const imageUrl = buildRecipeImageUrl(recipe.image);
 
     const details = [
         {

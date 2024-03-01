@@ -1,7 +1,7 @@
-import { EventType } from '@thymecard/types';
+import { EEventType } from '@thymecard/types';
 
 export interface IFeedEventProps {
-    type: EventType;
+    type: EEventType;
     time: Date;
     location?: string;
     rating?: number;

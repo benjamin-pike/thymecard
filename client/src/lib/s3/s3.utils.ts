@@ -8,6 +8,6 @@ export const getUserImageUrl = (imageFilename?: string) => {
     return `${S3_PATHS.USER_IMAGES}/${imageFilename}`;
 };
 
-export const getRecipeImageUrl = (imageFilename: string) => {
+export const buildRecipeImageUrl = (imageFilename: string) => {
     return `${S3_PATHS.RECIPE_IMAGES}/${imageFilename}`;
 };

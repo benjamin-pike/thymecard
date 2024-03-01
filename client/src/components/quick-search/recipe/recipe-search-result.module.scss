@@ -1,0 +1,187 @@
+$dark-bg: mix($mono-800, $mono-900, 25%);
+
+.result {
+    position: relative;
+
+    width: 100%;
+
+    &:hover {
+        @include dark-mode {
+            &:after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+
+                background-color: alpha($mono-500, 0.1);
+                box-shadow: 0 0 0 1px $mono-600;
+
+                border-radius: calc(0.5rem + 0.2rem);
+
+                pointer-events: none;
+
+                z-index: 1;
+            }
+        }
+    }
+
+    button {
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+
+        padding-right: 1rem;
+
+        height: 3.25rem;
+        width: 100%;
+
+        border-radius: calc(0.5rem + 0.2rem);
+
+        &:hover {
+            background-color: alpha($blue, 0.1);
+
+            .details {
+                .label,
+                .title {
+                    color: $blue;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
+                }
+
+                svg {
+                    color: $blue;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
+                }
+
+                .metadata {
+                    .separator {
+                        background-color: alpha($blue, 0.25);
+                    }
+                }
+            }
+        }
+
+        .image {
+            position: relative;
+
+            display: flex;
+            align-items: center;
+
+            height: 100%;
+
+            padding: 0.2rem;
+
+            img {
+                height: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+
+                border-radius: 0.5rem;
+
+                z-index: 1;
+            }
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+
+                height: 100%;
+                width: 7.5rem;
+
+                background: linear-gradient(to right, $mono-light 0%, $mono-light 1rem, transparent 100%);
+
+                border-radius: 0.5rem 0 0 0.5rem;
+
+                @include dark-mode {
+                    width: 15rem;
+
+                    background: linear-gradient(to right, $dark-bg 0%, $dark-bg 1rem, transparent 100%);
+                }
+            }
+        }
+
+        .details {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: 0.15rem;
+
+            z-index: 1;
+
+            .title {
+                position: relative;
+
+                flex-grow: 1;
+                flex-shrink: 1;
+
+                color: $mono-600;
+                font-size: $fs-13;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                @include dark-mode {
+                    color: $mono-light;
+                    font-weight: 400;
+                }
+            }
+
+            .metadata {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                li {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.25rem;
+
+                    color: $mono-600;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                        font-weight: 400;
+                    }
+
+                    svg {
+                        height: 0.75rem;
+                        width: 0.75rem;
+                    }
+
+                    p {
+                        width: fit-content;
+
+                        font-size: $fs-10;
+                        white-space: nowrap;
+                    }
+
+                    &:last-of-type + .separator {
+                        display: none;
+                    }
+                }
+
+                .separator {
+                    height: 0.75rem;
+                    width: 1px;
+
+                    background-color: $mono-300;
+
+                    @include dark-mode {
+                        background-color: $mono-600;
+                    }
+                }
+            }
+        }
+    }
+}

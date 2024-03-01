@@ -1,5 +1,5 @@
 .ingredients {
-    margin: 0.5rem 0 1.5rem 0;
+    margin: 1rem 0 1.5rem 0;
 
     width: 100%;
     max-width: 100%;
@@ -11,14 +11,14 @@
 .row {
     position: relative;
 
-    &:nth-of-type(even) {
+    &:nth-of-type(odd) {
         td:not(.match) {
-            background-color: transparentize($mono-100, 0.15);
+            background-color: alpha($mono-100, 0.5);
         }
 
         @include dark-mode {
             td:not(.match) {
-                background-color: transparentize($mono-800, 0.15);
+                background-color: alpha($mono-800, 0.5);
             }
         }
     }
@@ -428,9 +428,9 @@
                 box-shadow 150ms ease;
 
             &:hover {
-                color: $mono-light;
-                background-color: $mono-700;
-                box-shadow: 0 0 0 1px $mono-700;
+                color: $blue;
+                background-color: alpha($blue, 0.1);
+                box-shadow: 0 0 0 1px alpha($blue, 0.5);
             }
 
             @include dark-mode {
@@ -496,11 +496,12 @@
     }
 
     &:hover {
-        color: $mono-light;
-        background-color: $mono-700;
-        border: 1px solid $mono-700;
+        color: $blue;
+        background-color: alpha($blue, 0.1);
+        border: 1px solid alpha($blue, 0.5);
 
         @include dark-mode {
+            color: $mono-light;
             background-color: $mono-800;
             border: 1px solid $mono-500;
         }

@@ -1,13 +1,16 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRecipe } from '../RecipeProvider';
-import { ICONS } from '@/assets/icons';
 import { PiImageDuotone } from 'react-icons/pi';
-import styles from './image.module.scss';
-import { useCallback, useRef } from 'react';
+
+import LoadingDots from '@/components/common/loading-dots/LoadingDots';
+
+import { buildRecipeImageUrl } from '@/lib/s3/s3.utils';
+import { ICONS } from '@/assets/icons';
 import { createToast } from '@/lib/toast/toast.utils';
 import { isValidUrl } from '@thymecard/types';
-import { validateImageUrl } from '@/lib/media.utils';
-import { getRecipeImageUrl } from '@/lib/s3/s3.utils';
-import { sendRequest } from '@/lib/api/sendRequest';
+import { imageUrlToBlob } from '@/lib/media.utils';
+
+import styles from './image.module.scss';
 
 const UploadIcon = ICONS.common.upload;
 
@@ -24,13 +27,37 @@ const RecipeImage = () => {
 const DisplayView = () => {
     const { recipe } = useRecipe();
 
-    if (!recipe) {
-        return null;
+    const [isImageLoading, setIsImageLoading] = useState(true);
+    const ref = useRef<HTMLImageElement>(null);
+
+    const imageUrl = recipe?.image ? buildRecipeImageUrl(recipe.image) : null;
+
+    if (ref.current && isImageLoading) {
+        if (ref.current.complete) {
+            setIsImageLoading(false);
+        } else {
+            ref.current.onload = () => {
+                setIsImageLoading(false);
+            };
+        }
     }
 
-    const imageUrl = recipe.image ? getRecipeImageUrl(recipe.image) : null;
+    useEffect(() => {
+        if (recipe && !recipe.image) {
+            setIsImageLoading(false);
+        }
+    }, [recipe]);
 
-    return <div className={styles.display}>{imageUrl ? <img src={imageUrl} /> : <PiImageDuotone />}</div>;
+    if (!recipe) {
+        return <div className={styles.display}>{isImageLoading && <LoadingDots />}</div>;
+    }
+
+    return (
+        <div className={styles.display}>
+            {isImageLoading && <LoadingDots />}
+            {imageUrl ? <img ref={ref} src={imageUrl} data-visible={!isImageLoading} /> : <PiImageDuotone />}
+        </div>
+    );
 };
 
 const EditView = () => {
@@ -66,26 +93,10 @@ const EditView = () => {
             }
 
             try {
-                const { data, headers } = await sendRequest(`/api/proxy?url=${url}`, 'GET', {
-                    responseType: 'arraybuffer',
-                    headers: {
-                        Accept: 'image/*',
-                        'Allow-Cross-Origin-Resource-Sharing': '*'
-                    }
-                });
-
-                const blob = new Blob([data], { type: headers['content-type'] });
-                const blobUrl = URL.createObjectURL(blob);
-
-                if (validateImageUrl(blobUrl)) {
-                    image.update(blob);
-                } else {
-                    createToast('error', 'Invalid image URL');
-                    console.log('Invalid image URL');
-                }
+                const blob = await imageUrlToBlob(url);
+                image.update(blob);
             } catch (error) {
                 createToast('error', 'Failed to fetch image');
-                console.log('There was a problem with the fetch operation: ', error);
             }
         },
         [image]

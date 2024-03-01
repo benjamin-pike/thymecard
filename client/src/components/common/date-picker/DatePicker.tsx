@@ -1,8 +1,11 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { useToggle } from '@mantine/hooks';
-import { useWindowKeyDown } from '@/hooks/common/useWindowKeydown';
 import { DateTime } from 'luxon';
+
+import { useToggle } from '@mantine/hooks';
+
+import { useWindowKeyDown } from '@/hooks/common/useWindowKeydown';
 import { ICONS } from '@/assets/icons';
+
 import styles from './date-picker.module.scss';
 
 const LeftIcon = ICONS.common.chevronLeft;
@@ -12,18 +15,20 @@ interface IDatePickerProps {
     selectedDay?: DateTime;
     blockPast?: boolean;
     blockFuture?: boolean;
+    blockToday?: boolean;
     handleSelectDay: (day: DateTime) => void;
 }
 
-const DatePicker: FC<IDatePickerProps> = ({ selectedDay: initialSelectedDay, blockPast, blockFuture, handleSelectDay }) => {
+const DatePicker: FC<IDatePickerProps> = ({ selectedDay: initialSelectedDay, blockPast, blockFuture, blockToday, handleSelectDay }) => {
     const [selectedMonth, setSelectedMonth] = useState(initialSelectedDay || DateTime.local());
-    const [selectedDay, setSelectedDay] = useState(initialSelectedDay || DateTime.local());
+    const [selectedDay, setSelectedDay] = useState(initialSelectedDay);
 
     const [mode, toggleMode] = useToggle(['day', 'month']);
 
-    const today = useMemo(() => DateTime.local(), []);
+    const today = useMemo(() => DateTime.now().startOf('day'), []);
     const isPast = useCallback((date: DateTime) => date < today, [today]);
     const isFuture = useCallback((date: DateTime) => date > today, [today]);
+    const isToday = useCallback((date: DateTime) => date.toISODate() === today.toISODate(), [today]);
 
     const startDayOfMonth = selectedMonth.startOf('month');
     const endDayOfMonth = selectedMonth.endOf('month');
@@ -40,14 +45,15 @@ const DatePicker: FC<IDatePickerProps> = ({ selectedDay: initialSelectedDay, blo
 
     const handleDayClick = useCallback(
         (day: DateTime) => {
-            if ((blockPast && isPast(day)) || (blockFuture && isFuture(day))) {
+            if ((blockPast && isPast(day)) || (blockFuture && isFuture(day)) || (blockToday && isToday(day))) {
                 return;
             }
+
             setSelectedMonth(day);
             setSelectedDay(day);
             handleSelectDay(day);
         },
-        [blockFuture, blockPast, handleSelectDay, isFuture, isPast]
+        [blockFuture, blockPast, blockToday, handleSelectDay, isFuture, isPast, isToday]
     );
 
     const handleDecrementShift = useCallback(() => {
@@ -82,7 +88,7 @@ const DatePicker: FC<IDatePickerProps> = ({ selectedDay: initialSelectedDay, blo
     useWindowKeyDown('ArrowRight', handleIncrementShift);
 
     useEffect(() => {
-        if (initialSelectedDay && initialSelectedDay.toISO() !== selectedDay.toISO()) {
+        if (initialSelectedDay && initialSelectedDay.toISO() !== selectedDay?.toISO()) {
             setSelectedDay(initialSelectedDay);
             setSelectedMonth(initialSelectedDay);
         }
@@ -115,10 +121,10 @@ const DatePicker: FC<IDatePickerProps> = ({ selectedDay: initialSelectedDay, blo
                         <button
                             key={day.toISODate()}
                             className={styles.option}
-                            data-selected={day.toISODate() === selectedDay.toISODate()}
+                            data-selected={day.toISODate() === selectedDay?.toISODate()}
                             data-current-month={day.month === selectedMonth.month}
                             onClick={() => handleDayClick(day)}
-                            disabled={(blockPast && isPast(day)) || (blockFuture && isFuture(day))}
+                            disabled={(blockPast && isPast(day)) || (blockFuture && isFuture(day)) || (blockToday && isToday(day))}
                         >
                             {day.day}
                         </button>

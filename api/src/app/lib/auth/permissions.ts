@@ -1,4 +1,4 @@
-import { Role } from "@thymecard/types";
+import { Role } from '@thymecard/types';
 
 export enum Permission {
     READ = 1,
@@ -14,7 +14,8 @@ export enum AccessScope {
     RECIPE = 'r',
     DAY = 'd',
     PANTRY = 'p',
-    STOCK = 's'
+    STOCK = 's',
+    EVENT_BOOKMARK = 'e'
 }
 
 export const permissions = {
@@ -24,7 +25,8 @@ export const permissions = {
         [AccessScope.RECIPE]: Permission.ALL,
         [AccessScope.DAY]: Permission.ALL,
         [AccessScope.PANTRY]: Permission.ALL,
-        [AccessScope.STOCK]: Permission.ALL
+        [AccessScope.STOCK]: Permission.ALL,
+        [AccessScope.EVENT_BOOKMARK]: Permission.ALL
     },
     [Role.USER]: {
         [AccessScope.AUTH]: Permission.READ | Permission.WRITE | Permission.DELETE,
@@ -32,9 +34,10 @@ export const permissions = {
         [AccessScope.RECIPE]: Permission.READ | Permission.WRITE | Permission.DELETE,
         [AccessScope.DAY]: Permission.READ | Permission.WRITE | Permission.DELETE,
         [AccessScope.PANTRY]: Permission.READ | Permission.WRITE | Permission.DELETE,
-        [AccessScope.STOCK]: Permission.READ | Permission.WRITE | Permission.DELETE
+        [AccessScope.STOCK]: Permission.READ | Permission.WRITE | Permission.DELETE,
+        [AccessScope.EVENT_BOOKMARK]: Permission.READ | Permission.WRITE | Permission.DELETE
     }
-}
+};
 
 export interface IScopedPermission {
     scope: AccessScope;
@@ -53,4 +56,4 @@ export const hasPermissions = (userPermissions: Record<string, number>, required
     return requiredPermissions.every(({ scope, permission }) => {
         return (userPermissions[scope] & permission) === permission;
     });
-}
+};

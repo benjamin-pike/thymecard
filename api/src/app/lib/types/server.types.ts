@@ -12,10 +12,10 @@ import { ThymecardEnvironment } from '../../../env';
 import { ICredentialController } from '../../components/auth/credential/credential.controller';
 import { IOAuthController } from '../../components/auth/oauth/oauth.controller';
 import { ISessionController } from '../../components/auth/session/session.controller';
+import { IEventBookmarkController } from '../../components/eventBookmark/eventBookmark.controller';
 
 export interface IDependencies {
     env: ThymecardEnvironment;
-    // authController: IAuthController;
     oauthController: IOAuthController;
     credentialController: ICredentialController;
     sessionController: ISessionController;
@@ -24,9 +24,10 @@ export interface IDependencies {
     dayController: IDayController;
     pantryController: IPantryController;
     stockController: IStockController;
+    eventBookmarkController: IEventBookmarkController;
 }
 
-type routers = 'auth' | 'user' | 'recipe' | 'day' | 'pantry' | 'stock';
+type routers = 'auth' | 'user' | 'recipe' | 'day' | 'pantry' | 'stock' | 'eventBookmark';
 
 export type IRouters = {
     [key in routers]: express.Router;

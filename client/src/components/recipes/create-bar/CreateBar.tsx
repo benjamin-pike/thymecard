@@ -1,20 +1,20 @@
-import Search from '../search/Search';
-import styles from './create-bar.module.scss';
 import { useCallback, useState } from 'react';
-import Tooltip from '@/components/common/tooltip/Tooltip';
-import usePremium from '@/hooks/common/usePremium';
-import { ICONS } from '@/assets/icons';
-import { RootState } from '@/store';
 import { useSelector } from 'react-redux';
+import Search from '../search/Search';
+import Tooltip from '@/components/common/tooltip/Tooltip';
+import { RootState } from '@/store';
+import usePremium from '@/hooks/common/usePremium';
 import { useRecipe } from '../recipe/RecipeProvider';
+import { ICONS } from '@/assets/icons';
+import styles from './create-bar.module.scss';
 
 const LinkIcon = ICONS.recipes.link;
-const CreateIcon = ICONS.recipes.create;
+const CreateIcon = ICONS.recipes.add;
 const ChefIcon = ICONS.recipes.chef;
 const AddRecipeIcon = ICONS.recipes.add;
 
 const CreateBar = () => {
-    const { parseRecipe, createRecipePartial } = useRecipe();
+    const { handleParseRecipe, handleManualCreate } = useRecipe();
     const isPremium = usePremium();
     const { viewportSize, customViewportSize } = useSelector((state: RootState) => state.viewport);
 
@@ -29,13 +29,9 @@ const CreateBar = () => {
             ? 'top'
             : 'bottom';
 
-    const create = useCallback(() => {
-        createRecipePartial({});
-    }, [createRecipePartial]);
-
     const parse = useCallback(() => {
-        parseRecipe(value);
-    }, [parseRecipe, value]);
+        handleParseRecipe(value);
+    }, [handleParseRecipe, value]);
 
     return (
         <section className={styles.createBar}>
@@ -48,7 +44,7 @@ const CreateBar = () => {
                 </>
             )}
             <Search
-                primaryPlaceholder="Import"
+                primaryPlaceholder="Import recipe"
                 secondaryPlaceholder="from website . . ."
                 icon={<LinkIcon className={styles.searchIcon} />}
                 value={value}
@@ -56,40 +52,21 @@ const CreateBar = () => {
                 goFn={parse}
             />
             <div className={styles.divider} />
-
             {condenseButtons ? (
                 <button data-tooltip-id="add">
                     <AddRecipeIcon />
                 </button>
             ) : (
-                <>
-                    <button data-tooltip-id="add-manually" onClick={create}>
-                        <CreateIcon />
-                    </button>
-                    {/* TODO: IMPLEMENT BELOW */}
-                    {/* <div className={styles.divider} />
-                    <button data-tooltip-id="import-file">
-                        <UploadIcon />
-                    </button>
-                    <div className={styles.divider} />
-                    <button data-tooltip-id="duplicate-existing">
-                        <DuplicateIcon />
-                    </button> */}
-                </>
+                <button data-tooltip-id="add-manually" onClick={handleManualCreate}>
+                    <CreateIcon />
+                </button>
             )}
-
             <Tooltip id="chef" place={tooltipPosition} offset={17.5}>
                 Create with Chef AI
             </Tooltip>
             <Tooltip id="add-manually" place={tooltipPosition} offset={17.5}>
-                Add Manually
+                Add Recipe Manually
             </Tooltip>
-            {/* <Tooltip id="import-file" place={tooltipPosition} offset={17.5}>
-                Import from File
-            </Tooltip> */}
-            {/* <Tooltip id="duplicate-existing" place={tooltipPosition} offset={17.5}>
-                Duplicate Existing
-            </Tooltip> */}
             <Tooltip id="add" place={tooltipPosition} offset={17.5}>
                 Add Recipe
             </Tooltip>

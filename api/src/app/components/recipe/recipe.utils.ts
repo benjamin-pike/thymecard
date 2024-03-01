@@ -616,6 +616,11 @@ export const splitMultiTypeObjects = (objs: any): object[] => {
     const duplicatedObjects: object[] = [];
 
     for (const obj of objs) {
+        if (obj['@graph']) {
+            duplicatedObjects.push(...splitMultiTypeObjects(obj['@graph']));
+            continue;
+        }
+
         const type = obj['@type'];
 
         if (!type) {
