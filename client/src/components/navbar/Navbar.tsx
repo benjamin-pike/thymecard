@@ -96,9 +96,9 @@ const LINKS = [
         link: '#'
     },
     {
-        name: 'recipes',
+        name: 'food',
         icon: <BiFoodMenu />,
-        link: 'recipes'
+        link: '/food'
     },
     {
         name: 'activities',

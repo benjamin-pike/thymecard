@@ -5,6 +5,7 @@ import { IEvent } from '@/lib/global.types';
 import { BiPlus } from 'react-icons/bi';
 import { formatClasses } from '@/lib/common.utils';
 import styles from './day.module.scss';
+import { EEventType } from '@thymecard/types';
 
 interface IDayProps {
     data: IEvent[];
@@ -15,9 +16,9 @@ const Day: FC<IDayProps> = ({ data, date }) => {
     const isEmptyDay = data.length === 0;
     const periods = splitEvents(data, 15, 30);
 
-    const hasBreakfast = data.some((event) => event.type === 'breakfast');
-    const hasLunch = data.some((event) => event.type === 'lunch');
-    const hasDinner = data.some((event) => event.type === 'dinner');
+    const hasBreakfast = data.some((event) => event.type === EEventType.BREAKFAST);
+    const hasLunch = data.some((event) => event.type === EEventType.LUNCH);
+    const hasDinner = data.some((event) => event.type === EEventType.DINNER);
 
     return (
         date && (

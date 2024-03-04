@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import { EEventDisplayFormat, PlannerData } from '../planner.types';
 import { IEvent } from '@/lib/global.types';
 import styles from './month.module.scss';
+import { EEventType } from '@thymecard/types';
 
 interface IMonthProps {
     data: PlannerData;
@@ -124,11 +125,11 @@ const DayCell: FC<IDayCellProps> = ({
                 {displayMonth ? `${date.monthShort} ${date.day}` : date.day} <span className={styles.dayName}> • {date.weekdayShort}</span>
             </p>
             {events.map((event, k) => {
-                if (event.type !== 'activity' && !displayMeals) {
+                if (event.type !== EEventType.ACTIVITY && !displayMeals) {
                     return null;
                 }
 
-                if (event.type === 'activity' && !displayActivities) {
+                if (event.type === EEventType.ACTIVITY && !displayActivities) {
                     return null;
                 }
 

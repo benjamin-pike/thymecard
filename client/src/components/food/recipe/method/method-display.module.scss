@@ -1,0 +1,131 @@
+.method {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    margin-top: 1rem;
+
+    padding: 0 1rem;
+
+    &[data-print='true'] {
+        margin-top: 3rem;
+    }
+
+    &[data-ingredients-visible='true'] {
+        padding: 0 0 0 1rem;
+
+        @include responsive(('mobile')) {
+            padding: 0.5rem;
+        }
+    }
+
+    &[data-ingredients-visible='false'] {
+        margin-bottom: 1.5rem;
+    }
+
+    @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .sectionTitle {
+            margin-bottom: 0.5rem;
+
+            height: 1.5rem;
+
+            color: $mono-700;
+            font-weight: 500;
+            font-size: $fs-18;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+
+            margin-bottom: 0.5rem;
+
+            padding-left: 0.5rem;
+
+            @include responsive(('oneColumnWideMargins', 'oneColumnNarrowMargins')) {
+                padding-left: 0;
+            }
+
+            .step {
+                position: relative;
+
+                padding-left: 0.75rem;
+
+                .stepTitle {
+                    position: relative;
+
+                    display: block;
+
+                    margin-top: 0.25rem;
+                    margin-bottom: 0.5rem;
+
+                    color: $mono-700;
+                    font-weight: 500;
+                    font-size: $fs-16;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
+                }
+
+                p {
+                    color: $mono-700;
+                    font-weight: 300;
+                    font-size: $fs-14;
+                    line-height: $fs-28;
+
+                    @include dark-mode {
+                        color: $mono-light;
+                    }
+                }
+
+                &::before {
+                    content: attr(data-number);
+
+                    position: absolute;
+                    top: 0.9rem;
+                    right: calc(100% - 0.25rem);
+
+                    color: $mono-700;
+                    font-size: $fs-14;
+                    font-weight: 300;
+
+                    translate: 0 -50%;
+
+                    @include dark-mode {
+                        color: $mono-500;
+                    }
+                }
+            }
+        }
+
+        .divider {
+            margin-top: calc(-0.75rem - 1px);
+
+            width: 100%;
+            height: 1px;
+
+            background-color: $mono-200;
+
+            @include dark-mode {
+                background-color: $mono-700;
+            }
+        }
+    }
+}

@@ -4,7 +4,7 @@ import { IStockService } from './stock.service';
 import { upsertStockSchema } from './stock.types';
 import { UnprocessableError } from '../../lib/error/thymecardError';
 import { formatZodError } from '../../lib/error/error.utils';
-import { ErrorCode, IStock, IStockCategory, StockSection } from '@thymecard/types';
+import { ErrorCode, IStock, IStockCategory, EStockSection } from '@thymecard/types';
 
 interface IStockControllerDependencies {
     stockService: IStockService;
@@ -16,7 +16,7 @@ export interface IStockController {
 }
 
 interface IUpsertStockCategoryResponse {
-    section: StockSection;
+    section: EStockSection;
     categories: IStockCategory[];
 }
 

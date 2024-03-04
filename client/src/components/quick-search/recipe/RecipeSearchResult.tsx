@@ -3,7 +3,7 @@ import { Duration } from 'luxon';
 
 import LoadingSpinner from '../../common/loading-spinner/LoadingSpinner';
 
-import { useRecipe } from '@/components/recipes/recipe/RecipeProvider';
+import { useRecipe } from '@/components/food/recipe/RecipeProvider';
 
 import { convertToClientType } from '@/lib/common.utils';
 import { createToast } from '@/lib/toast/toast.utils';

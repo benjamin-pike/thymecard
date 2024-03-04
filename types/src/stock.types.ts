@@ -1,4 +1,4 @@
-export enum StockSection {
+export enum EStockSection {
 	PANTRY = "pantry",
 	SHOPPING_LIST = "shoppingList",
 	FAVORITES = "favorites"
@@ -28,5 +28,5 @@ export interface IStockItem {
 
 export type IStockCreate = Omit<IStock, "_id" | "createdAt" | "updatedAt">;
 export type IStockUpdate = {
-	[key in StockSection]: IStockCategory[];
+	[key in EStockSection]: IStockCategory[];
 };
