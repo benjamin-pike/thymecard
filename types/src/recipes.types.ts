@@ -1,11 +1,5 @@
 import { Client } from "..";
-import {
-	hasKey,
-	isDefined,
-	isOptional,
-	isString,
-	isValidMongoId
-} from "./types.utils";
+import { hasKey, isOptional, isString, isValidMongoId } from "./types.utils";
 
 export interface IRecipe {
 	_id: string;

@@ -22,5 +22,8 @@ export const ROUTES = {
         SUMMARIES: '/recipes/summary',
         SEARCH: '/recipes/search',
         SEARCH_GOOGLE: '/recipes/search/google'
+    },
+    STOCK: {
+        GET_STOCK: '/stock'
     }
 } as const;

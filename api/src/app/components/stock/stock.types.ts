@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { StockSection } from '@thymecard/types';
+import { EStockSection } from '@thymecard/types';
 
 export const createStockItemSchema = z.object({
     id: z.string(),
@@ -16,6 +16,6 @@ export const createStockCategorySchema = z.object({
 });
 
 export const upsertStockSchema = z.object({
-    section: z.enum([StockSection.PANTRY, StockSection.SHOPPING_LIST, StockSection.FAVORITES]),
+    section: z.enum([EStockSection.PANTRY, EStockSection.SHOPPING_LIST, EStockSection.FAVORITES]),
     categories: z.array(createStockCategorySchema)
 });

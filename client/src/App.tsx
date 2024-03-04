@@ -10,8 +10,8 @@ import Auth from './pages/auth/Auth';
 import Navbar from './components/navbar/Navbar';
 import Dashboard from './pages/dashboard/Dashboard';
 import Planner from './pages/planner/Planner';
-import Recipes from './pages/recipes/Recipes';
-import RecipeProvider from './components/recipes/recipe/RecipeProvider';
+import Food from './pages/food/Food';
+import RecipeProvider from './components/food/recipe/RecipeProvider';
 
 import ThemeWrapper from './components/wrappers/theme/ThemeWrapper';
 import ResponsiveWrapper from './components/wrappers/responsive/ResponsiveWrapper';
@@ -46,16 +46,16 @@ const privateRoutes = [
         element: <Planner />
     },
     {
-        path: '/recipes',
-        element: <Recipes />
+        path: '/food',
+        element: <Food />
     },
     {
-        path: '/recipes/create',
-        element: <Recipes />
+        path: '/food/recipes/create',
+        element: <Food />
     },
     {
-        path: '/recipes/:recipeId',
-        element: <Recipes />
+        path: '/food/recipes/:recipeId',
+        element: <Food />
     },
     {
         path: '/*',

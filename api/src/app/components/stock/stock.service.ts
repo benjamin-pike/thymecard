@@ -1,14 +1,14 @@
-import { ErrorCode, IStock, IStockCategory, StockSection } from '@thymecard/types';
+import { ErrorCode, IStock, IStockCategory, EStockSection } from '@thymecard/types';
 import { stockRepository } from './stock.model';
 import { InternalError } from '../../lib/error/thymecardError';
 
 export interface IStockService {
-    upsertStockCategory(userId: string, section: StockSection, categories: IStockCategory[]): Promise<IStockCategory[]>;
+    upsertStockCategory(userId: string, section: EStockSection, categories: IStockCategory[]): Promise<IStockCategory[]>;
     getStock(userId: string): Promise<IStock>;
 }
 
 export class StockService implements IStockService {
-    public async upsertStockCategory(userId: string, section: StockSection, categories: IStockCategory[]): Promise<IStockCategory[]> {
+    public async upsertStockCategory(userId: string, section: EStockSection, categories: IStockCategory[]): Promise<IStockCategory[]> {
         const stock = await stockRepository.findOneAndUpdate(
             { userId },
             {

@@ -2,7 +2,7 @@ import { BiCopy, BiFoodMenu, BiFridge, BiLink, BiPieChartAlt2, BiSolidFoodMenu }
 import { BsArrowRightShort, BsCalendar3, BsChevronDown, BsChevronLeft, BsChevronRight, BsQuestionLg } from 'react-icons/bs';
 import { CgSpinnerTwoAlt } from 'react-icons/cg';
 import { FaCaretDown, FaFacebook, FaGoogle, FaInfo, FaRegClock } from 'react-icons/fa6';
-import { FiEdit2, FiPrinter } from 'react-icons/fi';
+import { FiEdit2, FiPrinter, FiShoppingCart } from 'react-icons/fi';
 import { GrFormSearch, GrUndo } from 'react-icons/gr';
 import { HiOutlineDocumentAdd, HiOutlineDocumentDuplicate } from 'react-icons/hi';
 import { IoIosClose, IoIosTimer, IoMdEye, IoMdRefresh } from 'react-icons/io';
@@ -126,7 +126,8 @@ export const ICONS = {
         addToShoppingList: TbPlaylistAdd,
         scales: RiScales2Line,
         ingredients: RiListUnordered,
-        print: FiPrinter
+        print: FiPrinter,
+        shopping: FiShoppingCart
     },
     events: {
         breakfast: LuCoffee,

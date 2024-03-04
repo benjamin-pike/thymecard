@@ -1,0 +1,511 @@
+.event {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .time {
+        position: relative;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-shrink: 0;
+
+        padding: 0.4rem 0;
+
+        height: fit-content;
+        width: 2rem;
+
+        font-size: $fs-11;
+
+        .hours {
+            font-size: $fs-14;
+            font-weight: 600;
+        }
+
+        .minutes {
+            font-size: $fs-12;
+            opacity: 0.6;
+
+            @include dark-mode {
+                opacity: 0.8;
+            }
+        }
+
+        &::before,
+        &::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+
+            height: 0.2rem;
+            width: 0.2rem;
+
+            background-color: $mono-dark;
+
+            border-radius: 50%;
+
+            translate: -50%;
+
+            z-index: 1;
+        }
+
+        &::before {
+            top: -0.75rem;
+        }
+
+        &::after {
+            bottom: -0.75rem;
+        }
+    }
+
+    .body {
+        position: relative;
+
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        flex-grow: 1;
+        flex-shrink: 1;
+
+        padding: 0.75rem 0.75rem 0.75rem 1rem;
+
+        border-radius: 0.125rem 1rem 1rem 0.125rem;
+
+        overflow: hidden;
+
+        &::after {
+            content: '';
+            position: absolute;
+
+            inset: 0;
+            height: 100%;
+            width: 0.2rem;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+
+            margin-bottom: 0.5rem;
+
+            height: 1.5rem;
+
+            .type {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                padding: 0 0.5rem;
+                width: fit-content;
+                height: 100%;
+
+                border-radius: 0.5rem;
+
+                h2 {
+                    font-size: $fs-12;
+
+                    @include dark-mode {
+                        text-shadow: 0 0 0.5rem $mono-dark;
+                    }
+                }
+
+                .icon {
+                    height: 0.75rem;
+                    width: 0.75rem;
+
+                    svg {
+                        height: 100% !important;
+                        width: 100% !important;
+                    }
+                }
+            }
+
+            .metadata {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                padding: 0 0.5rem;
+
+                margin-left: auto;
+
+                width: fit-content;
+                height: 100%;
+
+                border-radius: 0.5rem;
+
+                span {
+                    font-size: $fs-11;
+
+                    @include dark-mode {
+                        text-shadow: 0 0 0.5rem $mono-dark;
+                    }
+                }
+
+                .duration {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.25rem;
+
+                    svg {
+                        height: 0.85rem;
+                        width: 0.85rem;
+
+                        path {
+                            stroke-width: 8;
+                        }
+                    }
+                }
+
+                .calories {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.25rem;
+
+                    svg {
+                        height: 0.85rem;
+                        width: 0.85rem;
+                    }
+                }
+            }
+
+            .separator {
+                height: 0.75rem;
+                width: 1px;
+            }
+        }
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+
+        button {
+            display: grid;
+            place-items: center;
+
+            height: 1.5rem;
+            width: 1.5rem;
+
+            background-color: $mono-100;
+
+            transition:
+                color 100ms ease,
+                background-color 100ms ease;
+
+            svg {
+                height: 1rem;
+                width: 1rem;
+            }
+
+            &.editEvent {
+                color: contrastize($blue, 'light');
+                background-color: alpha(contrastize($blue, 'light'), 0.1);
+
+                border-radius: 0.75rem 0.75rem 0.25rem 0.25rem;
+
+                &:hover {
+                    color: $mono-light;
+                    background-color: $blue;
+                }
+
+                @include dark-mode {
+                    color: contrastize($blue, 'dark');
+                    background-color: alpha(contrastize($blue, 'dark'), 0.15);
+                    box-shadow: 0 0 0 1px alpha(contrastize($blue, 'dark'), 0.15) inset;
+
+                    &:hover {
+                        color: $mono-light;
+                        background-color: contrastize($blue, 'dark');
+                    }
+                }
+
+                svg {
+                    scale: 0.9;
+
+                    translate: 0 5%;
+
+                    path {
+                        stroke-width: 2.5;
+                    }
+                }
+            }
+
+            &.bookmark {
+                margin: 0.125rem 0;
+
+                color: contrastize($green, 'light');
+                background-color: alpha(contrastize($green, 'light'), 0.1);
+
+                border-radius: 0.25rem;
+
+                &[data-bookmarked='true'] {
+                    color: alpha(contrastize($green, 'light'), 0.5);
+                    
+                    cursor: default;
+                }
+
+                &[data-bookmarked='false'] {
+                    &:hover {
+                        color: $mono-light;
+                        background-color: $green;
+                    }
+                }
+
+                @include dark-mode {
+                    margin: 0.2rem 0;
+
+                    color: contrastize($green, 'dark');
+                    background-color: alpha(contrastize($green, 'dark'), 0.15);
+                    box-shadow: 0 0 0 1px alpha(contrastize($green, 'dark'), 0.15) inset;
+
+                    &[data-bookmarked='false'] {
+                        &:hover {
+                            color: $mono-light;
+                            background-color: contrastize($green, 'dark');
+                        }
+                    }
+                }
+
+                svg {
+                    scale: 0.85;
+
+                    path {
+                        stroke-width: 4.5;
+                    }
+                }
+            }
+
+            &.remove {
+                color: contrastize($red, 'light');
+                background-color: alpha(contrastize($red, 'light'), 0.1);
+
+                border-radius: 0.25rem 0.25rem 0.75rem 0.75rem;
+
+                &:hover {
+                    color: $mono-light;
+                    background-color: $red;
+                }
+
+                @include dark-mode {
+                    color: contrastize($red, 'dark');
+                    background-color: alpha(contrastize($red, 'dark'), 0.15);
+                    box-shadow: 0 0 0 1px alpha(contrastize($red, 'dark'), 0.15) inset;
+
+                    &:hover {
+                        color: $mono-light;
+                        background-color: contrastize($red, 'dark');
+                    }
+                }
+
+                svg {
+                    scale: 0.95;
+
+                    translate: 0 -5%;
+
+                    path {
+                        stroke-width: 40;
+                    }
+                }
+            }
+        }
+    }
+
+    @each $event, $color in $event-colors {
+        $light-adjusted-color: contrastize($color, 'light');
+        $dark-adjusted-color: contrastize($color, 'dark');
+
+        &[data-event='#{$event}'] {
+            .time {
+                color: $light-adjusted-color;
+
+                @include dark-mode {
+                    color: $dark-adjusted-color;
+                }
+
+                &::before,
+                &::after {
+                    background-color: mix($color, $mono-light, 75%);
+                    box-shadow:
+                        0 0 0 0.175rem mix($color, $mono-light, 20%),
+                        0 0 0 0.125rem $mono-light;
+
+                    @include dark-mode {
+                        background-color: $color;
+                        box-shadow:
+                            0 0 0 0.175rem mix($color, $mono-dark, 30%),
+                            0 0 0 0.125rem $mono-dark;
+                    }
+                }
+            }
+
+            .body {
+                background-color: alpha($light-adjusted-color, 0.1);
+
+                @include dark-mode {
+                    background-color: alpha($dark-adjusted-color, 0.075);
+
+                    box-shadow: 0 0 0 1px alpha($dark-adjusted-color, 0.15) inset;
+                }
+
+                &::after {
+                    background-color: $color;
+                }
+
+                header {
+                    .type {
+                        color: $light-adjusted-color;
+                        background-color: mix($color, $mono-light, 2.5%);
+                        box-shadow: 0 0 0 1px alpha($color, 0.15);
+
+                        @include dark-mode {
+                            color: mix($dark-adjusted-color, $mono-light, 92.5%);
+                            background-color: mix($color, $mono-dark, 5%);
+                            box-shadow: 0 0 0 1px alpha($color, 0.15);
+                        }
+                    }
+
+                    .metadata {
+                        background-color: mix($light-adjusted-color, $mono-light, 2.5%);
+                        box-shadow: 0 0 0 1px alpha($light-adjusted-color, 0.15);
+
+                        @include dark-mode {
+                            background-color: mix($dark-adjusted-color, $mono-dark, 5%);
+                            box-shadow: 0 0 0 1px alpha($dark-adjusted-color, 0.15);
+                        }
+
+                        span {
+                            color: $light-adjusted-color;
+
+                            @include dark-mode {
+                                color: mix($dark-adjusted-color, $mono-light, 92.5%);
+                            }
+
+                            svg {
+                                opacity: 0.75;
+                            }
+                        }
+                    }
+
+                    .separator {
+                        background-color: alpha($light-adjusted-color, 0.35);
+
+                        @include dark-mode {
+                            background-color: alpha($dark-adjusted-color, 0.35);
+                        }
+                    }
+                }
+
+                ul {
+                    li {
+                        &:nth-of-type(odd) {
+                            background-color: alpha($light-adjusted-color, 0.05);
+
+                            @include dark-mode {
+                                background-color: alpha($mono-dark, 0.3);
+                            }
+                        }
+                    }
+                }
+
+                li {
+                    p {
+                        color: $light-adjusted-color;
+
+                        @include dark-mode {
+                            color: mix($dark-adjusted-color, $mono-light, 92.5%);
+                            text-shadow: 0 0 0.5rem $mono-dark;
+                        }
+                    }
+
+                    svg {
+                        color: $light-adjusted-color;
+
+                        @include dark-mode {
+                            color: $dark-adjusted-color;
+                            text-shadow: 0 0 0.5rem $mono-dark;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        height: calc(50% - 1rem);
+        width: 1px;
+
+        translate: -0.5px;
+
+        border-left: 1px dashed $mono-200;
+
+        @include dark-mode {
+            border-left-color: $mono-700;
+        }
+    }
+
+    &::before {
+        top: calc(-1rem - 0.5px);
+    }
+
+    &::after {
+        bottom: calc(-1rem - 0.5px);
+    }
+
+    &:last-of-type {
+        & + .divider {
+            display: none;
+        }
+    }
+}
+
+.divider {
+    position: relative;
+
+    width: calc(100% - 3.5rem);
+
+    margin-left: 1rem;
+
+    border-top: 1px dashed $mono-200;
+
+    z-index: 1;
+
+    @include dark-mode {
+        border-top-color: $mono-700;
+    }
+
+    &::before {
+        content: '';
+
+        position: absolute;
+        top: 50%;
+        left: 0;
+
+        height: 0.25rem;
+        width: 0.25rem;
+
+        background-color: $mono-light;
+        box-shadow:
+            0 0 0 1px $mono-300,
+            0 0 0 0.125rem $mono-light;
+
+        border-radius: 50%;
+
+        translate: -50% calc(-50% - 0.5px);
+
+        @include dark-mode {
+            background-color: $mono-dark;
+            box-shadow:
+                0 0 0 1px $mono-700,
+                0 0 0 0.125rem $mono-dark;
+        }
+    }
+}
