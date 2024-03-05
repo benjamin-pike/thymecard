@@ -58,7 +58,7 @@ export interface IMealEventItem {
 	id: string;
 	name: string;
 	servings: number;
-	calories?: number;
+	calories: number | null;
 	recipeId?: string;
 	isFavorite?: boolean;
 }

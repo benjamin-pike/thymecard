@@ -54,7 +54,7 @@ const useRecipeDraft = () => {
     );
 
     const init = useCallback(
-        (recipe: Partial<Client<IRecipe>>, image: string | null) => {
+        (recipe: Client<IRecipe>, image: string | null) => {
             components.title.init(recipe.title);
             components.description.init(recipe.description);
             components.authors.init(recipe.authors);
@@ -119,7 +119,9 @@ const useRecipeDraft = () => {
             nutrition: _.nutrition.value,
             ingredients: _.ingredients.value,
             method: _.method.value,
-            comments: _.comments.value
+            comments: _.comments.value,
+            isPublic: false,
+            isBookmarked: false
         };
     }, [validateComponents]);
 

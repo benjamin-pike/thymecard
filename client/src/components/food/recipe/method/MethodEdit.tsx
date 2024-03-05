@@ -32,6 +32,11 @@ const MethodSection: FC<IRecipeMethodSectionProps> = memo(({ section }) => {
     const [localSectionTitle, setLocalSectionTitle] = useState(section.sectionTitle);
 
     const handleLocalTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value === '') {
+            setLocalSectionTitle(null);
+            return;
+        }
+
         setLocalSectionTitle(e.target.value);
     }, []);
 
@@ -44,7 +49,7 @@ const MethodSection: FC<IRecipeMethodSectionProps> = memo(({ section }) => {
             <>
                 <div className={styles.sectionTitle}>
                     <input
-                        value={localSectionTitle}
+                        value={localSectionTitle ?? ''}
                         placeholder="Add section title"
                         onChange={handleLocalTitleChange}
                         onBlur={handleBlur}
@@ -95,6 +100,11 @@ const MethodStep: FC<IRecipeMethodStepProps> = memo(({ index, section, step }) =
     }, []);
 
     const handleLocalTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value === '') {
+            setLocalStepTitle(null);
+            return;
+        }
+
         setLocalStepTitle(e.target.value);
     }, []);
 
@@ -121,7 +131,12 @@ const MethodStep: FC<IRecipeMethodStepProps> = memo(({ index, section, step }) =
     return (
         <li className={styles.step} data-number={`${index + 1}.`}>
             <div className={styles.stepTitle}>
-                <input value={localStepTitle} placeholder="Add step title" onChange={handleLocalTitleChange} onBlur={handleStepTitleBlur} />
+                <input
+                    value={localStepTitle ?? ''}
+                    placeholder="Add step title"
+                    onChange={handleLocalTitleChange}
+                    onBlur={handleStepTitleBlur}
+                />
                 <button onClick={method.deleteStep(section.id, step.id)}>
                     <DeleteIcon />
                 </button>

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { sendRequest } from '@/lib/api/sendRequest';
 import { ROUTES } from '@/api/routes';
+import { createToast } from '@/lib/toast/toast.utils';
 
 const useImage = () => {
     const [url, setUrl] = useState<string | null>(null);
@@ -8,27 +9,32 @@ const useImage = () => {
     const [isModified, setIsModified] = useState<boolean>(false);
 
     const init = async (source: string | null) => {
-        setUrl(source);
+        setUrl(null);
+        setBlob(null);
 
         if (!source) {
-            setBlob(null);
-
             return;
         }
 
-        const { data, headers } = await sendRequest<ArrayBuffer, false>(ROUTES.PROXY, 'GET', {
+        const { status, data, headers } = await sendRequest<ArrayBuffer, false>(ROUTES.PROXY, 'GET', {
             responseType: 'arraybuffer',
             headers: {
                 Accept: 'image/*',
                 'Allow-Cross-Origin-Resource-Sharing': '*'
             },
             query: {
-                url
+                url: source
             }
         });
 
+        if (status !== 200) {
+            createToast('error', 'Failed to fetch recipe image');
+            return;
+        }
+
         const blob = new Blob([data], { type: headers['content-type'] });
 
+        setUrl(source);
         setBlob(blob);
     };
 

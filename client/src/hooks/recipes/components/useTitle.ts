@@ -5,7 +5,7 @@ const useTitle = () => {
     const [initial, setInitial] = useState('');
     const [edit, setEdit] = useState('');
 
-    const init = useCallback((title: string | undefined) => {
+    const init = useCallback((title: string) => {
         if (!title) {
             setInitial('');
             setEdit('');

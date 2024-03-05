@@ -4,27 +4,26 @@ import { hasKey, isOptional, isString, isValidMongoId } from "./types.utils";
 export interface IRecipe {
 	_id: string;
 	userId: string;
-	source?: string;
+	source: string | null;
 	title: string;
-	description?: string;
+	description: string | null;
 	image: string;
-	authors?: string[];
-	category?: string[];
-	cuisine?: string[];
-	diet?: string[];
-	keywords?: string[];
-	prepTime?: number;
-	cookTime?: number;
-	totalTime?: number;
+	authors: string[];
+	category: string[];
+	cuisine: string[];
+	diet: string[];
+	prepTime: number | null;
+	cookTime: number | null;
+	totalTime: number | null;
 	yield: IRecipeYield;
-	nutrition?: IRecipeNutritionalInformation;
+	nutrition: IRecipeNutritionalInformation;
 	ingredients: RecipeIngredients;
 	method: RecipeMethod;
-	lastCooked?: Date;
-	rating?: number;
-	comments?: IRecipeComment[];
-	isBookmarked?: boolean;
-	isPublic?: boolean;
+	lastCooked: Date | null;
+	rating: number | null;
+	comments: IRecipeComment[];
+	isBookmarked: boolean | null;
+	isPublic: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -36,7 +35,6 @@ export type IRecipeSummary = Pick<
 	| "image"
 	| "category"
 	| "cuisine"
-	| "keywords"
 	| "prepTime"
 	| "cookTime"
 	| "totalTime"
@@ -74,12 +72,11 @@ export type RecipeMethod = IRecipeMethodSection[];
 
 export interface IRecipeIngredient {
 	item: string;
-	quantity?: number[];
-	unit?: string;
-	prepStyles?: string;
-	notes?: string;
-	origin?: string;
-	match?: IRecipeIngredientMatch | null;
+	quantity: number[] | null;
+	unit: string | null;
+	prepStyles: string | null;
+	notes: string | null;
+	match: IRecipeIngredientMatch | null;
 }
 
 export interface IRecipeIngredientMatch {
@@ -90,13 +87,13 @@ export interface IRecipeIngredientMatch {
 export interface IRecipeMethodSection {
 	id: string;
 	steps: IRecipeMethodStep[];
-	sectionTitle?: string;
+	sectionTitle: string | null;
 }
 
 export interface IRecipeMethodStep {
 	id: string;
 	instructions: string;
-	stepTitle?: string;
+	stepTitle: string | null;
 }
 
 export interface IRecipeYield {
@@ -105,18 +102,18 @@ export interface IRecipeYield {
 }
 
 export interface IRecipeNutritionalInformation {
-	calories?: number;
-	sugar?: number; // g
-	carbohydrate?: number; // g
-	cholesterol?: number; // mg
-	fat?: number; // g
-	saturatedFat?: number; // g
-	transFat?: number; // g
-	unsaturatedFat?: number; // g
-	protein?: number; // g
-	fiber?: number; // g
-	sodium?: number; // mg
-	servingSize?: IRecipeYield;
+	calories: number | null;
+	sugar: number | null; // g
+	carbohydrate: number | null; // g
+	cholesterol: number | null; // mg
+	fat: number | null; // g
+	saturatedFat: number | null; // g
+	transFat: number | null; // g
+	unsaturatedFat: number | null; // g
+	protein: number | null; // g
+	fiber: number | null; // g
+	sodium: number | null; // mg
+	servingSize: IRecipeYield | null;
 }
 
 export interface IRecipeComment {
@@ -151,3 +148,50 @@ export const isSavedRecipe = (
 ): recipe is Client<IRecipe> => {
 	return hasKey(recipe, "_id") && isValidMongoId(recipe._id);
 };
+
+export const recipePrototype: IRecipe = {
+	_id: "",
+	userId: "",
+	source: null,
+	title: "",
+	description: null,
+	image: "",
+	authors: [],
+	category: [],
+	cuisine: [],
+	diet: [],
+	prepTime: null,
+	cookTime: null,
+	totalTime: null,
+	yield: {
+		quantity: [],
+		units: null
+	},
+	nutrition: {
+		calories: null,
+		sugar: null,
+		carbohydrate: null,
+		cholesterol: null,
+		fat: null,
+		saturatedFat: null,
+		transFat: null,
+		unsaturatedFat: null,
+		protein: null,
+		fiber: null,
+		sodium: null,
+		servingSize: null
+	},
+	ingredients: [],
+	method: [],
+	lastCooked: null,
+	rating: null,
+	comments: [],
+	isBookmarked: null,
+	isPublic: false,
+	createdAt: new Date(),
+	updatedAt: new Date()
+};
+
+export const clientRecipePrototype: Client<IRecipe> = JSON.parse(
+	JSON.stringify(recipePrototype)
+);

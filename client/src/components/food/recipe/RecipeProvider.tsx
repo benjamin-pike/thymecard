@@ -7,7 +7,16 @@ import { ModalState, useModal } from '@/hooks/common/useModal';
 import { useRecipeAPI } from '@/api/useRecipeAPI';
 import useRecipeComponents from '@/hooks/recipes/useRecipeDraft';
 
-import { Client, IRecipe, IRecipeCreate, IRecipeSummary, IRecipeUpdate, isDefined, isString } from '@thymecard/types';
+import {
+    Client,
+    IRecipe,
+    IRecipeCreate,
+    IRecipeSummary,
+    IRecipeUpdate,
+    clientRecipePrototype,
+    isDefined,
+    isString
+} from '@thymecard/types';
 import { createToast } from '@/lib/toast/toast.utils';
 import { buildRecipeImageUrl } from '@/lib/s3/s3.utils';
 import { imageUrlToBlob } from '@/lib/media.utils';
@@ -15,9 +24,10 @@ import { imageUrlToBlob } from '@/lib/media.utils';
 type RecipeComponents = ReturnType<typeof useRecipeComponents>['components'];
 
 interface IRecipeContext extends RecipeComponents {
-    recipe: Partial<Client<IRecipe>> | undefined;
+    recipe: Client<IRecipe>;
     summaries: Client<IRecipeSummary>[] | undefined;
     recipeModalState: ModalState;
+    isLoading: boolean;
     isEditing: boolean;
     isIncomplete: boolean;
     selectRecipe: (recipeId: string) => void;
@@ -56,7 +66,7 @@ const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
     const { modalState: recipeModalState, openModal: openRecipeModal, closeModal: closeRecipeModal } = useModal();
 
     const [recipeId, setRecipeId] = useState<string>();
-    const [recipe, setRecipe] = useState<Partial<Client<IRecipe>>>();
+    const [recipe, setRecipe] = useState<Client<IRecipe>>({ ...clientRecipePrototype });
     const [summaries, setSummaries] = useState<Client<IRecipeSummary>[]>();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -81,7 +91,7 @@ const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
     }, [navigate, openRecipeModal]);
 
     const reset = useCallback(() => {
-        setRecipe(undefined);
+        setRecipe({ ...clientRecipePrototype });
         setRecipeId(undefined);
         setIsEditing(false);
         setIsIncomplete(false);
@@ -148,14 +158,18 @@ const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
     );
 
     const handleUpdateRecipe = useCallback(
-        (update: Client<IRecipeUpdate>) => {
+        async (update: Client<IRecipeUpdate>) => {
             if (!recipeId) {
                 return;
             }
 
-            updateRecipe(recipeId, update);
+            const updatedRecipe = await updateRecipe(recipeId, update);
+
+            setRecipe(updatedRecipe);
+
+            refreshSummaries();
         },
-        [recipeId, updateRecipe]
+        [recipeId, refreshSummaries, updateRecipe]
     );
 
     const handleDeleteRecipe = useCallback(async () => {
@@ -174,7 +188,9 @@ const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
 
     const handleParseRecipe = useCallback(
         async (url: string) => {
-            const { recipe, image } = await parseRecipe(url);
+            const { recipe: parsedRecipe, image } = await parseRecipe(url);
+
+            const recipe = { ...clientRecipePrototype, ...parsedRecipe };
 
             init(recipe, image ?? null);
             setRecipe(recipe);
@@ -185,8 +201,8 @@ const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
     );
 
     const handleManualCreate = useCallback(() => {
-        init({}, null);
-        setRecipe({});
+        init({ ...clientRecipePrototype }, null);
+        setRecipe({ ...clientRecipePrototype });
 
         enterCreateMode();
     }, [enterCreateMode, init]);
@@ -202,8 +218,8 @@ const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
             toggleEditing();
 
             createToast('success', `Recipe ${isNew ? 'created' : 'saved'} successfully`);
-        } catch (e) {
-            createToast('error', `Failed to ${isNew ? 'create' : 'save'} recipe`);
+        } catch (err: any) {
+            createToast('error', err.message ?? `Failed to ${isNew ? 'create' : 'save'} recipe`);
         }
 
         try {
@@ -270,6 +286,7 @@ const RecipeProvider: FC<IRecipeProviderProps> = ({ children }) => {
         recipe,
         summaries,
         recipeModalState,
+        isLoading,
         isEditing,
         isIncomplete,
         selectRecipe,

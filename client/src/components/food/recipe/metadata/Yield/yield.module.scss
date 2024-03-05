@@ -1,5 +1,6 @@
 .edit {
     display: flex;
+    flex-grow: 1;
     gap: 0.5rem;
 
     .quantity,
@@ -75,11 +76,11 @@
         }
     }
 
-    .units {
+    .units {    
         flex-grow: 1;
         flex-shrink: 1;
 
-        min-width: 0;
+        width: 0;
 
         &::placeholder {
             font-weight: 300;

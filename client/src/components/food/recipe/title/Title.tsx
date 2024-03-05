@@ -8,15 +8,13 @@ const BookmarkOutlineIcon = ICONS.recipes.bookmark;
 const BookmarkFillIcon = ICONS.recipes.bookmarkFill;
 
 const Title: FC = () => {
-    const { recipe, isEditing, title, handleUpdateRecipe, isIncomplete } = useRecipe();
+    const { recipe, isLoading, isEditing, title, handleUpdateRecipe, isIncomplete } = useRecipe();
 
     const isError = !title.edit.length && isIncomplete;
 
     const handleBookmarkButtonClick = useCallback(() => {
         handleUpdateRecipe({ isBookmarked: !recipe?.isBookmarked });
     }, [recipe, handleUpdateRecipe]);
-
-    const isLoading = !recipe;
 
     return (
         <span className={styles.title} data-editing={isEditing} data-error={isError}>

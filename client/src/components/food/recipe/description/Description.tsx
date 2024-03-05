@@ -8,7 +8,7 @@ import styles from './description.module.scss';
 const ExpandIcon = ICONS.common.toggle;
 
 const Description: FC = () => {
-    const { recipe, description, isEditing } = useRecipe();
+    const { recipe, description, isLoading, isEditing } = useRecipe();
 
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [isExpanded, toggleIsExpanded] = useToggle([false, true]);
@@ -70,8 +70,6 @@ const Description: FC = () => {
 
     useEffect(checkOverflow, [checkOverflow, recipe]);
 
-    const isLoading = !recipe?.description;
-
     return (
         <section className={styles.description} data-editing={isEditing} data-empty={!description.edit}>
             {isEditing ? (
@@ -79,7 +77,7 @@ const Description: FC = () => {
                     ref={textAreaRef}
                     rows={1}
                     className={styles.input}
-                    value={description.edit}
+                    value={description.edit ?? ''}
                     placeholder="Add recipe description . . ."
                     data-empty={!description.edit}
                     onChange={handleDescriptionChange}

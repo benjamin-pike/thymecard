@@ -5,73 +5,69 @@ import { transformDateString } from '../../lib/types/zod.utils';
 export const createRecipeSchema = z.object({
     userId: z.string(),
     title: z.string(),
-    description: z.string().optional(),
-    authors: z.array(z.string()).optional(),
-    source: z.string().optional(),
-    category: z.array(z.string()).optional(),
-    cuisine: z.array(z.string()).optional(),
-    diet: z.array(z.string()).optional(),
-    keywords: z.array(z.string()).optional(),
-    prepTime: z.number().optional(),
-    cookTime: z.number().optional(),
-    totalTime: z.number().optional(),
+    description: z.string().nullable(),
+    authors: z.array(z.string()),
+    source: z.string().nullable(),
+    category: z.array(z.string()),
+    cuisine: z.array(z.string()),
+    diet: z.array(z.string()),
+    prepTime: z.number().nullable(),
+    cookTime: z.number().nullable(),
+    totalTime: z.number().nullable(),
     yield: z.object({
         quantity: z.array(z.number()),
         units: z.string().nullable()
     }),
     nutrition: z
         .object({
-            calories: z.number().optional(),
-            sugar: z.number().optional(),
-            carbohydrate: z.number().optional(),
-            cholesterol: z.number().optional(),
-            fat: z.number().optional(),
-            saturatedFat: z.number().optional(),
-            transFat: z.number().optional(),
-            unsaturatedFat: z.number().optional(),
-            protein: z.number().optional(),
-            fiber: z.number().optional(),
-            sodium: z.number().optional(),
+            calories: z.number().nullable(),
+            sugar: z.number().nullable(),
+            carbohydrate: z.number().nullable(),
+            cholesterol: z.number().nullable(),
+            fat: z.number().nullable(),
+            saturatedFat: z.number().nullable(),
+            transFat: z.number().nullable(),
+            unsaturatedFat: z.number().nullable(),
+            protein: z.number().nullable(),
+            fiber: z.number().nullable(),
+            sodium: z.number().nullable(),
             servingSize: z
                 .object({
                     quantity: z.array(z.number()),
                     units: z.string().nullable()
                 })
-                .optional()
-        })
-        .optional(),
+                .nullable()
+        }),
     ingredients: z.array(
         z.object({
             item: z.string(),
-            quantity: z.array(z.number()).optional(),
-            unit: z.string().optional(),
-            prepStyles: z.string().optional(),
-            notes: z.string().optional(),
-            origin: z.string().optional(),
+            quantity: z.array(z.number()).nullable(),
+            unit: z.string().nullable(),
+            prepStyles: z.string().nullable(),
+            notes: z.string().nullable(),
             match: z
                 .object({
                     itemId: z.number(),
                     name: z.string(),
                 })
                 .nullable()
-                .optional(),
         })
     ),
     method: z.array(
         z.object({
             id: z.string(),
-            sectionTitle: z.string().optional(),
+            sectionTitle: z.string().nullable(),
             steps: z.array(
                 z.object({
                     id: z.string(),
                     instructions: z.string(),
-                    stepTitle: z.string().optional()
+                    stepTitle: z.string().nullable()
                 })
             )
         })
     ),
-    rating: z.number().min(0).max(5).optional(),
-    lastCooked: transformDateString.optional(),
+    rating: z.number().min(0).max(5).nullable(),
+    lastCooked: transformDateString.nullable(),
     comments: z
         .array(
             z.object({
@@ -79,10 +75,9 @@ export const createRecipeSchema = z.object({
                 comment: z.string(),
                 createdAt: transformDateString
             })
-        )
-        .optional(),
-    isBookmarked: z.boolean().optional(),
-    isPublic: z.boolean().optional()
+        ),
+    isBookmarked: z.boolean(),
+    isPublic: z.boolean()
 });
 
 export const updateRecipeSchema = createRecipeSchema.omit({ userId: true }).partial();

@@ -25,7 +25,7 @@ const Time: FC<ITimeProps> = ({ type }) => {
         return null;
     }
 
-    return isEditing ? <EditView type={type} /> : <DisplayView time={time} />;
+    return isEditing ? <EditView type={type} /> : <DisplayView time={time ?? undefined} />;
 };
 
 export default Time;
@@ -38,7 +38,7 @@ const EditView: FC<ITimeProps> = ({ type }) => {
             <div className={styles.hours}>
                 <input
                     type="number"
-                    value={time.edit[type]?.hours}
+                    value={time.edit[type]?.hours ?? ''}
                     min={0}
                     max={99}
                     placeholder="#"
@@ -49,7 +49,7 @@ const EditView: FC<ITimeProps> = ({ type }) => {
             <div className={styles.minutes}>
                 <input
                     type="number"
-                    value={time.edit[type]?.minutes}
+                    value={time.edit[type]?.minutes ?? ''}
                     min={0}
                     max={59}
                     placeholder="#"

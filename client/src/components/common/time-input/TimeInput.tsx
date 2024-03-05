@@ -135,12 +135,12 @@ const TimeInput: FC<ITimeInputProps> = ({ initial, handleUpdate }) => {
         <div className={styles.input} onClick={handleContainerClick}>
             <input
                 ref={hourInputRef}
-                type="text"
                 name="hours"
                 value={time.hours}
                 min={0}
                 max={23}
                 placeholder="00"
+                autoComplete="off"
                 maxLength={2}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -150,12 +150,12 @@ const TimeInput: FC<ITimeInputProps> = ({ initial, handleUpdate }) => {
             <span data-placeholder-visible={!time.hours && !time.minutes}>:</span>
             <input
                 ref={minuteInputRef}
-                type="text"
                 name="minutes"
                 value={time.minutes}
                 min={0}
                 max={59}
                 placeholder="00"
+                autoComplete="off"
                 maxLength={2}
                 onChange={handleChange}
                 onBlur={handleBlur}

@@ -6,10 +6,10 @@ import { compare } from '@thymecard/utils';
 const useComments = () => {
     const { user } = useUser();
 
-    const [initial, setInitial] = useState<Client<IRecipeComment>[] | undefined>();
-    const [edit, setEdit] = useState<Client<IRecipeComment>[] | undefined>();
+    const [initial, setInitial] = useState<Client<IRecipeComment>[]>([]);
+    const [edit, setEdit] = useState<Client<IRecipeComment>[]>([]);
 
-    const init = (comments: Client<IRecipeComment>[] | undefined) => {
+    const init = (comments: Client<IRecipeComment>[]) => {
         setInitial(
             comments ?? [
                 {
@@ -30,10 +30,10 @@ const useComments = () => {
         );
     };
 
-    const validate = (): { value: Client<IRecipeComment>[] | undefined; isModified: boolean } => {
+    const validate = (): { value: Client<IRecipeComment>[]; isModified: boolean } => {
         const isModified = !compare(initial, edit);
 
-        const value = edit?.length ? edit : undefined;
+        const value = edit.filter(({ comment }) => comment);
 
         return {
             value,

@@ -13,15 +13,15 @@ const useIngredients = () => {
         match: []
     });
 
-    const init = useCallback((data: IRecipeIngredient[] | undefined) => {
+    const init = useCallback((data: IRecipeIngredient[]) => {
         if (!data) {
             setInitial([
                 {
                     item: '',
-                    quantity: [],
-                    unit: '',
-                    prepStyles: '',
-                    notes: '',
+                    quantity: null,
+                    unit: null,
+                    prepStyles: null,
+                    notes: null,
                     match: null
                 }
             ]);
@@ -82,11 +82,11 @@ const useIngredients = () => {
 
             return {
                 item,
-                quantity: parsedQuantity?.length ? parsedQuantity : undefined,
-                unit: values.unit[i] ?? undefined,
-                prepStyles: values.prepStyle[i] ?? undefined,
-                notes: values.note[i] ?? undefined,
-                match: values.match[i] ?? undefined
+                quantity: parsedQuantity?.length ? parsedQuantity : null,
+                unit: values.unit[i] ?? null,
+                prepStyles: values.prepStyle[i] ?? null,
+                notes: values.note[i] ?? null,
+                match: values.match[i] ?? null
             };
         });
 

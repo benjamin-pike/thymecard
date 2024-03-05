@@ -1,6 +1,5 @@
-import { Client, IRecipeSummary } from '@thymecard/types';
+import { Client, IRecipeSummary, isNull } from '@thymecard/types';
 import { FilterAction, IFilterState } from './filter.types';
-import { isDefined } from '@/lib/type.utils';
 
 export const filterRecipes = (recipes: Client<IRecipeSummary>[], state: IFilterState): Client<IRecipeSummary>[] => {
     return recipes
@@ -28,9 +27,9 @@ export const filterRecipes = (recipes: Client<IRecipeSummary>[], state: IFilterS
                 case 'date':
                     return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * state.sortBy.sort;
                 case 'rating':
-                    if (!isDefined(a.rating) && !isDefined(b.rating)) return 0;
-                    if (!isDefined(a.rating)) return 1;
-                    if (!isDefined(b.rating)) return -1;
+                    if (isNull(a.rating) && isNull(b.rating)) return 0;
+                    if (isNull(a.rating)) return 1;
+                    if (isNull(b.rating)) return -1;
 
                     return (a.rating - b.rating) * state.sortBy.sort;
                 case 'time': {
@@ -38,16 +37,16 @@ export const filterRecipes = (recipes: Client<IRecipeSummary>[], state: IFilterS
                     let timeB = b.totalTime;
 
                     if (!timeA) {
-                        timeA = a.prepTime && a.cookTime ? a.prepTime + a.cookTime : undefined;
+                        timeA = a.prepTime && a.cookTime ? a.prepTime + a.cookTime : null;
                     }
 
                     if (!timeB) {
-                        timeB = b.prepTime && b.cookTime ? b.prepTime + b.cookTime : undefined;
+                        timeB = b.prepTime && b.cookTime ? b.prepTime + b.cookTime : null;
                     }
 
-                    if (!isDefined(timeA) && !isDefined(timeB)) return 0;
-                    if (!isDefined(timeA)) return 1;
-                    if (!isDefined(timeB)) return -1;
+                    if (isNull(timeA) && isNull(timeB)) return 0;
+                    if (isNull(timeA)) return 1;
+                    if (isNull(timeB)) return -1;
 
                     return (timeA - timeB) * state.sortBy.sort;
                 }

@@ -318,9 +318,9 @@ export class RecipeService implements IRecipeService {
                     continue;
                 }
 
-                const input = { ...attempt.recipe, userId }
+                const input = { ...attempt.recipe, userId };
                 const recipe = createRecipeSchema.parse(input);
-                
+
                 recipes.push({
                     recipe: recipe,
                     image: attempt.image
@@ -344,7 +344,8 @@ export class RecipeService implements IRecipeService {
         };
         const update = { $push: { comments: comment } };
         const projection = { comments: 1 };
-        const { comments } = (await recipeRepository.findOneAndUpdate<Pick<IRecipe, '_id' | 'comments'>>(filter, update, { projection })) ?? {};
+        const { comments } =
+            (await recipeRepository.findOneAndUpdate<Pick<IRecipe, '_id' | 'comments'>>(filter, update, { projection })) ?? {};
 
         if (!comments) {
             throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found or you do not have access to it', {
@@ -401,8 +402,9 @@ export class RecipeService implements IRecipeService {
         };
         const projection = { comments: 1 };
 
-        const { _id, comments } =
-            (await recipeRepository.findOneAndUpdate<Pick<IRecipe, '_id' | 'comments'>>(filter, update, { projection })) ?? {};
+        const { _id, comments } = (await recipeRepository.findOneAndUpdate<Pick<IRecipe, '_id' | 'comments'>>(filter, update, {
+            projection
+        })) ?? { comments: [] };
 
         if (!_id) {
             throw new NotFoundError(ErrorCode.RecipeNotFound, 'The requested recipe could not be found or you do not have access to it', {
@@ -428,7 +430,6 @@ const summaryProjection: Record<keyof IRecipeSummary, any> = {
     image: 1,
     category: 1,
     cuisine: 1,
-    keywords: 1,
     prepTime: 1,
     cookTime: 1,
     totalTime: 1,

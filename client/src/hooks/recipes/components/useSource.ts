@@ -3,15 +3,15 @@ import { createToast } from '@/lib/toast/toast.utils';
 import { isValidUrl } from '@thymecard/types';
 
 const useSource = () => {
-    const [initial, setInitial] = useState<string | undefined>(undefined);
-    const [edit, setEdit] = useState<string | undefined>(undefined);
+    const [initial, setInitial] = useState<string | null>(null);
+    const [edit, setEdit] = useState<string | null>(null);
 
-    const init = useCallback((description: string | undefined) => {
+    const init = useCallback((description: string | null) => {
         setInitial(description);
         setEdit(description);
     }, []);
 
-    const validate = useCallback((): { value: string | undefined; isModified: boolean } => {
+    const validate = useCallback((): { value: string | null; isModified: boolean } => {
         if (edit && !isValidUrl(edit)) {
             createToast('error', 'Invalid recipe source URL');
             throw new Error('Invalid recipe source URL');
@@ -24,7 +24,7 @@ const useSource = () => {
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.value) {
-            return setEdit(undefined);
+            return setEdit(null);
         }
 
         setEdit(e.target.value);

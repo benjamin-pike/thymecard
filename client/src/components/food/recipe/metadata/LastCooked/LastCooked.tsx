@@ -38,7 +38,7 @@ const EditView: FC = () => {
                 </div>
             </div>
             <PopoverWrapper id={'popover-metadata-last-cooked'} position={PopoverPosition.BOTTOM_LEFT} offset={10}>
-                <DatePicker selectedDay={lastCooked.edit} blockFuture={true} handleSelectDay={lastCooked.handleSelect} />
+                <DatePicker selectedDay={lastCooked.edit ?? undefined} blockFuture={true} handleSelectDay={lastCooked.handleSelect} />
             </PopoverWrapper>
         </>
     );

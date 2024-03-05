@@ -1,28 +1,38 @@
+import { compare } from '@thymecard/utils';
 import { useCallback, useState } from 'react';
 
 interface ITime {
-    hours?: number;
-    minutes?: number;
+    hours: number | null;
+    minutes: number | null;
 }
 
 interface ITimeEdit {
-    prep: ITime | undefined;
-    cook: ITime | undefined;
-    total: ITime | undefined;
+    prep: ITime | null;
+    cook: ITime | null;
+    total: ITime | null;
 }
 
 interface IValidate {
-    value: number | undefined;
+    value: number | null;
     isModified: boolean;
 }
 
 const useTime = () => {
-    const [initial, setInitial] = useState<ITimeEdit>({ prep: undefined, cook: undefined, total: undefined });
-    const [edit, setEdit] = useState<ITimeEdit>({ prep: undefined, cook: undefined, total: undefined });
+    const [initial, setInitial] = useState<ITimeEdit>({ prep: null, cook: null, total: null });
+    const [edit, setEdit] = useState<ITimeEdit>({ prep: null, cook: null, total: null });
 
-    const init = useCallback((prep: number | undefined, cook: number | undefined, total: number | undefined) => {
-        setInitial({ prep: minutesToHoursAndMinutes(prep), cook: minutesToHoursAndMinutes(cook), total: minutesToHoursAndMinutes(total) });
-        setEdit({ prep: minutesToHoursAndMinutes(prep), cook: minutesToHoursAndMinutes(cook), total: minutesToHoursAndMinutes(total) });
+    const init = useCallback((prep: number | null, cook: number | null, total: number | null) => {
+        console.log('init time');
+        setInitial({
+            prep: minutesToHoursAndMinutes(prep),
+            cook: minutesToHoursAndMinutes(cook),
+            total: minutesToHoursAndMinutes(total)
+        });
+        setEdit({
+            prep: minutesToHoursAndMinutes(prep),
+            cook: minutesToHoursAndMinutes(cook),
+            total: minutesToHoursAndMinutes(total)
+        });
     }, []);
 
     const validate = useCallback((): {
@@ -31,22 +41,22 @@ const useTime = () => {
         total: IValidate;
     } => {
         const value = {
-            prep: (edit.prep?.hours ?? 0) * 60 + (edit.prep?.minutes ?? 0) || undefined,
-            cook: (edit.cook?.hours ?? 0) * 60 + (edit.cook?.minutes ?? 0) || undefined,
-            total: (edit.total?.hours ?? 0) * 60 + (edit.total?.minutes ?? 0) || undefined
+            prep: (edit.prep?.hours ?? 0) * 60 + (edit.prep?.minutes ?? 0) || null,
+            cook: (edit.cook?.hours ?? 0) * 60 + (edit.cook?.minutes ?? 0) || null,
+            total: (edit.total?.hours ?? 0) * 60 + (edit.total?.minutes ?? 0) || null
         };
 
         return {
-            prep: { value: value.prep, isModified: edit.prep?.toString() !== initial.prep?.toString() },
-            cook: { value: value.cook, isModified: edit.cook?.toString() !== initial.cook?.toString() },
-            total: { value: value.total, isModified: edit.total?.toString() !== initial.total?.toString() }
+            prep: { value: value.prep, isModified: !compare(edit.prep, initial.prep) },
+            cook: { value: value.cook, isModified: !compare(edit.cook, initial.cook) },
+            total: { value: value.total, isModified: !compare(edit.total, initial.total) }
         };
     }, [edit, initial]);
 
     const handleHoursChange = useCallback(
         (field: 'prep' | 'cook' | 'total') => (e: React.ChangeEvent<HTMLInputElement>) => {
             if (!e.target.value) {
-                setEdit({ ...edit, [field]: { ...edit[field], hours: undefined } });
+                setEdit({ ...edit, [field]: { ...edit[field], hours: null } });
                 return;
             }
 
@@ -65,7 +75,7 @@ const useTime = () => {
     const handleMinutesChange = useCallback(
         (field: 'prep' | 'cook' | 'total') => (e: React.ChangeEvent<HTMLInputElement>) => {
             if (!e.target.value) {
-                setEdit({ ...edit, [field]: { ...edit[field], minutes: undefined } });
+                setEdit({ ...edit, [field]: { ...edit[field], minutes: null } });
                 return;
             }
 
@@ -86,9 +96,9 @@ const useTime = () => {
 
 export default useTime;
 
-const minutesToHoursAndMinutes = (mins: number | undefined): ITime => {
+const minutesToHoursAndMinutes = (mins: number | null): ITime => {
     if (!mins) {
-        return { hours: undefined, minutes: undefined };
+        return { hours: null, minutes: null };
     }
 
     const hours = Math.floor(mins / 60);
