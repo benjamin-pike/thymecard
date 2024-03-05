@@ -25,37 +25,31 @@ const RecipeImage = () => {
 };
 
 const DisplayView = () => {
-    const { recipe } = useRecipe();
+    const { recipe, isLoading: isRecipeLoading } = useRecipe();
 
     const [isImageLoading, setIsImageLoading] = useState(true);
     const ref = useRef<HTMLImageElement>(null);
 
     const imageUrl = recipe?.image ? buildRecipeImageUrl(recipe.image) : null;
 
-    if (ref.current && isImageLoading) {
-        if (ref.current.complete) {
-            setIsImageLoading(false);
-        } else {
-            ref.current.onload = () => {
-                setIsImageLoading(false);
-            };
-        }
-    }
+    const handleImageLoad = useCallback(() => {
+        setIsImageLoading(false);
+    }, []);
 
     useEffect(() => {
-        if (recipe && !recipe.image) {
+        if (!isRecipeLoading && !recipe.image) {
             setIsImageLoading(false);
         }
-    }, [recipe]);
+    }, [isRecipeLoading, recipe]);
 
-    if (!recipe) {
+    if (isRecipeLoading) {
         return <div className={styles.display}>{isImageLoading && <LoadingDots />}</div>;
     }
 
     return (
         <div className={styles.display}>
             {isImageLoading && <LoadingDots />}
-            {imageUrl ? <img ref={ref} src={imageUrl} data-visible={!isImageLoading} /> : <PiImageDuotone />}
+            {imageUrl ? <img ref={ref} src={imageUrl} data-visible={!isImageLoading} onLoad={handleImageLoad} /> : <PiImageDuotone />}
         </div>
     );
 };
