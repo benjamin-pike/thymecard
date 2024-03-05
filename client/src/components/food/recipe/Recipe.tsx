@@ -44,23 +44,6 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
         toggleDisplayIngredients();
     }, [toggleDisplayIngredients]);
 
-    // const handleApplyIngredientsScale = useCallback(
-    //     (multiplier: number) => () => {
-    //         if (multiplier === scale) {
-    //             return;
-    //         }
-
-    //         setScale(multiplier);
-
-    //         if (multiplier !== 1) {
-    //             createToast('info', `Scale of ${multiplier}x applied`);
-    //         } else {
-    //             createToast('info', 'Scale reset to original values');
-    //         }
-    //     },
-    //     [scale]
-    // );
-
     const servings = useMemo(() => {
         const { quantity } = recipe.yield;
         return (scale * quantity.reduce((acc, curr) => acc + curr, 0)) / quantity.length;

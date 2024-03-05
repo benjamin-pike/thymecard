@@ -34,7 +34,6 @@ import {
     PiPencilSimple,
     PiPlus,
     PiTimer,
-    PiTrashSimpleBold,
     PiUploadSimple,
     PiWarningBold
 } from 'react-icons/pi';
