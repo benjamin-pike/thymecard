@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { useRecipe } from '../../RecipeProvider';
 import styles from './yield.module.scss';
+import { round } from '@/lib/number.utils';
 
 interface IYieldProps {
     scale: number;
@@ -50,7 +51,7 @@ const DisplayView: FC<IYieldProps> = ({ scale }) => {
             <p className={styles.value}>
                 {recipe.yield?.quantity.map((q) => q * scale).join(' - ')} {recipe.yield?.units}
             </p>
-            {scale !== 1 && <p className={styles.scale}>{scale}x</p>}
+            {scale !== 1 && <p className={styles.scale}>{round(scale, 2)}x</p>}
         </>
     );
 };

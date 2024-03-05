@@ -216,7 +216,7 @@
             }
 
             .scaleWarning {
-                padding: 1rem;
+                padding: 0.75rem 0.875rem;
 
                 width: fit-content;
 
@@ -231,7 +231,7 @@
                 border-radius: 0.5rem;
 
                 @include dark-mode {
-                    color: $mono-light;
+                    color: contrastize($blue, 'dark');
                     box-shadow: 0 0 0 1px $blue inset;
                 }
 
@@ -240,8 +240,7 @@
                 }
 
                 span {
-                    font-weight: 500;
-                    text-decoration: underline;
+                    font-weight: 600;
                 }
 
                 &[data-ingredients-visible='false'] {

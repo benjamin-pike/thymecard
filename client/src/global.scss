@@ -22,7 +22,7 @@
         } @else if $color == $blue {
             @return lighten($color, 10%);
         } @else if $color == $purple {
-            @return lighten($color, 10%);
+            @return lighten($color, 20%);
         } @else {
             @return $color;
         }

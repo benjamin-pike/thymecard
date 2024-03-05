@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
 
-import Serving from './Yield/Yield';
+import Yield from './Yield/Yield';
 import Time from './Time/Time';
 import Rating from './Rating/Rating';
 import LastCooked from './LastCooked/LastCooked';
@@ -83,7 +83,7 @@ const Metadata: FC<IMetadataProps> = ({ scale }) => {
                         <li>
                             <ServingsIcon className={styles.icon} />
                             <p className={styles.metric}>SERVES</p>
-                            <Serving scale={scale} />
+                            <Yield scale={scale} />
                         </li>
                         {shouldRender.prepTime && (
                             <li>

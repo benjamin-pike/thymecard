@@ -3,13 +3,14 @@
 
     height: 1rem;
     width: 100%;
-
     background: linear-gradient(
         to right,
         alpha($mono-100, 0.9) 15%,
         alpha($mono-200, 0.75) 50%,
         alpha($mono-100, 0.9) 85%
     );
+
+    background-size: 200% auto;
 
     @include dark-mode {
         background: linear-gradient(
@@ -18,12 +19,13 @@
             alpha($mono-800, 0.5) 50%,
             alpha($mono-700, 0.5) 85%
         );
+
+        background-size: 200% auto;
     }
 
-    background-size: 200% auto;
     border-radius: 0.5rem;
 
-    animation: pulse 2000ms ease infinite;
+    animation: pulse 2000ms linear infinite;
 }
 
 @keyframes pulse {

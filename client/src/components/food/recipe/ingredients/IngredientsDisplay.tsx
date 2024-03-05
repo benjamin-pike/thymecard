@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { useRecipe } from '../RecipeProvider';
-import { round } from '@/lib/number.utils';
 import { buildKey } from '@thymecard/utils';
 import { isNumber } from '@thymecard/types';
 import { capitalize } from '@/lib/string.utils';
@@ -74,34 +73,57 @@ const IngredientsDisplay: FC<IRecipeIngredientsDisplayProps> = ({ addedIngredien
 
 export default IngredientsDisplay;
 
-const mapDecimalToFraction = (number: number) => {
-    const roundedDecimal = round(number, 3);
+const findClosestFraction = (remainder: number, fractionMap: Map<number, JSX.Element>) => {
+    let closestFractionKey = [...fractionMap.keys()][0];
+    let minimumDifference = Infinity;
 
-    const integer = Math.floor(roundedDecimal);
-    const remainder = roundedDecimal - integer;
-
-    if (!remainder) {
-        return <>{integer}</>;
-    }
-
-    const fraction = DECIMAL_FRACTION_MAP.get(remainder);
-
-    if (fraction) {
-        if (integer) {
-            return (
-                <>
-                    {integer} {fraction}
-                </>
-            );
+    fractionMap.forEach((_, key) => {
+        const difference = Math.abs(key - remainder);
+        if (difference < minimumDifference) {
+            minimumDifference = difference;
+            closestFractionKey = key;
         }
+    });
 
-        return fraction;
+    const fraction = fractionMap.get(closestFractionKey);
+
+    if (!fraction) {
+        throw new Error('Fraction not found');
     }
 
-    return <>{roundedDecimal}</>;
+    return fraction;
+};
+
+const mapDecimalToFraction = (n: number) => {
+    const integerPart = Math.floor(n);
+    const decimalPart = n - integerPart;
+
+    if (decimalPart === 0) {
+        return <> {integerPart} </>;
+    }
+
+    const closestFraction = findClosestFraction(decimalPart, DECIMAL_FRACTION_MAP);
+
+    if (integerPart > 0) {
+        return (
+            <>
+                {integerPart} {closestFraction}
+            </>
+        );
+    }
+
+    return closestFraction;
 };
 
 const DECIMAL_FRACTION_MAP = new Map([
+    [
+        0.0625,
+        <>
+            <sup className={styles.numerator}>1</sup>
+            <span className={styles.slash}>&frasl;</span>
+            <sub className={styles.denominator}>16</sub>
+        </>
+    ],
     [
         0.1,
         <>

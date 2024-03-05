@@ -1,4 +1,4 @@
-import { FC, useCallback, useRef, useState } from 'react';
+import { FC, useCallback, useMemo, useRef, useState } from 'react';
 import { useIntersection, useToggle } from '@mantine/hooks';
 import { useReactToPrint } from 'react-to-print';
 
@@ -9,19 +9,17 @@ import Image from './image/Image';
 import Toolbar from './toolbar/Toolbar';
 import IngredientsEdit from './ingredients/IngredientsEdit';
 import IngredientsDisplay from './ingredients/IngredientsDisplay';
-import ScaleIngredientsModal from './scale-ingredients-modal/ScaleIngredientsModal';
 import MethodDisplay from './method/MethodDisplay';
 import MethodEdit from './method/MethodEdit';
 import CommentsEdit from './comments/CommentsEdit';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
-import ModalWrapper from '@/components/wrappers/modal/ModalWrapper';
 
-import { useModal } from '@/hooks/common/useModal';
 import { useRecipe } from './RecipeProvider';
 import { IViewport } from '@/hooks/common/useBreakpoints';
 
 import { formatClasses, queue } from '@/lib/common.utils';
 import { createToast } from '@/lib/toast/toast.utils';
+import { round } from '@/lib/number.utils';
 
 import styles from './recipe.module.scss';
 
@@ -42,42 +40,49 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
     const [addedIngredients, setAddedIngredients] = useState(new Set<number>());
     const [scale, setScale] = useState(1);
 
-    const {
-        modalState: scaleIngredientsModalState,
-        openModal: openScaleIngredientsModal,
-        closeModal: closeScaleIngredientsModal
-    } = useModal();
-
     const handleToggleDisplayIngredients = useCallback(() => {
         toggleDisplayIngredients();
     }, [toggleDisplayIngredients]);
 
-    const handleOpenScaleIngredientsModal = useCallback(() => {
-        openScaleIngredientsModal();
-    }, [openScaleIngredientsModal]);
+    // const handleApplyIngredientsScale = useCallback(
+    //     (multiplier: number) => () => {
+    //         if (multiplier === scale) {
+    //             return;
+    //         }
 
-    const handleApplyIngredientsScale = useCallback(
-        (multiplier: number) => () => {
-            if (multiplier === scale) {
-                closeScaleIngredientsModal();
-                return;
-            }
+    //         setScale(multiplier);
 
-            setScale(multiplier);
-            closeScaleIngredientsModal();
+    //         if (multiplier !== 1) {
+    //             createToast('info', `Scale of ${multiplier}x applied`);
+    //         } else {
+    //             createToast('info', 'Scale reset to original values');
+    //         }
+    //     },
+    //     [scale]
+    // );
 
-            if (multiplier !== 1) {
-                createToast('info', `Scale of ${multiplier}x applied`);
+    const servings = useMemo(() => {
+        const { quantity } = recipe.yield;
+        return (scale * quantity.reduce((acc, curr) => acc + curr, 0)) / quantity.length;
+    }, [scale, recipe]);
+
+    const handleServingsChange = useCallback(
+        (mode: 'INCREASE' | 'DECREASE') => () => {
+            const { quantity } = recipe.yield;
+            const base = quantity.reduce((acc, curr) => acc + curr, 0) / quantity.length;
+
+            if (mode === 'INCREASE') {
+                setScale((servings + 1) / base);
             } else {
-                createToast('info', 'Scale reset to original values');
+                if (servings === 1) {
+                    return;
+                }
+
+                setScale((servings - 1) / base);
             }
         },
-        [closeScaleIngredientsModal, scale]
+        [recipe, servings]
     );
-
-    const handleCloseScaleIngredientsModal = useCallback(() => {
-        closeScaleIngredientsModal();
-    }, [closeScaleIngredientsModal]);
 
     const openPrintDialog = useReactToPrint({
         content: () => sectionRef.current,
@@ -149,88 +154,71 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
                 <div ref={intersectionRef} className={formatClasses(styles, ['divider', 'delimiter'])} />
             </header>
             <section className={styles.body} data-display-ingredients={displayIngredients} data-editing={isEditing}>
-                <>
-                    <div className={styles.left}>
-                        <Toolbar
-                            isEditing={isEditing}
-                            displayIngredients={displayIngredients}
-                            isFullscreen={isRecipeFullscreen}
-                            handleOpenScaleIngredientsModal={handleOpenScaleIngredientsModal}
-                            handleToggleDisplayIngredients={handleToggleDisplayIngredients}
-                            handleExport={() => console.log('export')}
-                            handlePrint={handlePrint}
-                            handleToggleFullscreen={handleRecipeFullscreen}
-                            handleDeleteRecipe={handleDeleteRecipeButtonClick}
-                        />
-                        <ScrollWrapper
-                            className={styles.ingredientsWrapper}
-                            height={'100%'}
-                            padding={1}
-                            active={
-                                !isEditing &&
-                                !isPrintLayout &&
-                                !viewport.current.isOneColumnWideMargins &&
-                                !viewport.current.isOneColumnNarrowMargins
-                            }
-                            isScrollable={isBodyOnly}
-                        >
-                            {isEditing ? (
-                                <IngredientsEdit />
-                            ) : (
-                                <IngredientsDisplay
-                                    addedIngredients={addedIngredients}
-                                    scale={scale}
-                                    isPrintLayout={isPrintLayout}
-                                    handleIngredientsClick={handleIngredientsClick}
-                                />
-                            )}
-                        </ScrollWrapper>
-                    </div>
-                    <div className={styles.right}>
-                        <ScrollWrapper
-                            className={styles.methodWrapper}
-                            height={'100%'}
-                            padding={displayIngredients ? 2 : 0.5}
-                            active={
-                                !isEditing &&
-                                !isPrintLayout &&
-                                !viewport.current.isOneColumnWideMargins &&
-                                !viewport.current.isOneColumnNarrowMargins
-                            }
-                            isScrollable={isBodyOnly}
-                        >
-                            <>
-                                {!isEditing && scale !== 1 && (
-                                    <p className={styles.scaleWarning} data-ingredients-visible={displayIngredients}>
-                                        <strong>Note</strong> – A scale of <span>{scale}x</span> has been applied to the ingredients. Any
-                                        measurements in the <span>method</span> and <span>ingredient notes</span> have not been scaled
-                                    </p>
-                                )}
-                                {isEditing ? (
-                                    <MethodEdit />
-                                ) : (
-                                    <MethodDisplay isPrintLayout={isPrintLayout} isIngredientsVisible={displayIngredients} />
-                                )}
-                            </>
-                        </ScrollWrapper>
-                    </div>
-
-                    <ModalWrapper
-                        state={scaleIngredientsModalState}
-                        handleCloseModal={handleCloseScaleIngredientsModal}
-                        blurBackground={true}
+                <div className={styles.left}>
+                    <Toolbar
+                        isEditing={isEditing}
+                        displayIngredients={displayIngredients}
+                        isFullscreen={isRecipeFullscreen}
+                        servings={servings}
+                        handleToggleDisplayIngredients={handleToggleDisplayIngredients}
+                        handleExport={() => console.log('export')}
+                        handlePrint={handlePrint}
+                        handleToggleFullscreen={handleRecipeFullscreen}
+                        handleServingsChange={handleServingsChange}
+                        handleDeleteRecipe={handleDeleteRecipeButtonClick}
+                    />
+                    <ScrollWrapper
+                        className={styles.ingredientsWrapper}
+                        height={'100%'}
+                        padding={1}
+                        active={
+                            !isEditing &&
+                            !isPrintLayout &&
+                            !viewport.current.isOneColumnWideMargins &&
+                            !viewport.current.isOneColumnNarrowMargins
+                        }
+                        isScrollable={isBodyOnly}
                     >
-                        <ScaleIngredientsModal
-                            currentMultiplier={scale}
-                            recipeYield={{
-                                quantity: [4],
-                                units: 'people'
-                            }}
-                            handleApply={handleApplyIngredientsScale}
-                            handleClose={handleCloseScaleIngredientsModal}
-                        />
-                    </ModalWrapper>
-                </>
+                        {isEditing ? (
+                            <IngredientsEdit />
+                        ) : (
+                            <IngredientsDisplay
+                                addedIngredients={addedIngredients}
+                                scale={scale}
+                                isPrintLayout={isPrintLayout}
+                                handleIngredientsClick={handleIngredientsClick}
+                            />
+                        )}
+                    </ScrollWrapper>
+                </div>
+                <div className={styles.right}>
+                    <ScrollWrapper
+                        className={styles.methodWrapper}
+                        height={'100%'}
+                        padding={displayIngredients ? 2 : 0.5}
+                        active={
+                            !isEditing &&
+                            !isPrintLayout &&
+                            !viewport.current.isOneColumnWideMargins &&
+                            !viewport.current.isOneColumnNarrowMargins
+                        }
+                        isScrollable={isBodyOnly}
+                    >
+                        <>
+                            {!isEditing && scale !== 1 && (
+                                <p className={styles.scaleWarning} data-ingredients-visible={displayIngredients}>
+                                    A scale of <span>{round(scale, 2)}x</span> has been applied to the ingredients. Measurements in the{' '}
+                                    <span>method</span> and <span>ingredient notes</span> have not been scaled
+                                </p>
+                            )}
+                            {isEditing ? (
+                                <MethodEdit />
+                            ) : (
+                                <MethodDisplay isPrintLayout={isPrintLayout} isIngredientsVisible={displayIngredients} />
+                            )}
+                        </>
+                    </ScrollWrapper>
+                </div>
             </section>
         </section>
     );

@@ -109,7 +109,7 @@
                     font-size: $fs-12;
 
                     @include dark-mode {
-                        text-shadow: 0 0 0.5rem $mono-dark;
+                        text-shadow: 0 0 0.125rem $mono-dark;
                     }
                 }
 
