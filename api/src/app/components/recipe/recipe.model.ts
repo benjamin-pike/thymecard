@@ -173,7 +173,8 @@ const RecipeSchema = new Schema(
         },
         description: {
             type: String,
-            required: false
+            required: false,
+            default: null
         },
         image: {
             type: String,
@@ -182,43 +183,47 @@ const RecipeSchema = new Schema(
         authors: {
             type: Array(String),
             required: false,
-            default: undefined
+            default: []
         },
         source: {
             type: String,
-            required: false
+            required: false,
+            default: null
         },
         category: {
             type: Array(String),
             required: false,
-            default: undefined
+            default: []
         },
         cuisine: {
             type: Array(String),
             required: false,
-            default: undefined
+            default: []
         },
         diet: {
             type: Array(String),
             required: false,
-            default: undefined
-        },
-        keywords: {
-            type: Array(String),
-            required: false,
-            default: undefined
+            default: []
         },
         prepTime: {
             type: Number,
-            required: false
+            required: false,
+            default: null
         },
         cookTime: {
             type: Number,
-            required: false
+            required: false,
+            default: null
         },
         totalTime: {
             type: Number,
-            required: false
+            required: false,
+            default: null
+        },
+        lastCooked: {
+            type: Date,
+            required: false,
+            default: null
         },
         yield: {
             type: Yield,
@@ -227,7 +232,7 @@ const RecipeSchema = new Schema(
         },
         nutrition: {
             type: Nutrition,
-            required: false,
+            required: true,
             _id: false
         },
         ingredients: {
@@ -244,27 +249,24 @@ const RecipeSchema = new Schema(
             type: Number,
             required: false,
             min: 0,
-            max: 5
+            max: 5,
+            default: null
         },
         comments: {
             type: Array(Comment),
             required: false,
-            default: undefined
+            default: []
         },
         isBookmarked: {
             type: Boolean,
-            required: true,
+            required: false,
             default: false
         },
         isPublic: {
             type: Boolean,
-            required: true,
+            required: false,
             default: false
         },
-        lastCooked: {
-            type: Date,
-            required: false
-        }
     }
 );
 

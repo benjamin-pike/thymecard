@@ -23,14 +23,24 @@
     .metrics {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
 
         li {
             display: flex;
             align-items: center;
 
+            padding: 0.75rem 0.85rem;
+            border-radius: 0.5rem;
+
+            &:nth-of-type(odd) {
+                background-color: alpha($mono-100, 0.75);
+
+                @include dark-mode{
+                    background-color: alpha($mono-800, 0.85);
+                }
+            }
+
             .icon {
-                margin-right: 0.5rem;
+                margin-right: 0.75rem;
 
                 color: $mono-600;
             }
@@ -39,7 +49,7 @@
                 width: 4.5rem;
 
                 color: $mono-600;
-                font-size: $fs-14;
+                font-size: $fs-13;
                 font-weight: 600;
 
                 @include dark-mode {
@@ -83,6 +93,24 @@
 
         @include dark-mode {
             background-color: $mono-800;
+        }
+    }
+
+    &[data-editing='true'] {
+        .metrics {
+            gap: 0.75rem;
+
+            li {
+                padding: 0;
+
+                height: 1.75rem;
+
+                background-color: transparent;
+
+                @include dark-mode{
+                    background-color: transparent;
+                }
+            }
         }
     }
 }

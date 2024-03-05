@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react';
-import { IRecipeNutritionalInformation } from '@thymecard/types';
+import { IRecipeNutritionalInformation, clientRecipePrototype } from '@thymecard/types';
 import { compare } from '@thymecard/utils';
 
 const useNutrition = () => {
-    const [initial, setInitial] = useState<IRecipeNutritionalInformation>({});
-    const [edit, setEdit] = useState<IRecipeNutritionalInformation>({});
+    const [initial, setInitial] = useState<IRecipeNutritionalInformation>({ ...clientRecipePrototype.nutrition });
+    const [edit, setEdit] = useState<IRecipeNutritionalInformation>({ ...clientRecipePrototype.nutrition });
 
-    const init = useCallback((nutrition: IRecipeNutritionalInformation | undefined) => {
+    const init = useCallback((nutrition: IRecipeNutritionalInformation) => {
         setInitial({ ...nutrition });
         setEdit({ ...nutrition });
     }, []);

@@ -1,15 +1,15 @@
 import { useCallback, useState } from 'react';
 
 const useRating = () => {
-    const [initial, setInitial] = useState<number | undefined>(undefined);
-    const [edit, setEdit] = useState<number | undefined>(undefined);
+    const [initial, setInitial] = useState<number | null>(null);
+    const [edit, setEdit] = useState<number | null>(null);
 
-    const init = useCallback((rating: number | undefined) => {
+    const init = useCallback((rating: number | null) => {
         setInitial(rating);
         setEdit(rating);
     }, []);
 
-    const validate = useCallback((): { value: number | undefined; isModified: boolean } => {
+    const validate = useCallback((): { value: number | null; isModified: boolean } => {
         return { value: edit, isModified: edit !== initial };
     }, [edit, initial]);
 
@@ -18,7 +18,7 @@ const useRating = () => {
             const value = e.target.value;
 
             if (value === '') {
-                return setEdit(undefined);
+                return setEdit(null);
             }
 
             const parsedValue = parseFloat(value);

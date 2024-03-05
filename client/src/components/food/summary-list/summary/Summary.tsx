@@ -47,7 +47,7 @@ const Summary: FC<ISummaryProps> = ({ recipe, selectedTags, handleSelectRecipe, 
         {
             name: 'prepTime',
             label: 'Prep Time',
-            value: Duration.fromObject({ minutes: recipe.prepTime }).toFormat('h:mm'),
+            value: Duration.fromObject({ minutes: recipe.prepTime ?? undefined }).toFormat('h:mm'),
             icon: <PrepTimeIcon />,
             display: !!recipe.prepTime
         },
@@ -101,13 +101,19 @@ const Summary: FC<ISummaryProps> = ({ recipe, selectedTags, handleSelectRecipe, 
                     {recipe.isBookmarked && <BookmarkIcon />}
                 </span>
                 <Details recipeId={recipe._id} details={details} />
-                <div className={styles.tags}>
-                    {orderedTags.map((tag) => (
-                        <button key={`${recipe._id}${tag}`} data-selected={selectedTags.includes(tag)} onClick={() => handleTagClick(tag)}>
-                            {tag}
-                        </button>
-                    ))}
-                </div>
+                {!!orderedTags.length && (
+                    <div className={styles.tags}>
+                        {orderedTags.map((tag) => (
+                            <button
+                                key={`${recipe._id}${tag}`}
+                                data-selected={selectedTags.includes(tag)}
+                                onClick={() => handleTagClick(tag)}
+                            >
+                                {tag}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
         </li>
     );

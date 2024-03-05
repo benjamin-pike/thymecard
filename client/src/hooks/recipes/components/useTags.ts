@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
 interface IValidate {
-    value: string[] | undefined;
+    value: string[];
     isModified: boolean;
 }
 
@@ -16,7 +16,7 @@ const useTags = () => {
 
     const edit = [...cuisineEdit, ...dietEdit, ...categoryEdit];
 
-    const init = useCallback((cuisine: string[] | undefined, diet: string[] | undefined, category: string[] | undefined) => {
+    const init = useCallback((cuisine: string[], diet: string[], category: string[]) => {
         setCuisineInitial(cuisine ?? []);
         setDietInitial(diet ?? []);
         setCategoryInitial(category ?? []);
@@ -29,15 +29,15 @@ const useTags = () => {
     const validate = useCallback((): { cuisine: IValidate; diet: IValidate; category: IValidate } => {
         return {
             cuisine: {
-                value: (cuisineEdit?.length && cuisineEdit) || undefined,
+                value: cuisineEdit,
                 isModified: cuisineInitial?.join(',') !== cuisineEdit?.join(',')
             },
             diet: {
-                value: (dietEdit?.length && dietEdit) || undefined,
+                value: dietEdit,
                 isModified: dietInitial?.join(',') !== dietEdit?.join(',')
             },
             category: {
-                value: (categoryEdit?.length && categoryEdit) || undefined,
+                value: categoryEdit,
                 isModified: categoryInitial?.join(',') !== categoryEdit?.join(',')
             }
         };

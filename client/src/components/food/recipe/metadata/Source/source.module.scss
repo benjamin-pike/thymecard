@@ -3,7 +3,7 @@
 
     min-width: 0;
 
-    font-weight: 300;
+    font-weight: 400;
     font-size: $fs-12;
     color: $mono-600;
     border: 1px dashed $mono-300;
@@ -33,9 +33,13 @@
 }
 
 .display {
-    color: $mono-500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    color: $mono-600;
     font-size: $fs-14;
-    font-weight: 200;
+    font-weight: 300;
 
     @include dark-mode {
         color: $mono-500;

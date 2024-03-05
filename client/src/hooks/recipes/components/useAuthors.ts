@@ -1,16 +1,17 @@
 import { useCallback, useState } from 'react';
+import { compare } from '@thymecard/utils';
 
 const useAuthors = () => {
-    const [initial, setInitial] = useState<string[] | undefined>(undefined);
-    const [edit, setEdit] = useState<string[] | undefined>(undefined);
+    const [initial, setInitial] = useState<string[]>([]);
+    const [edit, setEdit] = useState<string[]>([]);
 
-    const init = useCallback((authors: string[] | undefined) => {
+    const init = useCallback((authors: string[]) => {
         setInitial(authors);
         setEdit(authors);
     }, []);
 
-    const validate = useCallback((): { value: string[] | undefined; isModified: boolean } => {
-        const isModified = initial !== edit;
+    const validate = useCallback((): { value: string[]; isModified: boolean } => {
+        const isModified = !compare(initial, edit);
 
         return { value: edit?.filter((author) => author), isModified };
     }, [edit, initial]);
@@ -28,10 +29,6 @@ const useAuthors = () => {
 
     const handleDelete = useCallback(
         (index: number) => () => {
-            if (edit?.length === 1) {
-                return setEdit(undefined);
-            }
-
             setEdit(edit?.filter((_, i) => i !== index));
         },
         [edit]

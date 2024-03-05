@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useRecipe } from '../../RecipeProvider';
 import { numberToStars } from '@/lib/elements.utils';
-import { isDefined } from '@thymecard/types';
+import { isNull } from '@thymecard/types';
 import styles from './rating.module.scss';
 
 const Rating: FC = () => {
@@ -22,7 +22,7 @@ const EditView: FC = () => {
     }
 
     return (
-        <div className={styles.edit} data-defined={isDefined(rating.edit)}>
+        <div className={styles.edit} data-defined={!isNull(rating.edit)}>
             <input
                 type="number"
                 value={rating.edit ?? ''}
@@ -48,7 +48,7 @@ const DisplayView: FC = () => {
     }
 
     return (
-        <span className={styles.value} data-defined={isDefined(recipe.rating)}>
+        <span className={styles.value} data-defined={!isNull(recipe.rating)}>
             {Stars}
         </span>
     );

@@ -2,16 +2,16 @@ import { useCallback, useState } from 'react';
 import { DateTime } from 'luxon';
 
 const useLastCooked = () => {
-    const [initial, setInitial] = useState<DateTime | undefined>(undefined);
-    const [edit, setEdit] = useState<DateTime | undefined>(undefined);
+    const [initial, setInitial] = useState<DateTime | null>(null);
+    const [edit, setEdit] = useState<DateTime | null>(null);
 
-    const init = useCallback((lastCooked: string | undefined) => {
-        setInitial(lastCooked ? DateTime.fromISO(lastCooked) : undefined);
-        setEdit(lastCooked ? DateTime.fromISO(lastCooked) : undefined);
+    const init = useCallback((lastCooked: string | null) => {
+        setInitial(lastCooked ? DateTime.fromISO(lastCooked) : null);
+        setEdit(lastCooked ? DateTime.fromISO(lastCooked) : null);
     }, []);
 
-    const validate = useCallback((): { value: string | undefined; isModified: boolean } => {
-        const value = edit?.toISO() ?? undefined;
+    const validate = useCallback((): { value: string | null; isModified: boolean } => {
+        const value = edit?.toISO() ?? null;
         const isModified = edit?.toString() !== initial?.toString();
 
         return { value, isModified };

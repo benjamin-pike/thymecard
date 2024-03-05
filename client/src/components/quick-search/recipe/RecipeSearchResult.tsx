@@ -44,7 +44,7 @@ const RecipeSearchResult: FC<IRecipeSearchResultProps> = ({ recipe, image, handl
             {
                 name: 'prepTime',
                 label: 'Prep Time',
-                value: Duration.fromObject({ minutes: recipe.prepTime }).toFormat('h:mm'),
+                value: Duration.fromObject({ minutes: recipe.prepTime ?? undefined }).toFormat('h:mm'),
                 icon: <PrepTimeIcon />,
                 display: !!recipe.prepTime
             },

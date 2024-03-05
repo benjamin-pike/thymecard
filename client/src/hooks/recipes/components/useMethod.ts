@@ -7,7 +7,7 @@ const useMethod = () => {
     const [initial, setInitial] = useState<RecipeMethod>([]);
     const [edit, setEdit] = useState<RecipeMethod>([]);
 
-    const init = useCallback((data: RecipeMethod | undefined) => {
+    const init = useCallback((data: RecipeMethod) => {
         if (!data) {
             const sectionId = uuid();
             const stepId = uuid();

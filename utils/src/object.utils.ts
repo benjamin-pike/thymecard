@@ -1,4 +1,4 @@
-import { isArray, isObject } from "@thymecard/types";
+import { Client, isArray, isObject } from "@thymecard/types";
 
 export const compare = (objA: any, objB: any): boolean => {
 	if (objA === objB) {
@@ -45,4 +45,8 @@ export const compare = (objA: any, objB: any): boolean => {
 	}
 
 	return true;
+};
+
+export const convertToClientType = <T>(data: T): Client<T> => {
+    return JSON.parse(JSON.stringify(data));
 };

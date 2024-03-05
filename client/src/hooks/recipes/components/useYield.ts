@@ -11,7 +11,7 @@ const useYield = () => {
     const [initial, setInitial] = useState<IRecipeYieldEdit>({ quantity: '', units: '' });
     const [edit, setEdit] = useState<IRecipeYieldEdit>({ quantity: '', units: '' });
 
-    const init = useCallback((recipeYield: IRecipeYield | undefined) => {
+    const init = useCallback((recipeYield: IRecipeYield) => {
         if (!recipeYield) {
             setInitial({ quantity: '', units: '' });
             setEdit({ quantity: '', units: '' });

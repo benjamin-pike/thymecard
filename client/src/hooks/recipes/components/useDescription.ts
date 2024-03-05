@@ -1,16 +1,15 @@
 import { useCallback, useState } from 'react';
 
 const useDescription = () => {
-    const [initial, setInitial] = useState<string | undefined>(undefined);
-    const [edit, setEdit] = useState<string | undefined>(undefined);
+    const [initial, setInitial] = useState<string | null>(null);
+    const [edit, setEdit] = useState<string | null>(null);
 
-    const init = useCallback((description: string | undefined) => {
-        console.log('init description', description);
+    const init = useCallback((description: string | null) => {
         setInitial(description);
         setEdit(description);
     }, []);
 
-    const validate = useCallback((): { value: string | undefined; isModified: boolean } => {
+    const validate = useCallback((): { value: string | null; isModified: boolean } => {
         const isModified = initial !== edit;
 
         return { value: edit, isModified };
@@ -18,7 +17,7 @@ const useDescription = () => {
 
     const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (!e.target.value) {
-            return setEdit(undefined);
+            return setEdit(null);
         }
 
         setEdit(e.target.value);

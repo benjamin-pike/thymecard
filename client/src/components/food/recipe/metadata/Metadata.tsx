@@ -31,29 +31,27 @@ interface IMetadataProps {
 }
 
 const Metadata: FC<IMetadataProps> = ({ scale }) => {
-    const { recipe, isEditing } = useRecipe();
+    const { recipe, isLoading, isEditing } = useRecipe();
 
     const tags = collateRecipeTags(recipe ?? {});
 
     const shouldRender = {
-        authors: !!recipe?.authors || isEditing,
-        source: !!recipe?.source || isEditing,
-        prepTime: !!recipe?.prepTime || isEditing,
-        cookTime: !!recipe?.cookTime || isEditing,
-        totalTime: !!recipe?.totalTime || isEditing,
-        added: !!recipe?.createdAt,
-        lastCooked: !!recipe?.lastCooked || isEditing,
-        nutrition: !!recipe?.nutrition?.calories || isEditing,
+        authors: !!recipe.authors.length || isEditing,
+        source: !!recipe.source || isEditing,
+        prepTime: !!recipe.prepTime || isEditing,
+        cookTime: !!recipe.cookTime || isEditing,
+        totalTime: !!recipe.totalTime || isEditing,
+        added: !!recipe.createdAt,
+        lastCooked: !!recipe.lastCooked || isEditing,
+        nutrition: !!recipe.nutrition?.calories || isEditing,
         tags: !!tags.length || isEditing
     };
 
     const createdAt = recipe?.createdAt ? DateTime.fromISO(recipe.createdAt).toFormat('MMMM d, yyyy') : undefined;
 
-    const isLoading = !recipe;
-
     return (
         <>
-            <div className={styles.details}>
+            <div className={styles.details} data-editing={isEditing}>
                 {isLoading ? (
                     <>
                         <TextSkeleton fontSize={1} width="100%" />
@@ -87,7 +85,6 @@ const Metadata: FC<IMetadataProps> = ({ scale }) => {
                             <p className={styles.metric}>SERVES</p>
                             <Serving scale={scale} />
                         </li>
-                        <div className={styles.divider} />
                         {shouldRender.prepTime && (
                             <li>
                                 <PrepTimeIcon className={styles.icon} />
@@ -106,12 +103,10 @@ const Metadata: FC<IMetadataProps> = ({ scale }) => {
                                 <p className={styles.metric}>TOTAL</p> <Time type="total" />
                             </li>
                         )}
-                        {(shouldRender.prepTime || shouldRender.cookTime || shouldRender.totalTime) && <div className={styles.divider} />}
                         <li className={styles.rating}>
                             <RatingIcon className={styles.icon} />
                             <p className={styles.metric}>RATING</p> <Rating />
                         </li>
-                        <div className={styles.divider} />
                         {shouldRender.added && (
                             <li>
                                 <AddedIcon className={styles.icon} />
@@ -129,7 +124,6 @@ const Metadata: FC<IMetadataProps> = ({ scale }) => {
                 )}
                 {isLoading ? (
                     <>
-                        <div className={styles.divider} />
                         <div className={styles.tagsLoading}>
                             <TextSkeleton fontSize={1.25} width="calc(35% - 0.25rem)" />
                             <TextSkeleton fontSize={1.25} width="calc(65% - 0.25rem)" />
@@ -141,14 +135,13 @@ const Metadata: FC<IMetadataProps> = ({ scale }) => {
                 ) : (
                     shouldRender.tags && (
                         <>
-                            <div className={styles.divider} />
+                            {isEditing && <div className={styles.divider} />}
                             <Tags />
                         </>
                     )
                 )}
                 {isLoading ? (
                     <>
-                        <div className={styles.divider} />
                         <div className={styles.tagsLoading}>
                             <TextSkeleton fontSize={1.75} width="5rem" />
                             <TextSkeleton fontSize={1.75} width="3.25rem" />
@@ -159,7 +152,6 @@ const Metadata: FC<IMetadataProps> = ({ scale }) => {
                 ) : (
                     shouldRender.nutrition && (
                         <>
-                            {/* <div className={styles.divider} /> */}
                             <Nutrition />
                         </>
                     )

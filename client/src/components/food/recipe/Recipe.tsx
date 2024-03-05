@@ -33,7 +33,7 @@ interface IRecipeProps {
 }
 
 const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFullscreen, handleClearSelectedRecipe }) => {
-    const { recipe, isEditing, handleDeleteRecipe } = useRecipe();
+    const { recipe, isLoading, isEditing, handleDeleteRecipe } = useRecipe();
 
     const sectionRef = useRef<HTMLElement>(null);
 
@@ -121,13 +121,11 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
     );
 
     const { ref: intersectionRef, entry } = useIntersection({
-        root: document.body,
+        root: sectionRef.current,
         threshold: 1
     });
 
     const isBodyOnly = !entry?.isIntersecting;
-
-    const isLoading = !recipe;
 
     return (
         <section ref={sectionRef} className={styles.recipe}>

@@ -6,22 +6,20 @@ import {
     isNonEmptyString,
     isNumber,
     isPlainObject,
-    isString,
-    parseFloatOrUndefined,
-    validate
+    isString, validate
 } from '../../lib/types/typeguards.utils';
 import { isSchemaOrgHowToStep, isSchemaOrgHowToSection } from './recipe.types';
 import { UNIT_MAP, FRACTION_MAP, VALID_PREP_STYLES, VALID_PREP_STYLE_MODIFIERS } from './recipe.globals';
 import { removeHTML, toTitleCase } from '@thymecard/utils';
 import {
-    IRecipeCreate,
     IRecipeIngredient,
     IRecipeMethodSection,
     IRecipeNutritionalInformation,
     IRecipeParseResponse,
     IRecipeYield,
     RecipeIngredients,
-    RecipeMethod
+    RecipeMethod,
+    parseFloatOrNull
 } from '@thymecard/types';
 export class RecipeParser {
     private readonly resource: Record<string, any>;
@@ -39,7 +37,7 @@ export class RecipeParser {
                 source: validate(this.resource.url, isNonEmptyString, undefined),
                 category: this.parseCategoryOrCuisine(this.resource.recipeCategory),
                 cuisine: this.parseCategoryOrCuisine(this.resource.recipeCuisine),
-                keywords: this.parseKeywords(this.resource.keywords),
+                // keywords: this.parseKeywords(this.resource.keywords),
                 prepTime: this.parseDuration(this.resource.prepTime),
                 cookTime: this.parseDuration(this.resource.cookTime),
                 totalTime: this.parseDuration(this.resource.totalTime),
@@ -145,7 +143,7 @@ export class RecipeParser {
 
     private parseYield(resource: any): IRecipeYield | undefined {
         if (!resource) {
-            return undefined;
+            return;
         }
         if (isNumber(resource)) {
             return { quantity: [resource], units: null };
@@ -167,7 +165,7 @@ export class RecipeParser {
                 }
 
                 if (!quantity) {
-                    return undefined;
+                    return;
                 }
 
                 return { quantity, units: units ?? null };
@@ -178,7 +176,7 @@ export class RecipeParser {
                 return { quantity: [parsedQuantity], units: null };
             }
 
-            return undefined;
+            return;
         }
         if (isArray(resource)) {
             const result = resource.map((item) => this.parseYield(item)).find((result) => result !== undefined);
@@ -220,18 +218,18 @@ export class RecipeParser {
         }
 
         const nutritionInformation: IRecipeNutritionalInformation = {
-            calories: parseFloatOrUndefined(resource.calories),
-            sugar: parseFloatOrUndefined(resource.sugarContent),
-            carbohydrate: parseFloatOrUndefined(resource.carbohydrateContent),
-            cholesterol: parseFloatOrUndefined(resource.cholesterolContent),
-            fat: parseFloatOrUndefined(resource.fatContent),
-            saturatedFat: parseFloatOrUndefined(resource.saturatedFatContent),
-            transFat: parseFloatOrUndefined(resource.transFatContent),
-            unsaturatedFat: parseFloatOrUndefined(resource.unsaturatedFatContent),
-            protein: parseFloatOrUndefined(resource.proteinContent),
-            fiber: parseFloatOrUndefined(resource.fiberContent),
-            sodium: parseFloatOrUndefined(resource.sodiumContent),
-            servingSize: this.parseYield(resource.servingSize)
+            calories: parseFloatOrNull(resource.calories),
+            sugar: parseFloatOrNull(resource.sugarContent),
+            carbohydrate: parseFloatOrNull(resource.carbohydrateContent),
+            cholesterol: parseFloatOrNull(resource.cholesterolContent),
+            fat: parseFloatOrNull(resource.fatContent),
+            saturatedFat: parseFloatOrNull(resource.saturatedFatContent),
+            transFat: parseFloatOrNull(resource.transFatContent),
+            unsaturatedFat: parseFloatOrNull(resource.unsaturatedFatContent),
+            protein: parseFloatOrNull(resource.proteinContent),
+            fiber: parseFloatOrNull(resource.fiberContent),
+            sodium: parseFloatOrNull(resource.sodiumContent),
+            servingSize: this.parseYield(resource.servingSize) ?? null
         };
 
         return nutritionInformation;
@@ -254,12 +252,14 @@ export class RecipeParser {
             if (resource.every(isSchemaOrgHowToStep)) {
                 const section: IRecipeMethodSection = {
                     id: uuid(),
-                    steps: []
+                    steps: [],
+                    sectionTitle: null
                 };
                 for (const element of resource) {
+                    const title = element.name?.toLowerCase() !== element.text.toLowerCase() && element.name;
                     const step = {
                         id: uuid(),
-                        stepTitle: element.name?.toLowerCase() !== element.text.toLowerCase() ? element.name : undefined,
+                        stepTitle: title || null,
                         instructions: removeHTML(element.text)
                     };
                     section.steps.push(step);
@@ -273,12 +273,13 @@ export class RecipeParser {
             // Handle recipes that use sections and steps
             for (const element of resource) {
                 if (isSchemaOrgHowToStep(element)) {
+                    const title = element.name?.toLowerCase() !== element.text.toLowerCase() && element.name;
                     const step = {
                         id: uuid(),
-                        stepTitle: element.name?.toLowerCase() !== element.text.toLowerCase() ? element.name : undefined,
+                        stepTitle: title || null,
                         instructions: removeHTML(element.text)
                     };
-                    result.push({ id: uuid(), steps: [step] });
+                    result.push({ id: uuid(), sectionTitle: null, steps: [step] });
                     continue;
                 }
                 if (isSchemaOrgHowToSection(element)) {
@@ -292,7 +293,7 @@ export class RecipeParser {
 
                     result.push({
                         id: uuid(),
-                        sectionTitle: element.name,
+                        sectionTitle: element.name ?? null,
                         steps
                     });
                 }
@@ -362,12 +363,11 @@ export class IngredientsParser {
         const notes = notesAndStyles.filter((note) => !prepStyles.includes(note));
 
         return {
-            quantity,
-            unit,
+            quantity: quantity ?? null,
+            unit: unit ?? null,
             item,
-            prepStyles: prepStyles.length ? prepStyles.join(', ') : undefined,
-            notes: notes.length ? notes.join(', ') : undefined,
-            origin: input,
+            prepStyles: prepStyles.length ? prepStyles.join(', ') : null,
+            notes: notes.length ? notes.join(', ') : null,
             match: null
         };
     }

@@ -1,7 +1,7 @@
 $types: (
     cuisine: $blue,
-    diet: $green,
-    category: $orange
+    diet: $orange,
+    category: $green
 );
 
 .tags {
@@ -86,11 +86,6 @@ $types: (
 
             translate: 0 -50%;
         }
-
-        // @include dark-mode {
-        //     color: $mono-light;
-        //     background-color: transparent;
-        // }
     }
 
     ul {
@@ -98,7 +93,7 @@ $types: (
         flex-wrap: wrap;
         gap: 0.5rem;
 
-        max-width: 15rem;
+        max-width: 20rem;
 
         .tagEdit {
             display: flex;
@@ -178,16 +173,9 @@ $types: (
         display: flex;
         gap: 0.5rem;
 
-        padding-bottom: 0.75rem;
         margin-bottom: 0.25rem;
 
         width: 100%;
-
-        border-bottom: 1px dashed $mono-300;
-
-        @include dark-mode {
-            border-bottom: 1px dashed $mono-600;
-        }
 
         &[data-empty='true'] {
             padding-bottom: 0;

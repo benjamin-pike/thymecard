@@ -43,7 +43,7 @@ const EventItem: FC<IEventItemProps> = ({ name, isFavorite, recipeId, handleSele
                 handleUpdateMealEventItem({
                     recipeId: recipe._id,
                     name: recipe.title,
-                    calories: recipe.nutrition?.calories,
+                    calories: recipe.nutrition.calories,
                     servings: 1
                 });
             } catch (error: any) {

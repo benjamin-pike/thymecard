@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRecipe } from '../../RecipeProvider';
-import { isDefined } from '@thymecard/types';
+import { isNull } from '@thymecard/types';
 import styles from './nutrition.module.scss';
 
 const Nutrition = () => {
@@ -58,6 +58,18 @@ const EditView = () => {
         setFocusIndices((prev) => prev.filter((i) => i !== index));
     };
 
+    const determineInputValue = useCallback((value: number | null, unit: string, isFocused: boolean) => {
+        if (isNull(value)) {
+            return '';
+        }
+
+        if (isFocused) {
+            return `${value}`;
+        }
+
+        return `${value}${unit}`;
+    }, []);
+
     return (
         <>
             {metrics.map(({ key, label, value, unit }, i) => {
@@ -69,9 +81,9 @@ const EditView = () => {
                         <input
                             className={styles.edit}
                             type={isFocused ? 'number' : 'text'}
-                            value={isFocused ? value : value ? `${value}${unit}` : ''}
+                            value={determineInputValue(value, unit, isFocused)}
                             placeholder="#"
-                            data-empty={!isDefined(value)}
+                            data-empty={isNull(value)}
                             style={{ width: `${(value ?? 0).toString().length + inputPadding}ch` }}
                             onChange={nutrition.handleChange(key)}
                             onFocus={handleFocus(i)}
