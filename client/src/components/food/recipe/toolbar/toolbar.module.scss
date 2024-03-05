@@ -3,17 +3,17 @@
     align-items: center;
     gap: 1rem;
 
-    padding: 0.5rem 1rem 0.5rem 1rem;
+    padding: 0.5rem 1rem 1rem 1rem;
 
     height: 2.5rem;
 
     border-bottom: 1px solid $mono-200;
-    
+
     @include dark-mode {
         border-bottom: 1px solid $mono-700;
     }
 
-    button {
+    .toolbarButton {
         height: 1.15rem;
         width: 1.15rem;
 
@@ -36,7 +36,7 @@
             transition: translate 200ms ease;
         }
 
-        &.save {
+        &[data-button='save'] {
             svg {
                 scale: 1.25;
 
@@ -46,7 +46,7 @@
             }
         }
 
-        &.discard {
+        &[data-button='discard'] {
             margin-left: -0.35rem;
 
             svg {
@@ -58,20 +58,77 @@
             }
         }
 
-        &.displayIngredients {
+        &[data-button='displayIngredients'] {
             path {
                 stroke-width: 0.35;
             }
         }
 
-        &.fullscreen {
+        &[data-button='fullscreen'] {
             svg {
                 scale: 1.15;
             }
         }
 
-        &:last-of-type {
-            margin-left: auto;
+        &[data-button='delete'] {
+            translate: 0 -1px;
+        }
+    }
+
+    &[data-editing='true'] {
+        .toolbarButton {
+            &[data-button='fullscreen'] {
+                margin-left: auto;
+            }
+        }
+    }
+
+    .scale {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        margin-left: auto;
+        padding: 0.25rem 0.5rem;
+
+        border: 1px solid $mono-200;
+
+        border-radius: 0.5rem;
+
+        @include dark-mode {
+            border: 1px solid $mono-700;
+        }
+
+        input {
+            color: $mono-700;
+            font-weight: 500;
+            font-size: $fs-13;
+            text-align: center;
+
+            @include dark-mode {
+                color: $mono-light;
+            }
+        }
+
+        button {
+            display: grid;
+            place-content: center;
+
+            height: 0.625rem;
+            width: 0.625rem;
+
+            color: $mono-700;
+
+            @include dark-mode {
+                color: $mono-500;
+            }
+
+            svg {
+                height: 100%;
+                width: 100%;
+
+                stroke-width: 10;
+            }
         }
     }
 }

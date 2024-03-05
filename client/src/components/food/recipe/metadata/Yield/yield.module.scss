@@ -59,7 +59,7 @@
 
             &::before {
                 color: $red;
-    
+
                 @include dark-mode {
                     color: transparentize($red, 0.4);
                 }
@@ -76,7 +76,7 @@
         }
     }
 
-    .units {    
+    .units {
         flex-grow: 1;
         flex-shrink: 1;
 
@@ -109,20 +109,11 @@
 
     margin-left: auto;
 
-    padding: 0 0.475rem 0 0.525rem;
-
-    height: 1.75rem;
-    min-width: 1.75rem;
-
-    font-size: $fs-11;
+    font-size: $fs-12;
     font-weight: 300;
-    color: $mono-700;
-    background-color: transparentize($mono-100, 0.25);
-
-    border-radius: 100vmax;
+    color: $mono-600;
 
     @include dark-mode {
-        color: $mono-light;
-        background-color: $mono-800;
+        color: $mono-500;
     }
 }

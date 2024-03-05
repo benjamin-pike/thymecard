@@ -8,7 +8,6 @@ import styles from './toolbar.module.scss';
 const EditIcon = ICONS.common.pen;
 const SaveIcon = ICONS.common.tick;
 const DiscardIcon = ICONS.common.XLarge;
-const ScalesIcon = ICONS.recipes.scales;
 const IngredientsIcon = ICONS.recipes.ingredients;
 const PlannerIcon = ICONS.common.planner;
 const ExportIcon = ICONS.recipes.export;
@@ -16,6 +15,9 @@ const PrintIcon = ICONS.recipes.print;
 const FullscreenIcon = ICONS.common.enterFullscreen;
 const FullscreenExitIcon = ICONS.common.exitFullscreen;
 const DeleteIcon = ICONS.common.delete;
+
+const AddIcon = ICONS.common.plus;
+const MinusIcon = ICONS.common.minus;
 
 interface IButton {
     icon: JSX.Element;
@@ -32,11 +34,12 @@ interface IToolbarProps {
     isEditing: boolean;
     displayIngredients: boolean;
     isFullscreen: boolean;
-    handleOpenScaleIngredientsModal: () => void;
+    servings: number;
     handleToggleDisplayIngredients: () => void;
     handleExport: () => void;
     handlePrint: () => void;
     handleToggleFullscreen: () => void;
+    handleServingsChange: (mode: 'INCREASE' | 'DECREASE') => () => void;
     handleDeleteRecipe: () => void;
 }
 
@@ -44,11 +47,12 @@ const Toolbar: FC<IToolbarProps> = ({
     isEditing,
     displayIngredients,
     isFullscreen,
-    handleOpenScaleIngredientsModal,
+    servings,
     handleToggleDisplayIngredients,
     handleExport,
     handlePrint,
     handleToggleFullscreen,
+    handleServingsChange,
     handleDeleteRecipe
 }) => {
     const { toggleEditing, handleSaveRecipe, handleCancelEdit } = useRecipe();
@@ -76,14 +80,6 @@ const Toolbar: FC<IToolbarProps> = ({
                 tooltip: 'Discard Changes',
                 mode: ['edit'],
                 onClick: handleCancelEdit
-            },
-            {
-                icon: <ScalesIcon />,
-                name: 'scale',
-                tooltip: 'Scale Ingredients',
-                isActive: false,
-                mode: ['view'],
-                onClick: handleOpenScaleIngredientsModal
             },
             {
                 icon: <IngredientsIcon />,
@@ -124,38 +120,30 @@ const Toolbar: FC<IToolbarProps> = ({
                 activeTooltip: 'Exit Fullscreen',
                 mode: ['view', 'edit'],
                 onClick: handleToggleFullscreen
-            },
-            {
-                icon: <DeleteIcon />,
-                name: 'delete',
-                tooltip: 'Delete Recipe',
-                mode: ['view'],
-                onClick: handleDeleteRecipe
             }
         ],
         [
             toggleEditing,
             handleSaveRecipe,
             handleCancelEdit,
-            handleOpenScaleIngredientsModal,
             displayIngredients,
             handleToggleDisplayIngredients,
             handleExport,
             handlePrint,
             isFullscreen,
-            handleToggleFullscreen,
-            handleDeleteRecipe
+            handleToggleFullscreen
         ]
     );
 
     return (
-        <section className={styles.toolbar}>
+        <section className={styles.toolbar} data-editing={isEditing}>
             {buttons.map(
                 (button) =>
                     ((!isEditing && button.mode.includes('view')) || (isEditing && button.mode.includes('edit'))) && (
                         <Fragment key={buildKey('toolbar', button.name)}>
                             <button
-                                className={styles[button.name]}
+                                className={styles.toolbarButton}
+                                data-button={button.name}
                                 data-tooltip-id={`recipe-${button.name}`}
                                 data-tooltip-content={button.isActive ? button.activeTooltip ?? button.tooltip : button.tooltip}
                                 onClick={button.onClick}
@@ -165,6 +153,31 @@ const Toolbar: FC<IToolbarProps> = ({
                             <Tooltip id={`recipe-${button.name}`} place="bottom" size="small" />
                         </Fragment>
                     )
+            )}
+            {!isEditing && (
+                <>
+                    <div className={styles.scale}>
+                        <button className={styles.decrease} onClick={handleServingsChange('DECREASE')}>
+                            <MinusIcon />
+                        </button>
+                        <input value={servings} style={{ width: `${servings.toString().length}ch` }} />
+                        <button className={styles.increase} onClick={handleServingsChange('INCREASE')}>
+                            <AddIcon />
+                        </button>
+                    </div>
+                    <Fragment key={buildKey('toolbar', 'delete')}>
+                        <button
+                            className={styles.toolbarButton}
+                            data-button={'delete'}
+                            data-tooltip-id={`recipe-delete`}
+                            data-tooltip-content={'Delete Recipe'}
+                            onClick={handleDeleteRecipe}
+                        >
+                            <DeleteIcon />
+                        </button>
+                        <Tooltip id={`recipe-delete`} place="bottom" size="small" />
+                    </Fragment>
+                </>
             )}
         </section>
     );

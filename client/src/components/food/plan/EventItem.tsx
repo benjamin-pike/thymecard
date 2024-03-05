@@ -24,14 +24,16 @@ interface IEventItemProps extends IMealEventItem {
 const EventItem: FC<IEventItemProps> = ({ name, isFavorite, recipeId, handleSelectRecipe, handleSelectEventItem }) => {
     const { handleUpdateMealEventItem } = usePlan();
     const hasLinkedRecipe = isDefined(recipeId);
-    const { quickSearchState, isQuickSearchClosed, closeQuickSearch } = useQuickSearch();
+    const { quickSearchState, isQuickSearchClosed, openQuickSearch, closeQuickSearch } = useQuickSearch();
 
     const handleRecipeClick = useCallback(() => {
-        handleSelectEventItem();
         if (hasLinkedRecipe) {
             handleSelectRecipe(recipeId);
+        } else {
+            handleSelectEventItem();
+            openQuickSearch();
         }
-    }, [handleSelectEventItem, handleSelectRecipe, hasLinkedRecipe, recipeId]);
+    }, [handleSelectEventItem, handleSelectRecipe, hasLinkedRecipe, openQuickSearch, recipeId]);
 
     const handleCloseQuickSearch = useCallback(() => {
         closeQuickSearch();

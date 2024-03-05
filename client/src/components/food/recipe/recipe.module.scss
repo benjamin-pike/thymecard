@@ -31,25 +31,6 @@
         border: 1px solid $mono-700;
     }
 
-    // @include responsive(('threeColumns')) {
-    //     margin: -1.5rem;
-    //     margin-left: -0.75rem;
-
-    //     height: calc(100% + 3rem);
-    //     width: calc(100% + 2.25rem);
-    // }
-
-    // @include responsive(('summariesHidden')) {
-    //     margin: -1.5rem;
-
-    //     height: calc(100% + 3rem);
-    //     width: calc(100% + 3rem);
-    // }
-
-    // @include responsive(('oneColumnNarrowMargins')) {
-    //     padding: 1.5rem 2.5rem 0 2.5rem;
-    // }
-
     .back {
         display: grid;
         place-items: center;
@@ -216,7 +197,7 @@
             }
 
             .scaleWarning {
-                padding: 1rem;
+                padding: 0.75rem 0.875rem;
 
                 width: fit-content;
 
@@ -231,7 +212,7 @@
                 border-radius: 0.5rem;
 
                 @include dark-mode {
-                    color: $mono-light;
+                    color: contrastize($blue, 'dark');
                     box-shadow: 0 0 0 1px $blue inset;
                 }
 
@@ -240,8 +221,7 @@
                 }
 
                 span {
-                    font-weight: 500;
-                    text-decoration: underline;
+                    font-weight: 600;
                 }
 
                 &[data-ingredients-visible='false'] {

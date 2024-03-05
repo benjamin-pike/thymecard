@@ -19,7 +19,8 @@ import {
     LuMoreHorizontal,
     LuRepeat,
     LuSalad,
-    LuSoup
+    LuSoup,
+    LuTrash2
 } from 'react-icons/lu';
 import { MdFilterList, MdOutlineArrowDropDownCircle, MdOutlineCalendarMonth } from 'react-icons/md';
 import {
@@ -33,7 +34,6 @@ import {
     PiPencilSimple,
     PiPlus,
     PiTimer,
-    PiTrashSimpleBold,
     PiUploadSimple,
     PiWarningBold
 } from 'react-icons/pi';
@@ -71,7 +71,7 @@ export const ICONS = {
         tick: IoCheckmark,
         enterFullscreen: RiFullscreenLine,
         exitFullscreen: RiFullscreenExitLine,
-        delete: PiTrashSimpleBold,
+        delete: LuTrash2,
         planner: MdOutlineCalendarMonth,
         question: BsQuestionLg,
         info: FaInfo,
