@@ -14,6 +14,11 @@
         max-width: unset;
     }
 
+    [data-fullscreen='true'] & {
+        max-width: 22.5rem;
+        min-width: 22.5rem;
+    }
+
     .origin {
         display: flex;
         flex-direction: column;
@@ -34,7 +39,7 @@
             &:nth-of-type(odd) {
                 background-color: alpha($mono-100, 0.75);
 
-                @include dark-mode{
+                @include dark-mode {
                     background-color: alpha($mono-800, 0.85);
                 }
             }
@@ -107,7 +112,7 @@
 
                 background-color: transparent;
 
-                @include dark-mode{
+                @include dark-mode {
                     background-color: transparent;
                 }
             }

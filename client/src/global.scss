@@ -30,9 +30,9 @@
 
     @if $theme == 'light' {
         @if $color == $yellow {
-            @return saturate(darken($color, 12.5%), 100%);
+            @return saturate(darken($color, 15%), 100%);
         } @else if $color == $green {
-            @return saturate(darken($color, 5%), 50%);
+            @return saturate(darken($color, 7.5%), 50%);
         } @else if $color == $aqua {
             @return darken($color, 10%);
         } @else {
@@ -89,8 +89,8 @@
 // $mono-900: hsl(220, 20%, 5%);
 // $mono-dark: rgb(9, 11, 17);
 
-$mono-light: hsl(0, 0%, 100%);
-$mono-100: hsl(223, 36%, 97%);
+$mono-light: rgb(255, 255, 255);
+$mono-100: rgb(245, 246, 250);
 $mono-200: hsl(220, 22%, 93%);
 $mono-300: hsl(217, 25%, 85%);
 $mono-400: hsl(221, 23%, 76%);
@@ -124,18 +124,18 @@ $mono-dark: hsl(225, 31%, 5%);
 // $yellow: #FF9500;
 // $green: #55AF3F;
 // $aqua: #179897;
-$blue: #0066aa;
+$blue: #0073bf;
 // $purple: #3F3173;
 // $pink: #DA2E90;
 
-$red: #ed1849;
+$red: #ed183f;
 $orange: #f2612f;
 $yellow: #fcb022;
 $green: #00b064;
-$aqua: #0098a9;
+$aqua: #0494a7;
 // $blue: #00375b;
 $purple: #561ca3;
-$pink: #c2008b;
+$pink: #EF2D82;
 
 $fs-32: 2rem;
 $fs-28: 1.75rem;
@@ -166,8 +166,8 @@ $event-colors: (
     'ACTIVITY': $purple,
     'SNACK': $orange,
     'DRINK': $yellow,
-    'APPETIZER': $pink,
-    'DESSERT': $aqua
+    'APPETIZER': $aqua,
+    'DESSERT': $pink
 );
 
 $metric-colors: (

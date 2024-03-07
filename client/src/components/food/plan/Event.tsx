@@ -26,6 +26,7 @@ interface IEventProps {
     items: IMealEventItem[];
     bookmarkId?: string;
     isToday: boolean;
+    gap?: number;
     handleSelectRecipe: (recipeId: string) => void;
     handleEditEventClick: () => void;
     handleBookmarkEventClick: () => void;
@@ -40,6 +41,7 @@ const Event: FC<IEventProps> = ({
     items,
     bookmarkId,
     isToday,
+    gap,
     handleSelectRecipe,
     handleEditEventClick,
     handleBookmarkEventClick,
@@ -120,7 +122,7 @@ const Event: FC<IEventProps> = ({
                         <RemoveIcon />
                     </button>
                 </div>
-
+                {isDefined(gap) && <p className={styles.timeGap}>+ {formatDuration(gap, 'long', true)}</p>}
                 <Tooltip id="edit-event" size="small" place="left" offset={10} />
                 <Tooltip id="bookmark-event" size="small" place="left" offset={10} />
                 <Tooltip id="remove-event" size="small" place="left" offset={10} />
