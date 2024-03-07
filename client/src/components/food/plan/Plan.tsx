@@ -220,11 +220,12 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
                     <div className={styles.scrollContainer}>
                         <ScrollWrapper height={'100%'} padding={1.25}>
                             <ul ref={bodyRef} className={styles.body}>
-                                {events.map((event, i) => (
+                                {events.map((event, i, arr) => (
                                     <Event
                                         key={i}
                                         {...event}
                                         isToday={selectedDay.index === 0}
+                                        gap={i !== arr.length - 1 ? arr[i + 1].time - event.time + event.duration : undefined}
                                         handleSelectRecipe={handleSelectRecipe}
                                         handleEditEventClick={handleEditEventClick(event._id)}
                                         handleBookmarkEventClick={handleBookmarkEventClick(event._id, isDefined(event.bookmarkId))}

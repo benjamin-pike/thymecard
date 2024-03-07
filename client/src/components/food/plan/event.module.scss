@@ -40,8 +40,8 @@
             position: absolute;
             left: 50%;
 
-            height: 0.2rem;
-            width: 0.2rem;
+            height: 0.25rem;
+            width: 0.25rem;
 
             background-color: $mono-dark;
 
@@ -107,10 +107,6 @@
 
                 h2 {
                     font-size: $fs-12;
-
-                    @include dark-mode {
-                        text-shadow: 0 0 0.125rem $mono-dark;
-                    }
                 }
 
                 .icon {
@@ -245,7 +241,7 @@
 
                 &[data-bookmarked='true'] {
                     color: alpha(contrastize($green, 'light'), 0.5);
-                    
+
                     cursor: default;
                 }
 
@@ -315,6 +311,30 @@
         }
     }
 
+    .timeGap {
+        position: absolute;
+        top: calc(100% + 1.25rem);
+        left: 50%;
+
+        padding: 0 0.625rem;
+
+        color: $mono-500;
+        background-color: $mono-light;
+        font-size: $fs-11;
+        font-weight: 400;
+
+        border-radius: 100vmax;
+
+        translate: -50% -50%;
+
+        z-index: 2;
+
+        @include dark-mode {
+            color: $mono-500;
+            background-color: $mono-900;
+        }
+    }
+
     @each $event, $color in $event-colors {
         $light-adjusted-color: contrastize($color, 'light');
         $dark-adjusted-color: contrastize($color, 'dark');
@@ -329,27 +349,29 @@
 
                 &::before,
                 &::after {
-                    background-color: mix($color, $mono-light, 75%);
+                    background-color: $color;
                     box-shadow:
+                        0 0 0.25rem $mono-light,
                         0 0 0 0.175rem mix($color, $mono-light, 20%),
-                        0 0 0 0.125rem $mono-light;
+                        0 0 0 0.25rem $mono-light;
 
                     @include dark-mode {
                         background-color: $color;
                         box-shadow:
-                            0 0 0 0.175rem mix($color, $mono-dark, 30%),
+                            0 0 0.25rem $mono-dark,
+                            0 0 0 0.175rem mix($color, $mono-dark, 37.5%),
                             0 0 0 0.125rem $mono-dark;
                     }
                 }
             }
 
             .body {
-                background-color: alpha($light-adjusted-color, 0.1);
+                background: linear-gradient(to bottom right, alpha($color, 0.05), alpha($color, 0.125));
+                box-shadow: 0 0 0 0.5px alpha($light-adjusted-color, 0.25) inset;
 
                 @include dark-mode {
-                    background-color: alpha($dark-adjusted-color, 0.075);
-
-                    box-shadow: 0 0 0 1px alpha($dark-adjusted-color, 0.15) inset;
+                    background: alpha($mono-800, 0.375);
+                    box-shadow: 0 0 0 0.5px $mono-700 inset;
                 }
 
                 &::after {
@@ -360,22 +382,23 @@
                     .type {
                         color: $light-adjusted-color;
                         background-color: mix($color, $mono-light, 2.5%);
-                        box-shadow: 0 0 0 1px alpha($color, 0.15);
+                        box-shadow: 0px 0px 0 1px alpha($color, 0.2);
 
                         @include dark-mode {
-                            color: mix($dark-adjusted-color, $mono-light, 92.5%);
-                            background-color: mix($color, $mono-dark, 5%);
-                            box-shadow: 0 0 0 1px alpha($color, 0.15);
+                            color: $mono-light;
+                            background-color: alpha($mono-800, 0.75);
+                            box-shadow: 0 0 0 0.5px $mono-700;
                         }
                     }
 
                     .metadata {
+                        font-weight: 400;
                         background-color: mix($light-adjusted-color, $mono-light, 2.5%);
-                        box-shadow: 0 0 0 1px alpha($light-adjusted-color, 0.15);
+                        box-shadow: 0 0 0 1px alpha($light-adjusted-color, 0.2);
 
                         @include dark-mode {
-                            background-color: mix($dark-adjusted-color, $mono-dark, 5%);
-                            box-shadow: 0 0 0 1px alpha($dark-adjusted-color, 0.15);
+                            background-color: alpha($mono-800, 0.75);
+                            box-shadow: 0 0 0 0.5px $mono-700;
                         }
 
                         span {
@@ -383,10 +406,8 @@
 
                             @include dark-mode {
                                 color: mix($dark-adjusted-color, $mono-light, 92.5%);
-                            }
 
-                            svg {
-                                opacity: 0.75;
+                                color: $mono-light;
                             }
                         }
                     }
@@ -396,38 +417,74 @@
 
                         @include dark-mode {
                             background-color: alpha($dark-adjusted-color, 0.35);
+
+                            background-color: $mono-700;
                         }
                     }
                 }
 
                 ul {
+                    margin: 0.125rem;
+
+                    border-radius: calc(0.375rem);
+                    box-shadow: 0 0 0 0.125rem mix($color, $mono-light, 3.75%), 0 0 0 calc(0.125rem + 0.5px) alpha($light-adjusted-color, 0.375);
+
+                    @include dark-mode {
+                        box-shadow: 0 0 0 0.125rem mix($mono-700, $mono-dark, 3.75%), 0 0 0 calc(0.125rem + 0.5px) $mono-700;
+                    }
+
                     li {
                         &:nth-of-type(odd) {
-                            background-color: alpha($light-adjusted-color, 0.05);
+                            background: linear-gradient(to right, alpha($color, 0.05), alpha($color, 0.05));
 
                             @include dark-mode {
-                                background-color: alpha($mono-dark, 0.3);
+                                background: linear-gradient(to right, alpha($mono-800, 0.25), alpha($mono-800, 0.625));
                             }
                         }
-                    }
-                }
 
-                li {
-                    p {
-                        color: $light-adjusted-color;
-
-                        @include dark-mode {
-                            color: mix($dark-adjusted-color, $mono-light, 92.5%);
-                            text-shadow: 0 0 0.5rem $mono-dark;
+                        p {
+                            color: mix($light-adjusted-color, $mono-dark, 80%);
+                            color: $light-adjusted-color;
+    
+                            @include dark-mode {
+                                color: $mono-light;
+                            }
                         }
-                    }
-
-                    svg {
-                        color: $light-adjusted-color;
-
-                        @include dark-mode {
-                            color: $dark-adjusted-color;
-                            text-shadow: 0 0 0.5rem $mono-dark;
+    
+                        button {
+                            color: $light-adjusted-color;
+    
+                            opacity: 0.5;
+    
+                            @include dark-mode {
+                                color: $mono-600;
+    
+                                opacity: 1;
+                            }
+                        }
+    
+                        &:hover {
+                            button {
+                                opacity: 1;
+    
+                                @include dark-mode {
+                                    color: $mono-500;
+                                }
+    
+                                &[data-active='true'] {
+                                    opacity: 1;
+                                }
+    
+                                &:hover {
+                                    opacity: 0.75;
+    
+                                    @include dark-mode {
+                                        color: $mono-light;
+    
+                                        opacity: 1;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -440,12 +497,12 @@
         content: '';
         position: absolute;
         left: 1rem;
-        height: calc(50% - 1rem);
+        height: calc(50% - 0.625rem);
         width: 1px;
 
         translate: -0.5px;
 
-        border-left: 1px dashed $mono-200;
+        border-left: 1px solid $mono-200;
 
         @include dark-mode {
             border-left-color: $mono-700;
@@ -453,11 +510,11 @@
     }
 
     &::before {
-        top: calc(-1rem - 0.5px);
+        top: calc(-1.25rem - 0.5px);
     }
 
     &::after {
-        bottom: calc(-1rem - 0.5px);
+        bottom: calc(-1.25rem - 0.5px);
     }
 
     &:last-of-type {

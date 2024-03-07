@@ -35,7 +35,7 @@ const Recipes = () => {
 
     const { recipeModalState, selectRecipe, clearRecipe, recipe } = useRecipe();
 
-    const [isRecipeFullscreen, toggleRecipeFullscreen] = useToggle([false, true]);
+    const [isRecipeFullscreen, setIsRecipeFullscreen] = useState(false);
 
     const [displayListDrawer, setDisplayListDrawer] = useState(false);
     const [displayStockDrawer, setDisplayStockDrawer] = useState(false);
@@ -63,8 +63,8 @@ const Recipes = () => {
     }, [toggleVisibleInfo]);
 
     const handleRecipeFullscreen = useCallback(() => {
-        toggleRecipeFullscreen();
-    }, [toggleRecipeFullscreen]);
+        setIsRecipeFullscreen((prev) => !prev);
+    }, []);
 
     useEffect(() => {
         if (initialRecipeId && !recipe) {
@@ -72,11 +72,17 @@ const Recipes = () => {
         }
     }, [initialRecipeId, recipe, selectRecipe]);
 
+    useEffect(() => {
+        if (recipeModalState === 'closed') {
+            setIsRecipeFullscreen(false);
+        }
+    }, [recipeModalState]);
+
     return (
         <>
             <main className={styles.food}>
                 {isCreatBarBottom && <CreateBar />}
-                <div className={styles.body} data-fullscreen={isRecipeFullscreen}>
+                <div className={styles.body} /*data-fullscreen={isRecipeFullscreen}*/>
                     <section className={styles.left}>
                         <DrawerWrapper
                             direction="left"

@@ -20,8 +20,11 @@ import { IViewport } from '@/hooks/common/useBreakpoints';
 import { formatClasses, queue } from '@/lib/common.utils';
 import { createToast } from '@/lib/toast/toast.utils';
 import { round } from '@/lib/number.utils';
+import { ICONS } from '@/assets/icons';
 
 import styles from './recipe.module.scss';
+
+const CloseIcon = ICONS.common.XLarge;
 
 interface IRecipeProps {
     viewport: IViewport;
@@ -116,10 +119,12 @@ const Recipe: FC<IRecipeProps> = ({ viewport, isRecipeFullscreen, handleRecipeFu
     const isBodyOnly = !entry?.isIntersecting;
 
     return (
-        <section ref={sectionRef} className={styles.recipe}>
-            {/* <button className={styles.back} onClick={handleClearSelectedRecipe}>
-                <CloseIcon />
-            </button> */}
+        <section ref={sectionRef} className={styles.recipe} data-fullscreen={isRecipeFullscreen}>
+            {isRecipeFullscreen && (
+                <button className={styles.close} onClick={handleClearSelectedRecipe}>
+                    <CloseIcon />
+                </button>
+            )}
             <header className={styles.header}>
                 <Title />
                 <div className={styles.divider} />

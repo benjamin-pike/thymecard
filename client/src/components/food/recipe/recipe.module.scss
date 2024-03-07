@@ -27,8 +27,56 @@
 
     @include dark-mode {
         background-color: $mono-900;
-
         border: 1px solid $mono-700;
+    }
+
+    &[data-fullscreen='true'] {
+        --height: 100dvh;
+        width: 100dvw;
+
+        border-radius: 0;
+
+        @include dark-mode {
+            border: none;
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+
+            height: 1.5rem;
+            width: 1.5rem;
+
+            color: $mono-500;
+            font-weight: 400;
+            font-size: $fs-14;
+
+            transition: color 150ms ease;
+
+            @include dark-mode {
+                color: $mono-500;
+            }
+
+            &:hover {
+                color: $mono-700;
+
+                @include dark-mode {
+                    color: $mono-light;
+                }
+            }
+
+            svg {
+                height: 100%;
+                width: 100%;
+            }
+        }
+
+        .header,
+        .body {
+            width: 80%;
+            max-width: 80%;
+        }
     }
 
     .back {
