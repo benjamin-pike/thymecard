@@ -44,39 +44,14 @@
     }
 
     .dialog {
-        position: absolute;
-        top: calc(100% + 0.5rem);
-        right: 0rem;
-
         padding: 2rem;
 
         background-color: $mono-light;
-        box-shadow:
-            0 0 0 1px transparentize($mono-700, $amount: 0.9),
-            4px 4px 20px rgba(0, 0, 0, 0.05);
-
-        opacity: 0;
 
         border-radius: 0.5rem;
 
-        z-index: 1000;
-
-        scale: 0;
-        transform-origin: top right;
-
-        transition:
-            scale 200ms ease,
-            opacity 200ms ease;
-
         @include dark-mode {
             background-color: $mono-900;
-            box-shadow: 0 0 0 1px $mono-700;
-        }
-
-        &[data-open='true'] {
-            scale: 1;
-
-            opacity: 1;
         }
     }
 }
@@ -311,7 +286,7 @@
 
             color: $mono-700;
             font-size: $fs-10;
-            font-weight: 700;
+            font-weight: 400;
 
             width: 1.5rem;
 

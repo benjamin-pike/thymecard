@@ -11,6 +11,7 @@ import { formatMaxTime } from './filter.functions';
 import { ICONS } from '@/assets/icons';
 
 import styles from './filter.module.scss';
+import Popover from '@/components/wrappers/popover/Popover';
 
 const FilterIcon = ICONS.recipes.filter;
 
@@ -61,12 +62,18 @@ const Filter: FC<IFilterProps> = ({ state, dispatch }) => {
 
     return (
         <section ref={ref} className={styles.filter}>
-            <button className={styles.toggleButton} onClick={() => setOpen(!open)}>
-                <FilterIcon />
-            </button>
-            <div className={styles.dialog} data-open={open}>
-                <Accordion data={filters} />
-            </div>
+            <Popover
+                content={
+                    <div className={styles.dialog} data-open={open}>
+                        <Accordion data={filters} />
+                    </div>
+                }
+                placement="bottom-end"
+            >
+                <button className={styles.toggleButton} onClick={() => setOpen(!open)}>
+                    <FilterIcon />
+                </button>
+            </Popover>
         </section>
     );
 };

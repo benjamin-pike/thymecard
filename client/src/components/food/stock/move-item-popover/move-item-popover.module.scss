@@ -1,16 +1,12 @@
 .addToFavoritesPopover {
-    position: absolute;
-
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
 
-    min-width: 15rem;
+    min-width: 17.5rem;
 
     padding: 1.75rem;
 
     background-color: $mono-light;
-    box-shadow: 0 0 0 1px transparentize($mono-700, $amount: 0.9), 4px 4px 20px rgba(0, 0, 0, 0.05);
     opacity: 1;
 
     border-radius: 0.5rem;
@@ -18,18 +14,19 @@
     scale: 1;
     transform-origin: top right;
 
-    transition: scale 200ms ease, opacity 200ms ease;
+    transition:
+        scale 200ms ease,
+        opacity 200ms ease;
 
     z-index: 100;
-    
+
     @include dark-mode {
         background-color: $mono-900;
-        box-shadow: 0 0 0 1px $mono-700;
     }
 
     &[data-open='false'] {
         opacity: 0;
-        
+
         scale: 0;
     }
 
@@ -46,9 +43,9 @@
     }
 
     h2 {
-        margin-top: 0.5rem;
+        margin: 0.25rem 0 0.75rem 0;
 
-        color: $mono-600;
+        color: $mono-700;
         font-size: $fs-12;
         font-weight: 400;
 
@@ -60,14 +57,25 @@
     ul {
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
-        
-        padding: 0.5rem 0 0 0.5rem;
     }
 
     li {
         display: flex;
         align-items: center;
+
+        height: 2.25rem;
+
+        padding: 0 1rem;
+
+        border-radius: 0.5rem;
+
+        &:nth-of-type(odd) {
+            background-color: alpha($mono-100, 0.75);
+
+            @include dark-mode {
+                background-color: alpha($mono-800, 0.75);
+            }
+        }
 
         &:last-of-type {
             margin-bottom: 0.5rem;
@@ -76,60 +84,66 @@
 
     input[type='radio'] {
         box-sizing: border-box;
-
         position: relative;
-        
         margin: 0;
         padding: 0;
-        
         height: 0.5rem;
-        
+        width: 0.5rem;
         background-color: transparent;
         border: none;
-        
         cursor: pointer;
-    }
 
-    input[type='radio']:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        
-        display: block;
-        
-        width: 0.5rem;
-        height: 0.5rem;
-        
-        box-shadow: 0 0 0 1px $mono-700;
-        
-        border-radius: 50%;
-        
-        transition: background-color 100ms ease, box-shadow 100ms ease;
+        &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            width: 0.5rem;
+            height: 0.5rem;
+            box-shadow: 0 0 0 1px $mono-700;
+            border-radius: 50%;
+            transition:
+                background-color 100ms ease,
+                box-shadow 100ms ease;
 
-        @include dark-mode {
-            box-shadow: 0 0 0 1px $mono-light;
+            @include dark-mode {
+                box-shadow: 0 0 0 1px $mono-500;
+            }
         }
-    }
 
-    input[type='radio'][data-checked = 'true']:before {
-        background-color: $mono-700;
+        &[data-checked='true']:before {
+            background-color: $mono-700;
 
-        @include dark-mode {
-            background-color: $mono-light;
+            @include dark-mode {
+                background-color: $mono-light;
+                box-shadow: 0 0 0 1px $mono-light;
+            }
         }
-    }
 
-    input[type='radio']:hover:before {
-        box-shadow: 0 0 0 1px $mono-700, 0 0 0 4px $mono-300;
+        &:hover:before {
+            box-shadow:
+                0 0 0 1px $mono-700,
+                0 0 0 4px $mono-300;
 
-        @include dark-mode {
-            box-shadow: 0 0 0 1px $mono-light, 0 0 0 4px $mono-600;
+            @include dark-mode {
+                box-shadow:
+                    0 0 0 1px $mono-500,
+                    0 0 0 4px $mono-700;
+            }
+        }
+
+        &[data-checked='true']:hover:before  {
+            @include dark-mode {
+                box-shadow:
+                    0 0 0 1px $mono-light,
+                    0 0 0 4px $mono-600;
+            }
         }
     }
 
     label {
-        margin-left: 1.25rem;
+        margin-left: 0.75rem;
 
         color: $mono-700;
         font-size: $fs-12;
@@ -149,6 +163,14 @@
                 @include dark-mode {
                     color: $mono-600;
                 }
+            }
+        }
+
+        &[data-unnamed='true'] {
+            color: $mono-500;
+
+            @include dark-mode {
+                color: $mono-600;
             }
         }
     }
@@ -171,36 +193,68 @@
             font-size: $fs-12;
             font-weight: 400;
             color: $mono-500;
-            box-shadow: 0 0 0 1px $mono-200;
-            
-            border-radius: 0.25rem;
 
-            transition: color 100ms ease, box-shadow 100ms ease, background-color 100ms ease;
+            border-radius: 0.375rem;
 
-            @include dark-mode {
-                box-shadow: 0 0 0 1px $mono-700;
-            }
+            transition:
+                color 100ms ease,
+                box-shadow 100ms ease,
+                background-color 100ms ease;
 
-            &:hover:not(:disabled) {
+            &.add {
                 color: $mono-light;
                 background-color: $mono-700;
-                box-shadow: 0 0 0 1px $mono-700;
+                border: 1px solid $mono-700;
+
+                &:hover {
+                    background-color: $mono-900;
+                    border: 1px solid $mono-900;
+                }
+
+                &:disabled {
+                    color: $mono-500;
+                    background-color: $mono-200;
+                    border: 1px solid $mono-200;
+                    cursor: not-allowed;
+                }
 
                 @include dark-mode {
-                    color: $mono-700;
-                    background-color: $mono-light;
-                    box-shadow: 0 0 0 1px $mono-light;
+                    color: $mono-light;
+                    background-color: $mono-dark;
+                    border: 1px solid $mono-700;
+
+                    &:hover {
+                        color: $mono-light;
+                        background-color: $mono-800;
+                        border: 1px solid $mono-500;
+                    }
+
+                    &:disabled {
+                        color: $mono-600;
+                        background-color: $mono-800;
+                        border: 1px solid $mono-800;
+                    }
                 }
             }
 
-            &:disabled {
-                cursor: auto;
-                background-color: $mono-100;
-                box-shadow: 0 0 0 1px $mono-300;
+            &.cancel {
+                color: $mono-600;
+                border: 1px solid $mono-200;
+
+                &:hover {
+                    background-color: $mono-100;
+                    border: 1px solid $mono-400;
+                }
 
                 @include dark-mode {
-                    background-color: $mono-800;
-                    box-shadow: 0 0 0 1px $mono-600;
+                    color: $mono-600;
+                    border: 1px solid $mono-800;
+
+                    &:hover {
+                        color: $mono-500;
+                        background-color: $mono-800;
+                        border: 1px solid $mono-700;
+                    }
                 }
             }
         }
@@ -211,6 +265,8 @@
     height: 1px;
     width: 100%;
     background-color: $mono-200;
+
+    margin: 0.5rem 0;
 
     @include dark-mode {
         background-color: $mono-700;

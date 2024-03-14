@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo, useState } from 'react';
-import PopoverWrapper, { PopoverPosition } from '@/components/wrappers/popover/PopoverWrapper';
 import Tooltip from '@/components/common/tooltip/Tooltip';
 import { useRecipe } from '../RecipeProvider';
+import Popover, { usePopoverContext } from '@/components/wrappers/popover/Popover';
 import { isNull } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';
 import { INGREDIENTS_FIELDS } from '@/hooks/recipes/components/useIngredients';
@@ -62,7 +62,7 @@ const IngredientsEdit: FC = () => {
     const handleSelectMatch = useCallback(
         (index: number) => () => {
             if (!matches[index]) {
-                return;
+                return setSelectedMatchIndex(null);
             }
 
             setSelectedMatchIndex(index);
@@ -159,15 +159,28 @@ const IngredientsEdit: FC = () => {
                                 </button>
                                 {!!item && (
                                     <td className={styles.match}>
-                                        <button
-                                            data-tooltip-id="nutritional-details-match"
-                                            data-tooltip-content={MATCH_TOOLTIP_CONTENTS[matches[i]?.strength ?? 'none']}
-                                            data-match={matches[i]?.strength ?? 'none'}
-                                            data-popover-id={matches[i]?.strength ? 'popover-match' : undefined}
-                                            onClick={handleSelectMatch(i)}
+                                        <Popover
+                                            content={
+                                                !isNull(selectedMatchIndex) ? (
+                                                    <MatchPopover
+                                                        matches={matches}
+                                                        selectedMatchIndex={selectedMatchIndex}
+                                                        handleConfirmMatch={handleConfirmMatch}
+                                                    />
+                                                ) : null
+                                            }
                                         >
-                                            {MATCH_ICONS[matches[i]?.strength ?? 'none']}
-                                        </button>
+                                            <button
+                                                className={styles.matchButton}
+                                                data-tooltip-id="nutritional-details-match"
+                                                data-tooltip-content={MATCH_TOOLTIP_CONTENTS[matches[i]?.strength ?? 'none']}
+                                                data-match={matches[i]?.strength ?? 'none'}
+                                                data-popover-id={matches[i]?.strength ? 'popover-match' : undefined}
+                                                onClick={handleSelectMatch(i)}
+                                            >
+                                                {MATCH_ICONS[matches[i]?.strength ?? 'none']}
+                                            </button>
+                                        </Popover>
                                     </td>
                                 )}
                             </tr>
@@ -178,37 +191,55 @@ const IngredientsEdit: FC = () => {
             <button className={styles.addButton} data-error={isIncomplete && values.item.length === 0} onClick={addIngredient}>
                 <AddIcon /> Add Ingredient
             </button>
-            <PopoverWrapper
-                id="popover-match"
-                position={PopoverPosition.BOTTOM_LEFT}
-                offset={7.5}
-                tooltip={<Tooltip id="nutritional-details-match" place="bottom" size="small" offset={15} />}
-            >
-                <div className={styles.popover}>
-                    <h3>
-                        <span className={styles.matched}>Matched</span> Ingredient{' '}
-                        <span className={styles.matchedItem}>{!isNull(selectedMatchIndex) && matches[selectedMatchIndex]?.name}</span>
-                    </h3>
-                    {!isNull(selectedMatchIndex) && matches[selectedMatchIndex]?.strength == 'confirmed' ? (
-                        <div className={styles.check}>
-                            <p>You confirmed this match</p>
-                            <button>Change</button>
-                        </div>
-                    ) : (
-                        <div className={styles.check}>
-                            <p>Is this correct?</p>
-                            <button onClick={handleConfirmMatch}>Yes</button>
-                            <button>No</button>
-                        </div>
-                    )}
-                </div>
-            </PopoverWrapper>
+            <Tooltip id="nutritional-details-match" place="bottom" size="small" offset={15} />
             <Tooltip id="remove-ingredient" place="bottom" size="small" offset={10} />
         </>
     );
 };
 
 export default IngredientsEdit;
+
+type Match = {
+    itemId: number;
+    name: string;
+    strength: 'strong' | 'weak' | 'confirmed';
+};
+
+interface IMatchPopoverProps {
+    matches: (Match | null)[];
+    selectedMatchIndex: number | null;
+    handleConfirmMatch: () => void;
+}
+
+const MatchPopover: FC<IMatchPopoverProps> = ({ matches, selectedMatchIndex, handleConfirmMatch }) => {
+    const { handleClosePopover } = usePopoverContext();
+
+    const handleMatchClick = useCallback(() => {
+        handleConfirmMatch();
+        handleClosePopover();
+    }, [handleClosePopover, handleConfirmMatch]);
+
+    return (
+        <div className={styles.popover}>
+            <h3>
+                <span className={styles.matched}>Matched</span> Ingredient{' '}
+                <span className={styles.matchedItem}>{!isNull(selectedMatchIndex) && matches[selectedMatchIndex]?.name}</span>
+            </h3>
+            {!isNull(selectedMatchIndex) && matches[selectedMatchIndex]?.strength == 'confirmed' ? (
+                <div className={styles.check}>
+                    <p>You confirmed this match</p>
+                    <button>Change</button>
+                </div>
+            ) : (
+                <div className={styles.check}>
+                    <p>Is this correct?</p>
+                    <button onClick={handleMatchClick}>Yes</button>
+                    <button>No</button>
+                </div>
+            )}
+        </div>
+    );
+};
 
 const MATCH_TOOLTIP_CONTENTS = {
     confirmed: 'You matched this ingredient',

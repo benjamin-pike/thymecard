@@ -6,11 +6,11 @@ import styles from './personal-details.module.scss';
 import { ICONS } from '@/assets/icons';
 import DatePicker from '@/components/common/date-picker/DatePicker';
 import { DateTime } from 'luxon';
-import PopoverWrapper, { PopoverPosition } from '@/components/wrappers/popover/PopoverWrapper';
 import DropdownWrapper from '@/components/wrappers/dropdown/DropdownWrapper';
 import NumberInput from '../../common/NumberInput';
 import { UserGender, isDefined } from '@thymecard/types';
 import Tooltip from '@/components/common/tooltip/Tooltip';
+import Popover from '@/components/wrappers/popover/Popover';
 
 const PersonIcon = ICONS.common.person;
 const CalendarIcon = ICONS.common.calendar;
@@ -112,16 +112,18 @@ const PersonalDetails: FC<IPersonalDetailsProps> = ({
             <div className={styles.grid}>
                 <TextInput value={firstName} placeholder="First name" handleChange={handleFirstNameChange} />
                 <TextInput value={lastName} placeholder="Last name" handleChange={handleLastNameChange} />
-                <TextInput
-                    type={isDateOfBirthFocused || !!dateOfBirth ? 'date' : 'text'}
-                    value={dateOfBirth?.toFormat('yyyy-MM-dd') ?? undefined}
-                    placeholder="Date of birth"
-                    buttonIcon={<CalendarIcon />}
-                    buttonPopoverId="popover-register-dob"
-                    handleChange={handleDateOfBirthChange}
-                    handleFocus={handleDateOfBirthFocus}
-                    handleBlur={handleDateOfBirthBlur}
-                />
+                <Popover content={<DatePicker selectedDay={dateOfBirth} handleSelectDay={handleSelectDateOfBirth} blockFuture={true} />}>
+                    <TextInput
+                        type={isDateOfBirthFocused || !!dateOfBirth ? 'date' : 'text'}
+                        value={dateOfBirth?.toFormat('yyyy-MM-dd') ?? undefined}
+                        placeholder="Date of birth"
+                        buttonIcon={<CalendarIcon />}
+                        buttonPopoverId="popover-register-dob"
+                        handleChange={handleDateOfBirthChange}
+                        handleFocus={handleDateOfBirthFocus}
+                        handleBlur={handleDateOfBirthBlur}
+                    />
+                </Popover>
                 <TextInput
                     value={gender ? genderMap[gender] : undefined}
                     disabled={true}
@@ -149,9 +151,6 @@ const PersonalDetails: FC<IPersonalDetailsProps> = ({
             </p>
             <div data-theme="dark">
                 <Tooltip id="tooltip-register-profile-image" place="right" size="medium" offset={-20} />
-                <PopoverWrapper id="popover-register-dob" position={PopoverPosition.MIDDLE_RIGHT} offset={10}>
-                    <DatePicker selectedDay={dateOfBirth} handleSelectDay={handleSelectDateOfBirth} blockFuture={true} />
-                </PopoverWrapper>
                 <DropdownWrapper id="dropdown-register-gender" position="left" offset={20}>
                     <ul className={styles.genderSelect}>
                         <li data-selected={gender === UserGender.MALE}>

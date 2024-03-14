@@ -3,7 +3,6 @@ import { DateTime } from 'luxon';
 
 import EventMetadataField, { EEventMetadataFieldType } from './MetadataField';
 import EventItems from './EventItems';
-import DatePickerPopover from '@/components/common/date-picker/DatePickerPopover';
 import ModalCard from '@/components/common/modal-card/ModalCard';
 import DropdownWrapper from '@/components/wrappers/dropdown/DropdownWrapper';
 
@@ -14,7 +13,6 @@ import { ModalState } from '@/hooks/common/useModal';
 
 import { Client, EEventType, IMealEventBookmark } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';
-import { PopoverPosition } from '@/components/wrappers/popover/PopoverWrapper';
 import { capitalize } from '@/lib/string.utils';
 import { createToast } from '@/lib/toast/toast.utils';
 import { minsToHoursAndMins } from '@thymecard/utils';
@@ -136,6 +134,7 @@ const AddEventModal: FC<IAddEventModalProps> = ({ state, date, bookmarkedEvent, 
                         labelWidth={5.75}
                         selectedDate={selectedDate}
                         popoverId="popover-event-date"
+                        handleSelectDate={handleSelectEventDate}
                     />
                     <EventMetadataField
                         type={EEventMetadataFieldType.TIME}
@@ -165,14 +164,6 @@ const AddEventModal: FC<IAddEventModalProps> = ({ state, date, bookmarkedEvent, 
                         ))}
                     </ul>
                 </DropdownWrapper>
-                <DatePickerPopover
-                    id="popover-event-date"
-                    position={PopoverPosition.BOTTOM_RIGHT}
-                    offset={5}
-                    selectedDay={selectedDate}
-                    blockPast={true}
-                    handleSelectDay={handleSelectEventDate}
-                />
                 <div className={styles.divider} />
                 <EventItems
                     items={selectedItems}

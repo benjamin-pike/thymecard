@@ -7,6 +7,7 @@ import { useWindowKeyDown } from '@/hooks/common/useWindowKeydown';
 import { ICONS } from '@/assets/icons';
 
 import styles from './date-picker.module.scss';
+import { usePopoverContext } from '@/components/wrappers/popover/Popover';
 
 const LeftIcon = ICONS.common.chevronLeft;
 const RightIcon = ICONS.common.chevronRight;
@@ -20,6 +21,8 @@ interface IDatePickerProps {
 }
 
 const DatePicker: FC<IDatePickerProps> = ({ selectedDay: initialSelectedDay, blockPast, blockFuture, blockToday, handleSelectDay }) => {
+    const { handleClosePopover } = usePopoverContext();
+
     const [selectedMonth, setSelectedMonth] = useState(initialSelectedDay || DateTime.local());
     const [selectedDay, setSelectedDay] = useState(initialSelectedDay);
 
@@ -52,8 +55,9 @@ const DatePicker: FC<IDatePickerProps> = ({ selectedDay: initialSelectedDay, blo
             setSelectedMonth(day);
             setSelectedDay(day);
             handleSelectDay(day);
+            handleClosePopover();
         },
-        [blockFuture, blockPast, blockToday, handleSelectDay, isFuture, isPast, isToday]
+        [blockFuture, blockPast, blockToday, handleClosePopover, handleSelectDay, isFuture, isPast, isToday]
     );
 
     const handleDecrementShift = useCallback(() => {

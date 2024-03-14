@@ -164,7 +164,7 @@ export class RecipeController implements IRecipeController {
             });
         }
 
-        return await this.recipeService.searchRecipes(context.userId, query);
+        return await this.recipeService.searchRecipes(context.userId, decodeURIComponent(query));
     }
 
     public async searchGoogleRecipes(context: IAuthenticatedContext, query: unknown): Promise<IRecipeSearchResult[]> {

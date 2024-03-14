@@ -1,14 +1,16 @@
-import { createContext, useContext, FC, ReactElement, useReducer, useCallback, useEffect, useRef } from 'react';
+import { createContext, useContext, FC, ReactElement, useReducer, useCallback, useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { IStock, IStockCategory, IStockItem, EStockSection } from '@thymecard/types';
 import { useStockAPI } from '@/api/useStockAPI';
 import { useMount } from '@/hooks/common/useMount';
 import { useDebounce } from '@/hooks/common/useDebounce';
+import { compare } from '@thymecard/utils';
 import useLocalStorage from '@/hooks/common/useLocalStorage';
 
 interface IStockContext {
     stock: IStock;
     selectedSection: EStockSection;
+    isLoading: boolean;
     init: (stock: IStock) => void;
     createCategory: (section: EStockSection) => () => void;
     removeCategory: (section: EStockSection, categoryId: string) => () => void;
@@ -51,6 +53,8 @@ const StockProvider: FC<IStockProviderProps> = ({ children }) => {
     const [selectedSection, setSelectedSection] = useLocalStorage<EStockSection>('stock-tab', EStockSection.PANTRY);
     const selectedSectionRef = useRef(selectedSection);
 
+    const [isLoading, setIsLoading] = useState(true);
+
     const handleSelectSection = useCallback(
         (section: EStockSection) => {
             setSelectedSection(section);
@@ -60,9 +64,13 @@ const StockProvider: FC<IStockProviderProps> = ({ children }) => {
 
     const handleUpsertStock = useCallback(
         async (stock: IStock, selectedSection: EStockSection) => {
+            if (isLoading) {
+                return;
+            }
+
             await upsertStock(selectedSection, stock[selectedSection]);
         },
-        [upsertStock]
+        [isLoading, upsertStock]
     );
 
     const debouncedUpsert = useDebounce(handleUpsertStock, 2000);
@@ -173,9 +181,13 @@ const StockProvider: FC<IStockProviderProps> = ({ children }) => {
 
     useMount(() => {
         const fetchDays = async () => {
+            setIsLoading(true);
+
             const stock = await getStock();
 
             init(stock);
+
+            setIsLoading(false);
         };
 
         fetchDays();
@@ -192,6 +204,7 @@ const StockProvider: FC<IStockProviderProps> = ({ children }) => {
     const value = {
         stock,
         selectedSection,
+        isLoading,
         init,
         createCategory,
         removeCategory,
@@ -230,7 +243,8 @@ interface IMoveItemPayload {
     targetSection: EStockSection;
     removeFromOrigin: boolean;
     targetCategoryId?: string;
-    newSection?: string;
+    newCategoryId?: string;
+    newCategoryName?: string;
 }
 
 type Action =
@@ -253,7 +267,9 @@ const stockReducer = (state: IStock, action: Action): IStock => {
             if (index === -1 && category) {
                 newState[section].push(category);
             } else if (category) {
-                newState[section][index] = category;
+                if (!compare(newState[section][index], category)) {
+                    newState[section][index] = category;
+                }
             }
 
             return newState;
@@ -263,40 +279,48 @@ const stockReducer = (state: IStock, action: Action): IStock => {
             const { section, categoryId } = action.payload;
             const index = state[section].findIndex((c) => c.id === categoryId);
 
-            if (index === -1) {
-                return newState;
+            if (index !== -1) {
+                newState[section].splice(index, 1);
             }
-
-            newState[section].splice(index, 1);
 
             return newState;
         }
 
         case StockActions.MOVE_ITEM: {
-            const { item, targetSection, targetCategoryId, newSection, removeFromOrigin } = action.payload;
+            const { item, targetSection, targetCategoryId, newCategoryId, newCategoryName, removeFromOrigin } = action.payload;
 
             if (targetCategoryId) {
                 const targetCategoryIndex = newState[targetSection].findIndex((c) => c.id === targetCategoryId);
 
                 if (targetCategoryIndex !== -1) {
-                    newState[targetSection][targetCategoryIndex].items.push(item);
+                    const itemExists = newState[targetSection][targetCategoryIndex].items.find((i) => i.id === item.id);
+                    if (!itemExists) {
+                        newState[targetSection][targetCategoryIndex].items.push(item);
+                    }
                 }
-            } else if (newSection) {
-                const newCategory: IStockCategory = {
-                    id: uuid(),
-                    name: newSection,
-                    items: [item]
-                };
+            } else if (newCategoryId && newCategoryName) {
+                const existingCategoryIndex = newState[targetSection].findIndex((c) => c.id === newCategoryId);
 
-                newState[targetSection].push(newCategory);
+                if (existingCategoryIndex === -1) {
+                    const newCategory: IStockCategory = {
+                        id: newCategoryId,
+                        name: newCategoryName,
+                        items: [item]
+                    };
+
+                    newState[targetSection].push(newCategory);
+                } else {
+                    if (!newState[targetSection][existingCategoryIndex].items.find((i) => i.id === item.id)) {
+                        newState[targetSection][existingCategoryIndex].items.push(item);
+                    }
+                }
             }
 
             if (removeFromOrigin) {
-                newState[targetSection].forEach((c) => {
-                    const index = c.items.findIndex((i) => i.id === item.id);
-
+                newState[targetSection].forEach((category) => {
+                    const index = category.items.findIndex((i) => i.id === item.id);
                     if (index !== -1) {
-                        c.items.splice(index, 1);
+                        category.items.splice(index, 1);
                     }
                 });
             }

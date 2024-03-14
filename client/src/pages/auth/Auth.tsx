@@ -1,4 +1,4 @@
-import { ReactComponent as Brand } from '@/assets/brand.svg';
+import Logo from '@/assets/brand.png';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Login from '@/components/auth/Login';
@@ -47,7 +47,7 @@ const Auth = () => {
         <main className={styles.auth}>
             <section className={styles.left}>
                 <div className={styles.brand}>
-                    <Brand />
+                    <img src={Logo} alt="thymecard" />
                     <h1>thymecard</h1>
                 </div>
                 <Routes>

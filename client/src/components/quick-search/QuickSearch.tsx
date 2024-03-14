@@ -54,7 +54,7 @@ const QuickSearch: FC<IQuickSearchProps> = ({
         handleSearch(query);
 
         setIsSearching(false);
-    }, 150);
+    }, 250);
 
     const handleSeachChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {

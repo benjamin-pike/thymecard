@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
 import { useRecipe } from '../../RecipeProvider';
-import PopoverWrapper, { PopoverPosition } from '@/components/wrappers/popover/PopoverWrapper';
 import DatePicker from '@/components/common/date-picker/DatePicker';
+import Popover, { usePopoverContext } from '@/components/wrappers/popover/Popover';
 import { ICONS } from '@/assets/icons';
 import styles from './last-cooked.module.scss';
 
@@ -18,28 +18,33 @@ export default LastCooked;
 
 const EditView: FC = () => {
     const { recipe, lastCooked } = useRecipe();
+    const { handleSelect } = lastCooked;
 
-    if (!recipe) {
-        return null;
-    }
+    const handleSelectDay = (day: DateTime) => {
+        handleSelect(day);
+    };
 
     return (
         <>
             <div className={styles.edit}>
-                <div className={styles.container}>
-                    <input
-                        value={lastCooked.edit?.toFormat('MMM d, yyyy') ?? ''}
-                        placeholder="Log first cook . . ."
-                        readOnly={!recipe.lastCooked}
-                    />
-                    <button data-popover-id={'popover-metadata-last-cooked'}>
-                        <CalendarIcon />
-                    </button>
-                </div>
+                <Popover
+                    content={<DatePicker selectedDay={lastCooked.edit ?? undefined} blockFuture={true} handleSelectDay={handleSelectDay} />}
+                    placement="bottom"
+                >
+                    <div className={styles.container}>
+                        <input
+                            className={styles.input}
+                            value={lastCooked.edit?.toFormat('MMM d, yyyy') ?? ''}
+                            placeholder="Log first cook . . ."
+                            readOnly={!recipe.lastCooked}
+                        />
+
+                        <button className={styles.button}>
+                            <CalendarIcon />
+                        </button>
+                    </div>
+                </Popover>
             </div>
-            <PopoverWrapper id={'popover-metadata-last-cooked'} position={PopoverPosition.BOTTOM_LEFT} offset={10}>
-                <DatePicker selectedDay={lastCooked.edit ?? undefined} blockFuture={true} handleSelectDay={lastCooked.handleSelect} />
-            </PopoverWrapper>
         </>
     );
 };
