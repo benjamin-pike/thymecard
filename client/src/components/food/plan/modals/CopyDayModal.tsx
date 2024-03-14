@@ -3,13 +3,11 @@ import { DateTime } from 'luxon';
 
 import ModalCard from '@/components/common/modal-card/ModalCard';
 import EventMetadataField, { EEventMetadataFieldType } from './MetadataField';
-import DatePickerPopover from '@/components/common/date-picker/DatePickerPopover';
 
 import { usePlan } from '../PlanProvider';
 import { ModalState } from '@/hooks/common/useModal';
 
 import { ICONS } from '@/assets/icons';
-import { PopoverPosition } from '@/components/wrappers/popover/PopoverWrapper';
 import { capitalize } from '@/lib/string.utils';
 import { createToast } from '@/lib/toast/toast.utils';
 
@@ -112,6 +110,7 @@ const CopyEventModal: FC<ICopyEventModalProps> = ({ state, handleCloseModal }) =
                         labelWidth={6.5}
                         selectedDate={targetDate}
                         popoverId="popover-target-date"
+                        handleSelectDate={handleSelectTargetDate}
                     />
                 </ul>
                 <div className={styles.divider} />
@@ -138,15 +137,6 @@ const CopyEventModal: FC<ICopyEventModalProps> = ({ state, handleCloseModal }) =
                         </li>
                     ))}
                 </ul>
-                <DatePickerPopover
-                    id="popover-target-date"
-                    position={PopoverPosition.BOTTOM_RIGHT}
-                    offset={5}
-                    selectedDay={originDate}
-                    blockPast={true}
-                    blockToday={true}
-                    handleSelectDay={handleSelectTargetDate}
-                />
             </section>
         </ModalCard>
     );

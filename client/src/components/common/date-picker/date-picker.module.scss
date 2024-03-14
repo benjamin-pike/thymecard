@@ -4,8 +4,6 @@
 
     padding: 1rem;
 
-    width: 14.5rem;
-
     &[data-mode='day'] {
         grid-template-columns: repeat(7, 1fr);
 
@@ -15,20 +13,21 @@
     }
 
     &[data-mode='month'] {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 3;
         gap: 0;
 
         .monthYear {
             grid-column: span 3;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .option {
             height: 2rem;
+            width: 4rem;
 
             font-size: $fs-14;
 
-            border: 0.5px solid $mono-200;
+            border: 0.5px solid $mono-100;
 
             @include dark-mode {
                 border: 0.5px solid $mono-800;
@@ -58,7 +57,14 @@
         justify-content: space-between;
         align-items: center;
 
-        margin-bottom: 0.5rem;
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.25rem;
+
+        border-bottom: 1px solid $mono-200;
+
+        @include dark-mode {
+            border-bottom: 1px solid $mono-800;
+        }
 
         .current {
             display: flex;
@@ -126,7 +132,9 @@
     .option {
         position: relative;
 
-        padding: 0.25rem;
+        padding: 0.25rem 0;
+
+        width: 1.5rem;
 
         color: $mono-600;
         font-size: $fs-12;

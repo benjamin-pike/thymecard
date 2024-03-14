@@ -1,7 +1,9 @@
 import { FC, useCallback, useMemo } from 'react';
 import { useStock } from '../StockProvider';
-import { ICONS } from '@/assets/icons';
+import MoveItemPopover from '../move-item-popover/MoveItemPopover';
+import Popover from '@/components/wrappers/popover/Popover';
 import { IStockCategory, IStockItem, EStockSection } from '@thymecard/types';
+import { ICONS } from '@/assets/icons';
 import styles from './item.module.scss';
 
 const MoveToFridgeIcon = ICONS.recipes.addToFridge;
@@ -27,9 +29,7 @@ export interface IItem {
     nameInputSize: number;
     quantityInputSize: number;
     assignItemRefs: IAssignItemRefs;
-    isActive: boolean;
     sectionItemIds: Record<EStockSection, string[]>;
-    handleMoveItemButtonClick: (target: EStockSection) => (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     focusAdjacentCell: (currentIndex: number, direction: 'up' | 'down' | 'left' | 'right', inputType: 'name' | 'quantity' | 'note') => void;
 }
 
@@ -43,8 +43,6 @@ const Item: FC<IItem> = ({
     nameInputSize,
     quantityInputSize,
     assignItemRefs,
-    isActive,
-    handleMoveItemButtonClick,
     focusAdjacentCell
 }) => {
     const { addItem: addItemClosure, updateItem: updateItemClosure, removeItem: removeItemClosure } = useStock();
@@ -120,10 +118,11 @@ const Item: FC<IItem> = ({
     };
 
     return (
-        <li className={styles.row} data-active={isActive}>
+        <li className={styles.row}>
             <input
                 ref={assignItemRefs.name}
                 className={styles.item}
+                type="text"
                 size={nameInputSize || 12}
                 value={item.name}
                 placeholder={nameInputSize ? '' : 'Item name'}
@@ -134,6 +133,7 @@ const Item: FC<IItem> = ({
             <input
                 ref={assignItemRefs.quantity}
                 className={styles.quantity}
+                type="text"
                 size={quantityInputSize || 10}
                 placeholder={quantityInputSize ? '' : 'Quantity'}
                 value={item.quantity ?? ''}
@@ -144,6 +144,7 @@ const Item: FC<IItem> = ({
             <input
                 ref={assignItemRefs.note}
                 className={styles.note}
+                type="text"
                 value={item.note}
                 placeholder="Add note"
                 data-type="note"
@@ -152,49 +153,75 @@ const Item: FC<IItem> = ({
             />
             <span className={styles.buttons}>
                 {section !== EStockSection.PANTRY && (
-                    <button
-                        ref={assignItemRefs.pantryButton}
-                        className={styles.moveToPantry}
-                        data-tooltip-id="move-to-pantry-stock"
-                        data-tooltip-content={
-                            isInPantry ? 'Already in Pantry' : `${section === EStockSection.SHOPPING_LIST ? 'Move' : 'Add'} to Pantry`
+                    <Popover
+                        content={
+                            isInPantry ? null : <MoveItemPopover item={item} originSection={section} targetSection={EStockSection.PANTRY} />
                         }
-                        data-active={isInPantry}
-                        onClick={handleMoveItemButtonClick(EStockSection.PANTRY)}
+                        placement="bottom-end"
+                        strategy="fixed"
                     >
-                        <MoveToFridgeIcon />
-                    </button>
+                        <button
+                            className={styles.button}
+                            data-tooltip-id="move-to-pantry-stock"
+                            data-tooltip-content={
+                                isInPantry ? 'Already in Pantry' : `${section === EStockSection.SHOPPING_LIST ? 'Move' : 'Add'} to Pantry`
+                            }
+                            data-active={isInPantry}
+                            data-role={EStockSection.PANTRY}
+                        >
+                            <MoveToFridgeIcon />
+                        </button>
+                    </Popover>
                 )}
                 {section !== EStockSection.SHOPPING_LIST && (
-                    <button
-                        ref={assignItemRefs.shoppingListButton}
-                        className={styles.addToShoppingList}
-                        data-tooltip-id="add-to-shopping-list-stock"
-                        data-tooltip-content={isInShoppingList ? 'Already in Shopping List' : 'Add to Shopping List'}
-                        data-active={isInShoppingList}
-                        onClick={handleMoveItemButtonClick(EStockSection.SHOPPING_LIST)}
+                    <Popover
+                        content={
+                            isInShoppingList ? null : (
+                                <MoveItemPopover item={item} originSection={section} targetSection={EStockSection.SHOPPING_LIST} />
+                            )
+                        }
+                        placement="bottom-end"
+                        strategy="fixed"
                     >
-                        <AddToShoppingListIcon />
-                    </button>
+                        <button
+                            className={styles.button}
+                            data-tooltip-id="add-to-shopping-list-stock"
+                            data-tooltip-content={isInShoppingList ? 'Already in Shopping List' : 'Add to Shopping List'}
+                            data-active={isInShoppingList}
+                            data-role={EStockSection.SHOPPING_LIST}
+                        >
+                            <AddToShoppingListIcon />
+                        </button>
+                    </Popover>
                 )}
                 {section !== EStockSection.FAVORITES && (
-                    <button
-                        ref={assignItemRefs.favoriteButton}
-                        className={styles.addToFavorites}
-                        data-tooltip-id="add-to-favorites-stock"
-                        data-tooltip-content={isInFavorites ? 'Already in Favorites' : 'Add to Favorites'}
-                        data-active={isInFavorites}
-                        onClick={handleMoveItemButtonClick(EStockSection.FAVORITES)}
+                    <Popover
+                        content={
+                            isInFavorites ? null : (
+                                <MoveItemPopover item={item} originSection={section} targetSection={EStockSection.FAVORITES} />
+                            )
+                        }
+                        placement="bottom-end"
+                        strategy="fixed"
                     >
-                        <StarIcon />
-                    </button>
+                        <button
+                            className={styles.button}
+                            data-tooltip-id="add-to-favorites-stock"
+                            data-tooltip-content={isInFavorites ? 'Already in Favorites' : 'Add to Favorites'}
+                            data-active={isInFavorites}
+                            data-role={EStockSection.FAVORITES}
+                        >
+                            <StarIcon />
+                        </button>
+                    </Popover>
                 )}
                 <button
-                    className={styles.deleteItem}
+                    className={styles.button}
                     data-tooltip-id="delete-item-stock"
                     data-tooltip-content="Delete Item"
                     onClick={removeItem}
                     onKeyDown={handleButtonKeyDown}
+                    data-role="delete"
                 >
                     <DeleteIcon />
                 </button>

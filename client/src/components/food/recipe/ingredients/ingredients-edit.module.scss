@@ -176,11 +176,12 @@
 
 .match {
     padding-left: 0.67rem;
+
     @include dark-mode {
         background-color: transparent;
     }
 
-    button {
+    .matchButton {
         display: grid;
         place-content: center;
 

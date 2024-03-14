@@ -1,0 +1,91 @@
+.wrapper {
+    position: absolute;
+
+    padding: 0.5rem;
+
+    z-index: 999;
+
+    .container {
+        position: relative;
+
+        background-color: $mono-light;
+        box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.05);
+        border: 1px solid alpha($mono-700, 0.1);
+        border-radius: 0.5rem;
+
+        white-space: nowrap;
+
+        @include dark-mode {
+            background-color: $mono-dark;
+            border: 1px solid $mono-700;
+        }
+
+        &[data-state='open'] {
+            animation: open 200ms ease;
+        }
+
+        &[data-state='closing'] {
+            animation: close 200ms ease forwards;
+        }
+    }
+
+    $placements: (
+        'left': right,
+        'left-start': top right,
+        'left-end': bottom right,
+        'right': left,
+        'right-start': top left,
+        'right-end': bottom left,
+        'top': bottom,
+        'top-start': left bottom,
+        'top-end': right bottom,
+        'bottom': top,
+        'bottom-start': left top,
+        'bottom-end': right top
+    );
+
+    @each $placement, $origin in $placements {
+        &[data-popper-placement='#{$placement}'] .container {
+            transform-origin: $origin;
+        }
+    }
+
+    $placements: (
+        'left-start': top,
+        'left-end': bottom,
+        'right-start': top,
+        'right-end': bottom,
+        'top-start': left,
+        'top-end': right,
+        'bottom-start': left,
+        'bottom-end': right
+    );
+
+    @each $placement, $padding in $placements {
+        &[data-popper-placement='#{$placement}'] {
+            padding-#{$padding}: 0;
+        }
+    }
+}
+
+@keyframes open {
+    from {
+        opacity: 0;
+        scale: 0.75;
+    }
+    to {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+@keyframes close {
+    from {
+        opacity: 1;
+        scale: 1;
+    }
+    to {
+        opacity: 0;
+        scale: 0.75;
+    }
+}

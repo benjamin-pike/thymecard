@@ -1,7 +1,7 @@
 .row {
     display: grid;
     grid-template-columns: auto auto 1fr auto;
-    
+
     border-radius: 0.35rem;
 
     &:nth-of-type(odd) {
@@ -16,19 +16,21 @@
     &:focus-within,
     &[data-active='true'] {
         .buttons {
-            opacity: 1;
+            .button {
+                opacity: 1;
 
-            @include dark-mode {
-                color: $mono-light;
+                @include dark-mode {
+                    color: $mono-light;
+                }
             }
         }
     }
 
-    input {
+    input[type='text'] {
         height: 2rem;
-        
+
         padding-right: 1rem;
-        
+
         font-size: $fs-12;
 
         white-space: nowrap;
@@ -37,7 +39,7 @@
 
         &.item {
             padding-left: 1.25rem;
-            
+
             width: fit-content;
 
             color: $mono-700;
@@ -91,12 +93,8 @@
         color: $mono-700;
 
         padding: 0 0.35rem;
-        
-        opacity: 0;
 
-        transition: opacity 100ms ease;
-
-        button {
+        .button {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -104,39 +102,41 @@
             height: 1rem;
             width: 1rem;
 
+            opacity: 0;
+
             transition: opacity 100ms ease;
 
             &:hover {
                 opacity: 0.75;
             }
 
-            &.moveToPantry {
+            &[data-role='pantry'] {
                 margin-right: 0.2rem;
 
                 svg {
                     stroke-width: 2px;
-                    
+
                     scale: 0.8;
                 }
             }
 
-            &.addToShoppingList {
+            &[data-role='shoppingList'] {
                 margin-right: 0.2rem;
 
                 svg {
                     stroke-width: 1.5px;
-                    
+
                     scale: 1.15;
                 }
             }
 
-            &.addToFavorites {
+            &[data-role='favorites'] {
                 svg {
                     scale: 0.8;
                 }
             }
 
-            &.deleteItem {
+            &[data-role='delete'] {
                 svg {
                     path {
                         stroke-width: 35px;

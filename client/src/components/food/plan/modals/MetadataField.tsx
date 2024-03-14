@@ -7,6 +7,8 @@ import { ITime } from '@thymecard/types';
 import { capitalize } from '@/lib/string.utils';
 
 import styles from './metadata-field.module.scss';
+import DatePicker from '@/components/common/date-picker/DatePicker';
+import Popover from '@/components/wrappers/popover/Popover';
 
 export enum EEventMetadataFieldType {
     DROPDOWN = 'dropdown',
@@ -41,6 +43,7 @@ const EventMetadataField: FC<EventFieldProps> = ({
     dropdownId,
     popoverId,
     disabled,
+    handleSelectDate,
     handleUpdateTime
 }) => {
     let field: ReactElement | null = null;
@@ -82,7 +85,17 @@ const EventMetadataField: FC<EventFieldProps> = ({
                 {icon}
                 <p>{label}</p>
             </div>
-            {field}
+            {type === EEventMetadataFieldType.DATE && handleSelectDate ? (
+                <Popover
+                    className={styles.popover}
+                    content={<DatePicker selectedDay={selectedDate} blockPast={true} handleSelectDay={handleSelectDate}></DatePicker>}
+                    placement="bottom-start"
+                >
+                    <>{field}</>
+                </Popover>
+            ) : (
+                field
+            )}
         </li>
     );
 };

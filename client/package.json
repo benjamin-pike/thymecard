@@ -11,9 +11,10 @@
     },
     "dependencies": {
         "@mantine/hooks": "6.0.13",
+        "@popperjs/core": "2.11.8",
         "@reduxjs/toolkit": "1.9.5",
-        "@thymecard/utils": "file:../utils",
         "@tanstack/react-query": "4.29.14",
+        "@thymecard/utils": "file:../utils",
         "axios": "1.5.0",
         "eslint-config-next": "13.4.3",
         "eslint-plugin-prettier": "5.0.0",
@@ -23,6 +24,7 @@
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-icons": "4.10.1",
+        "react-popper": "2.3.0",
         "react-redux": "8.1.1",
         "react-router-dom": "6.13.0",
         "react-to-print": "2.14.13",
@@ -32,8 +34,8 @@
         "uuid": "9.0.0"
     },
     "devDependencies": {
-        "@thymecard/types": "file:../types",
         "@svgr/webpack": "8.0.1",
+        "@thymecard/types": "file:../types",
         "@types/luxon": "3.3.0",
         "@types/node": "20.2.3",
         "@types/react": "18.2.6",

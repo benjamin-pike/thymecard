@@ -1,41 +1,34 @@
-import { FC, useCallback, useState } from 'react';
-import { useClickOutside } from '@/hooks/common/useClickOutside';
+import { FC, useCallback, useMemo, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import { useStock } from '../StockProvider';
+import { usePopoverContext } from '@/components/wrappers/popover/Popover';
 import { IStockItem, EStockSection } from '@thymecard/types';
 import styles from './move-item-popover.module.scss';
 
 interface IMoveItemPopoverProps {
     item: IStockItem;
-    isOpen: boolean;
     originSection?: EStockSection;
     targetSection: EStockSection;
-    location: {
-        right: number;
-        top: number;
-    };
-    toggleButtonElement: HTMLButtonElement | null;
-    handleClose: () => void;
 }
 
-const MoveItemPopover: FC<IMoveItemPopoverProps> = ({
-    item,
-    isOpen,
-    originSection,
-    targetSection,
-    location,
-    toggleButtonElement,
-    handleClose
-}) => {
+const MoveItemPopover: FC<IMoveItemPopoverProps> = ({ item, originSection, targetSection }) => {
     const { stock, moveItem } = useStock();
+    const { handleClosePopover } = usePopoverContext();
 
-    const candidateCategories = stock[targetSection] ?? [];
+    const candidateCategories = useMemo(() => stock[targetSection] ?? [], [stock, targetSection]);
     const itemCategory = originSection ? stock[originSection].find((c) => c.items.some((i) => item && i.id === item.id)) : undefined;
 
     const shouldDefaultToNewCategory = !candidateCategories.some(({ name }) => name === itemCategory?.name);
+    const unnamedCategoryIds: string[] = useMemo(
+        () =>
+            candidateCategories.reduce(
+                (acc: string[], { id, name }: { id: string; name: string | null }) => (name ? acc : [...acc, id]),
+                []
+            ),
+        [candidateCategories]
+    );
 
-    const [newSection, setNewSection] = useState(shouldDefaultToNewCategory ? itemCategory?.name : '');
-
-    const favoritePopoverRef = useClickOutside<HTMLDivElement>(handleClose, [toggleButtonElement]);
+    const [newSection, setNewSection] = useState<string>();
 
     const [selectedTarget, setSelectedTarget] = useState(
         shouldDefaultToNewCategory ? 'new-item' : candidateCategories.find((c) => c.name === itemCategory?.name)?.id ?? 'new-item'
@@ -52,32 +45,26 @@ const MoveItemPopover: FC<IMoveItemPopoverProps> = ({
         setSelectedTarget('new-item');
     }, []);
 
-    const handleMove = useCallback(() => {
+    const handleAddClick = useCallback(() => {
         const isNewCategory = selectedTarget === 'new-item';
+
         moveItem({
             item,
             targetSection,
             targetCategoryId: isNewCategory ? undefined : selectedTarget,
-            newSection: isNewCategory ? newSection : undefined,
+            newCategoryId: isNewCategory ? uuid() : undefined,
+            newCategoryName: isNewCategory ? newSection : undefined,
             removeFromOrigin: originSection === EStockSection.SHOPPING_LIST && targetSection === EStockSection.PANTRY
         });
-        handleClose();
-    }, [selectedTarget, moveItem, item, targetSection, newSection, originSection, handleClose]);
+
+        handleClosePopover();
+    }, [selectedTarget, moveItem, item, targetSection, newSection, originSection, handleClosePopover]);
 
     return (
-        <div
-            ref={favoritePopoverRef}
-            key={itemCategory?.name}
-            className={styles.addToFavoritesPopover}
-            data-open={isOpen}
-            style={{
-                right: location.right,
-                top: location.top
-            }}
-        >
+        <div key={itemCategory?.name} className={styles.addToFavoritesPopover}>
             <h1>{popoverTitle}</h1>
             <div className={styles.divider} />
-            <h2>Select category</h2>
+            <h2>Select a target category</h2>
             <ul>
                 {candidateCategories.map(({ id, name }) => {
                     return (
@@ -89,7 +76,9 @@ const MoveItemPopover: FC<IMoveItemPopoverProps> = ({
                                 data-checked={selectedTarget === id}
                                 onChange={() => updateSelectedTarget(id)}
                             />
-                            <label htmlFor={id}>{name}</label>
+                            <label htmlFor={id} data-unnamed={!name}>
+                                {name || `Unnamed Category #${unnamedCategoryIds.indexOf(id) + 1}`}
+                            </label>
                         </li>
                     );
                 })}
@@ -108,10 +97,12 @@ const MoveItemPopover: FC<IMoveItemPopoverProps> = ({
             </ul>
             <div className={styles.divider} />
             <div className={styles.buttons}>
-                <button disabled={selectedTarget === 'new-item' && !newSection} onClick={handleMove}>
+                <button className={styles.add} disabled={selectedTarget === 'new-item' && !newSection} onClick={handleAddClick}>
                     Add
                 </button>
-                <button onClick={handleClose}>Cancel</button>
+                <button className={styles.cancel} onClick={handleClosePopover}>
+                    Cancel
+                </button>
             </div>
         </div>
     );

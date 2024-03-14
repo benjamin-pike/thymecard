@@ -1,10 +1,9 @@
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef } from 'react';
 import { useToggle } from '@mantine/hooks';
 import { useStock } from '../StockProvider';
 
 import Item from '../item/Item';
 import CustomTooltip from '@/components/common/tooltip/Tooltip';
-import MoveItemPopover from '../move-item-popover/MoveItemPopover';
 
 import { formatClasses } from '@/lib/common.utils';
 import { IStockCategory, EStockSection } from '@thymecard/types';
@@ -34,11 +33,6 @@ const Category: FC<ICategory> = ({ section, category }) => {
 
     const [expanded, toggleExpanded] = useToggle([true, false]);
 
-    const [isMoveItemPopoverOpen, setIsMoveItemPopoverOpen] = useState(false);
-    const [moveItemPopoverItemIndex, setMoveItemPopoverIndex] = useState<number | null>(null);
-    const [popoverLocation, setPopoverLocation] = useState({ right: 0, top: 0 });
-    const [moveItemTarget, setMoveItemTarget] = useState<EStockSection>(EStockSection.PANTRY);
-
     const sectionRef = useRef<HTMLLIElement>(null);
     const categoryNameRef = useRef<HTMLInputElement>(null);
     const nameRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -47,19 +41,6 @@ const Category: FC<ICategory> = ({ section, category }) => {
     const pantryButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const shoppingListButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const favoriteButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
-    const activeToggleButton = (() => {
-        if (moveItemPopoverItemIndex === null) return null;
-
-        switch (moveItemTarget) {
-            case EStockSection.PANTRY:
-                return pantryButtonRefs.current[moveItemPopoverItemIndex];
-            case EStockSection.SHOPPING_LIST:
-                return shoppingListButtonRefs.current[moveItemPopoverItemIndex];
-            case EStockSection.FAVORITES:
-                return favoriteButtonRefs.current[moveItemPopoverItemIndex];
-        }
-    })();
 
     const sectionItemIds = useMemo(() => {
         const extractIds = (section: EStockSection) => {
@@ -156,38 +137,6 @@ const Category: FC<ICategory> = ({ section, category }) => {
         }
     };
 
-    const handleMoveItemButtonClick = (itemIndex: number) => (targetSection: EStockSection) => (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (sectionItemIds[targetSection].includes(category.items[itemIndex].id)) {
-            return;
-        }
-
-        const element = e.currentTarget as HTMLButtonElement;
-
-        const { right, top } = element.getBoundingClientRect();
-        const { right: containerRight, top: containerTop } = sectionRef.current?.getBoundingClientRect() as DOMRect;
-
-        const isSameTarget = targetSection === moveItemTarget && itemIndex === moveItemPopoverItemIndex;
-
-        setTimeout(
-            () => {
-                setPopoverLocation({
-                    right: containerRight - right,
-                    top: top - containerTop + element.offsetHeight * 1.35
-                });
-
-                setMoveItemPopoverIndex(itemIndex);
-                setMoveItemTarget(targetSection);
-                setIsMoveItemPopoverOpen((currentState) => !currentState);
-            },
-            isSameTarget ? 0 : 100
-        );
-    };
-
-    const handleClosePopover = () => {
-        setIsMoveItemPopoverOpen(false);
-        setMoveItemPopoverIndex(null);
-    };
-
     const assignItemRefs = (index: number) => {
         return {
             name: (ref: HTMLInputElement | null) => (nameRefs.current[index] = ref),
@@ -243,13 +192,11 @@ const Category: FC<ICategory> = ({ section, category }) => {
                                     section={section}
                                     category={category}
                                     item={item}
-                                    isActive={index === moveItemPopoverItemIndex}
                                     sectionItemIds={sectionItemIds}
                                     assignItemRefs={assignItemRefs(index)}
                                     focusAdjacentCell={focusAdjacentCell}
                                     nameInputSize={nameInputSize}
                                     quantityInputSize={quantityInputSize}
-                                    handleMoveItemButtonClick={handleMoveItemButtonClick(index)}
                                 />
                             );
                         })}
@@ -258,15 +205,6 @@ const Category: FC<ICategory> = ({ section, category }) => {
                         </button>
                     </ul>
                 </div>
-                <MoveItemPopover
-                    item={category.items[moveItemPopoverItemIndex ?? 0]}
-                    originSection={section}
-                    targetSection={moveItemTarget}
-                    isOpen={isMoveItemPopoverOpen}
-                    location={popoverLocation}
-                    toggleButtonElement={activeToggleButton}
-                    handleClose={handleClosePopover}
-                />
             </li>
 
             <CustomTooltip id="move-to-pantry-stock" size={'small'} place="bottom" offset={10} />

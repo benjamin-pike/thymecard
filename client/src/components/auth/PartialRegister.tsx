@@ -6,10 +6,11 @@ import { DateTime } from 'luxon';
 import AuthSection from './common/AuthSection';
 import PersonalDetails from './stages/register/PersonalDetails';
 
+import useUser from '@/hooks/user/useUser';
+
 import { UserGender, isNumber, parseIntOrUndefined } from '@thymecard/types';
 import { sendRequest } from '@/lib/api/sendRequest';
 import { createToast } from '@/lib/toast/toast.utils';
-import useUser from '@/hooks/user/useUser';
 
 const PartialRegister = () => {
     const navigate = useNavigate();
