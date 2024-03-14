@@ -225,7 +225,7 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
                                         key={i}
                                         {...event}
                                         isToday={selectedDay.index === 0}
-                                        gap={i !== arr.length - 1 ? arr[i + 1].time - event.time + event.duration : undefined}
+                                        gap={i !== arr.length - 1 ? arr[i + 1].time - (event.time + event.duration) : undefined}
                                         handleSelectRecipe={handleSelectRecipe}
                                         handleEditEventClick={handleEditEventClick(event._id)}
                                         handleBookmarkEventClick={handleBookmarkEventClick(event._id, isDefined(event.bookmarkId))}
