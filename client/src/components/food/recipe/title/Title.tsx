@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react';
 import TextSkeleton from '@/components/common/loading-skeleton/TextSkeleton';
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 import { ICONS } from '@/assets/icons';
 import styles from './title.module.scss';
 

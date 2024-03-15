@@ -4,7 +4,7 @@ import Search from '../search/Search';
 import Tooltip from '@/components/common/tooltip/Tooltip';
 import { RootState } from '@/store';
 import usePremium from '@/hooks/common/usePremium';
-import { useRecipe } from '../recipe/RecipeProvider';
+import { useRecipe } from '../../providers/RecipeProvider';
 import { ICONS } from '@/assets/icons';
 import styles from './create-bar.module.scss';
 

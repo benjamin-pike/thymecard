@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 import { PiImageDuotone } from 'react-icons/pi';
 
 import LoadingDots from '@/components/common/loading-dots/LoadingDots';

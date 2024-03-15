@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useRecipe } from '../../RecipeProvider';
+import { useRecipe } from '../../../../providers/RecipeProvider';
 import styles from './source.module.scss';
 import { ICONS } from '@/assets/icons';
 

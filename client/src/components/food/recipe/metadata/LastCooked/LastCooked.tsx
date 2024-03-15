@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
-import { useRecipe } from '../../RecipeProvider';
+import { useRecipe } from '../../../../providers/RecipeProvider';
 import DatePicker from '@/components/common/date-picker/DatePicker';
-import Popover, { usePopoverContext } from '@/components/wrappers/popover/Popover';
+import Popover from '@/components/wrappers/popover/Popover';
 import { ICONS } from '@/assets/icons';
 import styles from './last-cooked.module.scss';
 

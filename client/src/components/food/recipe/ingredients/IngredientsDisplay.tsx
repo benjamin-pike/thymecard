@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 import { buildKey } from '@thymecard/utils';
 import { isNumber } from '@thymecard/types';
 import { capitalize } from '@/lib/string.utils';

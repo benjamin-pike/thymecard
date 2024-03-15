@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import { useRecipe } from '../../RecipeProvider';
+import { useRecipe } from '../../../../providers/RecipeProvider';
 import { numberToStars } from '@/lib/elements.utils';
 import { isNull } from '@thymecard/types';
 import styles from './rating.module.scss';

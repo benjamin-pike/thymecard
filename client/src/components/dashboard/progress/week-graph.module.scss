@@ -56,7 +56,7 @@
 }
 
 .circle {
-    fill: white;
+    fill: $mono-light;
     stroke-width: 3;
 
     @include dark-mode {
@@ -110,7 +110,7 @@
 }
 
 .hoverCircle {
-    fill: white;
+    fill: $mono-light;
     stroke-width: 4;
 
 

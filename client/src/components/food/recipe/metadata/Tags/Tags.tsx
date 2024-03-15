@@ -1,5 +1,5 @@
 import { FC, useRef } from 'react';
-import { useRecipe } from '../../RecipeProvider';
+import { useRecipe } from '../../../../providers/RecipeProvider';
 import { ICONS } from '@/assets/icons';
 import { collateRecipeTags } from '@/lib/recipe.utils';
 import { capitalize } from '@/lib/string.utils';

@@ -14,7 +14,7 @@ import MethodEdit from './method/MethodEdit';
 import CommentsEdit from './comments/CommentsEdit';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
 
-import { useRecipe } from './RecipeProvider';
+import { useRecipe } from '../../providers/RecipeProvider';
 import { IViewport } from '@/hooks/common/useBreakpoints';
 
 import { formatClasses, queue } from '@/lib/common.utils';

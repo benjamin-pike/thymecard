@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useRecipe } from '../../RecipeProvider';
+import { useRecipe } from '../../../../providers/RecipeProvider';
 import styles from './yield.module.scss';
 import { round } from '@/lib/number.utils';
 

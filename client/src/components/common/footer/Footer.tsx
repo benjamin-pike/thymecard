@@ -11,7 +11,7 @@ const Footer: FC = () => {
                 <span>Terms and Conditions</span> • <span>Privacy Policy</span>
             </p>
             <p>
-                © <span className={styles.year}>{new Date().getFullYear()}</span> Serona
+                © <span className={styles.year}>{new Date().getFullYear()}</span> Thymecard
             </p>
         </footer>
     );

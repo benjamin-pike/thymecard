@@ -62,7 +62,7 @@
     }
 
     &[data-active='true'] {
-        color: white;
+        color: $mono-light;
         background-color: $mono-700;
 
         @include dark-mode {

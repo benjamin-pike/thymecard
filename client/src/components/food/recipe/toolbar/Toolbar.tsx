@@ -1,6 +1,6 @@
 import { FC, Fragment, useMemo } from 'react';
 import Tooltip from '@/components/common/tooltip/Tooltip';
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 import { ICONS } from '@/assets/icons';
 import { buildKey } from '@thymecard/utils';
 import styles from './toolbar.module.scss';

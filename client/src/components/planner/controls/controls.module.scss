@@ -130,15 +130,9 @@
             }
         }
 
-        &.expanded {
-            &::after {
-                content: '3';
-            }
-        }
-
         &.compact {
             &::after {
-                content: '4';
+                content: '3';
             }
         }
     }
@@ -148,27 +142,30 @@
         align-items: center;
         justify-content: center;
 
-        padding: 0.3rem 0.6rem;
+        padding: 0.375rem 0.75rem;
 
         font-size: $fs-12;
         color: $mono-600;
-
-        border-radius: 0.25rem;
-
-        transition: box-shadow 100ms ease, background-color 100ms ease, color 100ms ease;
+        border: 1px solid $mono-200;
+        
+        border-radius: 0.375rem;
+        
+        transition: border 100ms ease, background-color 100ms ease, color 100ms ease;
 
         @include dark-mode {
-            color: $mono-100;
+            color: $mono-light;
+            border: 1px solid $mono-700;
         }
 
         &:hover {
-            color: white;
-            background-color: $mono-700;
-            box-shadow: 0 0 0 1px $mono-700;
+            color: $blue;
+            background-color: alpha($blue, 0.1);
+            border: 1px solid alpha($blue, 0.5);
 
             @include dark-mode {
+                color: $mono-light;
                 background-color: $mono-800;
-                box-shadow: 0 0 0 1px $mono-700;
+                border: 1px solid $mono-500;
             }
         }
     }

@@ -11,7 +11,7 @@ import Source from './Source/Source';
 import Nutrition from './Nutrition/Nutrition';
 import TextSkeleton from '@/components/common/loading-skeleton/TextSkeleton';
 
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 
 import { collateRecipeTags } from '@/lib/recipe.utils';
 import { ICONS } from '@/assets/icons';

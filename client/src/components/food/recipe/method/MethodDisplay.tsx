@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import styles from './method-display.module.scss';
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 
 interface IRecipeMethodDisplayProps {
     isPrintLayout: boolean;

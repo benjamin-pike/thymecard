@@ -1,7 +1,7 @@
 import { memo, FC, useEffect, useCallback, useRef, useState } from 'react';
 import { IRecipeMethodSection, IRecipeMethodStep } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 import styles from './method-edit.module.scss';
 
 const DeleteIcon = ICONS.common.XLarge;
