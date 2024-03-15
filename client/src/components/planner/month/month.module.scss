@@ -86,22 +86,15 @@
 }
 
 .day {
-    font-weight: 500;
-    font-size: $fs-11;
-    color: $mono-light;
-    background-color: $mono-700;
+    margin: auto auto 0.5rem auto;
 
     width: fit-content;
 
-    padding: 0.25rem 0.6rem;
-    margin: auto auto 0.25rem auto;
-
-    border-radius: 100vmax;
+    color: $mono-700;
+    font-size: $fs-14;
 
     @include dark-mode {
-        color: $mono-300;
-        background-color: $mono-800;
-        box-shadow: 0 0 0 1px $mono-700;
+        color: $mono-light;
     }
 }
 
