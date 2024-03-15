@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import ModalCard from '@/components/common/modal-card/ModalCard';
 import EventMetadataField, { EEventMetadataFieldType } from './MetadataField';
 
-import { usePlan } from '../PlanProvider';
+import { usePlan } from '../../../providers/PlanProvider';
 import { ModalState } from '@/hooks/common/useModal';
 
 import { ICONS } from '@/assets/icons';

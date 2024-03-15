@@ -17,7 +17,7 @@ const Brand = () => {
     return (
         <>
             <Logo className={styles.logo} onClick={handleClick} />
-            <h1 className={styles.brand}>serona</h1>
+            <h1 className={styles.brand}>thymecard</h1>
         </>
     );
 };

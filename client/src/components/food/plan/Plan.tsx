@@ -12,7 +12,7 @@ import Event from './Event';
 import Tooltip from '@/components/common/tooltip/Tooltip';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
 
-import { usePlan } from './PlanProvider';
+import { usePlan } from '../../providers/PlanProvider';
 import { useModal } from '@/hooks/common/useModal';
 import { useQuickSearch } from '@/hooks/common/useQuickSearch';
 
@@ -20,13 +20,15 @@ import { ICONS } from '@/assets/icons';
 import { Client, IMealEventBookmark, extractMealEvents, isDefined } from '@thymecard/types';
 
 import styles from './plan.module.scss';
+import { useMount } from '@/hooks/common/useMount';
 
 const AddIcon = ICONS.common.plus;
 const CopyIcon = ICONS.common.copy;
 const BookmarkIcon = ICONS.recipes.bookmark;
 const StockIcon = ICONS.recipes.tickList;
 
-const TODAY = DateTime.now();
+const TODAY = DateTime.now().startOf('day');
+
 interface IPlanProps {
     handleSelectRecipe: (recipeId: string) => void;
     handleToggleVisibleInfo: () => void;
@@ -34,7 +36,17 @@ interface IPlanProps {
 
 const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) => {
     const { customViewportSize } = useSelector((state: RootState) => state.viewport);
-    const { plan, selectedDay, selectedEvent, handleSelectDay, handleSelectEvent, handleDeleteEvent, handleSelectEventItem } = usePlan();
+    const {
+        plan,
+        selectedDay,
+        startDate,
+        selectedEvent,
+        handleFetchDays,
+        handleSelectDay,
+        handleSelectEvent,
+        handleDeleteEvent,
+        handleSelectEventItem
+    } = usePlan();
 
     const bodyRef = useRef<HTMLUListElement>(null);
 
@@ -71,9 +83,9 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
     } = useQuickSearch();
 
     const displaySwitchViewButton = customViewportSize === 'twoColumns';
-    const events = useMemo(() => extractMealEvents(selectedDay.events), [selectedDay.events]);
-    const date = useMemo(() => DateTime.fromISO(selectedDay.date), [selectedDay.date]);
-
+    const events = useMemo(() => extractMealEvents(selectedDay.events), [selectedDay]);
+    const date = useMemo(() => selectedDay.date, [selectedDay]);
+    console.log(selectedDay);
     const isEmpty = useMemo(() => events.length === 0, [events]);
 
     const [bookmarkedEvent, setBookmarkedEvent] = useState<Client<IMealEventBookmark> | null>(null);
@@ -177,16 +189,22 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
         scrollWrapperElement.scrollTo({ top: 0, behavior: 'smooth' });
     }, [bodyRef]);
 
+    useMount(() => {
+        handleFetchDays(TODAY, 5);
+    });
+
     return (
         <>
             <section className={styles.plan}>
                 <div className={styles.selectedDay}>
                     <header className={styles.top}>
-                        <p className={styles.date}>
-                            <span className={styles.dateDay}>{date.toFormat('cccc')}</span>
-                            <span>{date.toFormat('d')}</span>
-                            <span className={styles.dateMonth}>{date.toFormat('MMMM')}</span>
-                        </p>
+                        {date && (
+                            <p className={styles.date}>
+                                <span className={styles.dateDay}>{date.toFormat('cccc')}</span>
+                                <span>{date.toFormat('d')}</span>
+                                <span className={styles.dateMonth}>{date.toFormat('MMMM')}</span>
+                            </p>
+                        )}
                         <div className={styles.buttons}>
                             <button className={styles.addEvent} onClick={handleOpenAddEventModal}>
                                 <AddIcon />
@@ -241,7 +259,7 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
                     {!!plan &&
                         plan.map((day, i) => (
                             <li key={i} className={styles.day} data-selected={selectedDay.index === i}>
-                                <button onClick={handleSelectDay(i)}>
+                                <button onClick={() => handleSelectDay(startDate.plus({ days: i }))}>
                                     <p>
                                         <span>{TODAY.plus({ days: i }).toFormat('ccc')[0]}</span>
                                         <span className={styles.dividerText}>{'   |   '}</span>
@@ -260,13 +278,15 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
                     <div className={styles.bar} data-day={selectedDay.index} />
                 </ul>
             </section>
-            <AddEventModal
-                key={isAddEventModalClosed.toString()}
-                state={addEventModalState}
-                date={date}
-                bookmarkedEvent={bookmarkedEvent}
-                handleCloseModal={handleCloseAddEventModal}
-            />
+            {date && (
+                <AddEventModal
+                    key={isAddEventModalClosed.toString()}
+                    state={addEventModalState}
+                    date={date}
+                    bookmarkedEvent={bookmarkedEvent}
+                    handleCloseModal={handleCloseAddEventModal}
+                />
+            )}
             <CopyDayModal key={isCopyDayModalClosed.toString()} state={copyDayModalState} handleCloseModal={handleCloseCopyDayModal} />
             {selectedEvent && (
                 <EditEventModal

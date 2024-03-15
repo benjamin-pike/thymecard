@@ -1,8 +1,8 @@
 .wrapper {
     flex: 1 1;
-    
+
     padding: 0 0.75rem;
-    
+
     height: calc(100% - 2rem);
     min-height: 0;
 
@@ -23,7 +23,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1rem;
 
     padding: 0 1rem 1rem 1rem;
 
@@ -98,30 +98,33 @@
         font-size: $fs-11;
 
         color: $mono-600;
-        background-color: white;
-        box-shadow: 0 0 0 1px $mono-200;
+        background-color: $mono-light;
+        border: 1px solid $mono-200;
 
         border-radius: 100vmax;
 
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 1rem;
 
-        transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;
+        transition:
+            color 100ms ease,
+            background-color 100ms ease,
+            border 100ms ease;
 
         @include dark-mode {
             color: $mono-200;
             background-color: $mono-900;
-            box-shadow: 0 0 0 1px $mono-700;
+            border: 1px solid $mono-700;
         }
 
         &:hover {
-            color: white;
-            background-color: $mono-700;
-            box-shadow: 0 0 0 1px $mono-700;
+            color: $blue;
+            background-color: alpha($blue, 0.1);
+            border: 1px solid alpha($blue, 0.5);
 
             @include dark-mode {
-                color: $mono-700;
-                background-color: $mono-light;
-                box-shadow: 0 0 0 1px $mono-light;
+                color: $mono-light;
+                background-color: $mono-800;
+                border: 1px solid $mono-500;
             }
         }
 
@@ -186,7 +189,7 @@
         font-size: $fs-10;
 
         color: $mono-600;
-        background-color: white;
+        background-color: $mono-light;
 
         translate: 0 -50%;
 
@@ -220,7 +223,7 @@
     gap: calc(0.5rem + 1px);
 
     width: 100%;
-    height: 1.75rem;
+    height: 2rem;
 
     color: $mono-600;
 
@@ -256,8 +259,9 @@
     font-weight: 500;
     text-align: center;
 
-    background-color: white;
-    box-shadow: 0 0 0 1px $mono-200, 0 0 0 0.5rem white;
+    background-color: $mono-light;
+    border: 1px solid $mono-200;
+    box-shadow: 0 0 0 0.5rem white;
 
     width: fit-content;
 
@@ -269,13 +273,19 @@
 
     @include dark-mode {
         background-color: $mono-900;
-        box-shadow: 0 0 0 1px $mono-700, 0 0 0 0.5rem $mono-900;
+        border: 1px solid $mono-700;
+        box-shadow: 0 0 0 0.5rem $mono-900;
     }
 }
 
 .addEvent {
     &.named {
-        transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;
+        padding: 0.5rem 1rem;
+
+        transition:
+            color 100ms ease,
+            background-color 100ms ease,
+            border 100ms ease;
     }
 
     &.generic {
@@ -286,30 +296,35 @@
         height: 100%;
         aspect-ratio: 1;
 
-        background-color: white;
-        box-shadow: 0 0 0 1px $mono-200, 0 0 0 0.5rem white;
+        background-color: $mono-light;
+        border: 1px solid $mono-200;
+        box-shadow: 0 0 0 0.5rem $mono-light;
 
         border-radius: 50%;
 
         z-index: 1;
 
-        transition: color 100ms ease, background-color 100ms ease, box-shadow 100ms ease;
+        transition:
+            color 100ms ease,
+            background-color 100ms ease,
+            border 100ms ease;
 
         @include dark-mode {
             background-color: $mono-900;
-            box-shadow: 0 0 0 1px $mono-700, 0 0 0 0.5rem $mono-900;
+            border: 1px solid $mono-700;
+            box-shadow: 0 0 0 0.5rem $mono-900;
         }
     }
 
     &:hover {
-        color: white;
-        background-color: $mono-700;
-        box-shadow: 0 0 0 1px $mono-700, 0 0 0 0.5rem white;
+        color: $blue;
+        background-color: alpha($blue, 0.1);
+        border: 1px solid alpha($blue, 0.5);
 
         @include dark-mode {
-            color: $mono-700;
-            background-color: $mono-light;
-            box-shadow: 0 0 0 1px $mono-light, 0 0 0 0.5rem $mono-900;
+            color: $mono-light;
+            background-color: $mono-800;
+            border: 1px solid $mono-500;
         }
     }
 }
@@ -321,17 +336,30 @@
     left: 2.5rem;
 
     display: flex;
-    justify-content: space-between;
+    gap: 0.5rem;
 
     width: calc(100% - 3rem);
 
     font-size: $fs-11;
 
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem;
 
-    border-radius: 0.25rem;
+    border-radius: 0.1rem 0.5rem 0.5rem 0.1rem;
 
     backdrop-filter: brightness(1.035);
+
+    overflow: hidden;
+
+    &::before {
+        content: '';
+
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        width: 0.25rem;
+        height: 100%;
+    }
 
     @each $event, $color in $event-colors {
         $light-adjusted-color: contrastize($color, 'light');
@@ -339,19 +367,24 @@
 
         &[data-type='#{$event}'] {
             color: $light-adjusted-color;
-            background-color: transparentize($light-adjusted-color, 0.9);
-            box-shadow: 0 0 0 1px transparentize($color, 0.5);
+            background-color: alpha($light-adjusted-color, 0.1);
+            box-shadow: 0 0 0 1px alpha($color, 0.25) inset;
 
             @include dark-mode {
                 color: $dark-adjusted-color;
-                background-color: transparentize($dark-adjusted-color, 0.9);
-                box-shadow: 0 0 0 1px transparentize($dark-adjusted-color, 0.5);
+                background-color: alpha($dark-adjusted-color, 0.1);
+                box-shadow: 0 0 0 1px alpha($dark-adjusted-color, 0.25) inset;
+            }
+
+            &::before {
+                background-color: $color;
             }
         }
     }
 }
 
 .eventName {
+    flex-grow: 1;
     flex-shrink: 1;
 
     white-space: nowrap;

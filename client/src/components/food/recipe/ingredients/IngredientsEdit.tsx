@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 import Tooltip from '@/components/common/tooltip/Tooltip';
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 import Popover, { usePopoverContext } from '@/components/wrappers/popover/Popover';
 import { isNull } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';

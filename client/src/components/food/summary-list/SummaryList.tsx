@@ -8,7 +8,7 @@ import Tags, { ITag } from './tags/Tags';
 import Summary from './summary/Summary';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
 
-import { useRecipe } from '../recipe/RecipeProvider';
+import { useRecipe } from '../../providers/RecipeProvider';
 
 import { ICONS } from '@/assets/icons';
 import { filterRecipes, filterReducer } from './filter/filter.functions';

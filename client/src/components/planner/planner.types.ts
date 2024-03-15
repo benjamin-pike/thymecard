@@ -5,6 +5,5 @@ export type PlannerData = Record<string, IEvent[]>;
 export enum EEventDisplayFormat {
     COMPACT = 'compact',
     SIMPLE = 'simple',
-    STRIP = 'strip',
-    EXPANDED = 'expanded'
+    STRIP = 'strip'
 }

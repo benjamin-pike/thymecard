@@ -6,6 +6,10 @@
     "author": "Benjamin Pike",
     "license": "ISC",
     "dependencies": {
-        "@thymecard/types": "file:../types"
+        "luxon": "3.3.0"
+    },
+    "devDependencies": {
+        "@thymecard/types": "file:../types",
+        "@types/luxon": "3.3.0"
     }
 }

@@ -10,10 +10,9 @@ import Plan from '@/components/food/plan/Plan';
 import Stock from '@/components/food/stock/Stock';
 import StockProvider from '@/components/food/stock/StockProvider';
 import DrawerWrapper from '@/components/wrappers/drawer/DrawerWrapper';
-import PlanProvider from '@/components/food/plan/PlanProvider';
 import ModalWrapper from '@/components/wrappers/modal/ModalWrapper';
 
-import { useRecipe } from '@/components/food/recipe/RecipeProvider';
+import { useRecipe } from '@/components/providers/RecipeProvider';
 
 import { ICONS } from '@/assets/icons';
 
@@ -131,9 +130,7 @@ const Recipes = () => {
                                             isActive={isInfoDrawersActive}
                                             closeDrawer={() => setDisplayPlanDrawer(false)}
                                         >
-                                            <PlanProvider>
-                                                <Plan handleSelectRecipe={selectRecipe} handleToggleVisibleInfo={handleToggleVisibleInfo} />
-                                            </PlanProvider>
+                                            <Plan handleSelectRecipe={selectRecipe} handleToggleVisibleInfo={handleToggleVisibleInfo} />
                                         </DrawerWrapper>
                                     )}
                                     {displayStock && (

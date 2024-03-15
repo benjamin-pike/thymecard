@@ -1,12 +1,13 @@
-import { FC } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { DateTime } from 'luxon';
-import { EEventDisplayFormat, PlannerData } from '../planner.types';
-import { IEvent } from '@/lib/global.types';
+import { EEventDisplayFormat } from '../planner.types';
 import styles from './month.module.scss';
-import { EEventType } from '@thymecard/types';
+import { Client, EEventType, IDay } from '@thymecard/types';
+import { usePlan } from '@/components/providers/PlanProvider';
+import { formatTimeM } from '@thymecard/utils';
+import LoadingDots from '@/components/common/loading-dots/LoadingDots';
 
 interface IMonthProps {
-    data: PlannerData;
     currentDay: DateTime | null;
     currentMonth: DateTime;
     displayMeals: boolean;
@@ -17,7 +18,6 @@ interface IMonthProps {
 }
 
 const Month = ({
-    data,
     currentDay,
     currentMonth,
     displayMeals,
@@ -26,12 +26,36 @@ const Month = ({
     displayTime,
     handleDayClick
 }: IMonthProps) => {
+    const { plan, startDate, endDate, isLoading, handleFetchDays } = usePlan();
+
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const dates = generateMonth(currentMonth);
+    const dates = useMemo(() => generateMonth(currentMonth), [currentMonth]);
     const cellCount = dates.flat().length;
 
+    const indexOffset = dates[0].diff(startDate, 'days').days;
+
+    useEffect(() => {
+        const periodStartDate = dates[0];
+        const periodEndDate = dates[dates.length - 1];
+
+        if (
+            startDate < periodStartDate ||
+            (startDate.toISODate() === periodStartDate.toISODate() &&
+                (endDate >= periodEndDate || (endDate.toISODate() === periodEndDate.toISODate() && !isLoading)))
+        ) {
+            return;
+        }
+
+        handleFetchDays(dates[0], dates.length);
+    }, [dates, endDate, handleFetchDays, isLoading, plan, startDate]);
+
     return (
-        <section className={styles.month}>
+        <section className={styles.month} data-loading={isLoading}>
+            {isLoading && (
+                <div className={styles.loading}>
+                    <LoadingDots />
+                </div>
+            )}
             <div className={styles.calendar}>
                 <div className={styles.days}>
                     {dayNames.map((day, i) => (
@@ -42,11 +66,12 @@ const Month = ({
                 </div>
                 <div className={styles.body}>
                     {dates.flat().map((date, index) => {
-                        const events = data[date.toFormat('yyyy-MM-dd')] ?? [];
+                        const day = plan[index + indexOffset];
+
                         const isVisibleWhenTwoColumns = isInDivisibleSubArray(dates.flat(), index, 2);
                         const isVisibleWhenThreeColumns = isInDivisibleSubArray(dates.flat(), index, 3);
                         const dayCellProps = {
-                            events,
+                            day,
                             date,
                             index,
                             cellCount,
@@ -72,7 +97,7 @@ const Month = ({
 export default Month;
 
 interface IDayCellProps {
-    events: IEvent[];
+    day: Client<IDay> | null;
     date: DateTime;
     index: number;
     cellCount: number;
@@ -88,7 +113,7 @@ interface IDayCellProps {
 }
 
 const DayCell: FC<IDayCellProps> = ({
-    events,
+    day,
     date,
     currentDay,
     currentMonth,
@@ -114,6 +139,7 @@ const DayCell: FC<IDayCellProps> = ({
             data-today={isToday}
             data-current-day={isCurrentDay}
             data-current-month={isCurrentMonth}
+            data-populated={!!day?.events.length}
             data-hidden-two-columns={!isVisibleWhenTwoColumns}
             data-hidden-three-columns={!isVisibleWhenThreeColumns}
             data-first={isFirstDayOfCurrentMonth}
@@ -124,22 +150,28 @@ const DayCell: FC<IDayCellProps> = ({
             <p className={styles.date}>
                 {displayMonth ? `${date.monthShort} ${date.day}` : date.day} <span className={styles.dayName}> • {date.weekdayShort}</span>
             </p>
-            {events.map((event, k) => {
-                if (event.type !== EEventType.ACTIVITY && !displayMeals) {
-                    return null;
-                }
+            {day?.events.length ? (
+                day.events.map((event, k) => {
+                    if (event.type !== EEventType.ACTIVITY && !displayMeals) {
+                        return null;
+                    }
 
-                if (event.type === EEventType.ACTIVITY && !displayActivities) {
-                    return null;
-                }
+                    if (event.type === EEventType.ACTIVITY && !displayActivities) {
+                        return null;
+                    }
 
-                return (
-                    <div key={k} className={styles.event} data-event={event.type} data-format={eventDisplayFormat}>
-                        <p className={styles.eventName}>{event.name}</p>
-                        {displayTime && <p className={styles.eventTime}>{event.time}</p>}
-                    </div>
-                );
-            })}
+                    return (
+                        <div key={k} className={styles.event} data-event={event.type} data-format={eventDisplayFormat}>
+                            <p className={styles.eventName}>{event.items.map((item) => item.name).join(', ')}</p>
+                            {displayTime && <p className={styles.eventTime}>{formatTimeM(event.time)}</p>}
+                        </div>
+                    );
+                })
+            ) : (
+                <p className={styles.noEvents}>
+                    No <strong>Planned</strong> Events
+                </p>
+            )}
         </div>
     );
 };

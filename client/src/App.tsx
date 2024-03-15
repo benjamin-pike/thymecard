@@ -11,7 +11,8 @@ import Navbar from './components/navbar/Navbar';
 import Dashboard from './pages/dashboard/Dashboard';
 import Planner from './pages/planner/Planner';
 import Food from './pages/food/Food';
-import RecipeProvider from './components/food/recipe/RecipeProvider';
+import RecipeProvider from './components/providers/RecipeProvider';
+import PlanProvider from './components/providers/PlanProvider';
 
 import ThemeWrapper from './components/wrappers/theme/ThemeWrapper';
 import ResponsiveWrapper from './components/wrappers/responsive/ResponsiveWrapper';
@@ -73,14 +74,16 @@ export function CoreApp() {
                 <Router>
                     {user.user ? (
                         <RecipeProvider>
-                            <>
-                                <Navbar />
-                                <Routes>
-                                    {privateRoutes.map(({ path, element }) => (
-                                        <Route path={path} element={element} key={path} />
-                                    ))}
-                                </Routes>
-                            </>
+                            <PlanProvider>
+                                <>
+                                    <Navbar />
+                                    <Routes>
+                                        {privateRoutes.map(({ path, element }) => (
+                                            <Route path={path} element={element} key={path} />
+                                        ))}
+                                    </Routes>
+                                </>
+                            </PlanProvider>
                         </RecipeProvider>
                     ) : (
                         <Routes>

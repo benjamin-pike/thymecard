@@ -8,7 +8,7 @@
 
     border-radius: 0.25rem;
 
-    color: white;
+    color: $mono-light;
     background-color: $mono-900;
     box-shadow: 0 0 0 1px $mono-800;
 
@@ -34,7 +34,7 @@
     }
 
     &:hover {
-        background-color: white;
+        background-color: $mono-light;
         color: $mono-800;
         scale: 1.025;
     }

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import styles from './comments-edit.module.scss';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
 import { ICONS } from '@/assets/icons';
-import { useRecipe } from '../RecipeProvider';
+import { useRecipe } from '../../../providers/RecipeProvider';
 import { DateTime } from 'luxon';
 
 const AddIcon = ICONS.common.plus;

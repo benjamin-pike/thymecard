@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useRecipe } from '../../RecipeProvider';
+import { useRecipe } from '../../../../providers/RecipeProvider';
 import { isNull } from '@thymecard/types';
 import styles from './nutrition.module.scss';
 

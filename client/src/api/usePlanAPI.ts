@@ -71,25 +71,6 @@ export const usePlanAPI = () => {
         [callCopyDay]
     );
 
-    const { mutateAsync: callDeleteDay } = useMutation(async ({ date }: { date: string }) => {
-        const { status } = await sendRequest(ROUTES.DAYS.DELETE_DAY, 'DELETE', {
-            params: {
-                date: date
-            }
-        });
-
-        if (status !== 204) {
-            throw new Error('Failed to delete the day');
-        }
-    });
-
-    const deleteDay = useCallback(
-        async (date: string) => {
-            await callDeleteDay({ date });
-        },
-        [callDeleteDay]
-    );
-
     const { mutateAsync: callCreateEvent } = useMutation(async ({ date, event }: { date: string; event: Client<IDayEventCreate> }) => {
         const { status, data } = await sendRequest(ROUTES.DAYS.CREATE_EVENT, 'POST', {
             params: {
@@ -370,7 +351,6 @@ export const usePlanAPI = () => {
 
     return {
         getDays,
-        deleteDay,
         copyDay,
         createEvent,
         updateEvent,

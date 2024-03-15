@@ -2,7 +2,7 @@ import { FC, useCallback } from 'react';
 
 import RecipeQuickSearch from '@/components/quick-search/recipe/RecipeQuickSearch';
 
-import { usePlan } from './PlanProvider';
+import { usePlan } from '../../providers/PlanProvider';
 import { useQuickSearch } from '@/hooks/common/useQuickSearch';
 
 import { createToast } from '@/lib/toast/toast.utils';
@@ -13,15 +13,15 @@ import styles from './event-item.module.scss';
 
 const RecipeIcon = ICONS.common.recipe;
 const RecipeIconFill = ICONS.common.recipeFill;
-const FavoriteIcon = ICONS.common.star;
-const FavoriteIconFill = ICONS.common.starFill;
+// const FavoriteIcon = ICONS.common.star;
+// const FavoriteIconFill = ICONS.common.starFill;
 
 interface IEventItemProps extends IMealEventItem {
     handleSelectRecipe: (recipeId: string) => void;
     handleSelectEventItem: () => void;
 }
 
-const EventItem: FC<IEventItemProps> = ({ name, isFavorite, recipeId, handleSelectRecipe, handleSelectEventItem }) => {
+const EventItem: FC<IEventItemProps> = ({ name, recipeId, handleSelectRecipe, handleSelectEventItem }) => {
     const { handleUpdateMealEventItem } = usePlan();
     const hasLinkedRecipe = isDefined(recipeId);
     const { quickSearchState, isQuickSearchClosed, openQuickSearch, closeQuickSearch } = useQuickSearch();
@@ -60,7 +60,7 @@ const EventItem: FC<IEventItemProps> = ({ name, isFavorite, recipeId, handleSele
             <li className={styles.item}>
                 <p>{name}</p>
                 <div className={styles.buttons}>
-                    <button
+                    {/* <button
                         className={styles.favoriteMealItem}
                         data-active={!!isFavorite}
                         data-tooltip-id="favorite-meal-item"
@@ -68,7 +68,7 @@ const EventItem: FC<IEventItemProps> = ({ name, isFavorite, recipeId, handleSele
                     >
                         <FavoriteIcon />
                         <FavoriteIconFill />
-                    </button>
+                    </button> */}
                     <button
                         className={styles.linkToRecipe}
                         data-active={isDefined(recipeId)}

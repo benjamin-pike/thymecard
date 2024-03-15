@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useRecipe } from '../../RecipeProvider';
+import { useRecipe } from '../../../../providers/RecipeProvider';
 import { formatDuration } from '@thymecard/utils';
 import styles from './time.module.scss';
 

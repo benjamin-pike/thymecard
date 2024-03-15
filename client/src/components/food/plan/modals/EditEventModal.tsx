@@ -6,7 +6,7 @@ import ModalCard from '@/components/common/modal-card/ModalCard';
 import DropdownWrapper from '@/components/wrappers/dropdown/DropdownWrapper';
 
 import { useDay } from '@/hooks/plan/useDay';
-import { usePlan } from '../PlanProvider';
+import { usePlan } from '../../../providers/PlanProvider';
 import { useDropdown } from '@/hooks/common/useDropdown';
 import { ModalState } from '@/hooks/common/useModal';
 

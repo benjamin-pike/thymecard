@@ -1,14 +1,14 @@
 import { FC } from 'react';
-import { DateTime, Duration } from 'luxon';
+import { DateTime } from 'luxon';
 import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
-import { IEvent } from '@/lib/global.types';
 import { BiPlus } from 'react-icons/bi';
 import { formatClasses } from '@/lib/common.utils';
 import styles from './day.module.scss';
-import { EEventType } from '@thymecard/types';
+import { EEventType, IDayEvent } from '@thymecard/types';
+import { formatDuration, formatTimeM, minsToHoursAndMins } from '@thymecard/utils';
 
 interface IDayProps {
-    data: IEvent[];
+    data: IDayEvent[];
     date: DateTime | null;
 }
 
@@ -100,7 +100,7 @@ const Header: FC<IHeaderProps> = ({ date, displayButtons }) => {
 };
 
 interface IPeriodProps {
-    events: IEvent[];
+    events: IDayEvent[];
     period: { start: number; end: number };
     gap: string | null;
     isFinalPeriod: boolean;
@@ -125,11 +125,6 @@ const Period: FC<IPeriodProps> = ({ events, period, gap, isFinalPeriod, addNamed
                 ))}
 
                 {events.map((event) => {
-                    const duration = Duration.fromObject({ minutes: event.duration })
-                        .toFormat("h'h' mm'm'")
-                        .replace(new RegExp('^0h'), '')
-                        .replace(new RegExp('00m$'), '');
-
                     return (
                         <div
                             key={JSON.stringify(event)}
@@ -140,9 +135,11 @@ const Period: FC<IPeriodProps> = ({ events, period, gap, isFinalPeriod, addNamed
                                 height: `calc(${durationToPercent(event.duration, length)}% - 1px)`
                             }}
                         >
-                            <p className={styles.eventName}>{event.name}</p>
+                            <p className={styles.eventName}>{event.items.map((item) => item.name).join('; ')}</p>
                             <p className={styles.eventTime}>
-                                {event.time} • {duration}
+                                {formatTimeM(event.time)}
+                                {'   '}•{'   '}
+                                {formatDuration(event.duration, 'medium')}
                             </p>
                         </div>
                     );
@@ -193,17 +190,17 @@ type IPeriod = {
 
 type IPeriodEvents = {
     period: IPeriod;
-    events: IEvent[];
+    events: IDayEvent[];
 };
 
-const getHours = (events: IEvent[], resolution: number, threshold: number): IPeriod[] => {
+const getHours = (events: IDayEvent[], resolution: number, threshold: number): IPeriod[] => {
     const periods: IPeriod[] = [];
 
     events.forEach((event) => {
-        const [hour, minutes] = event.time.split(':').map(Number);
-        const startHour = hour + Math.floor(minutes / resolution) * (resolution / 60);
+        const { hours, minutes } = minsToHoursAndMins(event.time);
+        const startHour = hours + Math.floor(minutes / resolution) * (resolution / 60);
         const duration = event.duration;
-        const endMinutes = hour * 60 + minutes + duration;
+        const endMinutes = hours * 60 + minutes + duration;
         const endHour = Math.ceil(endMinutes / resolution) * (resolution / 60);
 
         if (periods.length === 0 || periods[periods.length - 1].end + threshold / 60 <= startHour) {
@@ -216,18 +213,18 @@ const getHours = (events: IEvent[], resolution: number, threshold: number): IPer
     return periods;
 };
 
-const splitEvents = (events: IEvent[], resolution: number, threshold: number): IPeriodEvents[] => {
+const splitEvents = (events: IDayEvent[], resolution: number, threshold: number): IPeriodEvents[] => {
     const periods = getHours(events, resolution, threshold);
     const periodsAndEvents: IPeriodEvents[] = [];
 
     periods.forEach((period) => {
         const startMinutes = period.start * 60;
         const endMinutes = period.end * 60;
-        const periodEvents: IEvent[] = [];
+        const periodEvents: IDayEvent[] = [];
 
         events.forEach((event) => {
-            const [hour, minutes] = event.time.split(':').map(Number);
-            const eventStartMinutes = hour * 60 + minutes;
+            const { hours, minutes } = minsToHoursAndMins(event.time);
+            const eventStartMinutes = hours * 60 + minutes;
             const eventEndMinutes = eventStartMinutes + event.duration;
 
             if (eventStartMinutes < endMinutes && eventEndMinutes > startMinutes) {
@@ -241,10 +238,10 @@ const splitEvents = (events: IEvent[], resolution: number, threshold: number): I
     return periodsAndEvents;
 };
 
-const timeToPercent = (time: string, periodStart: number, periodLength: number): number => {
-    const [hour, minute] = time.split(':').map(Number);
-    const adjustedHour = hour - periodStart;
-    return ((adjustedHour * 60 + minute) * 50) / (periodLength * 30);
+const timeToPercent = (timeM: number, periodStart: number, periodLength: number): number => {
+    const { hours, minutes } = minsToHoursAndMins(timeM);
+    const adjustedHour = hours - periodStart;
+    return ((adjustedHour * 60 + minutes) * 50) / (periodLength * 30);
 };
 
 const durationToPercent = (duration: number, periodLength: number): number => {

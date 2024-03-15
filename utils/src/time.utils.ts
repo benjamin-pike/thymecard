@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { ITime } from "@thymecard/types";
 
 export const minsToHoursAndMins = (mins: number) => {
@@ -7,8 +8,8 @@ export const minsToHoursAndMins = (mins: number) => {
 };
 
 export const hoursAndMinsToMins = (time: ITime) => {
-    return time.hours * 60 + time.minutes;
-}
+	return time.hours * 60 + time.minutes;
+};
 
 export const formatDuration = (
 	duration: number,
@@ -44,4 +45,12 @@ export const formatDuration = (
 		case "long":
 			return output;
 	}
+};
+
+export const formatTimeM = (timeM: number) => {
+	const time = minsToHoursAndMins(timeM);
+
+	return DateTime.local()
+		.set({ hour: time.hours, minute: time.minutes })
+		.toLocaleString(DateTime.TIME_SIMPLE);
 };
