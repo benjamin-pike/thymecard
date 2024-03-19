@@ -1,8 +1,7 @@
 import { DateTime } from 'luxon';
-import { EEventDisplayFormat } from '../planner.types';
 import { formatClasses } from '@/lib/common.utils';
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
-import { MdOutlineFastfood, MdOutlineViewDay } from 'react-icons/md';
+import { MdOutlineFastfood } from 'react-icons/md';
 import { FiActivity, FiClock } from 'react-icons/fi';
 import styles from './controls.module.scss';
 import Tooltip from '@/components/common/tooltip/Tooltip';
@@ -12,13 +11,11 @@ interface IControlBarProps {
     displayMeals: boolean;
     displayActivities: boolean;
     displayTime: boolean;
-    eventDisplayFormat: EEventDisplayFormat;
     handleMonthBackward: () => void;
     handleMonthForward: () => void;
     toggleMeals: () => void;
     toggleActivities: () => void;
     toggleTime: () => void;
-    toggleDisplayFormat: () => void;
     handleToday: () => void;
 }
 
@@ -27,13 +24,11 @@ const ControlBar = ({
     displayMeals,
     displayActivities,
     displayTime,
-    eventDisplayFormat,
     handleMonthBackward,
     handleMonthForward,
     toggleMeals,
     toggleActivities,
     toggleTime,
-    toggleDisplayFormat,
     handleToday
 }: IControlBarProps) => {
     return (
@@ -49,14 +44,6 @@ const ControlBar = ({
                     <BsChevronRight />
                 </button>
             </div>
-            <button
-                className={formatClasses(styles, ['button', 'toggleEventDisplayFormat', eventDisplayFormat])}
-                data-tooltip-id="tooltip-toggle-view"
-                data-tooltip-content="Toggle View"
-                onClick={toggleDisplayFormat}
-            >
-                <MdOutlineViewDay />
-            </button>
             <button
                 className={styles.button}
                 data-active={displayTime}

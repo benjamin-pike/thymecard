@@ -1,0 +1,175 @@
+.popover {
+    margin: -1.5rem 0 0 0.75rem;
+}
+
+.event {
+    cursor: pointer;
+
+    position: absolute;
+    left: 2.5rem;
+
+    padding: 0.625rem 0.625rem 0.625rem 0.875rem;
+    width: calc(100% - 3rem);
+
+    font-size: $fs-12;
+    font-weight: 400;
+
+    border-radius: 0.1rem 0.625rem 0.625rem 0.1rem;
+
+    overflow: hidden;
+
+    transition: box-shadow 100ms ease;
+
+    &::before {
+        content: '';
+
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        width: 0.25rem;
+        height: 100%;
+    }
+
+    .content {
+        height: 100%;
+    }
+
+    @each $event, $color in $event-colors {
+        $light-adjusted-color: contrastize($color, 'light');
+        $dark-adjusted-color: contrastize($color, 'dark');
+
+        &[data-type='#{$event}'] {
+            color: $light-adjusted-color;
+            background: linear-gradient(to right, alpha($color, 0.05), alpha($color, 0.1));
+            box-shadow:
+                0 0 0 1px alpha($color, 0.25) inset,
+                0 0 0 0.25rem alpha($mono-light, 0.5) inset;
+
+            @include dark-mode {
+                color: $mono-light;
+                background: linear-gradient(to right, alpha($mono-800, 0.125), alpha($mono-800, 0.375));
+                box-shadow: 0 0 0 0.5px $mono-700 inset;
+
+                .top {
+                    svg {
+                        color: $mono-100;
+                    }
+                }
+            }
+
+            &::before {
+                background-color: $color;
+            }
+
+            &:hover {
+                box-shadow:
+                    0 0 0 1px alpha($color, 0.5) inset,
+                    0 0 0 0.25rem alpha($mono-light, 0.5) inset;
+
+                @include dark-mode {
+                    background: alpha($mono-800, 0.5);
+                    box-shadow: 0 0 0 1px alpha($mono-500, 0.375) inset;
+                }
+            }
+        }
+    }
+
+    .top {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        width: 100%;
+
+        .name {
+            flex-shrink: 1;
+
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            overflow: hidden;
+        }
+
+        .calories {
+            margin-left: auto;
+
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+
+            font-size: $fs-11;
+        }
+    }
+
+    .metadata {
+        position: absolute;
+        bottom: 0.625rem;
+        right: 0.625rem;
+
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        white-space: pre;
+        font-size: $fs-10;
+        font-weight: 400;
+
+        @include dark-mode {
+            color: $mono-light;
+        }
+
+        .time {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+
+            svg {
+                scale: 1.1;
+
+                path {
+                    scale: 0.95;
+                    stroke-width: 2;
+                }
+            }
+        }
+
+        .duration {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+
+            svg {
+                stroke-width: 4;
+
+                scale: 1.25;
+            }
+        }
+    }
+
+    .separator {
+        height: 0.625rem;
+        width: 1px;
+
+        background-color: currentColor;
+
+        @include dark-mode {
+            background-color: $mono-600;
+        }
+    }
+
+    &[data-width='narrow'] {
+        .top {
+            translate: 0 -0.15rem;
+        }
+        .metadata {
+            display: none;
+        }
+    }
+
+    &[data-width='medium'] {
+        .metadata {
+            display: none;
+        }
+    }
+}

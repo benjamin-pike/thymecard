@@ -42,9 +42,9 @@ export const usePlanAPI = () => {
         [callGetDays]
     );
 
-    const { mutateAsync: callCopyDay } = useMutation(
+    const { mutateAsync: callCopyEvents } = useMutation(
         async ({ originDate, targetDate, excludedEvents }: { originDate: string; targetDate: string; excludedEvents: string[] }) => {
-            const { data, status } = await sendRequest<{ day: IDay }>(ROUTES.DAYS.COPY_DAY, 'POST', {
+            const { data, status } = await sendRequest<{ day: IDay }>(ROUTES.DAYS.COPY_EVENTS, 'POST', {
                 params: {
                     date: originDate
                 },
@@ -55,20 +55,46 @@ export const usePlanAPI = () => {
             });
 
             if (status !== 201) {
-                throw new Error('Failed to copy the day');
+                throw new Error('Failed to copy events');
             }
 
             return data;
         }
     );
 
-    const copyDay = useCallback(
+    const copyEvents = useCallback(
         async (originDate: string, targetDate: string, excludedEvents: string[]) => {
-            const { day } = await callCopyDay({ originDate, targetDate, excludedEvents });
+            const { day } = await callCopyEvents({ originDate, targetDate, excludedEvents });
 
             return day;
         },
-        [callCopyDay]
+        [callCopyEvents]
+    );
+
+    const { mutateAsync: callClearEvents } = useMutation(async ({ date, excludedEvents }: { date: string; excludedEvents: string[] }) => {
+        const { data, status } = await sendRequest<{ day: IDay }>(ROUTES.DAYS.CLEAR_EVENTS, 'POST', {
+            params: {
+                date
+            },
+            body: {
+                excludedEvents
+            }
+        });
+
+        if (status !== 200) {
+            throw new Error('Failed to clear events');
+        }
+
+        return data;
+    });
+
+    const clearEvents = useCallback(
+        async (date: string, excludedEvents: string[]) => {
+            const { day } = await callClearEvents({ date, excludedEvents });
+
+            return day;
+        },
+        [callClearEvents]
     );
 
     const { mutateAsync: callCreateEvent } = useMutation(async ({ date, event }: { date: string; event: Client<IDayEventCreate> }) => {
@@ -351,7 +377,8 @@ export const usePlanAPI = () => {
 
     return {
         getDays,
-        copyDay,
+        copyEvents,
+        clearEvents,
         createEvent,
         updateEvent,
         deleteEvent,

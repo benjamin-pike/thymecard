@@ -1,16 +1,16 @@
 import { FC, memo } from 'react';
-import { LuSalad, LuBanana, LuIceCream2, LuCoffee, LuActivity, LuGlassWater, LuSoup, LuPizza } from 'react-icons/lu';
+import { LuSalad, LuBanana, LuIceCream2, LuCoffee, LuActivity, LuGlassWater, LuSoup, LuLeafyGreen } from 'react-icons/lu';
 import { EEventType } from '@thymecard/types';
 import styles from './event-icon.module.scss';
 
 const iconMap: Record<EEventType, any> = {
     [EEventType.BREAKFAST]: <LuCoffee />,
-    [EEventType.LUNCH]: <LuPizza />,
+    [EEventType.LUNCH]: <LuSoup />,
     [EEventType.DINNER]: <LuSalad />,
     [EEventType.SNACK]: <LuBanana />,
     [EEventType.DRINK]: <LuGlassWater />,
     [EEventType.DESSERT]: <LuIceCream2 />,
-    [EEventType.APPETIZER]: <LuSoup />,
+    [EEventType.APPETIZER]: <LuLeafyGreen />,
     [EEventType.ACTIVITY]: <LuActivity />
 };
 
@@ -26,11 +26,11 @@ const EventIcon: FC<IEventIconProps> = memo(({ className, type, radius, backgrou
     return (
         <div
             className={`${styles.icon}${className ? ' ' + className : ''}`}
-            data-event={type.toLowerCase()}
+            data-event={type}
             style={{
                 width: radius * 2 + 'rem',
                 height: radius * 2 + 'rem',
-                padding: background ? radius * 0 + 'rem' : 0
+                padding: background ? radius * 0.5 + 'rem' : 0
             }}
             data-background={background}
             data-dashed={dashed}

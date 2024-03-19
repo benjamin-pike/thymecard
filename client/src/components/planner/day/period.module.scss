@@ -1,0 +1,177 @@
+.period {
+    position: relative;
+
+    width: 100%;
+    height: 10rem;
+}
+
+.gap {
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    gap: calc(0.5rem + 1px);
+
+    width: 100%;
+    height: 2rem;
+
+    color: $mono-600;
+
+    @include dark-mode {
+        color: $mono-200;
+    }
+
+    &::before {
+        content: '';
+
+        position: absolute;
+        left: 0;
+        top: calc(50% - 0.5px);
+
+        height: 1px;
+        width: 100%;
+
+        background-color: $mono-200;
+
+        z-index: 0;
+
+        @include dark-mode {
+            background-color: alpha($mono-700, 0.5);
+        }
+    }
+
+    .pill {
+        display: flex;
+        align-items: center;
+
+        font-size: $fs-11;
+        font-weight: 400;
+        text-align: center;
+
+        background-color: $mono-light;
+        border: 1px solid $mono-200;
+        box-shadow: 0 0 0 0.5rem $mono-light;
+
+        width: fit-content;
+
+        padding: 0 0.75rem;
+
+        border-radius: 100vmax;
+
+        z-index: 1;
+
+        @include dark-mode {
+            background-color: $mono-900;
+            border: 1px solid $mono-700;
+            box-shadow: 0 0 0 0.5rem $mono-900;
+        }
+    }
+
+    .addButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: calc(2rem - 2px);
+        aspect-ratio: 1;
+
+        background-color: $mono-light;
+        border: 1px solid $mono-200;
+        box-shadow: 0 0 0 0.5rem $mono-light;
+
+        border-radius: 50%;
+
+        z-index: 1;
+
+        transition:
+            color 100ms ease,
+            background-color 100ms ease,
+            border 100ms ease;
+
+        @include dark-mode {
+            background-color: $mono-900;
+            border: 1px solid $mono-700;
+            box-shadow: 0 0 0 0.5rem $mono-900;
+        }
+
+        &:hover {
+            color: $blue;
+            background-color: mix($mono-light, $blue, 90%);
+            border: 1px solid mix($mono-light, $blue, 50%);
+
+            @include dark-mode {
+                color: $mono-light;
+                background-color: $mono-800;
+                border: 1px solid $mono-500;
+            }
+        }
+
+        svg {
+            scale: 0.8;
+
+            path {
+                stroke-width: 7.5;
+            }
+        }
+    }
+}
+
+.hour {
+    position: absolute;
+
+    width: 100%;
+
+    .label {
+        position: absolute;
+        left: 0;
+
+        color: $mono-600;
+        background-color: $mono-light;
+        font-weight: 400;
+        font-size: $fs-10;
+        text-align: center;
+
+        translate: 0 -50%;
+
+        @include dark-mode {
+            color: $mono-light;
+            background-color: $mono-900;
+        }
+    }
+
+    .line {
+        position: absolute;
+        right: 0;
+
+        width: calc(100% - 2rem);
+        height: 1px;
+
+        background-color: $mono-200;
+
+        @include dark-mode {
+            background-color: alpha($mono-700, 0.75);
+            opacity: 0.5;
+        }
+
+        @each $event, $color in $event-colors {
+            $light-adjusted-color: contrastize($color, 'light');
+            $dark-adjusted-color: contrastize($color, 'dark');
+
+            &[data-coinciding-event='#{$event}'] {
+                background: linear-gradient(
+                    to right,
+                    $mono-200 0%,
+                    $mono-200 0.5rem,
+                    alpha($light-adjusted-color, 0.075) 0.5rem,
+                    alpha($light-adjusted-color, 0.075) calc(100% - 0.5rem),
+                    $mono-200 calc(100% - 0.5rem),
+                    $mono-200 100%
+                );
+
+                @include dark-mode {
+                    background: alpha($mono-700, 0.75);
+                }
+            }
+        }
+    }
+}

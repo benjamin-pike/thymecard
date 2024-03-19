@@ -6,7 +6,7 @@ import ModalCard from '@/components/common/modal-card/ModalCard';
 import DropdownWrapper from '@/components/wrappers/dropdown/DropdownWrapper';
 
 import { useDay } from '@/hooks/plan/useDay';
-import { usePlan } from '../../../providers/PlanProvider';
+import { usePlan } from '../../providers/PlanProvider';
 import { useDropdown } from '@/hooks/common/useDropdown';
 import { ModalState } from '@/hooks/common/useModal';
 
@@ -74,7 +74,7 @@ const EditEventModal: FC<IEditEventModalProps> = ({ state, handleCloseModal }) =
     );
 
     const handleUpdateEvent = useCallback(async () => {
-        if (!selectedType || !selectedTime || !selectedDuration || !selectedItems.length) {
+        if (!date || !selectedType || !selectedTime || !selectedDuration || !selectedItems.length) {
             return;
         }
 
@@ -98,7 +98,7 @@ const EditEventModal: FC<IEditEventModalProps> = ({ state, handleCloseModal }) =
         }
 
         try {
-            await updateEvent(date, eventId, {
+            await updateEvent(date?.toISODate(), eventId, {
                 type: isTypeChanged ? selectedType : undefined,
                 time: isTimeChanged ? selectedTimeM : undefined,
                 duration: isDurationChanged ? selectedDurationM : undefined,

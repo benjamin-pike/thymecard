@@ -1,69 +1,81 @@
 .wrapper {
-    position: absolute;
+    height: 100%;
 
-    padding: 0.5rem;
-
-    z-index: 999;
+    .trigger {
+        height: 100%;
+    }
 
     .container {
-        position: relative;
+        position: absolute;
 
-        background-color: $mono-light;
-        box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.05);
-        border: 1px solid alpha($mono-700, 0.1);
-        border-radius: 0.5rem;
+        padding: 0.5rem;
 
-        white-space: nowrap;
+        z-index: 999;
 
-        @include dark-mode {
-            background-color: $mono-dark;
-            border: 1px solid $mono-700;
+        .content {
+            position: relative;
+
+            background-color: $mono-light;
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid alpha($mono-700, 0.1);
+            border-radius: 0.5rem;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            @include dark-mode {
+                background-color: $mono-dark;
+                border: 1px solid $mono-700;
+            }
+
+            &[data-state='open'] {
+                animation: open 200ms ease;
+            }
+
+            &[data-state='closing'] {
+                animation: close 200ms ease forwards;
+            }
         }
 
-        &[data-state='open'] {
-            animation: open 200ms ease;
+        $placements: (
+            'left': right,
+            'left-start': top right,
+            'left-end': bottom right,
+            'right': left,
+            'right-start': top left,
+            'right-end': bottom left,
+            'top': bottom,
+            'top-start': left bottom,
+            'top-end': right bottom,
+            'bottom': top,
+            'bottom-start': left top,
+            'bottom-end': right top
+        );
+
+        @each $placement, $origin in $placements {
+            &[data-popper-placement='#{$placement}'] {
+                .content {
+                    transform-origin: $origin;
+                }
+            }
         }
 
-        &[data-state='closing'] {
-            animation: close 200ms ease forwards;
-        }
-    }
+        $placements: (
+            'left-start': top,
+            'left-end': bottom,
+            'right-start': top,
+            'right-end': bottom,
+            'top-start': left,
+            'top-end': right,
+            'bottom-start': left,
+            'bottom-end': right
+        );
 
-    $placements: (
-        'left': right,
-        'left-start': top right,
-        'left-end': bottom right,
-        'right': left,
-        'right-start': top left,
-        'right-end': bottom left,
-        'top': bottom,
-        'top-start': left bottom,
-        'top-end': right bottom,
-        'bottom': top,
-        'bottom-start': left top,
-        'bottom-end': right top
-    );
-
-    @each $placement, $origin in $placements {
-        &[data-popper-placement='#{$placement}'] .container {
-            transform-origin: $origin;
-        }
-    }
-
-    $placements: (
-        'left-start': top,
-        'left-end': bottom,
-        'right-start': top,
-        'right-end': bottom,
-        'top-start': left,
-        'top-end': right,
-        'bottom-start': left,
-        'bottom-end': right
-    );
-
-    @each $placement, $padding in $placements {
-        &[data-popper-placement='#{$placement}'] {
-            padding-#{$padding}: 0;
+        @each $placement, $padding in $placements {
+            &[data-popper-placement='#{$placement}'] {
+                padding-#{$padding}: 0;
+            }
         }
     }
 }

@@ -9,11 +9,13 @@ import { IPagedResult } from '../../lib/types/common.types';
 import {
     ErrorCode,
     IDay,
-    IDayCreate, IDayEventCreate,
+    IDayCreate,
+    IDayEventCreate,
     IDayEventItemUpdate,
     IDayEventUpdate,
     IDayUpdate,
-    isArrayOf, isUuid,
+    isArrayOf,
+    isUuid,
     isValidMongoId
 } from '@thymecard/types';
 
@@ -28,6 +30,7 @@ export interface IDayController {
     getDay(context: IAuthenticatedContext, date: unknown): Promise<IDay>;
     deleteDay(context: IAuthenticatedContext, date: unknown): Promise<void>;
     copyDay(context: IAuthenticatedContext, originDate: unknown, targetDate: unknown, excludedEvents: unknown): Promise<IDay>;
+    clearDay(context: IAuthenticatedContext, date: unknown, excludedEvents: unknown): Promise<IDay>;
     createEvent(context: IAuthenticatedContext, date: unknown, resource: unknown): Promise<IDay>;
     updateEvent(context: IAuthenticatedContext, date: unknown, eventId: string, resource: unknown): Promise<IDay>;
     deleteEvent(context: IAuthenticatedContext, date: unknown, eventId: string): Promise<void>;
@@ -178,6 +181,24 @@ export class DayController implements IDayController {
         }
 
         return this.dayService.copyDay(originDate, targetDate, context.userId, excludedEvents);
+    }
+
+    public async clearDay(context: IAuthenticatedContext, date: unknown, excludedEvents: unknown): Promise<IDay> {
+        if (!isISODateString(date)) {
+            throw new UnprocessableError(ErrorCode.InvalidDateString, 'Invalid date', {
+                origin: 'DayController.deleteDay',
+                data: { date }
+            });
+        }
+
+        if (!isArrayOf(excludedEvents, isValidMongoId)) {
+            throw new UnprocessableError(ErrorCode.InvalidParameter, 'Invalid excluded events', {
+                origin: 'DayController.deleteDay',
+                data: { excludedEvents }
+            });
+        }
+
+        return this.dayService.clearDay(context.userId, date, excludedEvents);
     }
 
     public async createEvent(context: IAuthenticatedContext, date: unknown, resource: unknown): Promise<IDay> {

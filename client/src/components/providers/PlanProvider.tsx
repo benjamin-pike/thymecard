@@ -27,13 +27,14 @@ interface IPlanContext {
     endDate: DateTime;
     handleFetchDays: (startDate: DateTime, count: number) => Promise<void>;
     handleSelectDay: (date: DateTime) => void;
-    handleClearDay: () => Promise<void>;
+    handleDeselectDay: () => Promise<void>;
     handleMonthBackward: () => void;
     handleMonthForward: () => void;
     handleDayForward: () => void;
     handleDayBackward: () => void;
     handleToday: () => void;
-    handleCopyDay: (targetDate: DateTime, excludedEvents: string[]) => Promise<void>;
+    handleCopyEvents: (targetDate: DateTime, excludedEvents: string[]) => Promise<void>;
+    handleClearEvents: (excludedEvents: string[]) => Promise<void>;
     handleSelectEvent: (eventId: string) => void;
     handleCreateEvent: (resource: IEventCreateResource) => Promise<void>;
     handleUpdateEvent: (date: string, eventId: string, update: Client<IDayEventUpdate>) => Promise<void>;
@@ -82,7 +83,17 @@ interface IPlanProviderProps {
 const TODAY = DateTime.now().startOf('day');
 
 const PlanProvider: FC<IPlanProviderProps> = ({ children }) => {
-    const { getDays, copyDay, createEvent, updateEvent, deleteEvent, createEventBookmark, updateEventItem, deleteEventItem } = usePlanAPI();
+    const {
+        getDays,
+        copyEvents,
+        clearEvents,
+        createEvent,
+        updateEvent,
+        deleteEvent,
+        createEventBookmark,
+        updateEventItem,
+        deleteEventItem
+    } = usePlanAPI();
 
     const [plan, setPlan] = useState<Plan>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -189,7 +200,7 @@ const PlanProvider: FC<IPlanProviderProps> = ({ children }) => {
         [selectedMonth.month]
     );
 
-    const handleClearDay = useCallback(async () => {
+    const handleDeselectDay = useCallback(async () => {
         setSelectedDate(null);
     }, []);
 
@@ -230,15 +241,15 @@ const PlanProvider: FC<IPlanProviderProps> = ({ children }) => {
         setSelectedMonth(TODAY);
     }, [handleSelectDay]);
 
-    const handleCopyDay = useCallback(
+    const handleCopyEvents = useCallback(
         async (targetDate: DateTime, excludedEvents: string[]) => {
             if (!selectedDay.date) {
                 return;
             }
 
-            const day = await copyDay(selectedDay.date.toISODate(), targetDate.toISODate(), excludedEvents);
+            const day = await copyEvents(selectedDay.date.toISODate(), targetDate.toISODate(), excludedEvents);
 
-            const dayIndex = DateTime.fromISO(day.date).diff(TODAY, 'days').days;
+            const dayIndex = DateTime.fromISO(day.date).diff(startDate, 'days').days;
 
             if (dayIndex >= plan.length) {
                 return;
@@ -248,7 +259,28 @@ const PlanProvider: FC<IPlanProviderProps> = ({ children }) => {
 
             setPlan(updatedPlan);
         },
-        [copyDay, plan, selectedDay]
+        [selectedDay.date, copyEvents, startDate, plan]
+    );
+
+    const handleClearEvents = useCallback(
+        async (excludedEvents: string[]) => {
+            if (!selectedDay.date) {
+                return;
+            }
+
+            const day = await clearEvents(selectedDay.date.toISODate(), excludedEvents);
+
+            const dayIndex = DateTime.fromISO(day.date).diff(startDate, 'days').days;
+
+            if (dayIndex >= plan.length) {
+                return;
+            }
+
+            const updatedPlan = plan.map((d, i) => (i === dayIndex ? day : d));
+
+            setPlan(updatedPlan);
+        },
+        [selectedDay.date, clearEvents, plan]
     );
 
     const handleCreateEvent = useCallback(
@@ -401,8 +433,9 @@ const PlanProvider: FC<IPlanProviderProps> = ({ children }) => {
         selectedEvent,
         handleFetchDays,
         handleSelectDay,
-        handleCopyDay,
-        handleClearDay,
+        handleCopyEvents,
+        handleClearEvents,
+        handleDeselectDay,
         handleMonthBackward,
         handleMonthForward,
         handleDayForward,

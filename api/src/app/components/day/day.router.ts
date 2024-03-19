@@ -63,6 +63,18 @@ export const dayRouter = (dependencies: IDependencies) => {
             })
         )
         .post(
+            '/:date/clear',
+            errorHandler(async (req, res) => {
+                const context = req.context.getAuthContext();
+                const { date } = req.params;
+                const { excludedEvents } = req.body;
+
+                const day = await dayController.clearDay(context, date, excludedEvents);
+
+                res.status(HTTP_STATUS_CODES.OK).json({ day });
+            })
+        )
+        .post(
             '/:date/events',
             errorHandler(async (req, res) => {
                 const context = req.context.getAuthContext();
@@ -106,10 +118,10 @@ export const dayRouter = (dependencies: IDependencies) => {
                 const context = req.context.getAuthContext();
                 const { date, eventId, itemId } = req.params;
                 await dayController.deleteEventItem(context, date, eventId, itemId);
-                
+
                 res.status(HTTP_STATUS_CODES.NO_CONTENT).send();
             })
-        )
+        );
 
     return router;
 };
@@ -121,9 +133,10 @@ export const dayPermissions: IRoutePermissions = {
     'PUT /days/:date': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
     'DELETE /days/:date': [{ scope: AccessScope.DAY, permission: Permission.DELETE }],
     'POST /days/:date/copy': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
+    'POST /days/:date/clear': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
     'POST /days/:date/events': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
     'PUT /days/:date/events/:eventId': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
     'DELETE /days/:date/events/:eventId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }],
     'PUT /days/:date/events/:eventId/items/:itemId': [{ scope: AccessScope.DAY, permission: Permission.WRITE }],
-    'DELETE /days/:date/events/:eventId/items/:itemId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }],
+    'DELETE /days/:date/events/:eventId/items/:itemId': [{ scope: AccessScope.DAY, permission: Permission.DELETE }]
 };
