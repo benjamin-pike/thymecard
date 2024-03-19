@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import ModalCard from '@/components/common/modal-card/ModalCard';
 import Checkbox from '@/components/common/checkbox/Checkbox';
 
-import { usePlan } from '../../../providers/PlanProvider';
+import { usePlan } from '../../providers/PlanProvider';
 import { ModalState } from '@/hooks/common/useModal';
 
 import { ICONS } from '@/assets/icons';

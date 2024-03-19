@@ -4,27 +4,27 @@ import { DateTime } from 'luxon';
 import ModalCard from '@/components/common/modal-card/ModalCard';
 import EventMetadataField, { EEventMetadataFieldType } from './MetadataField';
 
-import { usePlan } from '../../../providers/PlanProvider';
+import { usePlan } from '../../providers/PlanProvider';
 import { ModalState } from '@/hooks/common/useModal';
 
 import { ICONS } from '@/assets/icons';
 import { capitalize } from '@/lib/string.utils';
 import { createToast } from '@/lib/toast/toast.utils';
 
-import styles from './copy-day-modal.module.scss';
+import styles from './copy-events-modal.module.scss';
 
 const CalendarIcon = ICONS.common.planner;
 const WarningIcon = ICONS.common.warning;
 
-interface ICopyEventModalProps {
+interface ICopyEventsModalProps {
     state: ModalState;
     handleCloseModal: () => void;
 }
 
-const CopyEventModal: FC<ICopyEventModalProps> = ({ state, handleCloseModal }) => {
-    const { selectedDay, handleCopyDay } = usePlan();
+const CopyEventsModal: FC<ICopyEventsModalProps> = ({ state, handleCloseModal }) => {
+    const { selectedDay, handleCopyEvents } = usePlan();
 
-    const originDate = useMemo(() => DateTime.fromISO(selectedDay.date), [selectedDay.date]);
+    const originDate = useMemo(() => selectedDay.date, [selectedDay.date]);
     const [targetDate, setTargetDate] = useState<DateTime>();
     const [excludedEvents, setExcludedEvents] = useState<string[]>([]);
 
@@ -55,14 +55,14 @@ const CopyEventModal: FC<ICopyEventModalProps> = ({ state, handleCloseModal }) =
         setIsCopyLoading(true);
 
         try {
-            await handleCopyDay(targetDate, excludedEvents);
+            await handleCopyEvents(targetDate, excludedEvents);
             handleCloseModal();
         } catch (err: any) {
             createToast('error', err.message);
         }
 
         setIsCopyLoading(false);
-    }, [handleCopyDay, targetDate, excludedEvents, handleCloseModal]);
+    }, [handleCopyEvents, targetDate, excludedEvents, handleCloseModal]);
 
     if (!selectedDay?.date) return null;
 
@@ -99,7 +99,7 @@ const CopyEventModal: FC<ICopyEventModalProps> = ({ state, handleCloseModal }) =
                         icon={<CalendarIcon className={styles.originIcon} />}
                         label="Origin Day"
                         labelWidth={6.5}
-                        selectedDate={originDate}
+                        selectedDate={originDate ?? undefined}
                         popoverId="popover-origin-date"
                         disabled={true}
                     />
@@ -142,4 +142,4 @@ const CopyEventModal: FC<ICopyEventModalProps> = ({ state, handleCloseModal }) =
     );
 };
 
-export default CopyEventModal;
+export default CopyEventsModal;

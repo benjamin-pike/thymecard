@@ -16,7 +16,7 @@
 @function contrastize($color, $theme) {
     @if $theme == 'dark' {
         @if $color == $red {
-            @return lighten($color, 5%);
+            @return lighten($color, 0%);
         } @else if $color == $aqua {
             @return lighten($color, 5%);
         } @else if $color == $blue {

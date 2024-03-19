@@ -1,0 +1,238 @@
+.event {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    padding: 1rem;
+
+    .header {
+        display: flex;
+        align-items: center;
+
+        .type {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            padding: 0.125rem 1rem 0 0;
+
+            width: fit-content;
+
+            font-weight: 500;
+
+            border-radius: 100vmax;
+
+            p {
+                font-size: $fs-13;
+            }
+        }
+
+        .buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            margin-left: auto;
+
+            button {
+                display: grid;
+                place-items: center;
+
+                margin-left: auto;
+
+                height: 2rem;
+                width: 2rem;
+
+                border-radius: 100vmax;
+
+                transition:
+                    color 100ms ease,
+                    background-color 100ms ease,
+                    border-color 100ms ease;
+
+                &.edit {
+                    svg {
+                        scale: 1.35;
+                        translate: 5% -5%;
+                    }
+                }
+
+                &.bookmark {
+                    svg {
+                        scale: 1.25;
+
+                        path {
+                            stroke-width: 2.5;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .metadata {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        white-space: pre;
+        font-size: $fs-11;
+        font-weight: 400;
+
+        .metric {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            padding: 0.5rem 0.75rem;
+
+            border-radius: 100vmax;
+
+            &[data-type='time'] {
+                svg {
+                    scale: 1.1;
+
+                    path {
+                        scale: 0.95;
+                        stroke-width: 2;
+                    }
+                }
+            }
+
+            &[data-type='duration'] {
+                svg {
+                    stroke-width: 4;
+
+                    scale: 1.25;
+                }
+            }
+
+            &[data-type='calories'] {
+                svg {
+                    scale: 1.15;
+                }
+            }
+        }
+    }
+
+    .items {
+        display: flex;
+        flex-direction: column;
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+
+            padding: 0.625rem 0.75rem;
+
+            font-size: $fs-12;
+
+            border-radius: 0.375rem;
+
+            .name {
+                margin-right: 0.5rem;
+
+                max-width: 15rem;
+                
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            span {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+
+                &.calories {
+                    margin-left: auto;
+                }
+            }
+        }
+    }
+
+    .separator {
+        width: 1px;
+        height: 0.75rem;
+    }
+
+    @each $event, $color in $event-colors {
+        &[data-type='#{$event}'] {
+            $light-adjusted-color: contrastize($color, 'light');
+
+            border-radius: 0.5rem;
+
+            @include dark-mode {
+                background: linear-gradient(to right, alpha($mono-800, 0.125), alpha($mono-800, 0.5));
+            }        
+
+            .header {
+                .type {
+                    background: linear-gradient(to right, alpha($light-adjusted-color, 0), alpha($light-adjusted-color, 0.075));
+
+                    @include dark-mode {
+                        background: linear-gradient(to right, alpha($mono-800, 0.125), alpha($mono-800, 0.75));
+                    }
+                }
+
+                .buttons {
+                    button {
+                        border: 1px solid alpha($light-adjusted-color, 0.25);
+
+                        @include dark-mode {
+                            color: $mono-light;
+                            border-color: $mono-700;
+                        }
+
+                        &:hover {
+                            color: $mono-light;
+                            background-color: $light-adjusted-color;
+                            border-color: 1px solid $light-adjusted-color;
+
+                            @include dark-mode {
+                                color: $mono-light;
+                                background-color: $mono-800;
+                                border: 1px solid $mono-500;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .metadata {
+                @include dark-mode {
+                    color: $mono-light;
+                }
+
+                .metric {
+                    border: 1px solid alpha($light-adjusted-color, 0.25);
+
+                    @include dark-mode {
+                        border: 1px solid $mono-700;
+                    }
+                }
+            }
+
+            .items {
+                .item {
+                    &:nth-of-type(odd) {
+                        background-color: alpha($light-adjusted-color, 0.05);
+
+                        @include dark-mode {
+                            background-color: alpha($mono-800, 1);
+                        }
+                    }
+                }
+            }
+
+            .separator {
+                background-color: alpha($light-adjusted-color, 0.5);
+
+                @include dark-mode {
+                    background-color: $mono-600;
+                }
+            }
+        }
+    }
+}

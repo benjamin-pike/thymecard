@@ -65,13 +65,18 @@ const Popover: FC<IPopoverProps> = ({ className, children, content, placement, s
 
     return (
         <PopoverContext.Provider value={{ handleClosePopover }}>
-            <div ref={containerRef} className={styles.container + className ? ` ${className}` : ''}>
-                <div ref={setReferenceElement} className={styles.popoverTrigger} onClick={handleOpenPopover}>
+            <div ref={containerRef} className={styles.wrapper}>
+                <div ref={setReferenceElement} className={styles.trigger} onClick={handleOpenPopover}>
                     {children}
                 </div>
                 {state !== 'closed' && content && (
-                    <div ref={setPopperElement} className={styles.wrapper} style={popperStyles.popper} {...attributes.popper}>
-                        <div className={styles.container} data-state={state}>
+                    <div
+                        ref={setPopperElement}
+                        className={styles.container + (className ? ` ${className}` : '')}
+                        style={popperStyles.popper}
+                        {...attributes.popper}
+                    >
+                        <div className={styles.content} data-state={state}>
                             {content}
                         </div>
                     </div>

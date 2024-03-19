@@ -1,11 +1,9 @@
 import { FC, useEffect, useMemo } from 'react';
 import { DateTime } from 'luxon';
-import { EEventDisplayFormat } from '../planner.types';
-import styles from './month.module.scss';
-import { Client, EEventType, IDay } from '@thymecard/types';
 import { usePlan } from '@/components/providers/PlanProvider';
-import { formatTimeM } from '@thymecard/utils';
+import DayCell from './DayCell';
 import LoadingDots from '@/components/common/loading-dots/LoadingDots';
+import styles from './month.module.scss';
 
 interface IMonthProps {
     currentDay: DateTime | null;
@@ -13,19 +11,21 @@ interface IMonthProps {
     displayMeals: boolean;
     displayActivities: boolean;
     displayTime: boolean;
-    eventDisplayFormat: EEventDisplayFormat;
-    handleDayClick: (date: DateTime) => void;
+    handleDayClick: (date: DateTime) => () => void;
+    handleDayDoubleClick: (date: DateTime) => () => void;
+    handleEventClick: (eventId: string) => () => void;
 }
 
-const Month = ({
+const Month: FC<IMonthProps> = ({
     currentDay,
     currentMonth,
     displayMeals,
     displayActivities,
-    eventDisplayFormat,
     displayTime,
-    handleDayClick
-}: IMonthProps) => {
+    handleDayClick,
+    handleDayDoubleClick,
+    handleEventClick
+}) => {
     const { plan, startDate, endDate, isLoading, handleFetchDays } = usePlan();
 
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -70,6 +70,7 @@ const Month = ({
 
                         const isVisibleWhenTwoColumns = isInDivisibleSubArray(dates.flat(), index, 2);
                         const isVisibleWhenThreeColumns = isInDivisibleSubArray(dates.flat(), index, 3);
+
                         const dayCellProps = {
                             day,
                             date,
@@ -80,10 +81,11 @@ const Month = ({
                             displayMeals,
                             displayActivities,
                             displayTime,
-                            eventDisplayFormat,
                             isVisibleWhenTwoColumns,
                             isVisibleWhenThreeColumns,
-                            handleDayClick
+                            handleDayClick,
+                            handleDayDoubleClick,
+                            handleEventClick
                         };
 
                         return <DayCell key={index} {...dayCellProps} />;
@@ -95,86 +97,6 @@ const Month = ({
 };
 
 export default Month;
-
-interface IDayCellProps {
-    day: Client<IDay> | null;
-    date: DateTime;
-    index: number;
-    cellCount: number;
-    currentDay: DateTime | null;
-    currentMonth: DateTime;
-    displayMeals: boolean;
-    displayActivities: boolean;
-    displayTime: boolean;
-    eventDisplayFormat: EEventDisplayFormat;
-    isVisibleWhenTwoColumns: boolean;
-    isVisibleWhenThreeColumns: boolean;
-    handleDayClick: (date: DateTime) => void;
-}
-
-const DayCell: FC<IDayCellProps> = ({
-    day,
-    date,
-    currentDay,
-    currentMonth,
-    displayMeals,
-    displayActivities,
-    displayTime,
-    eventDisplayFormat,
-    isVisibleWhenTwoColumns,
-    isVisibleWhenThreeColumns,
-    handleDayClick
-}) => {
-    const isCurrentDay = currentDay && date.hasSame(currentDay, 'day');
-    const isCurrentMonth = date.month === currentMonth.month;
-    const isToday = date.hasSame(DateTime.local(), 'day');
-    const isFirstDayOfCurrentMonth = isCurrentMonth && date.day === 1;
-    const isLastDayOfCurrentMonth = isCurrentMonth && date.day === date.daysInMonth;
-    const displayMonth = date.day === 1;
-
-    return (
-        <div
-            key={date.toFormat('yyyy-MM-dd')}
-            className={styles.cell}
-            data-today={isToday}
-            data-current-day={isCurrentDay}
-            data-current-month={isCurrentMonth}
-            data-populated={!!day?.events.length}
-            data-hidden-two-columns={!isVisibleWhenTwoColumns}
-            data-hidden-three-columns={!isVisibleWhenThreeColumns}
-            data-first={isFirstDayOfCurrentMonth}
-            data-last={isLastDayOfCurrentMonth}
-            data-format={eventDisplayFormat}
-            onClick={() => handleDayClick(date)}
-        >
-            <p className={styles.date}>
-                {displayMonth ? `${date.monthShort} ${date.day}` : date.day} <span className={styles.dayName}> • {date.weekdayShort}</span>
-            </p>
-            {day?.events.length ? (
-                day.events.map((event, k) => {
-                    if (event.type !== EEventType.ACTIVITY && !displayMeals) {
-                        return null;
-                    }
-
-                    if (event.type === EEventType.ACTIVITY && !displayActivities) {
-                        return null;
-                    }
-
-                    return (
-                        <div key={k} className={styles.event} data-event={event.type} data-format={eventDisplayFormat}>
-                            <p className={styles.eventName}>{event.items.map((item) => item.name).join(', ')}</p>
-                            {displayTime && <p className={styles.eventTime}>{formatTimeM(event.time)}</p>}
-                        </div>
-                    );
-                })
-            ) : (
-                <p className={styles.noEvents}>
-                    No <strong>Planned</strong> Events
-                </p>
-            )}
-        </div>
-    );
-};
 
 const generateMonth = (month: DateTime): DateTime[] => {
     const firstDayOfCurrentMonth = month.startOf('month');

@@ -3,10 +3,10 @@ import { DateTime } from 'luxon';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 
-import AddEventModal from './modals/AddEventModal';
-import BookmarkEventModal from './modals/BookmarkEventModal';
-import CopyDayModal from './modals/CopyDayModal';
-import EditEventModal from './modals/EditEventModal';
+import AddEventModal from '../../planner/modals/AddEventModal';
+import BookmarkEventModal from '../../planner/modals/BookmarkEventModal';
+import CopyDayModal from '../../planner/modals/CopyEventsModal';
+import EditEventModal from '../../planner/modals/EditEventModal';
 import EventBookmarkQuickSearch from '@/components/quick-search/meal-event-bookmark/MealEventBookmarkQuickSearch';
 import Event from './Event';
 import Tooltip from '@/components/common/tooltip/Tooltip';
@@ -15,12 +15,12 @@ import ScrollWrapper from '@/components/wrappers/scroll/ScrollWrapper';
 import { usePlan } from '../../providers/PlanProvider';
 import { useModal } from '@/hooks/common/useModal';
 import { useQuickSearch } from '@/hooks/common/useQuickSearch';
+import { useMount } from '@/hooks/common/useMount';
 
 import { ICONS } from '@/assets/icons';
 import { Client, IMealEventBookmark, extractMealEvents, isDefined } from '@thymecard/types';
 
 import styles from './plan.module.scss';
-import { useMount } from '@/hooks/common/useMount';
 
 const AddIcon = ICONS.common.plus;
 const CopyIcon = ICONS.common.copy;
@@ -283,7 +283,10 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
                     key={isAddEventModalClosed.toString()}
                     state={addEventModalState}
                     date={date}
-                    bookmarkedEvent={bookmarkedEvent}
+                    type={bookmarkedEvent?.type}
+                    time={bookmarkedEvent?.time}
+                    duration={bookmarkedEvent?.duration}
+                    items={bookmarkedEvent?.items}
                     handleCloseModal={handleCloseAddEventModal}
                 />
             )}

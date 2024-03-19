@@ -7,11 +7,11 @@ import ModalCard from '@/components/common/modal-card/ModalCard';
 import DropdownWrapper from '@/components/wrappers/dropdown/DropdownWrapper';
 
 import { useDay } from '@/hooks/plan/useDay';
-import { usePlan } from '../../../providers/PlanProvider';
+import { usePlan } from '../../providers/PlanProvider';
 import { useDropdown } from '@/hooks/common/useDropdown';
 import { ModalState } from '@/hooks/common/useModal';
 
-import { Client, EEventType, IMealEventBookmark } from '@thymecard/types';
+import { Client, EEventType, IMealEventItem } from '@thymecard/types';
 import { ICONS } from '@/assets/icons';
 import { capitalize } from '@/lib/string.utils';
 import { createToast } from '@/lib/toast/toast.utils';
@@ -27,13 +27,16 @@ const DurationIcon = ICONS.common.duration;
 interface IAddEventModalProps {
     state: ModalState;
     date: DateTime;
-    bookmarkedEvent?: Client<IMealEventBookmark> | null;
+    type?: EEventType;
+    time?: number;
+    duration?: number;
+    items?: Client<IMealEventItem>[];
     handleCloseModal: () => void;
 }
 
 const MEAL_TYPES = Object.values(EEventType).filter((type) => type !== EEventType.ACTIVITY);
 
-const AddEventModal: FC<IAddEventModalProps> = ({ state, date, bookmarkedEvent, handleCloseModal }) => {
+const AddEventModal: FC<IAddEventModalProps> = ({ state, date, type, time, duration, items, handleCloseModal }) => {
     const { handleCreateEvent: createEvent } = usePlan();
     const {
         selectedType,
@@ -53,10 +56,10 @@ const AddEventModal: FC<IAddEventModalProps> = ({ state, date, bookmarkedEvent, 
         handleLinkRecipe
     } = useDay({
         date,
-        type: bookmarkedEvent?.type,
-        time: bookmarkedEvent?.time ? minsToHoursAndMins(bookmarkedEvent.time) : undefined,
-        duration: bookmarkedEvent?.duration ? minsToHoursAndMins(bookmarkedEvent.duration) : undefined,
-        items: bookmarkedEvent?.items
+        type: type,
+        time: time ?? time ? minsToHoursAndMins(time) : undefined,
+        duration: duration ? minsToHoursAndMins(duration) : undefined,
+        items: items
     });
 
     const [isCreateLoading, setIsCreateLoading] = useState(false);

@@ -26,6 +26,7 @@ export interface IDayService {
     getDay(date: string, userId: string): Promise<IDay>;
     deleteDay(date: string, userId: string): Promise<void>;
     copyDay(originDate: string, targetDate: string, userId: string, excludedEvents: string[]): Promise<IDay>;
+    clearDay(userId: string, date: string, excludedEvents: string[]): Promise<IDay>;
     createEvent(date: string, userId: string, event: IDayEventCreate): Promise<IDay>;
     updateEvent(date: string, userId: string, eventId: string, update: IDayEventUpdate): Promise<IDay>;
     deleteEvent(date: string, userId: string, eventId: string): Promise<void>;
@@ -117,6 +118,24 @@ export class DayService implements IDayService {
         );
 
         return await dayRepository.findOneAndUpdate({ date: new Date(targetDate), userId }, { events }, { upsert: true });
+    }
+
+    public async clearDay(userId: string, date: string, excludedEvents: string[]): Promise<IDay> {
+        const query = { date: new Date(date), userId };
+        const update = {
+            $pull: { events: { _id: { $nin: excludedEvents } } }
+        };
+
+        const updatedDay = await dayRepository.findOneAndUpdate(query, update);
+
+        if (!updatedDay) {
+            throw new NotFoundError(ErrorCode.DayNotFound, 'Day not found', {
+                origin: 'DayService.clearDay',
+                data: { date, userId, excludedEvents }
+            });
+        }
+
+        return updatedDay;
     }
 
     public async createEvent(date: string, userId: string, event: IDayEventCreate): Promise<IDay> {
