@@ -330,7 +330,7 @@ export class RecipeService implements IRecipeService {
                     break;
                 }
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         }
 

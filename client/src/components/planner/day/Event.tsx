@@ -48,8 +48,11 @@ const Event: FC<IEventProps> = ({ event, period, handleOpenEditEventModal, handl
                         handleOpenBookmarkEventModal={handleOpenBookmarkEventModal}
                     />
                 }
-                placement="right-start"
+                placement="right"
+                fallbackPlacement="right"
                 strategy="fixed"
+                absoluteTrigger={true}
+                borderRadius={1.25}
             >
                 <div className={styles.content}>
                     <span className={styles.top}>
@@ -59,11 +62,11 @@ const Event: FC<IEventProps> = ({ event, period, handleOpenEditEventModal, handl
                     </span>
                     <p className={styles.metadata}>
                         <span className={styles.time}>
-                            <TimeIcon /> {formatTimeM(event.time)}
+                            <TimeIcon className={styles.icon} /> {formatTimeM(event.time)}
                         </span>
                         <div className={styles.separator} />
                         <span className={styles.duration}>
-                            <DurationIcon /> {formatDuration(event.duration, 'medium')}
+                            <DurationIcon className={styles.icon} /> {formatDuration(event.duration, 'medium')}
                         </span>
                     </p>
                 </div>

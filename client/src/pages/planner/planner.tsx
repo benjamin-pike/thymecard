@@ -17,8 +17,11 @@ import CopyEventsModal from '@/components/planner/modals/CopyEventsModal';
 import ClearEventsModal from '@/components/planner/modals/ClearEventsModal';
 import EditEventModal from '@/components/planner/modals/EditEventModal';
 import BookmarkEventModal from '@/components/planner/modals/BookmarkEventModal';
+import EventBookmarkQuickSearch from '@/components/quick-search/meal-event-bookmark/MealEventBookmarkQuickSearch';
 
-import { EEventType } from '@thymecard/types';
+import { useQuickSearch } from '@/hooks/common/useQuickSearch';
+
+import { Client, EEventType, IMealEventBookmark } from '@thymecard/types';
 import { formatClasses } from '@/lib/common.utils';
 
 import styles from './planner.module.scss';
@@ -59,6 +62,8 @@ const Planner = () => {
     const [newEventType, setNewEventType] = useState<EEventType | null>(null);
     const [newEventTime, setNewEventTime] = useState<number | null>(null);
 
+    const [bookmarkedEvent, setBookmarkedEvent] = useState<Client<IMealEventBookmark> | null>(null);
+
     const {
         modalState: addEventModalState,
         isModalClosed: isAddEventModalClosed,
@@ -94,6 +99,13 @@ const Planner = () => {
         closeModal: closeBookmarkEventModal
     } = useModal();
 
+    const {
+        quickSearchState: bookmarkQuickSearchState,
+        isQuickSearchClosed: isBookmarkQuickSeachClosed,
+        openQuickSearch: openBookmarkQuickSearch,
+        closeQuickSearch: closeBookmarkQuickSearch
+    } = useQuickSearch();
+
     const handleOpenAddEventModal = useCallback(
         (type: EEventType | null, time: number | null) => () => {
             openAddEventModal();
@@ -111,13 +123,16 @@ const Planner = () => {
     const handleCloseAddEventModal = useCallback(() => {
         closeAddEventModal();
 
+        if (bookmarkedEvent) {
+            setBookmarkedEvent(null);
+        }
         if (newEventType) {
             setNewEventType(null);
         }
         if (newEventTime) {
             setNewEventTime(null);
         }
-    }, [closeAddEventModal, newEventTime, newEventType]);
+    }, [bookmarkedEvent, closeAddEventModal, newEventTime, newEventType]);
 
     const handleOpenCopyEventsModal = useCallback(() => {
         openCopyEventsModal();
@@ -150,6 +165,23 @@ const Planner = () => {
     const handleCloseBookmarkEventModal = useCallback(() => {
         closeBookmarkEventModal();
     }, [closeBookmarkEventModal]);
+
+    const handleOpenBookmarkQuickSearch = useCallback(() => {
+        openBookmarkQuickSearch();
+    }, [openBookmarkQuickSearch]);
+
+    const handleCloseBookmarkQuickSearch = useCallback(() => {
+        closeBookmarkQuickSearch();
+    }, [closeBookmarkQuickSearch]);
+
+    const handleSelectBookmarkedEvent = useCallback(
+        (bookmark: Client<IMealEventBookmark>) => {
+            setBookmarkedEvent(bookmark);
+
+            openAddEventModal();
+        },
+        [openAddEventModal]
+    );
 
     const handleDayClick = useCallback(
         (date: DateTime) => () => {
@@ -284,6 +316,7 @@ const Planner = () => {
                         data={selectedDay ? selectedDay.events : []}
                         date={selectedDay.date}
                         handleOpenAddEventModal={handleOpenAddEventModal}
+                        handleOpenBookmarkQuickSearch={handleOpenBookmarkQuickSearch}
                         handleOpenCopyEventsModal={handleOpenCopyEventsModal}
                         handleOpenClearEventsModal={handleOpenClearEventsModal}
                         handleOpenEditEventModal={handleEventClick}
@@ -300,15 +333,18 @@ const Planner = () => {
                     displayTime={displayTime}
                     handleDayClick={handleDayClick}
                     handleDayDoubleClick={handleDayDoubleClick}
-                    handleEventClick={handleEventClick}
+                    handleOpenEditEventModal={handleEventClick}
+                    handleOpenBookmarkEventModal={handleBookmarkClick}
                 />
             </div>
             <AddEventModal
                 key={isAddEventModalClosed.toString()}
                 state={addEventModalState}
                 date={selectedDay?.date ?? TODAY}
-                type={newEventType ?? undefined}
-                time={newEventTime ?? undefined}
+                type={bookmarkedEvent?.type ?? newEventType ?? undefined}
+                time={bookmarkedEvent?.time ?? newEventTime ?? undefined}
+                duration={bookmarkedEvent?.duration}
+                items={bookmarkedEvent?.items}
                 handleCloseModal={handleCloseAddEventModal}
             />
             <CopyEventsModal
@@ -335,6 +371,12 @@ const Planner = () => {
                     handleCloseModal={handleCloseBookmarkEventModal}
                 />
             )}
+            <EventBookmarkQuickSearch
+                key={isBookmarkQuickSeachClosed.toString()}
+                state={bookmarkQuickSearchState}
+                handleClose={handleCloseBookmarkQuickSearch}
+                handleSelectResult={handleSelectBookmarkedEvent}
+            />
         </main>
     );
 };

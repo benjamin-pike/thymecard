@@ -1,8 +1,10 @@
 .wrapper {
-    height: 100%;
-
-    .trigger {
+    &[data-absolute-trigger='true'] {
         height: 100%;
+
+        .trigger {
+            height: 100%;
+        }
     }
 
     .container {
@@ -16,9 +18,10 @@
             position: relative;
 
             background-color: $mono-light;
-            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.05);
-            border: 1px solid alpha($mono-700, 0.1);
-            border-radius: 0.5rem;
+            box-shadow:
+                0 0 0.25rem 0.125rem alpha($mono-dark, 0.0375),
+                0.75rem 0.75rem 3rem alpha($mono-dark, 0.05),
+                0 0 6rem alpha($mono-dark, 0.05);
 
             white-space: nowrap;
 
@@ -27,6 +30,7 @@
             @include dark-mode {
                 background-color: $mono-dark;
                 border: 1px solid $mono-700;
+                box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.375);
             }
 
             &[data-state='open'] {

@@ -22,7 +22,6 @@ const useTime = () => {
     const [edit, setEdit] = useState<ITimeEdit>({ prep: null, cook: null, total: null });
 
     const init = useCallback((prep: number | null, cook: number | null, total: number | null) => {
-        console.log('init time');
         setInitial({
             prep: minutesToHoursAndMinutes(prep),
             cook: minutesToHoursAndMinutes(cook),

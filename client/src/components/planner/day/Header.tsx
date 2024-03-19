@@ -1,6 +1,13 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
 import styles from './header.module.scss';
+import { ICONS } from '@/assets/icons';
+import Tooltip from '@/components/common/tooltip/Tooltip';
+
+const AddIcon = ICONS.common.plus;
+const CopyIcon = ICONS.common.copy;
+const ClearIcon = ICONS.common.XLarge;
+const BookmarkIcon = ICONS.recipes.bookmark;
 
 interface IHeaderProps {
     date: DateTime;
@@ -8,6 +15,7 @@ interface IHeaderProps {
     handleOpenAddEventModal: () => void;
     handleOpenCopyEventsModal: () => void;
     handleOpenClearEventsModal: () => void;
+    handleOpenBookmarkQuickSearch: () => void;
 }
 
 const Header: FC<IHeaderProps> = ({
@@ -15,6 +23,7 @@ const Header: FC<IHeaderProps> = ({
     displayButtons,
     handleOpenAddEventModal,
     handleOpenCopyEventsModal,
+    handleOpenBookmarkQuickSearch,
     handleOpenClearEventsModal
 }) => {
     return (
@@ -27,17 +36,28 @@ const Header: FC<IHeaderProps> = ({
 
             {displayButtons && (
                 <div className={styles.buttons}>
-                    <button onClick={handleOpenAddEventModal}>
-                        <strong>Create</strong> Event
+                    <button className={styles.create} onClick={handleOpenAddEventModal}>
+                        <AddIcon /> Create
                     </button>
-                    <button onClick={handleOpenCopyEventsModal}>
-                        <strong>Copy</strong> Events
+                    <button
+                        className={styles.bookmark}
+                        data-tooltip-id={'tooltip-add-boomarked'}
+                        data-tooltip-content="Add Bookmarked Event"
+                        onClick={handleOpenBookmarkQuickSearch}
+                    >
+                        <BookmarkIcon />
                     </button>
-                    <button onClick={handleOpenClearEventsModal}>
-                        <strong>Clear</strong> Events
+                    <button className={styles.copy} onClick={handleOpenCopyEventsModal}>
+                        <CopyIcon />
+                        Copy
+                    </button>
+                    <button className={styles.clear} onClick={handleOpenClearEventsModal}>
+                        <ClearIcon />
+                        Clear
                     </button>
                 </div>
             )}
+            <Tooltip id="tooltip-add-boomarked" place="bottom" size="small" offset={10} />
         </header>
     );
 };

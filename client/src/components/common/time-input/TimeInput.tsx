@@ -59,7 +59,6 @@ const TimeInput: FC<ITimeInputProps> = ({ initial, handleUpdate }) => {
     );
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        console.log('handleKeyDown', e.key);
         const { name, value, selectionStart } = e.currentTarget;
 
         if (name === 'hours' && e.key === 'ArrowRight' && selectionStart === value.length) {
@@ -73,7 +72,6 @@ const TimeInput: FC<ITimeInputProps> = ({ initial, handleUpdate }) => {
             }
         }
 
-        console.log(name, selectionStart);
         if (name === 'minutes' && selectionStart === 0) {
             if (e.key === 'ArrowLeft') {
                 const hourInput = hourInputRef.current;

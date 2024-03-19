@@ -83,9 +83,7 @@ const Login = () => {
                 const formattedError = formatError(err);
 
                 if (formattedError.code === standardizeErrorCode(ErrorCode.IncompleteRegistration)) {
-                    console.log('incomplete registration');
                     const url = buildUrl('/register/partial', { query: { credentialId: formattedError.data.credentialId } });
-                    console.log(url);
                     return navigate(url);
                 }
 
