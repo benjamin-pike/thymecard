@@ -85,7 +85,7 @@ const Plan: FC<IPlanProps> = ({ handleSelectRecipe, handleToggleVisibleInfo }) =
     const displaySwitchViewButton = customViewportSize === 'twoColumns';
     const events = useMemo(() => extractMealEvents(selectedDay.events), [selectedDay]);
     const date = useMemo(() => selectedDay.date, [selectedDay]);
-    console.log(selectedDay);
+
     const isEmpty = useMemo(() => events.length === 0, [events]);
 
     const [bookmarkedEvent, setBookmarkedEvent] = useState<Client<IMealEventBookmark> | null>(null);

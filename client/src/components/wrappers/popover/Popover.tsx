@@ -21,10 +21,22 @@ interface IPopoverProps {
     children: ReactElement;
     content: ReactElement | null;
     placement?: Placement;
+    fallbackPlacement?: Placement;
     strategy?: 'fixed' | 'absolute';
+    absoluteTrigger?: boolean;
+    borderRadius?: number;
 }
 
-const Popover: FC<IPopoverProps> = ({ className, children, content, placement, strategy }) => {
+const Popover: FC<IPopoverProps> = ({
+    className,
+    children,
+    content,
+    placement,
+    fallbackPlacement,
+    strategy,
+    absoluteTrigger,
+    borderRadius
+}) => {
     const [state, setState] = useState<'open' | 'closing' | 'closed'>('closed');
 
     const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null);
@@ -35,7 +47,7 @@ const Popover: FC<IPopoverProps> = ({ className, children, content, placement, s
         strategy: strategy ?? 'absolute',
         modifiers: [
             { name: 'preventOverflow', options: { boundary: 'clippingParents' } },
-            { name: 'flip', options: { fallbackPlacements: ['bottom'] } }
+            { name: 'flip', options: { fallbackPlacements: [fallbackPlacement ?? 'auto'] } }
         ]
     });
 
@@ -65,7 +77,7 @@ const Popover: FC<IPopoverProps> = ({ className, children, content, placement, s
 
     return (
         <PopoverContext.Provider value={{ handleClosePopover }}>
-            <div ref={containerRef} className={styles.wrapper}>
+            <div ref={containerRef} className={styles.wrapper} data-absolute-trigger={absoluteTrigger}>
                 <div ref={setReferenceElement} className={styles.trigger} onClick={handleOpenPopover}>
                     {children}
                 </div>
@@ -76,7 +88,7 @@ const Popover: FC<IPopoverProps> = ({ className, children, content, placement, s
                         style={popperStyles.popper}
                         {...attributes.popper}
                     >
-                        <div className={styles.content} data-state={state}>
+                        <div className={styles.content} style={{ borderRadius: `${borderRadius ?? 0.5}rem` }} data-state={state}>
                             {content}
                         </div>
                     </div>

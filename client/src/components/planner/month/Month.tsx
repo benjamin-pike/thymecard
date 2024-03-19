@@ -13,7 +13,8 @@ interface IMonthProps {
     displayTime: boolean;
     handleDayClick: (date: DateTime) => () => void;
     handleDayDoubleClick: (date: DateTime) => () => void;
-    handleEventClick: (eventId: string) => () => void;
+    handleOpenEditEventModal: (eventId: string) => () => void;
+    handleOpenBookmarkEventModal: (eventId: string) => () => void;
 }
 
 const Month: FC<IMonthProps> = ({
@@ -24,7 +25,8 @@ const Month: FC<IMonthProps> = ({
     displayTime,
     handleDayClick,
     handleDayDoubleClick,
-    handleEventClick
+    handleOpenEditEventModal,
+    handleOpenBookmarkEventModal
 }) => {
     const { plan, startDate, endDate, isLoading, handleFetchDays } = usePlan();
 
@@ -85,7 +87,8 @@ const Month: FC<IMonthProps> = ({
                             isVisibleWhenThreeColumns,
                             handleDayClick,
                             handleDayDoubleClick,
-                            handleEventClick
+                            handleOpenEditEventModal,
+                            handleOpenBookmarkEventModal
                         };
 
                         return <DayCell key={index} {...dayCellProps} />;

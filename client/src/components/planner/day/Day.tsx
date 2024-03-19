@@ -21,6 +21,7 @@ interface IDayProps {
     handleOpenClearEventsModal: () => void;
     handleOpenEditEventModal: (id: string) => () => void;
     handleOpenBookmarkEventModal: (id: string) => () => void;
+    handleOpenBookmarkQuickSearch: () => void;
 }
 
 const Day: FC<IDayProps> = ({
@@ -29,6 +30,7 @@ const Day: FC<IDayProps> = ({
     handleOpenAddEventModal,
     handleOpenCopyEventsModal,
     handleOpenClearEventsModal,
+    handleOpenBookmarkQuickSearch,
     handleOpenEditEventModal,
     handleOpenBookmarkEventModal
 }) => {
@@ -133,6 +135,7 @@ const Day: FC<IDayProps> = ({
                                 date={date}
                                 displayButtons={data.length > 0}
                                 handleOpenAddEventModal={handleOpenAddEventModal(null, null)}
+                                handleOpenBookmarkQuickSearch={handleOpenBookmarkQuickSearch}
                                 handleOpenCopyEventsModal={handleOpenCopyEventsModal}
                                 handleOpenClearEventsModal={handleOpenClearEventsModal}
                             />

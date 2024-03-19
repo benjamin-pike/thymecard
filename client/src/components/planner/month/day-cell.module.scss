@@ -156,6 +156,8 @@
     .events {
         display: flex;
         flex-direction: column;
+            
+        margin-bottom: 0.5rem;
 
         width: 100%;
 
@@ -262,10 +264,6 @@
 
                     clip-path: unset;
                 }
-            }
-
-            &:last-of-type {
-                margin-bottom: 0.5rem;
             }
 
             @each $event, $color in $event-colors {

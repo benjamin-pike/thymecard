@@ -63,7 +63,6 @@ const NumberInput: FC<INumberInputProps> = ({ value, placeholder, disabled, min,
         const newValue = (parseInt(localValue) + 1).toString();
 
         if (max && parseInt(newValue) > max) {
-            console.log('handleIncrement early return');
             return;
         }
 

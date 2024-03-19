@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import { DateTime } from 'luxon';
+import Popover from '@/components/wrappers/popover/Popover';
+import EventPopover from '../popovers/EventPopover';
 import { Client, EEventType, IDay } from '@thymecard/types';
 import { formatTimeM } from '@thymecard/utils';
 import styles from './day-cell.module.scss';
@@ -18,7 +20,8 @@ interface IDayCellProps {
     isVisibleWhenThreeColumns: boolean;
     handleDayClick: (date: DateTime) => () => void;
     handleDayDoubleClick: (date: DateTime) => () => void;
-    handleEventClick: (eventId: string) => () => void;
+    handleOpenEditEventModal: (eventId: string) => () => void;
+    handleOpenBookmarkEventModal: (eventId: string) => () => void;
 }
 
 const DayCell: FC<IDayCellProps> = ({
@@ -33,7 +36,8 @@ const DayCell: FC<IDayCellProps> = ({
     isVisibleWhenThreeColumns,
     handleDayClick,
     handleDayDoubleClick,
-    handleEventClick
+    handleOpenEditEventModal,
+    handleOpenBookmarkEventModal
 }) => {
     const isCurrentDay = currentDay && date.hasSame(currentDay, 'day');
     const isCurrentMonth = date.month === currentMonth.month;
@@ -73,10 +77,24 @@ const DayCell: FC<IDayCellProps> = ({
                         }
 
                         return (
-                            <li key={k} className={styles.event} data-event={event.type} onClick={handleEventClick(event._id)}>
-                                <p className={styles.name}>{event.items.map((item) => item.name).join(', ')}</p>
-                                {displayTime && <p className={styles.time}>{formatTimeM(event.time)}</p>}
-                            </li>
+                            <Popover
+                                key={k}
+                                content={
+                                    <EventPopover
+                                        event={event}
+                                        handleOpenEditEventModal={handleOpenEditEventModal(event._id)}
+                                        handleOpenBookmarkEventModal={handleOpenBookmarkEventModal(event._id)}
+                                    />
+                                }
+                                placement="bottom"
+                                strategy="fixed"
+                                borderRadius={1.25}
+                            >
+                                <li key={k} className={styles.event} data-event={event.type}>
+                                    <p className={styles.name}>{event.items.map((item) => item.name).join(', ')}</p>
+                                    {displayTime && <p className={styles.time}>{formatTimeM(event.time)}</p>}
+                                </li>
+                            </Popover>
                         );
                     })}
                 </ul>

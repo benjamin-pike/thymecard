@@ -67,9 +67,7 @@ const useMethod = () => {
 
     const deleteSection = useCallback(
         (id: string) => () => {
-            console.log(id);
             const newMethod = edit.filter((section) => section.id !== id);
-            console.log(newMethod);
             setEdit(newMethod);
         },
         [edit]

@@ -67,7 +67,6 @@ const useIngredients = () => {
         }
 
         const compiledIngredients = values.item.map((item, i) => {
-            console.log(item);
             if (!item) {
                 createToast('error', 'All ingredients must be named');
                 throw new Error('All ingredients must be named');
