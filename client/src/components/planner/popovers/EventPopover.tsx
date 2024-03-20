@@ -10,6 +10,7 @@ import Tooltip from '@/components/common/tooltip/Tooltip';
 import { formatTimeM } from '@thymecard/utils';
 
 const TimeIcon = ICONS.common.time;
+const CalendarIcon = ICONS.common.planner;
 const CaloriesIcon = ICONS.common.pieChart;
 const EditIcon = ICONS.recipes.create;
 const BookmarkIcon = ICONS.recipes.bookmark;
@@ -68,14 +69,17 @@ const EventPopover: FC<IEventPopoverProps> = ({ event, handleOpenEditEventModal,
                     >
                         <EditIcon />
                     </button>
-                    <button
-                        className={styles.bookmark}
-                        data-tooltip-id="tooltip-bookmark-event"
-                        data-tooltip-content="Bookmark Event"
-                        onClick={handleBookmarkButtonClick}
-                    >
-                        <BookmarkIcon />
-                    </button>
+                    {!isDefined(event.bookmarkId) && (
+                        <button
+                            className={styles.bookmark}
+                            data-tooltip-id="tooltip-bookmark-event"
+                            data-tooltip-content="Bookmark Event"
+                            onClick={handleBookmarkButtonClick}
+                        >
+                            <BookmarkIcon />
+                        </button>
+                    )}
+                    <div className={styles.separator} />
                     <button
                         className={styles.remove}
                         data-tooltip-id="tooltip-remove-event"
@@ -88,12 +92,16 @@ const EventPopover: FC<IEventPopoverProps> = ({ event, handleOpenEditEventModal,
             </header>
             <div className={styles.divider} />
             <p className={styles.metadata}>
-                <TimeIcon />
-
-                <span>{selectedDay.date?.toFormat('cccc, d LLLL')}</span>
-                <span>•</span>
-                <span>
-                    {formatTimeM(event.time)} - {formatTimeM(event.time + event.duration)}
+                <span className={styles.date}>
+                    <CalendarIcon />
+                    {selectedDay.date?.toFormat('cccc, d LLLL')}
+                </span>
+                <div className={styles.separator} />
+                <span className={styles.time}>
+                    <TimeIcon />
+                    {formatTimeM(event.time)}
+                    {'  -  '}
+                    {formatTimeM(event.time + event.duration)}
                 </span>
             </p>
             <ul className={styles.items}>
