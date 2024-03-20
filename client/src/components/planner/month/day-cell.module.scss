@@ -267,16 +267,9 @@
             }
 
             @each $event, $color in $event-colors {
-                $light-adjusted-color: contrastize($color, 'light');
-                $dark-adjusted-color: contrastize($color, 'dark');
-
                 &[data-event='#{$event}'] {
                     &::before {
                         background-color: $color;
-
-                        @include dark-mode {
-                            background-color: $dark-adjusted-color;
-                        }
                     }
                 }
             }

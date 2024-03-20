@@ -88,7 +88,6 @@ const DayCell: FC<IDayCellProps> = ({
                                 }
                                 placement="bottom"
                                 strategy="fixed"
-                                borderRadius={1.25}
                             >
                                 <li key={k} className={styles.event} data-event={event.type}>
                                     <p className={styles.name}>{event.items.map((item) => item.name).join(', ')}</p>

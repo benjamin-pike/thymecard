@@ -2,6 +2,7 @@ import { useState, ReactElement, FC, useCallback, useEffect, createContext, useC
 import { Placement } from '@popperjs/core';
 import { usePopper } from 'react-popper';
 import { useClickOutside } from '@/hooks/common/useClickOutside';
+import { isArray } from '@thymecard/types';
 import styles from './popover.module.scss';
 
 interface IPopoverContext {
@@ -24,7 +25,7 @@ interface IPopoverProps {
     fallbackPlacement?: Placement;
     strategy?: 'fixed' | 'absolute';
     absoluteTrigger?: boolean;
-    borderRadius?: number;
+    borderRadius?: number | number[];
 }
 
 const Popover: FC<IPopoverProps> = ({
@@ -88,7 +89,17 @@ const Popover: FC<IPopoverProps> = ({
                         style={popperStyles.popper}
                         {...attributes.popper}
                     >
-                        <div className={styles.content} style={{ borderRadius: `${borderRadius ?? 0.5}rem` }} data-state={state}>
+                        <div
+                            className={styles.content}
+                            style={{
+                                ...(borderRadius && {
+                                    borderRadius: isArray(borderRadius)
+                                        ? borderRadius.map((r) => `${r}rem`).join(' ')
+                                        : `${borderRadius}rem`
+                                })
+                            }}
+                            data-state={state}
+                        >
                             {content}
                         </div>
                     </div>

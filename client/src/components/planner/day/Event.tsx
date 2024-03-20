@@ -48,11 +48,10 @@ const Event: FC<IEventProps> = ({ event, period, handleOpenEditEventModal, handl
                         handleOpenBookmarkEventModal={handleOpenBookmarkEventModal}
                     />
                 }
-                placement="right"
+                placement="right-start"
                 fallbackPlacement="right"
                 strategy="fixed"
                 absoluteTrigger={true}
-                borderRadius={1.25}
             >
                 <div className={styles.content}>
                     <span className={styles.top}>

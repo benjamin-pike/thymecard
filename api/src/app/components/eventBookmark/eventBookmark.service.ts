@@ -90,16 +90,18 @@ export class EventBookmarkService implements IEventBookmarkService {
         const filter = {
             userId
         };
+        const sort = { createdAt: -1 } as const;
 
-        return await mealEventBookmarkRepository.getPaged(filter, nextKey, 5);
+        return await mealEventBookmarkRepository.getPaged(filter, nextKey, 5, sort); // FIXME – limit should be configuared by query param (max. 30)  
     }
 
     public async getActivityEventBookmarks(userId: string, nextKey?: string): Promise<IPagedResult<IActivityEventBookmark>> {
         const filter = {
             userId
         };
+        const sort = { createdAt: -1 } as const;
 
-        return await activityEventBookmarkRepository.getPaged(filter, nextKey, 5);
+        return await activityEventBookmarkRepository.getPaged(filter, nextKey, 5, sort); // FIXME – limit should be configuared by query param (max. 30) 
     }
 
     public async searchMealEventBookmarks(userId: string, query: string): Promise<IPagedResult<IMealEventBookmark>> {
